@@ -1,6 +1,6 @@
 {
     "name": "GameCube Pro Adapter",
-    "version": "2022.12.11",
+    "version": "2022.12.12",
     "new_install_prompt_erase": true,
     "builds": [
       {
@@ -8,7 +8,7 @@
         "parts": [
           { "path": "bootloader.bin", "offset": 0 },
           { "path": "partition-table.bin", "offset": 32768 },
-          { "path": "firmware.bin", "offset": 65536 }
+          { "path": "gc-pro-adapter.bin", "offset": 65536 }
         ]
       }
     ]
