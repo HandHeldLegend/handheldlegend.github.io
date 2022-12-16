@@ -4,69 +4,81 @@
         <link rel="stylesheet" href="/css/style.css" type="text/css">
     </head>
 <body>
-<div class="context">
+  <div class="context">
 
-  <h1>GC Pocket Adapter<br>
-    Firmware Page</h1>
-  <div class="box">
-    <p>To update your device, hold the 'Mode Change' button while plugging in your device.</p>
-    <p>Next, click the 'connect' button and follow the prompts.</p>
-    <img src="/resources/gc_pocket/adapter_layout.jpg">
-  </div>
-  <div class="box">
-  <h3>Update 12.14.2022</h3>
-  <p>Resolves issue with GameCube adapter mode rumble not working.</p>
-  <esp-web-install-button
-    manifest="/firmware/gc_pro_adapter/manifest.json"
-  ></esp-web-install-button>
-  </div>
+    <h1>GC Pocket Adapter<br>
+      Firmware Page</h1>
 
-  <div class="line"></div>
+    <div class="box">
+      <p>To update your device, hold the 'Mode Change' button while plugging in your device.</p>
+      <p>Next, click the 'connect' button and follow the prompts.</p>
+      <img src="/resources/gc_pocket/adapter_layout.jpg">
+    </div>
 
-  <div class="box">
-    <h3>Previous updates</h3>
-    <div class="wrap-collapsible">
-      <input id="collapsible2" class="toggle" type="checkbox">
-      <label for="collapsible2" class="lbl-toggle">Update 12.12.2022</label>
-      <div class="collapsible-content">
-        <div class="content-inner">Resolves issue with sticks zeroing.</div>
+    <div class="box">
+      <h3>Update 12.14.2022</h3>
+      <p>Resolves issue with GameCube adapter mode rumble not working.</p>
+      <esp-web-install-button
+        manifest="/firmware/gc_pro_adapter/manifest.json"
+      ></esp-web-install-button>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="box">
+      <h3>Previous updates</h3>
+      <div class="wrap-collapsible">
+
+        <input id="collapsible2" class="toggle" type="checkbox">
+
+        <label for="collapsible2" class="lbl-toggle">Update 12.12.2022</label>
+
+        <div class="collapsible-content">
+
+          <div class="content-inner">Resolves issue with sticks zeroing.</div>
+
+        </div>
       </div>
     </div>
+
+    <div class="line"></div>
+
+    <div class="box">
+      <h3>Resources</h3>
+      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">GitHub Source Code</a>
+      <br>
+      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">User Guide</a>
+      <br>
+      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Assembly Guide</a>
+      <br>
+      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Store Page</a>
+    
+    </div>
+
+    <div class="box_bottom">
+      <p>
+      <a href="https://codepen.io/tokyoweb/pen/ZjdYVj" target="_blank">CSS By TokyoWeb</a> | Site by Mitch Cairns | © 2022, Hand Held Legend
+      </p>
+    </div>
+
   </div>
 
-  <div class="line"></div>
+  <div class="area" >
+    <ul class="circles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+    </ul>
+  </div >
 
-  <div class="box">
-    <h3>Resources</h3>
-    <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">GitHub Source Code</a>
-    <br>
-    <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">User Guide</a>
-    <br>
-    <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Assembly Guide</a>
-    <br>
-    <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Store Page</a>
-  </div>
-
-</div>
-
-<div class="area" >
-  <ul class="circles">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-  </ul>
-</div >
 </body>
-<script
-        type="module"
-        src="/js/install-button.js?module"
-    ></script>
-        <script src="/js/collapsible.js"></script>
+
+<script type="module" src="/js/install-button.js?module"> </script>
 </html>

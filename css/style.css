@@ -10,8 +10,8 @@ body {
     background: linear-gradient(-45deg, #fc6537, #e73c3c, #1b5bd3, #23d57c);
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
-    height: 100vh;
-
+    height: 100%;
+    width: 100%;
 }
 
 @keyframes gradient {
@@ -30,11 +30,12 @@ body {
 
 .context {
     width: 100%;
+    height: 100%;
+    overflow-y: auto;
     text-align: center;
     align-items: center;
     position: absolute;
-    top: 2vh;
-    z-index: 2;
+    z-index: 100;
 }
 
 .box {
@@ -48,6 +49,23 @@ body {
     margin-right: auto;
     margin-top: 8px;
     margin-bottom: 8px;
+    font-size: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 1;
+}
+
+.box_bottom {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: hsla(0, 0%, 100%, 0.555);
+    color: hsla(0, 0%, 80%, 0.349);
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    margin-bottom: 0;
     font-size: 15px;
     text-align: center;
     backdrop-filter: blur(10px);
@@ -119,7 +137,10 @@ input[type='checkbox'] {
     display: block;
     font-size: 20px;
     text-align: center;
-    padding: 1rem;
+    padding: 5px;
+    width:300px;
+    margin-left: auto;
+    margin-right: auto;
     color: rgba(0, 0, 0, 0.596);
     background: #00b7ffd5;
     cursor: pointer;
@@ -149,6 +170,9 @@ input[type='checkbox'] {
 
 .collapsible-content {
     max-height: 0px;
+    width:310px;
+    margin-left: auto;
+    margin-right: auto;
     overflow: hidden;
     transition: max-height .25s ease-in-out;
 }
