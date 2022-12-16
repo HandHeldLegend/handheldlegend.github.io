@@ -20,7 +20,7 @@ html {
 
 body {
     font-family: 'Exo', sans-serif;
-    background: linear-gradient(-45deg, #fc6537, #e73c3c, #1b5bd3, #23d57c);
+    background: linear-gradient(-45deg, #fff06c, #ff7272, #548efc, #23d57c);
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
 
@@ -220,7 +220,7 @@ input[type='checkbox'] {
 }
 
 .circles{
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -232,11 +232,11 @@ input[type='checkbox'] {
     position: absolute;
     display: block;
     list-style: none;
-    width: 20px;
-    height: 20px;
+    width: 100vw;
+    height: 100vh;
     background: rgba(255, 255, 255, 0.2);
     animation: animate 25s linear infinite;
-    bottom: -150px;
+    bottom: -20%;
     
 }
 
@@ -319,13 +319,19 @@ input[type='checkbox'] {
 @keyframes animate {
 
     100% {
-        transform: translateY(0) rotate(0deg);
+        transform: translateY(20vh) rotate(0deg);
         opacity: 0;
         border-radius: 50%;
     }
 
     0% {
-        transform: translateY(-120rem) rotate(720deg);
+        transform: translateY(-100vh) rotate(720deg);
+        opacity: 0;
+        border-radius: 0%;
+    }
+
+    2% {
+        transform: translateY(-100vh) rotate(720deg);
         opacity: 1;
         border-radius: 0%;
     }
