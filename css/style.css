@@ -211,7 +211,9 @@ input[type='checkbox'] {
 .line {
     width: 30rem;
     height: 0;
-    border: 0.08rem solid #C4C4C4;
+    border: 2px solid #C4C4C4;
+    fill: #C4C4C4;
+    border-radius: 1rem;
     margin: 0.35rem;
     display: inline-block;
 }
