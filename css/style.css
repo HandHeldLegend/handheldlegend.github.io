@@ -61,7 +61,7 @@ body {
     width: 40rem;
     border-radius: 2rem;
     background-color: hsla(0, 0%, 100%, 0.555);
-    color: hsla(0, 0%, 80%, 0.349);
+    color: rgb(0, 0, 0);
     padding: 1rem;
     margin-left: auto;
     margin-right: auto;
