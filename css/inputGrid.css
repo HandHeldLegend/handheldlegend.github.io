@@ -1,0 +1,48 @@
+.input-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    background-color: rgba(0, 255, 255, 0.336);
+    margin: 1rem auto;
+    text-align: left;
+    min-width: 8rem;
+    width: auto;
+    max-width: 20rem;
+    height: auto;
+    padding: 1rem;
+    border-radius: 1rem;
+    column-gap: 0.15rem;
+    row-gap: 1rem;
+    box-shadow: inset 0 0.15rem 0.15rem rgba(0,0,0,0.5), 0px 0.15rem 0px rgba(255,255,255,0.2);   
+}
+
+.grid-item {
+    min-width: 5rem;
+    width: auto;
+    height: auto;
+    padding-top: 0.15rem;
+    border: 0.15rem solid rgba(0,0,0,0.5);
+    border-radius: 0.5rem;
+    padding-bottom: 0.1rem;
+    text-align: left;
+    padding-left: 0.5rem;
+}
+
+.invisigrid {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin: 1rem auto;
+    min-width: 8rem;
+    width: 15em;
+    max-width: 30rem;
+    column-gap: 1em;
+}
+
+.invisigrid-trio{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    margin: 1rem auto;
+    min-width: 8rem;
+    width: 15em;
+    max-width: 30rem;
+    column-gap: 1em;
+}

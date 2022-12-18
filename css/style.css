@@ -89,12 +89,35 @@ body {
     z-index: 0;
 }
 
-.button {
-    z-index: 0;
-    font-size: 1.25rem;
+button {
+    font-family: inherit;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.3rem;
+    width:auto;
+    margin: 0.25rem;
+    margin-left: auto;
+    margin-right: auto;
+    color: rgba(0, 0, 0, 0.596);
+    background: #00b7ffd5;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease-out;
+    border-color: #ffffff00;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
 }
 
-.context img {
+button:disabled {
+    background: #5a5a5ad5;
+    cursor: default;
+}
+
+button:enabled:hover {
+    color: #FFF;
+}
+
+img {
     border-radius: 1rem;
     margin: 1rem;
     width: 40rem;
@@ -103,40 +126,41 @@ body {
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.45);
 }
 
-.context h1 {
+h1 {
     text-align: center;
     color: #fff;
     font-size: 3rem;
 }
 
-.context h2 {
+h2 {
     text-align: center;
     color: rgba(0, 0, 0, 0.596);
     font-size: 1.65rem;
 }
 
-.context h3 {
+h3 {
     text-align: center;
     color: rgba(0, 0, 0, 0.596);
     font-size: 1.75rem;
 }
 
-.context p {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+p {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
     text-align: center;
     color: rgb(0, 0, 0);
     font-size: 1.25rem;
 }
 
 /* Dropdown styling */
-input[type='checkbox'] {
+.toggle {
     display: none;
 }
 
 .wrap-collapsible {
     margin-top: 1rem;
-    margin: 0, 0;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .lbl-toggle {
@@ -144,7 +168,7 @@ input[type='checkbox'] {
     font-size: 1.5rem;
     text-align: center;
     padding: 0.3rem;
-    width:18rem;
+    width:22rem;
     margin-left: auto;
     margin-right: auto;
     color: rgba(0, 0, 0, 0.596);
@@ -177,15 +201,16 @@ input[type='checkbox'] {
 
 .collapsible-content {
     max-height: 0;
-    width:18.55rem;
+    width:22.5rem;
     margin-left: auto;
     margin-right: auto;
     overflow: hidden;
-    transition: max-height .5s ease-in-out;
+    transition: max-height .35s ease-in-out;
 }
 
 .toggle:checked+.lbl-toggle+.collapsible-content {
-    max-height: 4.5rem;
+    max-height: 50em;
+    height: auto;
 }
 
 .toggle:checked+.lbl-toggle {
@@ -208,13 +233,14 @@ input[type='checkbox'] {
 
 /* end dropdown styling */
 
-
 .line {
-    width: 30rem;
+    width: 20rem;
     height: 0;
-    border: 2px solid #C4C4C4;
-    fill: #C4C4C4;
+    border: 2px solid #44444470;
+    fill: #333333;
     border-radius: 1rem;
+    margin-left: auto;
+    margin-right: auto;
     margin: 0.35rem;
     display: inline-block;
 }
