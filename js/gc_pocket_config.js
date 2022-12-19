@@ -169,17 +169,17 @@ function placeSettingData(data)
     di_full = (data.getUint8(6) & 0xF);
     trigger_mode_2 = data.getUint8(6);
 
-    ns_l = (ns_full & 0xC) >> 2;
-    ns_r = ns_full & 0x3;
+    ns_r = (ns_full & 0xC) >> 2;
+    ns_l = ns_full & 0x3;
 
-    gc_l = (gc_full & 0xC) >> 2;
-    gc_r = gc_full & 0x3;
+    gc_r = (gc_full & 0xC) >> 2;
+    gc_l = gc_full & 0x3;
 
-    di_l = (di_full & 0xC) >> 2;
-    di_r = di_full & 0x3;
+    di_r = (di_full & 0xC) >> 2;
+    di_l = di_full & 0x3;
 
-    xi_l = (xi_full & 0xC) >> 2;
-    xi_r = xi_full & 0x3;
+    xi_r = (xi_full & 0xC) >> 2;
+    xi_l = xi_full & 0x3;
 
     // Place trigger mode settings
     placeTriggerData("dinput_lx", "dinput_l0", "dinput_l1", "dinput_l2", di_l);
