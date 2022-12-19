@@ -1,6 +1,6 @@
 {
     "name": "GameCube Pro Adapter",
-    "version": "2022.12.14",
+    "version": "2022.12.18",
     "new_install_prompt_erase": true,
     "builds": [
       {
