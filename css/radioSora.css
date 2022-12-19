@@ -3,7 +3,8 @@
     justify-content: space-around;
     align-items: center;
     background-color: #ff71718a;
-    width: 18rem;
+    width: fit-content;
+    padding: 0 0.2rem;
     height: 3rem;
     margin: 0.25rem;
     margin-left: auto;
@@ -23,19 +24,25 @@ input[type="radio"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 5rem;
+    width: 4.25rem;
     height: 2.3rem;
+    margin-left: -0.3rem;
+    margin-right: -0.3rem;
     text-align: center;
     border-radius: 1.5rem;
     overflow: hidden;
     transition: ease 0.3s;
+    cursor: pointer;
     
     color: #6e6e6edd;
 }
 
 input[type="radio"]:checked + label {
+    margin-left: 0.15rem;
+    margin-right: 0.15rem;
     background-color: #1e8fff91;
     color: #f1f3f5;
     box-shadow: 0.05rem 0.1rem 0.1rem 0 rgba(0,0,0,0.3);
     transition: 0.3s;
+    cursor: pointer;
 }

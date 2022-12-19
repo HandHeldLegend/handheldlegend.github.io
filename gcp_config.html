@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="module" src="/js/install-button.js?module"> </script>
+  <script src="/js/gc_pocket_config.js"></script>
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
+  <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
+  <link rel="stylesheet" href="/css/slider.css" type="text/css">
+  <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
+</head>
+
+<body>
+  <div class="context">
+
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+
+    <h1>GC Pocket Adapter<br>
+      Configurator</h1>
+
+    <div class="box">
+      <p>To configure your device, enter DInput mode (Blue LED).</p>
+      <p>Next, plug in your device and click the 'connect' button to select your device.</p>
+    </div>
+
+    <div class="box">
+
+      <div class="invisigrid">
+        <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
+        <button type="button" id="disconnect_button" onclick="doDisconnect()" disabled>Disconnect</button>
+      </div>
+
+      <div class="message-box" id="ood" disabled="true">
+        <h2>Your device is out of date!</h2>
+        <a href="https://handheldlegend.github.io/gc_pro.html" target="_blank">See our firmware page to update.</a>
+      </div>
+      <!-- SYSTEM SETTINGS -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="system-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="system-collapsible" id="system-collapsible-toggle" class="lbl-toggle" disabled="true">System Settings</label>
+
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+            <p>LED Brightness</p>
+
+            <div class="slider">
+              <input type="range" min="0" max="255" value="0" id="ledValue" oninput="ledTextValue.innerText = this.value" onchange="cmdLedUpdate(this.value)">
+              <p id="ledTextValue">0</p>
+            </div>
+
+            <p>L Trigger Threshold</p>
+
+            <div class="slider">
+              <input type="range" min="0" max="255" value="0" id="ltValue" oninput="ltTextValue.innerText = this.value" onchange="cmdTriggerThreshUpdate(0, this.value)">
+              <p id="ltTextValue">0</p>
+            </div>
+
+            <p>R Trigger Threshold</p>
+
+            <div class="slider">
+              <input type="range" min="0" max="255" value="0" id="rtValue" oninput="rtTextValue.innerText = this.value" onchange="cmdTriggerThreshUpdate(1, this.value)">
+              <p id="rtTextValue">0</p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- DINPUT SETTINGS -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="dinput-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="dinput-collapsible" id="dinput-collapsible-toggle" class="lbl-toggle" disabled="true">DInput Settings | Blue Mode</label>
+
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+            <h3>L Trigger</h3>
+            
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_dl" id="dinput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 0)">
+              <label for="dinput_lx">Off</label>
+              <input type="radio" name="radio_dl" id="dinput_l0" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 1)">
+              <label for="dinput_l0">Digital</label>
+              <input type="radio" name="radio_dl" id="dinput_l1" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 2)">
+              <label for="dinput_l1">Lite</label>
+              <input type="radio" name="radio_dl" id="dinput_l2" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 3)">
+              <label for="dinput_l2">Heavy</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>R Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_dr" id="dinput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 0)">
+              <label for="dinput_rx">Off</label>
+              <input type="radio" name="radio_dr" id="dinput_r0" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 1)">
+              <label for="dinput_r0">Digital</label>
+              <input type="radio" name="radio_dr" id="dinput_r1" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 2)">
+              <label for="dinput_r1">Lite</label>
+              <input type="radio" name="radio_dr" id="dinput_r2" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 3)">
+              <label for="dinput_r2">Heavy</label>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SWITCH SETTINGS -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="ninput-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="ninput-collapsible" id="ninput-collapsible-toggle" class="lbl-toggle" disabled="true">NS Settings | Yellow Mode</label>
+
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+            <h3>L Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_nl" id="ninput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 0)">
+              <label for="ninput_lx">Off</label>
+              <input type="radio" name="radio_nl" id="ninput_l0" onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 1)">
+              <label for="ninput_l0">Digital</label>
+              <input type="radio" name="radio_nl" id="ninput_l1" onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 2)">
+              <label for="ninput_l1">Lite</label>
+              <input type="radio" name="radio_nl" id="ninput_l2" onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 3)">
+              <label for="ninput_l2">Heavy</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>R Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_nr" id="ninput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 0)">
+              <label for="ninput_rx">Off</label>
+              <input type="radio" name="radio_nr" id="ninput_r0" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 1)">
+              <label for="ninput_r0">Digital</label>
+              <input type="radio" name="radio_nr" id="ninput_r1" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 2)">
+              <label for="ninput_r1">Lite</label>
+              <input type="radio" name="radio_nr" id="ninput_r2" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 3)">
+              <label for="ninput_r2">Heavy</label>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- GC MODE SETTINGS -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="ginput-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="ginput-collapsible" id="ginput-collapsible-toggle" class="lbl-toggle" disabled="true">GC Settings | Purple Mode</label>
+
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+            <h3>L Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_gl" id="ginput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_GC, 0, 0)">
+              <label for="ginput_lx">Off</label>
+              <input type="radio" name="radio_gl" id="ginput_l0" onchange="cmdTriggerUpdate(USB_MODE_GC, 0, 1)">
+              <label for="ginput_l0">Digital</label>
+              <input type="radio" name="radio_gl" id="ginput_l1" onchange="cmdTriggerUpdate(USB_MODE_GC, 0, 2)">
+              <label for="ginput_l1">Lite</label>
+              <input type="radio" name="radio_gl" id="ginput_l2" onchange="cmdTriggerUpdate(USB_MODE_GC, 0, 3)">
+              <label for="ginput_l2">Heavy</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>R Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_gr" id="ginput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_GC, 1, 0)">
+              <label for="ginput_rx">Off</label>
+              <input type="radio" name="radio_gr" id="ginput_r0" onchange="cmdTriggerUpdate(USB_MODE_GC, 1, 1)">
+              <label for="ginput_r0">Digital</label>
+              <input type="radio" name="radio_gr" id="ginput_r1" onchange="cmdTriggerUpdate(USB_MODE_GC, 1, 2)">
+              <label for="ginput_r1">Lite</label>
+              <input type="radio" name="radio_gr" id="ginput_r2" onchange="cmdTriggerUpdate(USB_MODE_GC, 1, 3)">
+              <label for="ginput_r2">Heavy</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- XINPUT SETTINGS -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="xinput-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="xinput-collapsible" id="xinput-collapsible-toggle", class="lbl-toggle" disabled="true">XINPUT Settings | Green Mode</label>
+        <div class="collapsible-content">
+          <div class="content-inner">
+
+            <h3>L Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_xl" id="xinput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 0)">
+              <label for="xinput_lx">Off</label>
+              <input type="radio" name="radio_xl" id="xinput_l1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 2)">
+              <label for="xinput_l1">Lite</label>
+              <input type="radio" name="radio_xl" id="xinput_l2" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 3)">
+              <label for="xinput_l2">Heavy</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>R Trigger</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_xr" id="xinput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 0)">
+              <label for="xinput_rx">Off</label>
+              <input type="radio" name="radio_xr" id="xinput_r1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 2)">
+              <label for="xinput_r1">Lite</label>
+              <input type="radio" name="radio_xr" id="xinput_r2" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 3)">
+              <label for="xinput_r2">Heavy</label>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="invisigrid">
+        <button type="button" id="default_button" onclick="doDefault()" disabled>Reset All</button>
+        <button type="button" id="save_button" onclick="doSave()" disabled>Save All</button>
+      </div>
+
+      <div class="line"></div>
+
+      <div class="input-container">
+        <div class="grid-item">X Axis</div>
+        <div class="grid-item" id="x_axis">0</div>
+
+        <div class="grid-item">Y Axis</div>
+        <div class="grid-item" id="y_axis">0</div>
+
+        <div class="grid-item">CX Axis</div>
+        <div class="grid-item" id="cx_axis">0</div>
+
+        <div class="grid-item">CY Axis</div>
+        <div class="grid-item" id="cy_axis">0</div>
+      </div>
+
+  </div>
+</div>
+  <div class="footer">
+    <a href="https://codepen.io/tokyoweb/pen/ZjdYVj" target="_blank">CSS By TokyoWeb</a> | Site by Mitch Cairns | ©
+    2022, Hand Held Legend
+  </div>
+
+</body>
+
+</html>
