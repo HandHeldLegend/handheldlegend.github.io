@@ -1,0 +1,100 @@
+.procon-container {
+    position: relative;
+    width: fit-content;
+    height: 8rem;
+    margin: 1rem auto;
+    margin-bottom: -3rem;
+    --p-width: 16rem;
+    --p-shift: -8rem;
+    --p-ushift: -2rem;
+}
+
+.procon-body {
+    -webkit-mask-image: url(body.svg);
+    mask-image: url(body.svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 10rem;
+    mask-size: 10rem;
+    position:absolute;
+    width: 20rem;
+    height: 8rem;
+    top:0;
+    left: -5rem;
+    z-index:2;
+    background-color: rgb(255, 2, 2);
+    transition: all 0.25s ease-out;
+}
+
+.procon-buttons {
+    -webkit-mask-image: url(buttons.svg);
+    mask-image: url(buttons.svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 10rem;
+    mask-size: 10rem;
+    position:absolute;
+    width: 20rem;
+    height: 8rem;
+    top:0;
+    left: -5rem;
+    z-index:3;
+    background-color: rgb(38, 0, 255);
+    transition: all 0.25s ease-out;
+}
+
+.procon-l-grip {
+    -webkit-mask-image: url(left_grip.svg);
+    mask-image: url(left_grip.svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 10rem;
+    mask-size: 10rem;
+    position:absolute;
+    width: 20rem;
+    height: 8rem;
+    top:0;
+    left: -5rem;
+    z-index:3;
+    background-color: rgb(38, 0, 255);
+    transition: all 0.25s ease-out;
+}
+
+.procon-r-grip {
+    -webkit-mask-image: url(right_grip.svg);
+    mask-image: url(right_grip.svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 10rem;
+    mask-size: 10rem;
+    position:absolute;
+    width: 20rem;
+    height: 8rem;
+    top:0;
+    left: -5rem;
+    z-index:3;
+    background-color: rgb(38, 0, 255);
+    transition: all 0.25s ease-out;
+}
+
+.procon-shadow {
+    -webkit-mask-image: url(body_shadow.svg);
+    mask-image: url(body_shadow.svg);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 10rem;
+    mask-size: 10rem;
+    position:absolute;
+    width: 20rem;
+    height: 8rem;
+    top:0;
+    left: -5rem;
+    z-index:1;
+    background-color: rgba(75, 75, 75, 0.527)
+}
+
+input[type="color"]
+{
+    border-radius: 0.5rem;
+    background: rgba(255, 156, 156, 0.267);
+}

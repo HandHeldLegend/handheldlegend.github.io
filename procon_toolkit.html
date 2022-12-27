@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
   <link rel="stylesheet" href="/css/slider.css" type="text/css">
   <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
+  <link rel="stylesheet" href="resources/procon_toolkit/pc_img.css">
 </head>
 
 <body>
@@ -32,17 +33,14 @@
     <div class="box">
       <p>To configure your device, first enable pairing mode by holding the small button on top of the controller.</p>
       <p>Pair the controller with your device in your bluetooth settings.</p>
-      <p>Next, click the 'connect' button to select your device.</p>
-      <p>If you get a permission dialogue, grant permission, then click 'connect' again.</p>
-      <br>
-      <p>Color settings are coming soon-ish. Stay tuned for updates.</p>
+      <p>Next, click the 'connect' button to select your controller.</p>
     </div>
 
     <div class="box">
         <p>If you found this tool helpful, consider checking out our store.</p>
         <p>We sell tons of great Pro Controller modding parts and accessories.</p>
         <a href="https://handheldlegend.com" target="_blank">HHL Shop - Thank you!</a>
-      </div>
+    </div>
 
     <div class="box">
 
@@ -51,22 +49,44 @@
         <button type="button" id="disconnect_button" onclick="doDisconnect()" disabled>Disconnect</button>
       </div>
 
-      <div class="message-box" id="ood" disabled="true">
-        <h2>Your device is out of date!</h2>
-        <a href="https://handheldlegend.github.io/gc_pro.html" target="_blank">See our firmware page to update.</a>
-      </div>
+
       <!-- COLOR SETTINGS -->
       <!-- --------------- -->
       <div class="wrap-collapsible">
 
-        <input id="color-collapsible" class="toggle" type="checkbox" disabled="true">
+        <input id="color-collapsible" class="toggle" type="checkbox" disabled >
 
-        <label for="color-collapsible" id="color-collapsible-toggle" class="lbl-toggle" disabled="true">Color Settings</label>
+        <label for="color-collapsible" id="color-collapsible-toggle" class="lbl-toggle" disabled="true" >Color Settings</label>
 
         <div class="collapsible-content">
 
           <div class="content-inner">
 
+            <div class="procon-container">
+              <div class="procon-body" id="body-mask" style></div>
+              <div class="procon-buttons" id="buttons-mask" style></div>
+              <div class ="procon-l-grip" id="l-grip-mask" style></div>
+              <div class ="procon-r-grip" id="r-grip-mask" style></div>
+              <div class ="procon-shadow"></div>
+            </div>
+            <br>
+            <label for="pc-body">Body</label>
+            <br>
+            <input type="color" id="pc_body" name="pc-body" value="#e66465" onchange='setColorData(0, this.value)'>
+            <br>
+            <label for="pc-buttons">Buttons</label>
+            <br>
+            <input type="color" id="pc_buttons" name="pc-buttons" value="#e66465" onchange='setColorData(1, this.value)'>
+            <br>
+            <label for="pc-body">Left Grip</label>
+            <br>
+            <input type="color" id="pc_grip_l" name="pc-body" value="#e66465" onchange='setColorData(2, this.value)'>
+            <br>
+            <label for="pc-body">Right Grip</label>
+            <br>
+            <input type="color" id="pc_grip_r" name="pc-body" value="#e66465" onchange='setColorData(3, this.value)'>
+            <br>
+            <button type="button" id="save_color_button" onclick="doSaveColor()">Save Color</button>
           </div>
 
         </div>
@@ -79,7 +99,7 @@
       <p>Release both sticks so they are centered.</p>
       <p>Click the button below to save the calibration data.</p>
       
-      <button type="button" id="save_button" onclick="doSave()" disabled>Save Calibration</button>
+      <button type="button" id="save_button" onclick="doSaveStickSettings()" disabled>Save Calibration</button>
 
       <div class="line"></div>
 

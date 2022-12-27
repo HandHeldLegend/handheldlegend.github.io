@@ -84,6 +84,18 @@ y_axis_element = null;
 cx_axis_element = null;
 cy_axis_element = null;
 
+body_color_element = null;
+body_color_mask = null;
+
+button_color_element = null;
+button_color_mask = null
+
+grip_l_color_element = null;
+grip_l_color_mask = null;
+
+grip_r_color_element = null;
+grip_r_color_mask = null;
+
 body_color = [0, 0, 0];
 buttons_color = [0, 0, 0];
 grip_l_color = [0, 0, 0];
@@ -119,6 +131,18 @@ async function doConnect() {
     y_axis_element = document.getElementById("y_axis");
     cx_axis_element = document.getElementById("cx_axis");
     cy_axis_element = document.getElementById("cy_axis");
+
+    body_color_element = document.getElementById("pc_body");
+    body_color_mask = document.getElementById("body-mask");
+
+    button_color_element = document.getElementById("pc_buttons");
+    button_color_mask = document.getElementById("buttons-mask")
+
+    grip_l_color_element = document.getElementById("pc_grip_l");
+    grip_l_color_mask = document.getElementById("l-grip-mask");
+
+    grip_r_color_element = document.getElementById("pc_grip_r");
+    grip_r_color_mask = document.getElementById("r-grip-mask");
 
     // Set up disconnect listener
     navigator.hid.addEventListener('disconnect', ({device}) => {
@@ -186,16 +210,11 @@ function enableAllSettings(set)
   if (!set)
   {
       out = "true";
+      document.getElementById("color-collapsible").checked = false;
   }
 
-  /*
   document.getElementById("color-collapsible").disabled = !set;
   document.getElementById("color-collapsible-toggle").setAttribute("disabled", out);
-
-  if (out = "false")
-  {
-      document.getElementById("color-collapsible").checked = false;
-  }*/
 
   // Enable save button and reset all button
   document.getElementById("save_button").disabled = !set;
@@ -269,12 +288,6 @@ function onDeviceDisconnect(d) {
 }
 // --------------------- //
 // --------------------- //
-
-
-// Tell controller to save all settings
-async function doSave() {
-    await saveStickCalibration();
-}
 
 // PRO CONTROLLER INPUT TRANSLATION FUNCTIONS
 
@@ -432,6 +445,7 @@ function spiReadCmdReturn(addressUpper, addressLower, length, full_data)
     }
     else if ( (addressUpper == SPI_COLOR_UPPER) && (addressLower == SPI_COLOR_LOWER) )
     {
+        console.log("Got Color Data.");
         loadColorData(full_data);
     }
 }
@@ -478,6 +492,10 @@ function doLoadSettings()
 
     sendSpiReadCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, SPI_CALIB_LEN)
     .then(console.log("Sent SPI Read for Stick Calibration."))
+    .catch(err=>console.log(err));
+
+    sendSpiReadCmd(SPI_COLOR_UPPER, SPI_COLOR_LOWER, SPI_COLOR_LEN)
+    .then(console.log("Sent SPI Read for Color data."))
     .catch(err=>console.log(err));
 }
 
@@ -547,38 +565,149 @@ function loadStickCalibration(full_data)
 
     calibration_loaded = true;
     enableAllSettings(true);
-
-    // Load color data after calibration data
-    //await sendSpiReadCmd(SPI_COLOR_UPPER, SPI_COLOR_LOWER, SPI_COLOR_LEN);
 }
 
 // Interprets color data and shows this on the
 // page.
 function loadColorData(full_data)
 {
+    tag = "#";
+
     body_color[0] = full_data.getUint8(SPI_READ_DATA_IDX + 0);
     body_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 1);
     body_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 2);
+
+    text_body_color = tag.concat(body_color[0].toString(16).padStart(2, "0"), 
+                            body_color[1].toString(16).padStart(2, "0"), body_color[2].toString(16).padStart(2, "0"));
 
     buttons_color[0] = full_data.getUint8(SPI_READ_DATA_IDX + 3);
     buttons_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 4);
     buttons_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 5);
 
+    text_buttons_color = tag.concat(buttons_color[0].toString(16).padStart(2, "0"), 
+                        buttons_color[1].toString(16).padStart(2, "0"), buttons_color[2].toString(16).padStart(2, "0"));
+    console.log(text_buttons_color);
+
     grip_l_color[0] = full_data.getUint8(SPI_READ_DATA_IDX + 6);
     grip_l_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 7);
     grip_l_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 8);
 
+    text_grip_l_color = tag.concat(grip_l_color[0].toString(16).padStart(2, "0"), 
+                        grip_l_color[1].toString(16).padStart(2, "0"), grip_l_color[2].toString(16).padStart(2, "0"));
+
     grip_r_color[0] = full_data.getUint8(SPI_READ_DATA_IDX + 9);
     grip_r_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 10);
     grip_r_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 11);
+
+    text_grip_r_color = tag.concat(grip_r_color[0].toString(16).padStart(2, "0"), 
+                        grip_r_color[1].toString(16).padStart(2, "0"), grip_r_color[2].toString(16).padStart(2, "0"));
+
+    body_color_mask.style["background-color"] = text_body_color;
+    body_color_element.value = text_body_color;
+
+    button_color_mask.style["background-color"] = text_buttons_color;
+    button_color_element.value = text_buttons_color;
+
+    grip_l_color_mask.style["background-color"] = text_grip_l_color;
+    grip_l_color_element.value = text_grip_l_color;
+
+    grip_r_color_mask.style["background-color"] = text_grip_r_color;
+    grip_r_color_element.value = text_grip_r_color;
+
     color_loaded = true;
 
     enableAllSettings(true);
 
 }
 
+// Exchanges hex color string for byte array
+function convertColorData(colorStringHex)
+{
+    console.log("Setting color...");
+    console.log(colorStringHex);
+    body = colorStringHex.slice(1, 7);
+
+    r = body.slice(0, 2);
+    rOut = "0x".concat(r);
+
+    g = body.slice(2, 4);
+    gOut = "0x".concat(g);
+
+    b = body.slice(4, 6);
+    bOut = "0x".concat(b);
+    console.log(bOut);
+
+    r = Number(rOut);
+    g = Number(gOut);
+    b = Number(bOut);
+
+    vals = [r, g, b];
+    return vals;
+}
+
+// Sets appropriate color data on change
+function setColorData(code, color_text)
+{
+    switch(code)
+    {   
+        // Body
+        case 0:
+            body_color = convertColorData(color_text);
+            body_color_mask.style["background-color"] = color_text;
+            break;
+
+        case 1:
+            buttons_color = convertColorData(color_text);
+            button_color_mask.style["background-color"] = color_text;
+            break;
+
+        case 2:
+            grip_l_color = convertColorData(color_text);
+            grip_l_color_mask.style["background-color"] = color_text;
+            break;
+
+        case 3:
+            grip_r_color = convertColorData(color_text);
+            grip_r_color_mask.style["background-color"] = color_text;
+            break;
+
+        default:
+            console.log("Not a valid code.");
+            break;
+    }
+}
+
+// Send data to be written to the SPI
+async function sendSpiWriteCmd(addressUpper, addressLower, data_out, length)
+{
+    if (length > 0x1D)
+    {
+        console.log("CAN'T WRITE THIS MUCH DATA!");
+        return;
+    }
+
+    if (device.opened)
+    {
+        inc_gpn_out();
+        data_main = [global_packet_number_out, 
+            0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+            SUBCMD_SPI_WRITE, addressLower, addressUpper, 0x00, 0x00, length];
+
+        data = data_main.concat(data_out);
+
+        try
+        {
+            await device.sendReport(0x01, new Uint8Array(data));
+        }
+        catch (e) {
+            console.error(e.message);
+        }
+    }
+}
+
 // Save the stick calibration data
-async function saveStickCalibration()
+async function doSaveStickSettings()
 {
     magic_upper = 0xB2;
     magic_lower = 0xA1;
@@ -611,42 +740,18 @@ async function saveStickCalibration()
                 magic_upper, magic_lower,
                 r_0, r_1, r_2, r_3, r_4, r_5, r_6, r_7, r_8];
     
-    sendSpiWriteCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, data_out, SPI_CALIB_LEN);
+    await sendSpiWriteCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, data_out, SPI_CALIB_LEN);
 }
 
 // Save the controller color data
-async function saveColorData()
+async function doSaveColor()
 {
+    data_out = [body_color[0], body_color[1], body_color[2],
+                buttons_color[0], buttons_color[1], buttons_color[2],
+                grip_l_color[0], grip_l_color[1], grip_l_color[2],
+                grip_r_color[0], grip_r_color[1], grip_r_color[2]];
 
-}
-
-// Send data to be written to the SPI
-async function sendSpiWriteCmd(addressUpper, addressLower, data_out, length)
-{
-    if (length > 0x1D)
-    {
-        console.log("CAN'T WRITE THIS MUCH DATA!");
-        return;
-    }
-
-    if (device.opened)
-    {
-        inc_gpn_out();
-        data_main = [global_packet_number_out, 
-            0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00,
-            SUBCMD_SPI_WRITE, addressLower, addressUpper, 0x00, 0x00, length];
-
-        data = data_main.concat(data_out);
-
-        try
-        {
-            await device.sendReport(0x01, new Uint8Array(data));
-        }
-        catch (e) {
-            console.error(e.message);
-        }
-    }
+    await sendSpiWriteCmd(SPI_COLOR_UPPER, SPI_COLOR_LOWER, data_out, SPI_COLOR_LEN);
 }
 
 
