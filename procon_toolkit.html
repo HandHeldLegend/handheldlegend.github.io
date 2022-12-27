@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="/js/procon_toolkit/procon_toolkit.js"></script>
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
+  <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
+  <link rel="stylesheet" href="/css/slider.css" type="text/css">
+  <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
+</head>
+
+<body>
+  <div class="context">
+
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+
+    <h1>Pro Controller<br>
+      Configurator</h1>
+
+    <div class="box">
+      <p>To configure your device, first enable pairing mode by holding the small button on top of the controller.</p>
+      <p>Next, click the 'connect' button to select your device.</p>
+      <p>If you get a permission dialogue, grant permission, then click 'connect' again.</p>
+      <br>
+      <p>Color settings are coming soon-ish. Stay tuned for updates.</p>
+    </div>
+
+    <div class="box">
+        <p>If you found this tool helpful, consider checking out our store.</p>
+        <p>We sell tons of great Pro Controller modding parts and accessories.</p>
+        <a href="https://handheldlegend.com" target="_blank">HHL Shop - Thank you!</a>
+      </div>
+
+    <div class="box">
+
+      <div class="invisigrid">
+        <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
+        <button type="button" id="disconnect_button" onclick="doDisconnect()" disabled>Disconnect</button>
+      </div>
+
+      <div class="message-box" id="ood" disabled="true">
+        <h2>Your device is out of date!</h2>
+        <a href="https://handheldlegend.github.io/gc_pro.html" target="_blank">See our firmware page to update.</a>
+      </div>
+      <!-- COLOR SETTINGS -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="color-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="color-collapsible" id="color-collapsible-toggle" class="lbl-toggle" disabled="true">Color Settings</label>
+
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+          </div>
+
+        </div>
+      </div>
+
+      <div class="line"></div>
+
+      <p>To calibrate your sticks, swirl both sticks</p>
+      <p>around in a full circle 6-10 times.</p>
+      <p>Release both sticks so they are centered.</p>
+      <p>Click the button below to save the calibration data.</p>
+      
+      <button type="button" id="save_button" onclick="doSave()" disabled>Save Calibration</button>
+
+      <div class="line"></div>
+
+      <h3>Scaled Stick Output</h3>
+      <div class="input-container">
+        <div class="grid-item">X Axis</div>
+        <div class="grid-item" id="x_axis">0</div>
+
+        <div class="grid-item">Y Axis</div>
+        <div class="grid-item" id="y_axis">0</div>
+
+        <div class="grid-item">CX Axis</div>
+        <div class="grid-item" id="cx_axis">0</div>
+
+        <div class="grid-item">CY Axis</div>
+        <div class="grid-item" id="cy_axis">0</div>
+      </div>
+
+  </div>
+</div>
+  <div class="footer">
+    <a href="https://handheldlegend.github.io/css.html" target="_blank">CSS Attributions</a> | Site by Mitch Cairns | ©
+    2022, Hand Held Legend
+  </div>
+
+</body>
+
+</html>
