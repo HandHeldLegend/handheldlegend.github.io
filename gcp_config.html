@@ -270,6 +270,31 @@
         <div class="grid-item" id="cy_axis">0</div>
       </div>
 
+      <!-- SNAPBACK VIEWER -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="snapback-collapsible" class="toggle" type="checkbox" disabled="true">
+
+        <label for="snapback-collapsible" id="snapback-collapsible-toggle", class="lbl-toggle" disabled="true">Snapback Viewer</label>
+        <div class="collapsible-content">
+          <div class="content-inner">
+            <h3>Axis Select</h3>
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_snapback" id="sb_ax" checked onchange="updateSnapbackAxis(0)">
+              <label for="sb_ax">AX</label>
+              <input type="radio" name="radio_snapback" id="sb_ay" onchange="updateSnapbackAxis(1)">
+              <label for="sb_ay">AY</label>
+              <input type="radio" name="radio_snapback" id="sb_cx" onchange="updateSnapbackAxis(2)">
+              <label for="sb_cx">CX</label>
+              <input type="radio" name="radio_snapback" id="sb_cy" onchange="updateSnapbackAxis(3)">
+              <label for="sb_cy">CY</label>
+            </div>
+            <canvas id="snapback_canvas" width="326" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+
   </div>
 </div>
   <div class="footer">

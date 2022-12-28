@@ -74,6 +74,13 @@ body {
     z-index: 0;
 }
 
+canvas {
+    margin-top: 0.25rem;
+    border: #23d57c;
+    background-color: rgba(255, 89, 89, 0.445);
+    border-radius: 2rem;
+}
+
 .footer {
     position: absolute;
     bottom: 0;

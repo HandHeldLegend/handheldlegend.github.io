@@ -9,6 +9,8 @@ y_axis = null;
 cx_axis = null;
 cy_axis = null;
 
+snapback_axis = 0;
+
 const ubitmask = 0xFF;
 const CMD_USB_REPORTID = 0x02;
 
@@ -122,6 +124,9 @@ function enableAllSettings(set)
     document.getElementById("system-collapsible").disabled = !set;
     document.getElementById("system-collapsible-toggle").setAttribute("disabled", out);
 
+    document.getElementById("snapback-collapsible").disabled = !set;
+    document.getElementById("snapback-collapsible-toggle").setAttribute("disabled", out);
+
     if (out = "false")
     {
         document.getElementById("system-collapsible").checked = false;
@@ -129,6 +134,7 @@ function enableAllSettings(set)
         document.getElementById("ninput-collapsible").checked = false;
         document.getElementById("ginput-collapsible").checked = false;
         document.getElementById("xinput-collapsible").checked = false;
+        document.getElementById("snapback-collapsible").checked = false;
     }
 
     // Enable save button and reset all button
@@ -247,12 +253,31 @@ function placeTriggerData(r0, r1, r2, r3, value)
 function handleInputReport(e) {
     const {data, device, reportId} = e;
 
+    // Input report
     if (reportId == 0x01)
     {
         x_axis.textContent = data.getUint8(3).toString();
         y_axis.textContent = data.getUint8(4).toString();
         cx_axis.textContent = data.getUint8(5).toString();
         cy_axis.textContent = data.getUint8(6).toString();
+
+        output = data.getUint8(3);
+        switch(snapback_axis)
+        {
+            default:
+            case 0:
+                break;
+            case 1:
+                output = data.getUint8(4);
+                break;
+            case 2:
+                output = data.getUint8(5);
+                break;
+            case 3:
+                output = data.getUint8(6);
+                break;
+        }
+        updateSnapbackGraph(output);
     }
     else if (reportId == 0x02)
     {
@@ -391,3 +416,164 @@ async function doDefault() {
 }
 // --------------------- //
 // --------------------- //
+
+
+//SNAPBACK STUFF
+width = 0;
+height = 0;
+canvas = null;
+ctx = null;
+initialized = false;
+
+const GC_CENTER = 128;
+const GC_MAX = 228;
+const GC_MIN = 27;
+const GC_SNAPTHRESH = 23;
+
+const TOGGLE_EN_HIGH = 200;
+const TOGGLE_EN_LOW = 56;
+scaleH = 0;
+scaleCenter = null;
+scaleTopSb = null;
+scaleLowSb = null;
+vals = null;
+count = null;
+
+snapUp = false;
+snapDown = false;
+rebound = false;
+COUNT_RESET = 60;
+countToComplete = COUNT_RESET;
+snapComplete = false;
+
+// Change snapback viewer axis
+function updateSnapbackAxis(axis)
+{
+    snapback_axis = axis;
+}
+
+// Draws an update frame to the snapback graph
+function updateSnapbackGraph(value)
+{
+    if (!initialized)
+    {
+        canvas = document.getElementById("snapback_canvas");
+        width = canvas.width;
+        height = canvas.height;
+
+        // Calculate scale units
+        scaleH = height/256;
+        scaleCenter = GC_CENTER*scaleH;
+        scaleTopSb = scaleCenter - (GC_SNAPTHRESH*scaleH);
+        scaleLowSb = scaleCenter + (GC_SNAPTHRESH*scaleH);
+        COUNT_RESET = width/2;
+        ctx = canvas.getContext("2d");
+        vals = [];
+        count = 0;
+
+        // Draw center line and snapback lines
+        ctx.beginPath();
+        ctx.moveTo(0, scaleCenter);
+        ctx.lineTo(width, scaleCenter);
+        ctx.strokeStyle = '#00000080';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, scaleTopSb);
+        ctx.lineTo(width, scaleTopSb);
+        ctx.strokeStyle = '#de1b1f80';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, scaleLowSb);
+        ctx.lineTo(width, scaleLowSb);
+        ctx.strokeStyle = '#de1b1f80';
+        ctx.stroke();
+
+        initialized=true;
+    }
+
+    if (value >= TOGGLE_EN_HIGH && !snapDown)
+    {
+        snapDown = true;
+        snapUp = false;
+        rebound = false;
+    }
+    else if (value <= TOGGLE_EN_LOW && !snapUp)
+    {
+        snapDown = false;
+        snapUp = true;
+        rebound = false;
+    }
+
+    if (snapDown && !rebound && value <= GC_CENTER)
+    {
+        countToComplete = COUNT_RESET;
+        rebound = true;
+    }
+    else if (snapUp && !rebound && value >= GC_CENTER)
+    {
+        countToComplete = COUNT_RESET;
+        rebound = true;
+    }
+    
+    if (rebound && countToComplete > 0)
+    {
+        countToComplete -= 1;
+    }
+    else if (rebound && countToComplete < 1)
+    {
+        countToComplete = COUNT_RESET;
+        rebound = false;
+        snapUp = false;
+        snapDown = false;
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw center line and snapback lines
+        ctx.beginPath();
+        ctx.moveTo(0, scaleCenter);
+        ctx.lineTo(width, scaleCenter);
+        ctx.strokeStyle = '#00000080';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, scaleTopSb);
+        ctx.lineTo(width, scaleTopSb);
+        ctx.strokeStyle = '#de1b1f80';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, scaleLowSb);
+        ctx.lineTo(width, scaleLowSb);
+        ctx.strokeStyle = '#de1b1f80';
+        ctx.stroke();
+
+        if (vals.length > 1)
+        {
+            
+            // Draw input line
+            ctx.beginPath();
+            ctx.moveTo(width, height-(value*scaleH));
+            for (var i = 0; i < count; i++)
+            {
+                ctx.lineTo(width-i, height-(vals[vals.length-1-i]*scaleH));
+            }
+        }
+        ctx.strokeStyle = '#0F0F00FF';
+        ctx.stroke();
+    }
+
+    // Add point to line
+    vals.push(value);
+    
+    if (count >= width)
+    {
+        vals.shift();
+    }
+    else
+    {
+        count += 1;
+    }
+    
+}
