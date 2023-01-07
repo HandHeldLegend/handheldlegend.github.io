@@ -1,6 +1,6 @@
 {
-    "name": "GameCube Pro Adapter",
-    "version": "2022.12.18",
+    "name": "GameCube Pocket Adapter",
+    "version": "2023.1.6",
     "new_install_prompt_erase": true,
     "builds": [
       {

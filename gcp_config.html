@@ -46,6 +46,33 @@
         <h2>Your device is out of date!</h2>
         <a href="https://handheldlegend.github.io/gc_pro.html" target="_blank">See our firmware page to update.</a>
       </div>
+
+      <!-- MODE EXPLAINER -->
+      <!-- --------------- -->
+      <div class="wrap-collapsible">
+
+        <input id="mode-explainer" class="toggle" type="checkbox">
+
+        <label for="mode-explainer" id="explainer-collapsible-toggle", class="lbl-toggle">Trigger Mode Info</label>
+        <div class="collapsible-content">
+          <div class="content-inner">
+            <h3>Off</h3>
+            All analog inputs and digital inputs are forwarded as is.
+            <div class="line"></div>
+            <h3>Digital</h3>
+            When the analog value is greater than the trigger threshold, the digital button is pressed.
+            <div class="line"></div>
+            <h3>Lite</h3>
+            When the digital value is pressed, a lite analog value (85) is sent. No digital button sent.
+            Great for trigger plugs.
+            <div class="line"></div>
+            <h3>Heavy</h3>
+            When the digital value is pressed, a heavy analog value (255) is sent. Digital button is sent.
+            Also useful for trigger plugs.
+          </div>
+        </div>
+      </div>
+
       <!-- SYSTEM SETTINGS -->
       <!-- --------------- -->
       <div class="wrap-collapsible">
@@ -146,10 +173,6 @@
               <label for="ninput_lx">Off</label>
               <input type="radio" name="radio_nl" id="ninput_l0" onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 1)">
               <label for="ninput_l0">Digital</label>
-              <input type="radio" name="radio_nl" id="ninput_l1" onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 2)">
-              <label for="ninput_l1">Lite</label>
-              <input type="radio" name="radio_nl" id="ninput_l2" onchange="cmdTriggerUpdate(USB_MODE_NS, 0, 3)">
-              <label for="ninput_l2">Heavy</label>
             </div>
 
             <div class="line"></div>
@@ -160,10 +183,6 @@
               <label for="ninput_rx">Off</label>
               <input type="radio" name="radio_nr" id="ninput_r0" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 1)">
               <label for="ninput_r0">Digital</label>
-              <input type="radio" name="radio_nr" id="ninput_r1" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 2)">
-              <label for="ninput_r1">Lite</label>
-              <input type="radio" name="radio_nr" id="ninput_r2" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 3)">
-              <label for="ninput_r2">Heavy</label>
             </div>
 
           </div>
@@ -227,10 +246,8 @@
             <div class="sora_radio_container">
               <input type="radio" name="radio_xl" id="xinput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 0)">
               <label for="xinput_lx">Off</label>
-              <input type="radio" name="radio_xl" id="xinput_l1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 2)">
-              <label for="xinput_l1">Lite</label>
-              <input type="radio" name="radio_xl" id="xinput_l2" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 3)">
-              <label for="xinput_l2">Heavy</label>
+              <input type="radio" name="radio_xl" id="xinput_l1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 1)">
+              <label for="xinput_l1">Digital</label>
             </div>
 
             <div class="line"></div>
@@ -239,23 +256,27 @@
             <div class="sora_radio_container">
               <input type="radio" name="radio_xr" id="xinput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 0)">
               <label for="xinput_rx">Off</label>
-              <input type="radio" name="radio_xr" id="xinput_r1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 2)">
-              <label for="xinput_r1">Lite</label>
-              <input type="radio" name="radio_xr" id="xinput_r2" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 3)">
-              <label for="xinput_r2">Heavy</label>
+              <input type="radio" name="radio_xr" id="xinput_r1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 1)">
+              <label for="xinput_r1">Digital</label>
             </div>
 
           </div>
         </div>
       </div>
 
-      <div class="invisigrid">
+      <!-- CONFIG BUTTONS  -->
+      <!-- --------------- -->
+      <!--
+      <div class="invisigrid" style="visibility:hidden">
         <button type="button" id="default_button" onclick="doDefault()" disabled>Reset All</button>
-        <button type="button" id="save_button" onclick="doSave()" disabled>Save All</button>
-      </div>
+      </div>-->
+      <br>
+      <button type="button" id="save_button" onclick="doSave()" disabled>Save All</button>
 
       <div class="line"></div>
 
+      <!-- INPUT TESTER    -->
+      <!-- --------------- -->
       <div class="input-container">
         <div class="grid-item">X Axis</div>
         <div class="grid-item" id="x_axis">0</div>
@@ -268,6 +289,18 @@
 
         <div class="grid-item">CY Axis</div>
         <div class="grid-item" id="cy_axis">0</div>
+
+        <div class="grid-item">Trigger L</div>
+        <div class="grid-item" id="tl_axis">0</div>
+
+        <div class="grid-item">L Button</div>
+        <div class="grid-item" id="tl_button">0</div>
+
+        <div class="grid-item">Trigger R</div>
+        <div class="grid-item" id="tr_axis">0</div>
+
+        <div class="grid-item">R Button</div>
+        <div class="grid-item" id="tr_button">0</div>
       </div>
 
       <!-- SNAPBACK VIEWER -->

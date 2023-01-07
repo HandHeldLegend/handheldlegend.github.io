@@ -2,12 +2,17 @@
 const vendorId = 0x20D6;
 const productId = 0xA714;
 
-const currentVersion = 0x08A5;
+const currentVersion = 0x08A6;
 
 x_axis = null;
 y_axis = null;
 cx_axis = null;
 cy_axis = null;
+
+tl_axis = null;
+tr_axis = null;
+tl_button = null;
+tr_button = null;
 
 snapback_axis = 0;
 
@@ -49,11 +54,16 @@ function doDisconnect() {
     document.getElementById("connect_button").disabled = false;
     document.getElementById("disconnect_button").disabled = true;
     document.getElementById("save_button").disabled = true;
-    document.getElementById("default_button").disabled = true;
+    //document.getElementById("default_button").disabled = true;
     x_axis.textContent = "0";
     y_axis.textContent = "0";
     cx_axis.textContent = "0";
     cy_axis.textContent = "0";
+
+    tl_axis     = "0";
+    tr_axis     = "0";
+    tl_button   = "0";
+    tr_button   = "0";
 
     enableAllSettings(false);
 }
@@ -66,6 +76,11 @@ async function openDevice() {
     y_axis = document.getElementById("y_axis");
     cx_axis = document.getElementById("cx_axis");
     cy_axis = document.getElementById("cy_axis");
+
+    tl_axis     = document.getElementById("tl_axis");;
+    tr_axis     = document.getElementById("tr_axis");;
+    tl_button   = document.getElementById("tl_button");;
+    tr_button   = document.getElementById("tr_button");;
 
     if (!device) {
       devices = await navigator.hid.requestDevice({
@@ -139,7 +154,7 @@ function enableAllSettings(set)
 
     // Enable save button and reset all button
     document.getElementById("save_button").disabled = !set;
-    document.getElementById("default_button").disabled = !set;
+    //document.getElementById("default_button").disabled = !set;
 }
 
 function placeSettingData(data)
@@ -256,10 +271,16 @@ function handleInputReport(e) {
     // Input report
     if (reportId == 0x01)
     {
+        tl_button.textContent = (data.getUint8(0) & 0x40) ? "1" : "0";
+        tr_button.textContent = (data.getUint8(0) & 0x80) ? "1" : "0";
+
         x_axis.textContent = data.getUint8(3).toString();
         y_axis.textContent = data.getUint8(4).toString();
         cx_axis.textContent = data.getUint8(5).toString();
         cy_axis.textContent = data.getUint8(6).toString();
+
+        tl_axis.textContent = data.getUint8(7).toString();
+        tr_axis.textContent = data.getUint8(8).toString();
 
         output = data.getUint8(3);
         switch(snapback_axis)
