@@ -1,6 +1,6 @@
 {
     "name": "GameCube Pocket Adapter",
-    "version": "2023.1.6",
+    "version": "2023.1.12",
     "new_install_prompt_erase": true,
     "builds": [
       {
@@ -8,7 +8,7 @@
         "parts": [
           { "path": "bootloader.bin", "offset": 0 },
           { "path": "partition-table.bin", "offset": 32768 },
-          { "path": "gc-pro-adapter.bin", "offset": 65536 }
+          { "path": "gc-pocket-adpater.bin", "offset": 65536 }
         ]
       }
     ]
