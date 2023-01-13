@@ -1,6 +1,6 @@
 {
-    "name": "Open Controller Classic",
-    "version": "2023.1.12 r1",
+    "name": "Open Controller Classic r2",
+    "version": "2023.1.12 r2",
     "new_install_prompt_erase": true,
     "builds": [
       {
