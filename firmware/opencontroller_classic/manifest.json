@@ -1,6 +1,6 @@
 {
     "name": "Open Controller Classic",
-    "version": "2022.12.12",
+    "version": "2023.1.12",
     "new_install_prompt_erase": true,
     "builds": [
       {
@@ -8,7 +8,7 @@
         "parts": [
           { "path": "bootloader.bin", "offset": 4096 },
           { "path": "partition-table.bin", "offset": 32768 },
-          { "path": "firmware.bin", "offset": 65536 }
+          { "path": "OPENCONTROLLER-CLASSIC.bin", "offset": 65536 }
         ]
       }
     ]
