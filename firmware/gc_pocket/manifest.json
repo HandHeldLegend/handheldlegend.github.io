@@ -1,6 +1,6 @@
 {
     "name": "GameCube Pocket Adapter",
-    "version": "2023.1.12",
+    "version": "2023.1.12 r2",
     "new_install_prompt_erase": true,
     "builds": [
       {
