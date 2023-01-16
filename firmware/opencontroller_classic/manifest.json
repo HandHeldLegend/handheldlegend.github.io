@@ -1,6 +1,6 @@
 {
     "name": "Open Controller Classic",
-    "version": "2023.1.12 r3",
+    "version": "2023.1.16 regression test",
     "new_install_prompt_erase": true,
     "builds": [
       {
