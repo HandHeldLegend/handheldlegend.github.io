@@ -9,9 +9,25 @@
 <body>
 <h1>HHL DevKit Firmware Installer</h1>
 <p>Open Controller Classic Firmware Installer.</p>
-<p>Version 1.16.2023 regression test.</p>
+<p>Version 1.17.2023.1 - Resolves SNES issues for real this time?</p>
+<p>Boot modes are now a thing for wired modes only (for now). Hold a button while plugging in to enable a mode.</p>
+<p>Mode is saved and will load on reboot.</p>
+<p>Buttons are action buttons, NOT DPAD.</p>
+<p>Left button  -> Retro Wired Mode (SNES/GC)</p>
+<p>Right button -> Nintendo Switch Wired Mode</p>
+<p>Up button    -> XInput Wired Mode (Steam Compatible)</p>
+<p>Down button  -> DInput Wired Mode</p>
 <esp-web-install-button
   manifest="/firmware/opencontroller_classic/manifest.json"
 ></esp-web-install-button>
+<br>
+<br>
+<h1>HOJA EFM8UB1 Update Required</h1>
+<p>Hold the "EN" pin on your ESP32 while plugging in via USB type C.</p>
+<p>This will enable USB bootloader on the EFM8UB1. Download the zip file linked</p>
+<p>unzip it, and run the included .bat file to update the firmware.</p>
+<p>Unplug and replug to finalize the firmware install.</p>
+<a href="/firmware/hoja_efm8usb/open_controller_usb_1.17.2023.1.zip" target="_blank">EFM8UB1 1.17.2023.1 Download Zip</a>
+
 </body>
 </html>
