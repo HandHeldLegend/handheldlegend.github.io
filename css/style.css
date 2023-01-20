@@ -155,7 +155,6 @@ button:enabled:hover {
 img {
     border-radius: 1rem;
     margin: 1rem;
-    width: 40rem;
     margin-left: auto;
     margin-right: auto;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.45);
