@@ -1,6 +1,6 @@
 {
     "name": "Open Controller Classic",
-    "version": "1.17.2023.3",
+    "version": "1.27.2023",
     "new_install_prompt_erase": true,
     "builds": [
       {
