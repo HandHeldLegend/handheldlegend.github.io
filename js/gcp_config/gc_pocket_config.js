@@ -2,7 +2,7 @@
 const GC_VID = 0x20D6;
 const GC_PID = 0xA714;
 
-const currentFwVersion = 0x08A7;
+const currentFwVersion = 0x08A8;
 const currentSettingVersion = 0x08A7;
 
 x_axis = null;
@@ -236,6 +236,7 @@ function checkSettingVersion(data)
 function checkFwVersion(data)
 {
     fwVersion = data.getUint8(1) | (data.getUint8(2)<<8);
+    console.log(fwVersion);
     if (fwVersion != currentFwVersion)
     {
         console.log("FW version out of date!");
