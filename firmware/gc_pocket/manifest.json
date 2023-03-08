@@ -1,6 +1,6 @@
 {
-    "name": "GameCube Pocket Adapter",
-    "version": "2023.1.12",
+    "name": "GC Pocket Adapter",
+    "version": "2023.3.7",
     "new_install_prompt_erase": true,
     "builds": [
       {

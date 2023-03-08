@@ -1,8 +1,9 @@
 // Use these to filter devices
-const vendorId = 0x20D6;
-const productId = 0xA714;
+const GC_VID = 0x20D6;
+const GC_PID = 0xA714;
 
-const currentVersion = 0x08A6;
+const currentFwVersion = 0x08A7;
+const currentSettingVersion = 0x08A7;
 
 x_axis = null;
 y_axis = null;
@@ -24,11 +25,21 @@ const CMD_SETTINGS_GETALL = 2;
 const CMD_SETTINGS_LEDSET = 3;
 const CMD_SETTINGS_TRIGGERMODE = 4;
 const CMD_SETTINGS_TRIGGERSENSITIVITY = 5;
+const CMD_SETTINGS_ZJUMP = 6;
+const CMD_SETTINGS_SETTINGVERSION = 7;
+const CMD_SETTINGS_FWVERSION = 8;
 
 const   USB_MODE_DINPUT  = 0x00;
 const   USB_MODE_NS       = 0x01;
 const   USB_MODE_XINPUT   = 0x02;
 const   USB_MODE_GC       = 0x03;
+
+const dev_filters = [
+    {
+        vendorId: GC_VID,
+        productId: GC_PID,
+    },
+];
 
 connected = false;
 device = null;
@@ -36,7 +47,7 @@ loaded_data = null;
 
 // CONNECT and DISCONNECT functions
 async function doConnect() {
-
+    console.log("Connecting...");
     // Set up disconnect listener
     navigator.hid.addEventListener('disconnect', ({device}) => {
         onDeviceDisconnect(device);
@@ -45,32 +56,9 @@ async function doConnect() {
     await openDevice();
 }
 
-function doDisconnect() {
-    if (device.opened)
-    {
-        device.close();
-    }
-
-    document.getElementById("connect_button").disabled = false;
-    document.getElementById("disconnect_button").disabled = true;
-    document.getElementById("save_button").disabled = true;
-    //document.getElementById("default_button").disabled = true;
-    x_axis.textContent = "0";
-    y_axis.textContent = "0";
-    cx_axis.textContent = "0";
-    cy_axis.textContent = "0";
-
-    tl_axis     = "0";
-    tr_axis     = "0";
-    tl_button   = "0";
-    tr_button   = "0";
-
-    enableAllSettings(false);
-}
-
 async function openDevice() {
-    const devices = await navigator.hid.getDevices();
-    device = devices.find(d => d.vendorId === vendorId && d.productId === productId);
+    devices = await navigator.hid.getDevices();
+    device = devices.find(d => d.vendorId === GC_VID && d.productId === GC_PID);
 
     x_axis = document.getElementById("x_axis");
     y_axis = document.getElementById("y_axis");
@@ -82,17 +70,15 @@ async function openDevice() {
     tl_button   = document.getElementById("tl_button");;
     tr_button   = document.getElementById("tr_button");;
 
-    if (!device) {
-      devices = await navigator.hid.requestDevice({
-        filters: [{ vendorId, productId }],
-      });
+    devices = await navigator.hid.requestDevice({
+        filters: dev_filters,
+    });
 
-      device = devices[0];
-    }
-    
+    device = devices[0];
+
     // Wait for device to open
     if (!device.opened) {
-      await device.open();
+        await device.open();
     }
 
     document.getElementById("connect_button").disabled = true;
@@ -157,38 +143,26 @@ function enableAllSettings(set)
     //document.getElementById("default_button").disabled = !set;
 }
 
-function placeSettingData(data)
+function placeLedSetting(data)
 {
-    console.log("Got settings from adapter.");
-    console.log(data);
-
-    adapter_mode = data.getUint8(3);
-
-    // Global settings
-
+    console.log("Got LED brightness setting.");
     // LED value
-    brightness = data.getUint8(4);
-    document.getElementById("ledValue").value = data.getUint8(4);
-    document.getElementById("ledTextValue").innerText = String(data.getUint8(4));
+    brightness = data.getUint8(1);
+    document.getElementById("ledValue").value = brightness;
+    document.getElementById("ledTextValue").innerText = String(brightness);
+}
 
-    // LT Threshold
-    trigger_thresh_l = data.getUint8(7);
-    document.getElementById("ltValue").value = data.getUint8(7);
-    document.getElementById("ltTextValue").innerText = String(data.getUint8(7));
-
-    // RT Threshold
-    trigger_thresh_r = data.getUint8(8);
-    document.getElementById("rtValue").value = data.getUint8(8);
-    document.getElementById("rtTextValue").innerText = String(data.getUint8(8));
-    
+function placeTriggerModeSetting(data)
+{
+    console.log("Got trigger mode setting data.");
     // Parse out trigger mode settings
-    gc_full = (data.getUint8(5) & 0xF0) >> 4;
-    ns_full = (data.getUint8(5) & 0xF);
-    trigger_mode_1 = data.getUint8(5);
+    gc_full = (data.getUint8(1) & 0xF0) >> 4;
+    ns_full = (data.getUint8(1) & 0xF);
+    trigger_mode_1 = data.getUint8(1);
 
-    xi_full = (data.getUint8(6) & 0xF0) >> 4;
-    di_full = (data.getUint8(6) & 0xF);
-    trigger_mode_2 = data.getUint8(6);
+    xi_full = (data.getUint8(2) & 0xF0) >> 4;
+    di_full = (data.getUint8(2) & 0xF);
+    trigger_mode_2 = data.getUint8(2);
 
     ns_r = (ns_full & 0xC) >> 2;
     ns_l = ns_full & 0x3;
@@ -216,22 +190,61 @@ function placeSettingData(data)
     placeTriggerData("ginput_rx", "ginput_r0", "ginput_r1", "ginput_r2", gc_r);
 }
 
-function isOutOfDate(v_upper, v_lower)
+function placeTriggerSensitivitySetting(data)
 {
-    combined = (v_upper << 8) | v_lower;
-    show = (combined == currentVersion);
-    console.log(combined);
-    if (show)
+    console.log("Got trigger sensitivity data.");
+    // LT Threshold
+    trigger_thresh_l = data.getUint8(1);
+    document.getElementById("ltValue").value = trigger_thresh_l;
+    document.getElementById("ltTextValue").innerText = String(trigger_thresh_l);
+
+    // RT Threshold
+    trigger_thresh_r = data.getUint8(2);
+    document.getElementById("rtValue").value = trigger_thresh_r;
+    document.getElementById("rtTextValue").innerText = String(trigger_thresh_r);
+}
+
+function placeZJumpSetting(data)
+{
+    z_jump = data.getUint8(1);
+    ns_zjump = z_jump & 0x3;
+    gc_zjump = (z_jump >> 2) & 0x3;
+    di_zjump = (z_jump >> 4) & 0x3;
+    xi_zjump = (z_jump >> 6) & 0x3;
+    console.log("Z Jump data loaded.");
+
+    placeZJumpData("dinput_zjump_off", "dinput_zjump_x", "dinput_zjump_y", di_zjump);
+    placeZJumpData("xinput_zjump_off", "xinput_zjump_x", "xinput_zjump_y", xi_zjump);
+    placeZJumpData("ginput_zjump_off", "ginput_zjump_x", "ginput_zjump_y", gc_zjump);
+    placeZJumpData("ninput_zjump_off", "ninput_zjump_x", "ninput_zjump_y", ns_zjump);
+}
+
+function checkSettingVersion(data)
+{
+    settingVersion = data.getUint8(1) | (data.getUint8(2)<<8);
+    if (settingVersion != currentSettingVersion)
     {
-        console.log("Up to date firmware.");
-        document.getElementById(id="ood").setAttribute("disabled", "true");
-        return false;
+        console.log("Setting version out of date!");
     }
     else
     {
-        console.log("Out of date firmware.");
+        console.log("Setting version OK.");
+        
+    }
+}
+
+function checkFwVersion(data)
+{
+    fwVersion = data.getUint8(1) | (data.getUint8(2)<<8);
+    if (fwVersion != currentFwVersion)
+    {
+        console.log("FW version out of date!");
         document.getElementById(id="ood").setAttribute("disabled", "false");
-        return true;
+    }
+    else
+    {
+        console.log("FW version OK.");
+        document.getElementById(id="ood").setAttribute("disabled", "true");
     }
 }
 
@@ -257,6 +270,13 @@ function placeTriggerData(r0, r1, r2, r3, value)
     {
         document.getElementById(r3).checked = (value == 3);
     }
+}
+
+function placeZJumpData(r0, r1, r2, value)
+{
+    document.getElementById(r0).checked = (value == 0);
+    document.getElementById(r1).checked = (value == 1);
+    document.getElementById(r2).checked = (value == 2);
 }
 // --------------------- //
 // --------------------- //
@@ -300,34 +320,72 @@ function handleInputReport(e) {
         }
         updateSnapbackGraph(output);
     }
+    // This is for handling configuration data input reports
     else if (reportId == 0x02)
     {
-        if (data.getUint8(0) == CMD_SETTINGS_GETALL)
+        switch(data.getUint8(0))
         {
-            loaded_data = data;
-            magic_num_1 = data.getUint8(1);
-            magic_num_2 = data.getUint8(2);
+            case CMD_SETTINGS_FWVERSION:
+                checkFwVersion(data);
+                break;
 
-            if (isOutOfDate(magic_num_2, magic_num_1))
-            {
-                console.log("Out of date adapter.");
-                return;
-            }
-            enableAllSettings(true);
-            placeSettingData(data);
+            case CMD_SETTINGS_LEDSET:
+                placeLedSetting(data);
+                enableAllSettings(true);
+                break;
+            
+            case CMD_SETTINGS_SETTINGVERSION:
+                checkSettingVersion(data);
+                break;
+
+            case CMD_SETTINGS_TRIGGERMODE:
+                placeTriggerModeSetting(data);
+                break;
+
+            case CMD_SETTINGS_TRIGGERSENSITIVITY:
+                placeTriggerSensitivitySetting(data);
+                break;
+
+            case CMD_SETTINGS_ZJUMP:
+                placeZJumpSetting(data);
+                break;
+
+            default:
+                console.log("Unknown settings data.");
+                console.log(data);
+                break;
         }
-
-        
     }
-    
 }
 
 function onDeviceDisconnect(d) {
-    if (d.productId == productId)
+    doDeviceDisconnect();
+}
+
+function doDeviceDisconnect()
+{
+    if (device.opened)
     {
-        console.log("Adapter disconnected.");
-        doDisconnect();
+        device.close();
     }
+
+    device = null;
+
+    document.getElementById("connect_button").disabled = false;
+    document.getElementById("disconnect_button").disabled = true;
+    document.getElementById("save_button").disabled = true;
+    //document.getElementById("default_button").disabled = true;
+    x_axis.textContent = "0";
+    y_axis.textContent = "0";
+    cx_axis.textContent = "0";
+    cy_axis.textContent = "0";
+
+    tl_axis     = "0";
+    tr_axis     = "0";
+    tl_button   = "0";
+    tr_button   = "0";
+
+    enableAllSettings(false);
 }
 // --------------------- //
 // --------------------- //
@@ -347,6 +405,23 @@ async function cmdTriggerUpdate(mode, trigger, value)
     {
         console.log("Sending trigger update...");
         const data = [CMD_SETTINGS_TRIGGERMODE, mode, trigger, value];
+
+        try
+        {
+            await device.sendReport(CMD_USB_REPORTID, new Uint8Array(data));
+        }
+        catch (e) {
+            console.error(e.message);
+        }
+    }
+}
+
+async function cmdZJumpUpdate(mode, value)
+{
+    if (device.opened)
+    {
+        console.log("Sending z jump update...");
+        const data = [CMD_SETTINGS_ZJUMP, mode, value];
 
         try
         {

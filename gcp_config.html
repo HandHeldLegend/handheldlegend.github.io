@@ -39,7 +39,7 @@
 
       <div class="invisigrid">
         <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
-        <button type="button" id="disconnect_button" onclick="doDisconnect()" disabled>Disconnect</button>
+        <button type="button" id="disconnect_button" onclick="doDeviceDisconnect()" disabled>Disconnect</button>
       </div>
 
       <div class="message-box" id="ood" disabled="true">
@@ -165,12 +165,25 @@
             <div class="sora_radio_container">
               <input type="radio" name="radio_dr" id="dinput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 0)">
               <label for="dinput_rx">Off</label>
-              <input type="radio" name="radio_dr" id="dinput_r0" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 1)">
+              <input type="radio" name="radio_dr" id="dinput_r0" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 1)">
               <label for="dinput_r0">Digital</label>
               <input type="radio" name="radio_dr" id="dinput_r1" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 2)">
               <label for="dinput_r1">Lite</label>
               <input type="radio" name="radio_dr" id="dinput_r2" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 3)">
               <label for="dinput_r2">Heavy</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>Z Jump</h3>
+
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_dzjump" id="dinput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 0)">
+              <label for="dinput_zjump_off">Off</label>
+              <input type="radio" name="radio_dzjump" id="dinput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 1)">
+              <label for="dinput_zjump_x">X</label>
+              <input type="radio" name="radio_dzjump" id="dinput_zjump_y" onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 2)">
+              <label for="dinput_zjump_y">Y</label>
             </div>
 
           </div>
@@ -206,6 +219,19 @@
               <label for="ninput_rx">Off</label>
               <input type="radio" name="radio_nr" id="ninput_r0" onchange="cmdTriggerUpdate(USB_MODE_NS, 1, 1)">
               <label for="ninput_r0">Digital</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>Z Jump</h3>
+
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_nzjump" id="ninput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_NS, 0)">
+              <label for="ninput_zjump_off">Off</label>
+              <input type="radio" name="radio_nzjump" id="ninput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_NS, 1)">
+              <label for="ninput_zjump_x">X</label>
+              <input type="radio" name="radio_nzjump" id="ninput_zjump_y" onchange="cmdZJumpUpdate(USB_MODE_NS, 2)">
+              <label for="ninput_zjump_y">Y</label>
             </div>
 
           </div>
@@ -250,6 +276,20 @@
               <input type="radio" name="radio_gr" id="ginput_r2" onchange="cmdTriggerUpdate(USB_MODE_GC, 1, 3)">
               <label for="ginput_r2">Heavy</label>
             </div>
+
+            <div class="line"></div>
+
+            <h3>Z Jump</h3>
+
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_gzjump" id="ginput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_GC, 0)">
+              <label for="ginput_zjump_off">Off</label>
+              <input type="radio" name="radio_gzjump" id="ginput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_GC, 1)">
+              <label for="ginput_zjump_x">X</label>
+              <input type="radio" name="radio_gzjump" id="ginput_zjump_y" onchange="cmdZJumpUpdate(USB_MODE_GC, 2)">
+              <label for="ginput_zjump_y">Y</label>
+            </div>
+
           </div>
 
         </div>
@@ -281,6 +321,19 @@
               <label for="xinput_rx">Off</label>
               <input type="radio" name="radio_xr" id="xinput_r1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 1)">
               <label for="xinput_r1">Digital</label>
+            </div>
+
+            <div class="line"></div>
+
+            <h3>Z Jump</h3>
+
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_xzjump" id="xinput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_XINPUT, 0)">
+              <label for="xinput_zjump_off">Off</label>
+              <input type="radio" name="radio_xzjump" id="xinput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_XINPUT, 1)">
+              <label for="xinput_zjump_x">X</label>
+              <input type="radio" name="radio_nzjump" id="xinput_zjump_y" onchange="cmdZJumpUpdate(USB_MODE_XINPUT, 2)">
+              <label for="xinput_zjump_y">Y</label>
             </div>
 
           </div>
