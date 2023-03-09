@@ -122,6 +122,14 @@ const dev_filters = [
         vendorId: ID_NINTENDO,
         productId: ID_PROCON
     },
+    {
+        vendorId: ID_NINTENDO,
+        productId: ID_JOYCON_L
+    },
+    {
+        vendorId: ID_NINTENDO,
+        productId: ID_JOYCON_R
+    },
 ];
 
 // CONNECT and DISCONNECT functions
@@ -171,7 +179,7 @@ function doDisconnect() {
 
 async function openDevice() {
     devices = await navigator.hid.getDevices();
-    device = devices.find(d => d.vendorId === ID_PROCON && d.productId === ID_PROCON);
+    device = devices.find(d => d.vendorId === ID_PROCON || d.productId === ID_JOYCON_L || d.productId === ID_JOYCON_L);
 
     if (!device) {
         devices = await navigator.hid.requestDevice({filters: dev_filters});
