@@ -47,6 +47,7 @@ loaded_data = null;
 
 // CONNECT and DISCONNECT functions
 async function doConnect() {
+
     console.log("Connecting...");
     // Set up disconnect listener
     navigator.hid.addEventListener('disconnect', ({device}) => {
