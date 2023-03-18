@@ -37,6 +37,15 @@
       ></esp-web-install-button>
     </div>
 
+    <div class="box" id="beta_fw" hidden>
+      <h3>BETA 3.17.2023</h3>
+      <p>Adds LED Blinking when settings are saved.</p>
+      <p>Re-adds dynamic HID polling alignment.</p>
+      <esp-web-install-button
+        manifest="/firmware/gc_pocket_beta/manifest.json"
+      ></esp-web-install-button>
+    </div>
+
     <div class="line"></div>
 
     <div class="box">
@@ -151,6 +160,17 @@
   <div class="footer">
       <a href="https://handheldlegend.github.io/css.html" target="_blank">CSS Attributions</a> | Site by Mitch Cairns | © 2022, Hand Held Legend
   </div>
+
+  <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const enable_beta = urlParams.has('beta');
+
+    if (enable_beta)
+    {
+      document.getElementById("beta_fw").removeAttribute("hidden");
+    }
+  </script>
 
 </body>
 </html>
