@@ -1,6 +1,6 @@
 {
     "name": "GC Pocket Adapter",
-    "version": "2023.3.16r2",
+    "version": "2023.3.18",
     "new_install_prompt_erase": true,
     "builds": [
       {

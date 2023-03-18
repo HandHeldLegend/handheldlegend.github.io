@@ -2,7 +2,7 @@
 const GC_VID = 0x20D6;
 const GC_PID = 0xA714;
 
-const currentFwVersion = 0x08AB;
+const currentFwVersion = 0x08AC;
 const currentSettingVersion = 0x08A7;
 
 x_axis = null;
