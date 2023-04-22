@@ -20,6 +20,7 @@ const   INPUT_SUBCMD_REPLY_ID_IDX   = 13;
 const   INPUT_SUBCMD_ACK_IDX    = 12;
 const   INPUT_SUBCMD_ACK_MASK   = 0x7F;
 
+// Calibration space changed?
 const   SPI_CALIB_UPPER = 0x80;
 const   SPI_CALIB_LOWER = 0x10;
 const   SPI_CALIB_LEN   = 22
@@ -231,6 +232,28 @@ function enableAllSettings(set)
 function placeSettingData(data)
 {
     console.log("Not implemented placeSettingData");
+}
+
+function placeCalibrationData(lx_min, lx_center, lx_max, ly_min, ly_center, ly_max, 
+                              rx_min, rx_center, rx_max, ry_min, ry_center, ry_max)
+{
+    document.getElementById("lx_max").textContent       = lx_max.toString();
+    document.getElementById("ly_max").textContent       = ly_max.toString();
+
+    document.getElementById("lx_center").textContent    = lx_center.toString();
+    document.getElementById("ly_center").textContent    = ly_center.toString();
+
+    document.getElementById("lx_min").textContent = lx_min.toString();
+    document.getElementById("ly_min").textContent = ly_min.toString();
+
+    document.getElementById("rx_max").textContent = rx_max.toString();
+    document.getElementById("ry_max").textContent = ry_max.toString();
+
+    document.getElementById("rx_center").textContent = rx_center.toString();
+    document.getElementById("ry_center").textContent = ry_center.toString();
+
+    document.getElementById("rx_min").textContent = rx_min.toString();
+    document.getElementById("ry_min").textContent = ry_min.toString();
 }
 // --------------------- //
 // --------------------- //
@@ -497,7 +520,7 @@ function doLoadSettings()
     cy_high_future = 0;
     cy_low_future = 0;
     cy_center_future = O_AXIS_CENTER;
-
+    
     sendSpiReadCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, SPI_CALIB_LEN)
     .then(console.log("Sent SPI Read for Stick Calibration."))
     .catch(err=>console.log(err));
@@ -536,7 +559,7 @@ function loadStickCalibration(full_data)
     r_5 = full_data.getUint8(SPI_READ_DATA_IDX + 18);
     r_6 = full_data.getUint8(SPI_READ_DATA_IDX + 19);
     r_7 = full_data.getUint8(SPI_READ_DATA_IDX + 20);
-    r_8 = full_data.getUint8(SPI_READ_DATA_IDX + 21)
+    r_8 = full_data.getUint8(SPI_READ_DATA_IDX + 21);
 
     x_high = (l_1 << 8) & 0xF00 | l_0;
     console.log("X Axis High: ");
@@ -549,14 +572,17 @@ function loadStickCalibration(full_data)
     x_center = (l_4 << 8) & 0xF00 | l_3;
     console.log("X Axis Center: ");
     console.log(x_center);
+    
 
     y_center = (l_5 << 4) | (l_4 >> 4);
     console.log("Y Axis Center: ");
     console.log(y_center);
+    
 
     x_low = (l_7 << 8) & 0xF00 | l_6;
     console.log("X Axis Low: ");
     console.log(x_low);
+    
 
     y_low = (l_8 << 4) | (l_1 >> 7);
     console.log("Y Axis Low: ");
@@ -564,12 +590,13 @@ function loadStickCalibration(full_data)
 
     cx_high = (r_1 << 8) & 0xF00 | r_0;
     cy_high = (r_2 << 4) | (r_1 >> 4);
-
     cx_center = (r_4 << 8) & 0xF00 | r_3;
     cy_center = (r_5 << 4) | (r_4 >> 4);
-
     cx_low = (r_7 << 8) & 0xF00 | r_6;
     cy_low = (r_8 << 4) | (r_1 >> 7);
+
+    placeCalibrationData(x_low, x_center, x_high, y_low, y_center, y_high, 
+                         cx_low, cx_center, cx_high, cy_low, cy_center, cy_high);
 
     calibration_loaded = true;
     enableAllSettings(true);
@@ -712,6 +739,11 @@ async function sendSpiWriteCmd(addressUpper, addressLower, data_out, length)
             console.error(e.message);
         }
     }
+}
+
+async function doWipeCalibrationSettings()
+{
+
 }
 
 // Save the stick calibration data

@@ -30,9 +30,14 @@
     </div>
 
     <div class="box">
-      <h3>Update 3.23.2023</h3>
+      <h3>Update 4.22.2023</h3>
       <p>Resolves digital input mode for XInput.</p>
       <p>Adds support for Wavebird.</p>
+      <p>Center value is 127 now.</p>
+      <p>Add SmashBox support.</p>
+      <p>Resolve USB Timeout refresh.</p>
+      <p>Invert Y Axis in DInput mode.</p>
+      <p>Add stick sensitivity option(NS mode and XInput only).</p>
       
       <esp-web-install-button
         manifest="/firmware/gc_pocket/manifest.json"
@@ -41,10 +46,7 @@
 
     <div class="box" id="beta_fw" hidden>
       <h3>BETA 4.4.2023r2</h3>
-      <p>Center value is 127 now.</p>
-      <p>Add SmashBox support.</p>
-      <p>Resolve USB Timeout refresh.</p>
-      <p>Invert Y Axis in DInput mode.</p>
+      <p>No beta</p>
       <esp-web-install-button
         manifest="/firmware/gc_pocket_beta/manifest.json"
       ></esp-web-install-button>
@@ -202,7 +204,9 @@
     const urlParams = new URLSearchParams(queryString);
     const enable_beta = urlParams.has('beta');
 
-    if (enable_beta)
+    const is_beta = false;
+
+    if (enable_beta && is_beta)
     {
       document.getElementById("beta_fw").removeAttribute("hidden");
     }

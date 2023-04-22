@@ -2,8 +2,8 @@
 const GC_VID = 0x20D6;
 const GC_PID = 0xA714;
 
-const currentFwVersion = 0x08AE;
-const currentSettingVersion = 0x08A7;
+const currentFwVersion = 0x08AF;
+const currentSettingVersion = 0x08A8;
 
 x_axis = null;
 y_axis = null;
@@ -28,11 +28,16 @@ const CMD_SETTINGS_TRIGGERSENSITIVITY = 5;
 const CMD_SETTINGS_ZJUMP = 6;
 const CMD_SETTINGS_SETTINGVERSION = 7;
 const CMD_SETTINGS_FWVERSION = 8;
+const CMD_SETTINGS_ANALOGSENSITIVITY = 9;
 
 const   USB_MODE_DINPUT  = 0x00;
 const   USB_MODE_NS       = 0x01;
 const   USB_MODE_XINPUT   = 0x02;
 const   USB_MODE_GC       = 0x03;
+
+const ANALOG_SENS_LOW = 127;
+const ANALOG_SENS_MID = 137;
+const ANALOG_SENS_HIGH = 147;
 
 const dev_filters = [
     {
@@ -220,6 +225,15 @@ function placeZJumpSetting(data)
     placeZJumpData("ninput_zjump_off", "ninput_zjump_x", "ninput_zjump_y", ns_zjump);
 }
 
+function placeAnalogSensSetting(data)
+{   
+    console.log("Got analog sensitivity data.");
+    value = data.getUint8(1);
+    document.getElementById("asens_low").checked = (value == ANALOG_SENS_LOW);
+    document.getElementById("asens_med").checked = (value == ANALOG_SENS_MID);
+    document.getElementById("asens_high").checked = (value == ANALOG_SENS_HIGH);
+}
+
 function checkSettingVersion(data)
 {
     settingVersion = data.getUint8(1) | (data.getUint8(2)<<8);
@@ -352,6 +366,10 @@ function handleInputReport(e) {
                 placeZJumpSetting(data);
                 break;
 
+            case CMD_SETTINGS_ANALOGSENSITIVITY:
+                placeAnalogSensSetting(data);
+                break;
+
             default:
                 console.log("Unknown settings data.");
                 console.log(data);
@@ -464,6 +482,39 @@ async function cmdTriggerThreshUpdate(trigger, value)
     {
         console.log("Sending trigger threshold update...");
         const data = [CMD_SETTINGS_TRIGGERSENSITIVITY, trigger, value];
+
+        try
+        {
+            await device.sendReport(CMD_USB_REPORTID, new Uint8Array(data));
+        }
+        catch (e) {
+            console.error(e.message);
+        }
+    }
+}
+
+async function cmdAnalogSensUpdate(value)
+{
+    if (device.opened)
+    {
+        console.log("Sending analog sensitivity update...");
+        const data = [CMD_SETTINGS_ANALOGSENSITIVITY, 127];
+
+        switch(value)
+        {
+            default:
+            case 0:
+                data[1] = ANALOG_SENS_LOW;
+                break;
+
+            case 1:
+                data[1] = ANALOG_SENS_MID;
+                break;
+
+            case 2:
+                data[1] = ANALOG_SENS_HIGH;
+                break;
+        }
 
         try
         {

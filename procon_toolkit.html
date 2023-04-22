@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="/css/slider.css" type="text/css">
   <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
   <link rel="stylesheet" href="resources/procon_toolkit/pc_img.css">
-  <iframe allow="usb;"></iframe>
 </head>
 
 <body>
@@ -99,6 +98,62 @@
       <p>around in a full circle 6-10 times.</p>
       <p>Release both sticks so they are centered.</p>
       <p>Click the button below to save the calibration data.</p>
+
+      <div class="wrap-collapsible">
+
+        <input id="calibration-collapsible" class="toggle" type="checkbox"  >
+
+        <label for="calibration-collapsible" id="calibration-collapsible-toggle" class="lbl-toggle"  >Calibration Data</label>
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+            <h3>Left Stick Calibration</h3>
+            <div class="input-container">
+              <div class="grid-item">X Max Distance</div>
+              <div class="grid-item" id="lx_max">0</div>
+
+              <div class="grid-item">X Center</div>
+              <div class="grid-item" id="lx_center">0</div>
+
+              <div class="grid-item">X Min Distance</div>
+              <div class="grid-item" id="lx_min">0</div>
+
+              <div class="grid-item">Y Max Distance</div>
+              <div class="grid-item" id="ly_max">0</div>
+
+              <div class="grid-item">Y Center</div>
+              <div class="grid-item" id="ly_center">0</div>
+
+              <div class="grid-item">Y Min Distance</div>
+              <div class="grid-item" id="ly_min">0</div>
+            </div>
+
+            <h3>Right Stick Calibration</h3>
+            <div class="input-container">
+              <div class="grid-item">X Max Distance</div>
+              <div class="grid-item" id="rx_max">0</div>
+
+              <div class="grid-item">X Center</div>
+              <div class="grid-item" id="rx_center">0</div>
+
+              <div class="grid-item">X Min Distance</div>
+              <div class="grid-item" id="rx_min">0</div>
+
+              <div class="grid-item">Y Max Distance</div>
+              <div class="grid-item" id="ry_max">0</div>
+
+              <div class="grid-item">Y Center</div>
+              <div class="grid-item" id="ry_center">0</div>
+
+              <div class="grid-item">Y Min Distance</div>
+              <div class="grid-item" id="ry_min">0</div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
       
       <button type="button" id="save_button" onclick="doSaveStickSettings()" disabled>Save Calibration</button>
 
@@ -117,6 +172,23 @@
 
         <div class="grid-item">CY Axis</div>
         <div class="grid-item" id="cy_axis">0</div>
+      </div>
+
+      <div class="line"></div>
+
+      <h3>Raw Stick Output</h3>
+      <div class="input-container">
+        <div class="grid-item">X Axis</div>
+        <div class="grid-item" id="x_axis_raw">0</div>
+
+        <div class="grid-item">Y Axis</div>
+        <div class="grid-item" id="y_axis_raw">0</div>
+
+        <div class="grid-item">CX Axis</div>
+        <div class="grid-item" id="cx_axis_raw">0</div>
+
+        <div class="grid-item">CY Axis</div>
+        <div class="grid-item" id="cy_axis_raw">0</div>
       </div>
 
   </div>

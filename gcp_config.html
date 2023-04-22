@@ -126,6 +126,17 @@
               <p id="rtTextValue">0</p>
             </div>
 
+            <p>Analog Sensitivity</p>
+
+            <div class="sora_radio_container">
+              <input type="radio" name="radio_analog_sens" id="asens_low" checked onchange="cmdAnalogSensUpdate(0)">
+              <label for="asens_low">Low</label>
+              <input type="radio" name="radio_analog_sens" id="asens_med" onchange="cmdAnalogSensUpdate(1)">
+              <label for="asens_med">Mid</label>
+              <input type="radio" name="radio_analog_sens" id="asens_high" onchange="cmdAnalogSensUpdate(2)">
+              <label for="asens_high">High</label>
+            </div>
+
           </div>
 
         </div>
