@@ -63,7 +63,12 @@ async function doConnect() {
 }
 
 async function openDevice() {
-    devices = await navigator.hid.getDevices();
+
+    devices = await navigator.hid.requestDevice({
+        filters: dev_filters,
+    });
+
+    //devices = await navigator.hid.getDevices();
     device = devices.find(d => d.vendorId === GC_VID && d.productId === GC_PID);
 
     x_axis = document.getElementById("x_axis");
@@ -76,9 +81,7 @@ async function openDevice() {
     tl_button   = document.getElementById("tl_button");;
     tr_button   = document.getElementById("tr_button");;
 
-    devices = await navigator.hid.requestDevice({
-        filters: dev_filters,
-    });
+    
 
     device = devices[0];
 
