@@ -45,8 +45,8 @@
     </div>
 
     <div class="box" id="beta_fw" hidden>
-      <h3>BETA 4.4.2023r2</h3>
-      <p>No beta</p>
+      <h3>BETA 4.24.2023</h3>
+      <p>Reduces input latency when used on a Nintendo Switch. (cut out about 3ms)</p>
       <esp-web-install-button
         manifest="/firmware/gc_pocket_beta/manifest.json"
       ></esp-web-install-button>
@@ -204,7 +204,7 @@
     const urlParams = new URLSearchParams(queryString);
     const enable_beta = urlParams.has('beta');
 
-    const is_beta = false;
+    const is_beta = true;
 
     if (enable_beta && is_beta)
     {
