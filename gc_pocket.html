@@ -38,14 +38,16 @@
       <p>Resolve USB Timeout refresh.</p>
       <p>Invert Y Axis in DInput mode.</p>
       <p>Add stick sensitivity option(NS mode and XInput only).</p>
-      
+
       <esp-web-install-button
         manifest="/firmware/gc_pocket/manifest.json"
       ></esp-web-install-button>
     </div>
 
     <div class="box" id="beta_fw" hidden>
-      <h3>BETA 4.27.2023</h3>
+      <h3>BETA 5.10.2023</h3>
+      <p>Added additional pollings on Non-Performance modes (1ms controller polling is now constant)</p>
+      <p>Changes from 4.27:</p>
       <p>This update resolves the issue where two adapters conflict on Nintendo Switch.</p>
       <p>The issue requires a fix to enable/disable 1ms polling or what I am now</p>
       <p>referring to as 'Performance Mode'. Performance Mode is now disabled by</p>
@@ -70,7 +72,7 @@
       <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Assembly Guide</a>
       <br>
       <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Store Page</a>
-    
+
     </div>
 
     <div class = "line"></div>
@@ -106,93 +108,6 @@
             <p>There was a bug relating to the multitasking when attempting to implement a new feature.</p>
             <p>This issue has been resolved with this update.</p>
           </div>
-
-        </div>
-      </div>
-
-      <!-- 3.7.2023.2 -->
-      <div class="wrap-collapsible">
-
-        <input id="3.7.2023.2" class="toggle" type="checkbox">
-
-        <label for="3.7.2023.2" class="lbl-toggle">Update 3.7.2023.2</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner"><p>x.2 update fixes issue with default settings and startup polling.</p>
-            <p>Added Z-Jump Option.</p>
-            <p>Added HID synchronized polling.</p>
-            <p>Added more intuitive mode switching.</p></div>
-
-        </div>
-      </div>
-
-      <!-- 1.12.2023 -->
-      <div class="wrap-collapsible">
-
-        <input id="1.12.2023" class="toggle" type="checkbox">
-
-        <label for="1.12.2023" class="lbl-toggle">Update 1.12.2023</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner">Nicer LED animations. Button 1 (Mode Change) functions as Screenshot on NS mode. Button 2 functions as Home in NS mode.</div>
-
-        </div>
-      </div>
-
-      <!-- 1.6.2023 -->
-      <div class="wrap-collapsible">
-
-        <input id="1.6.2023" class="toggle" type="checkbox">
-
-        <label for="1.6.2023" class="lbl-toggle">Update 1.6.2023</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner">Adds trigger config support.</div>
-
-        </div>
-      </div>
-
-      <!-- 12.18.2022 -->
-      <div class="wrap-collapsible">
-
-        <input id="12.18.2022" class="toggle" type="checkbox">
-
-        <label for="12.18.2022" class="lbl-toggle">Update 12.18.2022</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner">Adds preliminary support for web configurator.</div>
-
-        </div>
-      </div>
-
-      <!-- 12.14.2022 -->
-      <div class="wrap-collapsible">
-
-        <input id="12.14.2022" class="toggle" type="checkbox">
-
-        <label for="12.14.2022" class="lbl-toggle">Update 12.14.2022</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner">Resolves issue with GameCube adapter mode rumble not working.</div>
-
-        </div>
-      </div>
-
-      <!-- 12.12.2022 -->
-      <div class="wrap-collapsible">
-
-        <input id="12.12.2022" class="toggle" type="checkbox">
-
-        <label for="12.12.2022" class="lbl-toggle">Update 12.12.2022</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner">Resolves issue with sticks zeroing.</div>
 
         </div>
       </div>
