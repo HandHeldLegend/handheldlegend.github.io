@@ -2,8 +2,8 @@
 const GC_VID = 0x20D6;
 const GC_PID = 0xA714;
 
-const currentFwVersion = 0x08AF;
-const currentSettingVersion = 0x08A8;
+const currentFwVersion = 0x0900;
+const currentSettingVersion = 0x08AA;
 
 x_axis = null;
 y_axis = null;
@@ -58,7 +58,7 @@ async function doConnect() {
     navigator.hid.addEventListener('disconnect', ({device}) => {
         onDeviceDisconnect(device);
     });
-    
+
     await openDevice();
 }
 
@@ -80,8 +80,6 @@ async function openDevice() {
     tr_axis     = document.getElementById("tr_axis");;
     tl_button   = document.getElementById("tl_button");;
     tr_button   = document.getElementById("tr_button");;
-
-    
 
     device = devices[0];
 
@@ -119,6 +117,9 @@ function enableAllSettings(set)
         out = "true";
     }
 
+    document.getElementById("acceleration-collapsible").disabled = !set;
+    document.getElementById("acceleration-collapsible-toggle").setAttribute("disabled", out);
+
     document.getElementById("dinput-collapsible").disabled = !set;
     document.getElementById("dinput-collapsible-toggle").setAttribute("disabled", out);
 
@@ -139,6 +140,7 @@ function enableAllSettings(set)
 
     if (out = "false")
     {
+        document.getElementById("acceleration-collapsible").checked = false;
         document.getElementById("system-collapsible").checked = false;
         document.getElementById("dinput-collapsible").checked = false;
         document.getElementById("ninput-collapsible").checked = false;
@@ -228,13 +230,29 @@ function placeZJumpSetting(data)
     placeZJumpData("ninput_zjump_off", "ninput_zjump_x", "ninput_zjump_y", ns_zjump);
 }
 
-function placeAnalogSensSetting(data)
-{   
-    console.log("Got analog sensitivity data.");
-    value = data.getUint8(1);
-    document.getElementById("asens_low").checked = (value == ANALOG_SENS_LOW);
-    document.getElementById("asens_med").checked = (value == ANALOG_SENS_MID);
-    document.getElementById("asens_high").checked = (value == ANALOG_SENS_HIGH);
+function placeAnalogAccelSetting(data)
+{
+    console.log("Got analog acceleration data.");
+    value0 = 100-data.getUint8(1);
+    value1 = 100-data.getUint8(2);
+    value2 = 100-data.getUint8(3);
+    value3 = 100-data.getUint8(4);
+    console.log("LX: " + String(value0));
+    console.log("LY: " + String(value1));
+    console.log("RX: " + String(value2));
+    console.log("RY: " + String(value3));
+
+    document.getElementById("lx_accel_id").value = value0;
+    document.getElementById("lx_accel_value").innerText = String(value0);
+
+    document.getElementById("ly_accel_id").value = value1;
+    document.getElementById("ly_accel_value").innerText = String(value1);
+
+    document.getElementById("rx_accel_id").value = value2;
+    document.getElementById("rx_accel_value").innerText = String(value2);
+
+    document.getElementById("ry_accel_id").value = value3;
+    document.getElementById("ry_accel_value").innerText = String(value3);
 }
 
 function checkSettingVersion(data)
@@ -247,7 +265,7 @@ function checkSettingVersion(data)
     else
     {
         console.log("Setting version OK.");
-        
+
     }
 }
 
@@ -338,6 +356,8 @@ function handleInputReport(e) {
                 break;
         }
         updateSnapbackGraph(output);
+        updateStickGraph(data.getUint8(3), data.getUint8(4),
+                         data.getUint8(5), data.getUint8(6));
     }
     // This is for handling configuration data input reports
     else if (reportId == 0x02)
@@ -352,7 +372,7 @@ function handleInputReport(e) {
                 placeLedSetting(data);
                 enableAllSettings(true);
                 break;
-            
+
             case CMD_SETTINGS_SETTINGVERSION:
                 checkSettingVersion(data);
                 break;
@@ -370,7 +390,7 @@ function handleInputReport(e) {
                 break;
 
             case CMD_SETTINGS_ANALOGSENSITIVITY:
-                placeAnalogSensSetting(data);
+                placeAnalogAccelSetting(data);
                 break;
 
             default:
@@ -496,28 +516,14 @@ async function cmdTriggerThreshUpdate(trigger, value)
     }
 }
 
-async function cmdAnalogSensUpdate(value)
+// Send update to device for acceleration curve update
+async function cmdAccelUpdate(axis, value)
 {
+    newval = 100-value;
     if (device.opened)
     {
-        console.log("Sending analog sensitivity update...");
-        const data = [CMD_SETTINGS_ANALOGSENSITIVITY, 127];
-
-        switch(value)
-        {
-            default:
-            case 0:
-                data[1] = ANALOG_SENS_LOW;
-                break;
-
-            case 1:
-                data[1] = ANALOG_SENS_MID;
-                break;
-
-            case 2:
-                data[1] = ANALOG_SENS_HIGH;
-                break;
-        }
+        console.log("Sending analog acceleration update: " + String(newval));
+        const data = [CMD_SETTINGS_ANALOGSENSITIVITY, axis, newval];
 
         try
         {
@@ -569,6 +575,72 @@ async function doDefault() {
 // --------------------- //
 // --------------------- //
 
+// DRAW STICK OUTPUT STUFF
+stick_out_init = false;
+ls_center_x = 300*0.25;
+ls_center_y = 120/2;
+
+rs_center_x = 300*0.75;
+rs_center_y = 120/2;
+
+stick_scaler = 100/228;
+
+stick_canvas = null;
+stick_ctx = null;
+
+function updateStickGraph(lx, ly, rx, ry)
+{
+    if (!stick_out_init)
+    {
+        stick_canvas = document.getElementById("analog_canvas");
+        stick_ctx = stick_canvas.getContext("2d");
+        stick_out_init = true;
+    }
+
+    // Clear canvas
+    stick_ctx.clearRect(0, 0, 300, 150);
+
+    // Draw main circle
+    stick_ctx.beginPath();
+    stick_ctx.arc(ls_center_x, ls_center_y, 50, 0, 2 * Math.PI, false);
+    stick_ctx.fillStyle = '#8ad2ff';
+    stick_ctx.fill();
+    stick_ctx.lineWidth = 2;
+    stick_ctx.strokeStyle = '#3e6680';
+    stick_ctx.stroke();
+
+    // Draw main circle
+    stick_ctx.beginPath();
+    stick_ctx.arc(rs_center_x, rs_center_y, 50, 0, 2 * Math.PI, false);
+    stick_ctx.fillStyle = '#e8d368';
+    stick_ctx.fill();
+    stick_ctx.lineWidth = 2;
+    stick_ctx.strokeStyle = '#80753e';
+    stick_ctx.stroke();
+
+    a_lx = (lx-128)*stick_scaler;
+    a_ly = (ly-128)*stick_scaler;
+    a_rx = (rx-128)*stick_scaler;
+    a_ry = (ry-128)*stick_scaler;
+
+    // Draw the left stick
+    stick_ctx.beginPath();
+    stick_ctx.arc(ls_center_x+a_lx, ls_center_y+a_ly, 4, 0, 2 * Math.PI, false);
+    stick_ctx.fillStyle = '#e86868';
+    stick_ctx.fill();
+    stick_ctx.lineWidth = 1;
+    stick_ctx.strokeStyle = '#612a2a';
+    stick_ctx.stroke();
+
+    // Draw the right stick
+    stick_ctx.beginPath();
+    stick_ctx.arc(rs_center_x+a_rx, rs_center_y-a_ry, 4, 0, 2 * Math.PI, false);
+    stick_ctx.fillStyle = '#e86868';
+    stick_ctx.fill();
+    stick_ctx.lineWidth = 1;
+    stick_ctx.strokeStyle = '#612a2a';
+    stick_ctx.stroke();
+}
 
 //SNAPBACK STUFF
 width = 0;
@@ -668,7 +740,7 @@ function updateSnapbackGraph(value)
         countToComplete = COUNT_RESET;
         rebound = true;
     }
-    
+
     if (rebound && countToComplete > 0)
     {
         countToComplete -= 1;
@@ -703,7 +775,7 @@ function updateSnapbackGraph(value)
 
         if (vals.length > 1)
         {
-            
+
             // Draw input line
             ctx.beginPath();
             ctx.moveTo(width, height-(value*scaleH));
@@ -718,7 +790,7 @@ function updateSnapbackGraph(value)
 
     // Add point to line
     vals.push(value);
-    
+
     if (count >= width)
     {
         vals.shift();
@@ -727,5 +799,5 @@ function updateSnapbackGraph(value)
     {
         count += 1;
     }
-    
+
 }
