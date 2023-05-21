@@ -348,28 +348,28 @@
             <p>Left X Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="50" value="0" id="lx_accel_id" oninput="lx_accel_value.innerText = this.value" onchange="cmdAccelUpdate(0, this.value)">
+              <input type="range" min="0" max="100" value="0" id="lx_accel_id" oninput="lx_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(0, this.value)">
               <p id="lx_accel_value">0</p>
             </div>
 
             <p>Left Y Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="50" value="0" id="ly_accel_id" oninput="ly_accel_value.innerText = this.value" onchange="cmdAccelUpdate(1, this.value)">
+              <input type="range" min="0" max="100" value="0" id="ly_accel_id" oninput="ly_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(1, this.value)">
               <p id="ly_accel_value">0</p>
             </div>
 
             <p>Right X Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="50" value="0" id="rx_accel_id" oninput="rx_accel_value.innerText = this.value" onchange="cmdAccelUpdate(2, this.value)">
+              <input type="range" min="0" max="100" value="0" id="rx_accel_id" oninput="rx_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(2, this.value)">
               <p id="rx_accel_value">0</p>
             </div>
 
             <p>Right Y Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="50" value="0" id="ry_accel_id" oninput="ry_accel_value.innerText = this.value" onchange="cmdAccelUpdate(3, this.value)">
+              <input type="range" min="0" max="100" value="0" id="ry_accel_id" oninput="ry_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(3, this.value)">
               <p id="ry_accel_value">0</p>
             </div>
           </div>

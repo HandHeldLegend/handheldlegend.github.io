@@ -233,26 +233,26 @@ function placeZJumpSetting(data)
 function placeAnalogAccelSetting(data)
 {
     console.log("Got analog acceleration data.");
-    value0 = 100-data.getUint8(1);
-    value1 = 100-data.getUint8(2);
-    value2 = 100-data.getUint8(3);
-    value3 = 100-data.getUint8(4);
+    value0 = 150-data.getUint8(1);
+    value1 = 150-data.getUint8(2);
+    value2 = 150-data.getUint8(3);
+    value3 = 150-data.getUint8(4);
     console.log("LX: " + String(value0));
     console.log("LY: " + String(value1));
     console.log("RX: " + String(value2));
     console.log("RY: " + String(value3));
 
     document.getElementById("lx_accel_id").value = value0;
-    document.getElementById("lx_accel_value").innerText = String(value0);
+    document.getElementById("lx_accel_value").innerText = String(value0-50);
 
     document.getElementById("ly_accel_id").value = value1;
-    document.getElementById("ly_accel_value").innerText = String(value1);
+    document.getElementById("ly_accel_value").innerText = String(value1-50);
 
     document.getElementById("rx_accel_id").value = value2;
-    document.getElementById("rx_accel_value").innerText = String(value2);
+    document.getElementById("rx_accel_value").innerText = String(value2-50);
 
     document.getElementById("ry_accel_id").value = value3;
-    document.getElementById("ry_accel_value").innerText = String(value3);
+    document.getElementById("ry_accel_value").innerText = String(value3-50);
 }
 
 function checkSettingVersion(data)
@@ -519,7 +519,7 @@ async function cmdTriggerThreshUpdate(trigger, value)
 // Send update to device for acceleration curve update
 async function cmdAccelUpdate(axis, value)
 {
-    newval = 100-value;
+    newval = 150-value;
     if (device.opened)
     {
         console.log("Sending analog acceleration update: " + String(newval));
