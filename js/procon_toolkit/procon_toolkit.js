@@ -157,7 +157,7 @@ async function doConnect() {
     navigator.hid.addEventListener('disconnect', ({device}) => {
         onDeviceDisconnect(device);
     });
-    
+
     await openDevice();
 }
 
@@ -234,7 +234,7 @@ function placeSettingData(data)
     console.log("Not implemented placeSettingData");
 }
 
-function placeCalibrationData(lx_min, lx_center, lx_max, ly_min, ly_center, ly_max, 
+function placeCalibrationData(lx_min, lx_center, lx_max, ly_min, ly_center, ly_max,
                               rx_min, rx_center, rx_max, ry_min, ry_center, ry_max)
 {
     document.getElementById("lx_max").textContent       = lx_max.toString();
@@ -275,7 +275,7 @@ function handleInputReport(e) {
                 break;
 
             case SUBCMD_SPI_READ:
-                spiReadCmdReturn(data.getUint8(SPI_READ_ADDR_HIGH_IDX), data.getUint8(SPI_READ_ADDR_LOW_IDX), 
+                spiReadCmdReturn(data.getUint8(SPI_READ_ADDR_HIGH_IDX), data.getUint8(SPI_READ_ADDR_LOW_IDX),
                 data.getUint8(SPI_READ_DATA_LEN_IDX), data);
                 break;
 
@@ -291,13 +291,13 @@ function handleInputReport(e) {
                     console.log("SPI Write Protected response received.");
                 }
                 break;
-            
+
             case SUBCMD_REPORT_MODE:
                 console.log("Got input mode write response.");
                 input_mode_set = true;
                 doLoadSettings();
                 break;
-            
+
             case SUBCMD_SET_LEDS:
                 console.log("Got led write response.");
                 break;
@@ -450,7 +450,7 @@ async function sendSpiReadCmd(addressUpper, addressLower, length)
     {
         console.log("Sending SPI Read Command...");
         inc_gpn_out();
-        data = [global_packet_number_out, 
+        data = [global_packet_number_out,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             SUBCMD_SPI_READ, addressLower, addressUpper, 0x00, 0x00, length];
 
@@ -478,6 +478,10 @@ function spiReadCmdReturn(addressUpper, addressLower, length, full_data)
     {
         console.log("Got Color Data.");
         loadColorData(full_data);
+
+        sendSpiReadCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, SPI_CALIB_LEN)
+        .then(console.log("Sent SPI Read for Stick Calibration."))
+        .catch(err=>console.log(err));
     }
 }
 
@@ -488,7 +492,7 @@ async function sendInputModeChange()
     {
         console.log("Sending Input Mode Change Command...");
         inc_gpn_out();
-        data = [global_packet_number_out, 
+        data = [global_packet_number_out,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             SUBCMD_REPORT_MODE, REPORT_MODE_FULL];
         try
@@ -520,10 +524,6 @@ function doLoadSettings()
     cy_high_future = 0;
     cy_low_future = 0;
     cy_center_future = O_AXIS_CENTER;
-    
-    sendSpiReadCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, SPI_CALIB_LEN)
-    .then(console.log("Sent SPI Read for Stick Calibration."))
-    .catch(err=>console.log(err));
 
     sendSpiReadCmd(SPI_COLOR_UPPER, SPI_COLOR_LOWER, SPI_COLOR_LEN)
     .then(console.log("Sent SPI Read for Color data."))
@@ -539,7 +539,7 @@ function loadStickCalibration(full_data)
     magic_l_lower = full_data.getUint8(SPI_READ_DATA_IDX + 1);
 
     l_0 = full_data.getUint8(SPI_READ_DATA_IDX + 2);
-    l_1 = full_data.getUint8(SPI_READ_DATA_IDX + 3); 
+    l_1 = full_data.getUint8(SPI_READ_DATA_IDX + 3);
     l_2 = full_data.getUint8(SPI_READ_DATA_IDX + 4);
     l_3 = full_data.getUint8(SPI_READ_DATA_IDX + 5);
     l_4 = full_data.getUint8(SPI_READ_DATA_IDX + 6);
@@ -572,17 +572,17 @@ function loadStickCalibration(full_data)
     x_center = (l_4 << 8) & 0xF00 | l_3;
     console.log("X Axis Center: ");
     console.log(x_center);
-    
+
 
     y_center = (l_5 << 4) | (l_4 >> 4);
     console.log("Y Axis Center: ");
     console.log(y_center);
-    
+
 
     x_low = (l_7 << 8) & 0xF00 | l_6;
     console.log("X Axis Low: ");
     console.log(x_low);
-    
+
 
     y_low = (l_8 << 4) | (l_1 >> 7);
     console.log("Y Axis Low: ");
@@ -595,7 +595,7 @@ function loadStickCalibration(full_data)
     cx_low = (r_7 << 8) & 0xF00 | r_6;
     cy_low = (r_8 << 4) | (r_1 >> 7);
 
-    placeCalibrationData(x_low, x_center, x_high, y_low, y_center, y_high, 
+    placeCalibrationData(x_low, x_center, x_high, y_low, y_center, y_high,
                          cx_low, cx_center, cx_high, cy_low, cy_center, cy_high);
 
     calibration_loaded = true;
@@ -612,14 +612,14 @@ function loadColorData(full_data)
     body_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 1);
     body_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 2);
 
-    text_body_color = tag.concat(body_color[0].toString(16).padStart(2, "0"), 
+    text_body_color = tag.concat(body_color[0].toString(16).padStart(2, "0"),
                             body_color[1].toString(16).padStart(2, "0"), body_color[2].toString(16).padStart(2, "0"));
 
     buttons_color[0] = full_data.getUint8(SPI_READ_DATA_IDX + 3);
     buttons_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 4);
     buttons_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 5);
 
-    text_buttons_color = tag.concat(buttons_color[0].toString(16).padStart(2, "0"), 
+    text_buttons_color = tag.concat(buttons_color[0].toString(16).padStart(2, "0"),
                         buttons_color[1].toString(16).padStart(2, "0"), buttons_color[2].toString(16).padStart(2, "0"));
     console.log(text_buttons_color);
 
@@ -627,14 +627,14 @@ function loadColorData(full_data)
     grip_l_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 7);
     grip_l_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 8);
 
-    text_grip_l_color = tag.concat(grip_l_color[0].toString(16).padStart(2, "0"), 
+    text_grip_l_color = tag.concat(grip_l_color[0].toString(16).padStart(2, "0"),
                         grip_l_color[1].toString(16).padStart(2, "0"), grip_l_color[2].toString(16).padStart(2, "0"));
 
     grip_r_color[0] = full_data.getUint8(SPI_READ_DATA_IDX + 9);
     grip_r_color[1] = full_data.getUint8(SPI_READ_DATA_IDX + 10);
     grip_r_color[2] = full_data.getUint8(SPI_READ_DATA_IDX + 11);
 
-    text_grip_r_color = tag.concat(grip_r_color[0].toString(16).padStart(2, "0"), 
+    text_grip_r_color = tag.concat(grip_r_color[0].toString(16).padStart(2, "0"),
                         grip_r_color[1].toString(16).padStart(2, "0"), grip_r_color[2].toString(16).padStart(2, "0"));
 
     body_color_mask.style["background-color"] = text_body_color;
@@ -684,7 +684,7 @@ function convertColorData(colorStringHex)
 function setColorData(code, color_text)
 {
     switch(code)
-    {   
+    {
         // Body
         case 0:
             body_color = convertColorData(color_text);
@@ -724,7 +724,7 @@ async function sendSpiWriteCmd(addressUpper, addressLower, data_out, length)
     if (device.opened)
     {
         inc_gpn_out();
-        data_main = [global_packet_number_out, 
+        data_main = [global_packet_number_out,
             0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00,
             SUBCMD_SPI_WRITE, addressLower, addressUpper, 0x00, 0x00, length];
@@ -779,7 +779,7 @@ async function doSaveStickSettings()
                 l_0, l_1, l_2, l_3, l_4, l_5, l_6, l_7, l_8,
                 magic_upper, magic_lower,
                 r_0, r_1, r_2, r_3, r_4, r_5, r_6, r_7, r_8];
-    
+
     await sendSpiWriteCmd(SPI_CALIB_UPPER, SPI_CALIB_LOWER, data_out, SPI_CALIB_LEN);
 }
 

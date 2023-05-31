@@ -30,10 +30,10 @@ const CMD_SETTINGS_SETTINGVERSION = 7;
 const CMD_SETTINGS_FWVERSION = 8;
 const CMD_SETTINGS_ANALOGSENSITIVITY = 9;
 
-const   USB_MODE_DINPUT  = 0x00;
-const   USB_MODE_NS       = 0x01;
-const   USB_MODE_XINPUT   = 0x02;
-const   USB_MODE_GC       = 0x03;
+const   USB_MODE_DINPUT     = 0x02;
+const   USB_MODE_NS         = 0x00;
+const   USB_MODE_XINPUT     = 0x03;
+const   USB_MODE_GC         = 0x01;
 
 const ANALOG_SENS_LOW = 127;
 const ANALOG_SENS_MID = 137;
