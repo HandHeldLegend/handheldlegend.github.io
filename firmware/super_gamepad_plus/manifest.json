@@ -1,0 +1,15 @@
+{
+    "name": "Super Gamepad+",
+    "version": "6.7.2023",
+    "new_install_prompt_erase": true,
+    "builds": [
+      {
+        "chipFamily": "ESP32",
+        "parts": [
+          { "path": "bootloader.bin", "offset": 4096 },
+          { "path": "partition-table.bin", "offset": 32768 },
+          { "path": "HHL-GAMEPAD-SN.bin", "offset": 65536 }
+        ]
+      }
+    ]
+  }

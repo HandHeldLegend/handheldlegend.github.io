@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script type="module" src="/js/install-button.js?module"> </script>
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div class="context">
+
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+    <h1>RetroPlayground Super Gamepad+</h1>
+    <h1>Firmware Installer</h1>
+    <div class="box">
+      <h2>Firmware Installer</h2>
+      <p>Version 6.7.2023</p>
+      <p>Resolves NES issues and more</p>
+      <p>Controller must be powered ON in retro mode, then plugged in to ensure communication.</p>
+      <esp-web-install-button manifest="/firmware/super_gamepad_plus/manifest.json"></esp-web-install-button>
+      <br>
+      <div class="line"></div>
+      <h2>Basic Operation Instructions</h2>
+      <p>Hold select to turn the controller on or off.</p>
+      <p>Hold the following buttons on power up to boot into the following modes:</p>
+      <p>A -> Nintendo Switch Mode</p>
+      <p>X -> XInput Mode</p>
+      <p>B -> DInput Mode</p>
+      <p>Dpad Left -> NES/SNES Mode</p>
+      <p>Dpad Down -> N64 Mode</p>
+      <p>Dpad Right -> GameCube Mode</p>
+      <div class="line"></div>
+      <p>If no USB cable is connected, the controller will boot into wireless mode.</p>
+    </div>
+  </div>
+</body>
+
+</html>
