@@ -48,6 +48,8 @@
     </div>
 
     <div class="box" id="beta_fw" hidden>
+      <h3>Beta 6.3.2023</h3>
+      <p>Maybe fixes dumb sleeping edgecase.</p>
       <esp-web-install-button manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>
     </div>
 
@@ -138,7 +140,7 @@
     const urlParams = new URLSearchParams(queryString);
     const enable_beta = urlParams.has('beta');
 
-    const is_beta = false;
+    const is_beta = true;
 
     if (enable_beta && is_beta) {
       document.getElementById("beta_fw").removeAttribute("hidden");

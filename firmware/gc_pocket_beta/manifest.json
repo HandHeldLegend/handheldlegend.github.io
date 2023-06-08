@@ -1,6 +1,6 @@
 {
     "name": "GC Pocket Adapter Beta",
-    "version": "2023.5.10.BETA",
+    "version": "6.3.2023.BETA",
     "new_install_prompt_erase": true,
     "builds": [
       {
