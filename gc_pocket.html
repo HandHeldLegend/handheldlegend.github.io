@@ -26,105 +26,114 @@
       Firmware Page</h1>
 
     <div class="box">
-      <p>To update your device, hold the 'Update' button while plugging in your device.</p>
-      <p>Click the 'connect' button and follow the prompts.</p>
-      <img src="/resources/gc_pocket/adapter_layout.jpg">
+      <div class="box-inner">
+        <p>To update your device, hold the 'Update' button while plugging in your device.</p>
+        <p>Click the 'connect' button and follow the prompts.</p>
+        <img src="/resources/gc_pocket/adapter_layout.jpg">
+      </div>
     </div>
 
     <div class="box">
-      <h3>Update 5.20.2023</h3>
-      <p>Resolves USB Timeout breaking.</p>
-      <p>Adds negative acceleration scaling option.</p>
-      <p>Updated stick sensitivity to 'acceleration' (See configurator).</p>
-      <p>Added additional pollings on Non-Performance modes (1ms controller polling is now constant)</p>
-      <p>Changes from 4.27:</p>
-      <p>This update resolves the issue where two adapters conflict on Nintendo Switch.</p>
-      <p>The issue requires a fix to enable/disable 1ms polling or what I am now</p>
-      <p>referring to as 'Performance Mode'. Performance Mode is now disabled by</p>
-      <p>default and you can enable it by pressing both buttons at the same time</p>
-      <p>when the device is in standby (Red LED).</p>
-      <p>Reduces latency on Switch by ~3ms.</p>
-      <esp-web-install-button manifest="/firmware/gc_pocket/manifest.json"></esp-web-install-button>
+      <div class="box-inner">
+        <h3>Update 5.20.2023</h3>
+        <p>Resolves USB Timeout breaking.</p>
+        <p>Adds negative acceleration scaling option.</p>
+        <p>Updated stick sensitivity to 'acceleration' (See configurator).</p>
+        <p>Added additional pollings on Non-Performance modes (1ms controller polling is now constant)</p>
+        <p>Changes from 4.27:</p>
+        <p>This update resolves the issue where two adapters conflict on Nintendo Switch.</p>
+        <p>The issue requires a fix to enable/disable 1ms polling or what I am now</p>
+        <p>referring to as 'Performance Mode'. Performance Mode is now disabled by</p>
+        <p>default and you can enable it by pressing both buttons at the same time</p>
+        <p>when the device is in standby (Red LED).</p>
+        <p>Reduces latency on Switch by ~3ms.</p>
+        <esp-web-install-button manifest="/firmware/gc_pocket/manifest.json"></esp-web-install-button>
+      </div>
     </div>
 
     <div class="box" id="beta_fw" hidden>
-      <h3>Beta 6.3.2023</h3>
-      <p>Maybe fixes dumb sleeping edgecase.</p>
-      <esp-web-install-button manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>
+      <div class="box-inner">
+        <h3>Beta 6.3.2023</h3>
+        <p>Maybe fixes dumb sleeping edgecase.</p>
+        <esp-web-install-button manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>
+      </div>
     </div>
 
     <div class="line"></div>
 
     <div class="box">
-      <h3>Resources</h3>
-      <a href="https://handheldlegend.github.io/gcp_config.html" target="_blank">GC Pocket Adapter Configurator</a>
-      <br>
-      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">GitHub Source Code</a>
-      <br>
-      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">User Guide</a>
-      <br>
-      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Assembly Guide</a>
-      <br>
-      <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Store Page</a>
-
+      <div class="box-inner">
+        <h3>Resources</h3>
+        <a href="https://handheldlegend.github.io/gcp_config.html" target="_blank">GC Pocket Adapter Configurator</a>
+        <br>
+        <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">GitHub Source Code</a>
+        <br>
+        <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">User Guide</a>
+        <br>
+        <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Assembly Guide</a>
+        <br>
+        <a href="https://github.com/mitchellcairns/GC-Adapter-ESP32-S3" target="_blank">Store Page</a>
+      </div>
     </div>
 
     <div class="line"></div>
 
     <div class="box">
+      <div class="box-inner">
+        <h3>Previous updates</h3>
 
-      <h3>Previous updates</h3>
-
-      <!-- 4.22.2023 -->
-      <div class="wrap-collapsible">
-        <input id="4.22.2023" class="toggle" type="checkbox">
-        <label for="4.22.2023" class="lbl-toggle">Update 4.22.2023</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
-            <p>Resolves digital input mode for XInput</p>
-            <p>Adds support for Wavebird.</p>
-            <p>Center value is 127 now.</p>
-            <p>Add SmashBox support.</p>
-            <p>Resolve USB Timeout refresh.</p>
-            <p>Invert Y Axis in DInput mode.</p>
-            <p>Add stick sensitivity option(NS mode and XInput only).</p>
+        <!-- 4.22.2023 -->
+        <div class="wrap-collapsible">
+          <input id="4.22.2023" class="toggle" type="checkbox">
+          <label for="4.22.2023" class="lbl-toggle">Update 4.22.2023</label>
+          <div class="collapsible-content">
+            <div class="content-inner">
+              <p>Resolves digital input mode for XInput</p>
+              <p>Adds support for Wavebird.</p>
+              <p>Center value is 127 now.</p>
+              <p>Add SmashBox support.</p>
+              <p>Resolve USB Timeout refresh.</p>
+              <p>Invert Y Axis in DInput mode.</p>
+              <p>Add stick sensitivity option(NS mode and XInput only).</p>
+            </div>
           </div>
         </div>
-      </div>
 
 
-      <!-- 3.19.2023 -->
-      <div class="wrap-collapsible">
+        <!-- 3.19.2023 -->
+        <div class="wrap-collapsible">
 
-        <input id="3.19.2023" class="toggle" type="checkbox">
+          <input id="3.19.2023" class="toggle" type="checkbox">
 
-        <label for="3.19.2023" class="lbl-toggle">Update 3.19.2023</label>
+          <label for="3.19.2023" class="lbl-toggle">Update 3.19.2023</label>
 
-        <div class="collapsible-content">
+          <div class="collapsible-content">
 
-          <div class="content-inner">
-            <p>Replaced XInputHID mode with legacy XInput mode.</p>
+            <div class="content-inner">
+              <p>Replaced XInputHID mode with legacy XInput mode.</p>
+            </div>
+
           </div>
-
         </div>
-      </div>
 
-      <!-- 3.18.2023 -->
-      <div class="wrap-collapsible">
+        <!-- 3.18.2023 -->
+        <div class="wrap-collapsible">
 
-        <input id="3.18.2023" class="toggle" type="checkbox">
+          <input id="3.18.2023" class="toggle" type="checkbox">
 
-        <label for="3.18.2023" class="lbl-toggle">Update 3.18.2023</label>
+          <label for="3.18.2023" class="lbl-toggle">Update 3.18.2023</label>
 
-        <div class="collapsible-content">
+          <div class="collapsible-content">
 
-          <div class="content-inner">
-            <p>x.2 update fixes issue with default settings and startup polling.</p>
-            <p>There was a bug relating to the multitasking when attempting to implement a new feature.</p>
-            <p>This issue has been resolved with this update.</p>
+            <div class="content-inner">
+              <p>x.2 update fixes issue with default settings and startup polling.</p>
+              <p>There was a bug relating to the multitasking when attempting to implement a new feature.</p>
+              <p>This issue has been resolved with this update.</p>
+            </div>
+
           </div>
-
         </div>
+
       </div>
     </div>
 

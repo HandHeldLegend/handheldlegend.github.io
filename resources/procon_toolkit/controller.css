@@ -1,0 +1,47 @@
+#lightConfig {
+    display: flex;
+
+    text-align: left;
+}
+
+.controller {
+    flex-grow: 1;
+
+    border-bottom: none;
+    margin: 2rem;
+    height: fit-content;
+    width: 70%;
+    max-height: 50vh;
+}
+
+.controller .clickable {
+    cursor: pointer;
+}
+
+.controller .clickable:hover {
+    stroke: gray;
+}
+
+.controller .clickable.active {
+    stroke: white;
+}
+
+#lightSidebar {
+    padding: 2rem 1rem;
+}
+
+#lightSidebar select {
+    width: 100%;
+}
+
+#colorPicker {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+#colorPicker:not(.enabled) {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
