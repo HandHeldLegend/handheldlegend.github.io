@@ -1,11 +1,18 @@
 #lightConfig {
     display: flex;
+    flex-direction: column;
 
     text-align: left;
 }
 
+@media(min-width: 700px) {
+    #lightConfig {
+        flex-direction: row;
+    }
+}
+
 .controller {
-    flex-grow: 1;
+    flex-grow: 5;
 
     border-bottom: none;
     margin: 2rem;
@@ -28,20 +35,31 @@
 
 #lightSidebar {
     padding: 2rem 1rem;
+    flex-grow: 1;
 }
 
 #lightSidebar select {
-    width: 100%;
+    display: block;
 }
 
 #colorPicker {
-    margin-top: 1rem;
+    margin: 1rem 0;
     display: flex;
-    justify-content: center;
 }
 
 #colorPicker:not(.enabled) {
     pointer-events: none;
     opacity: 0.5;
+}
+
+#hexBox {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#lightHex {
+    flex-grow: 1;
+    font-size: 1.25rem;
+    width: 10rem;
 }
 

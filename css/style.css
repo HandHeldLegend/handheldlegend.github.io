@@ -132,6 +132,10 @@ button {
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
 }
 
+button.small {
+    font-size: 1rem;
+}
+
 .message-box[disabled="false"] {
     font-family: inherit;
     display: block;
@@ -201,6 +205,13 @@ p {
     text-align: center;
     color: rgb(0, 0, 0);
     font-size: 1.25rem;
+}
+
+fieldset {
+    border: 2px solid #44444470;
+    fill: #333333;
+    border-radius: 1rem;
+    padding: 1rem;
 }
 
 /* Dropdown styling */
