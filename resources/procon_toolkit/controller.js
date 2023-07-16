@@ -30,7 +30,6 @@ function onControllerLoad(element) {
         const newValue = '#' + String(value).toLowerCase()
             .replaceAll(/[^0-9a-f]/g, '').slice(0, 6)
 
-        console.log({value, newValue})
         if (newValue !== value) {
             lightHexElem.value = newValue
         }
