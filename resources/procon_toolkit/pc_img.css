@@ -1,11 +1,11 @@
 .procon-container {
     position: relative;
     width: fit-content;
-    height: 16rem;
+    height: 8rem;
     margin: 1rem auto;
     margin-bottom: -3rem;
     --p-width: 16rem;
-    --p-shift: -16rem;
+    --p-shift: -8rem;
     --p-ushift: -2rem;
 }
 
@@ -18,7 +18,7 @@
     mask-size: 10rem;
     position:absolute;
     width: 20rem;
-    height: 16rem;
+    height: 8rem;
     top:0;
     left: -5rem;
     z-index:2;
@@ -35,7 +35,7 @@
     mask-size: 10rem;
     position:absolute;
     width: 20rem;
-    height: 16rem;
+    height: 8rem;
     top:0;
     left: -5rem;
     z-index:3;
@@ -52,7 +52,7 @@
     mask-size: 10rem;
     position:absolute;
     width: 20rem;
-    height: 16rem;
+    height: 8rem;
     top:0;
     left: -5rem;
     z-index:3;
@@ -69,7 +69,7 @@
     mask-size: 10rem;
     position:absolute;
     width: 20rem;
-    height: 16rem;
+    height: 8rem;
     top:0;
     left: -5rem;
     z-index:3;
@@ -86,7 +86,7 @@
     mask-size: 10rem;
     position:absolute;
     width: 20rem;
-    height: 16rem;
+    height: 8rem;
     top:0;
     left: -5rem;
     z-index:1;
