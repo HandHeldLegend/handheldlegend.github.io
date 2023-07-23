@@ -2,13 +2,14 @@
 <html>
 
 <head>
-  <script src="/js/gcp_config/gc_pocket_config.js"></script>
+<!--  <script src="/js/gcp_config/gc_pocket_config.js"></script>-->
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
   <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
   <link rel="stylesheet" href="/css/slider.css" type="text/css">
   <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
-  <link rel="stylesheet" href="resources/procon_toolkit/pc_img.css">
+  <link rel="stylesheet" href="/css/modal.css" type="text/css">
+  <link rel="stylesheet" href="resources/procon_toolkit/controller.css">
 </head>
 
 <body>
@@ -31,311 +32,261 @@
       Configurator</h1>
 
     <div class="box">
-      <div class="invisigrid">
-        <button type="button" id="connect_button" onclick="connect_controller()">Connect</button>
-        <button type="button" id="disconnect_button" onclick="disconnect_controller()" disabled>Disconnect</button>
-      </div>
+      <div class="box-inner">
+        <div class="invisigrid">
+          <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
+          <button type="button" id="disconnect_button" onclick="doDeviceDisconnect()" disabled>Disconnect</button>
+        </div>
 
-      <div class="message-box" id="ood" disabled="true">
-        <h2>Your device is out of date!</h2>
-        <a href="https://handheldlegend.github.io/gc_pocket.html" target="_blank">See our firmware page to update.</a>
-      </div>
 
-      <!-- SOCIALS -->
-      <!-- --------------- -->
-      <div class="wrap-collapsible">
+        <div class="message-box" id="ood" disabled="true">
+          <h2>Your device is out of date!</h2>
+          <a href="https://handheldlegend.github.io/gc_pocket.html" target="_blank">See our firmware page to update.</a>
+        </div>
 
-        <input id="socials-qr" class="toggle" type="checkbox">
+        <!-- SOCIALS -->
+        <!-- --------------- -->
+        <div class="wrap-collapsible">
 
-        <label for="socials-qr" id="socials-toggle", class="lbl-toggle">Social Media</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
-            <h2>HandHeldLegend Twitter</h2>
-            <img src="/resources/qr/hhl.png">
-            <div class="line"></div>
-            <h2>Discord for Support</h2>
-            <img src="/resources/qr/discord.png">
+          <input id="socials-qr" class="toggle" type="checkbox">
 
+          <label for="socials-qr" id="socials-toggle", class="lbl-toggle">Social Media</label>
+          <div class="collapsible-content">
+            <div class="content-inner">
+              <h2>HandHeldLegend Twitter</h2>
+              <img src="/resources/qr/hhl.png">
+              <div class="line"></div>
+              <h2>Discord for Support</h2>
+              <img src="/resources/qr/discord.png">
+
+            </div>
           </div>
         </div>
-      </div>
-      <!-- --------------- -->
+        <!-- --------------- -->
 
-      <!-- MODE EXPLAINER
-      <div class="wrap-collapsible">
+        <!-- MODE EXPLAINER
+        <div class="wrap-collapsible">
 
-        <input id="mode-explainer" class="toggle" type="checkbox">
+          <input id="mode-explainer" class="toggle" type="checkbox">
 
-        <label for="mode-explainer" id="explainer-collapsible-toggle", class="lbl-toggle">Trigger Mode Info</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
-            <h3>Off</h3>
-            All analog inputs and digital inputs are forwarded as is.
-            <div class="line"></div>
-            <h3>Digital</h3>
-            When the analog value is greater than the trigger threshold, the digital button is pressed.
-            <div class="line"></div>
-            <h3>Lite</h3>
-            When the digital value is pressed, a lite analog value (85) is sent. No digital button sent.
-            Great for trigger plugs.
-            <div class="line"></div>
-            <h3>Heavy</h3>
-            When the digital value is pressed, a heavy analog value (255) is sent. Digital button is sent.
-            Also useful for trigger plugs.
+          <label for="mode-explainer" id="explainer-collapsible-toggle", class="lbl-toggle">Trigger Mode Info</label>
+          <div class="collapsible-content">
+            <div class="content-inner">
+              <h3>Off</h3>
+              All analog inputs and digital inputs are forwarded as is.
+              <div class="line"></div>
+              <h3>Digital</h3>
+              When the analog value is greater than the trigger threshold, the digital button is pressed.
+              <div class="line"></div>
+              <h3>Lite</h3>
+              When the digital value is pressed, a lite analog value (85) is sent. No digital button sent.
+              Great for trigger plugs.
+              <div class="line"></div>
+              <h3>Heavy</h3>
+              When the digital value is pressed, a heavy analog value (255) is sent. Digital button is sent.
+              Also useful for trigger plugs.
+            </div>
+          </div>
+        </div>-->
+
+        <!-- PROCON COLOR SETTINGS -->
+        <!-- --------------- -->
+        <div class="wrap-collapsible">
+
+          <input id="color-modal" class="modal-toggle" type="checkbox">
+
+          <label for="color-modal" id="color-collapsible-toggle" class="lbl-toggle">ProCon Color Settings</label>
+
+          <div class="modal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <span>ProCon Color Settings</span>
+                <label for="color-modal" class="close-button">&#10006;</label>
+              </div>
+
+              <section id="lightConfig">
+                <svg class="controller" data-src="resources/procon_toolkit/controller.svg" data-cache="disabled" data-unique-ids="disabled" data-css-scoping="disabled" data-loading="lazy" oniconload="onControllerLoad(this)"></svg>
+
+                <div id="lightSidebar">
+                  <label for="lightingEffect">Lighting Effect</label>
+                  <select id="lightingEffect">
+                    <option>Static</option>
+                  </select>
+
+                  <div id="colorPicker"></div>
+
+                  <label for="lightHex">Hex Value</label>
+                  <div id="hexBox">
+                    <input id="lightHex" type="text" disabled/>
+                    <button id="copyButton" class="small">Copy</button>
+                  </div>
+                </div>
+              </section>
+
+              <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
+            </div>
           </div>
         </div>
-      </div>-->
 
-      <!-- PROCON COLOR SETTINGS -->
-      <!-- --------------- -->
-      <div class="wrap-collapsible">
+        <!-- TRIGGER SETTINGS
+        <div class="wrap-collapsible">
 
-        <input id="color-collapsible" class="toggle" type="checkbox">
+          <input id="trigger_collapsible" class="toggle" type="checkbox">
 
-        <label for="color-collapsible" id="color-collapsible-toggle" class="lbl-toggle">ProCon Color Settings</label>
+          <label for="trigger_collapsible" id="trigger_collapsible_toggle" class="lbl-toggle">Trigger Settings</label>
 
-        <div class="collapsible-content">
+          <div class="collapsible-content">
 
-          <div class="content-inner">
+            <div class="content-inner">
 
-            <div class="procon-container">
-              <div class="procon-body" id="body-mask" style></div>
-              <div class="procon-buttons" id="buttons-mask" style></div>
-              <div class ="procon-l-grip" id="l-grip-mask" style></div>
-              <div class ="procon-r-grip" id="r-grip-mask" style></div>
-              <div class ="procon-shadow"></div>
-            </div>
-            <br>
-            <label for="pc-body">Body</label>
-            <br>
-            <input type="color" id="pc_body" name="pc-body" value="#e66465" onchange='set_procon_color(0, this.value)'>
-            <br>
-            <label for="pc-buttons">Buttons</label>
-            <br>
-            <input type="color" id="pc_buttons" name="pc-buttons" value="#e66465" onchange='set_procon_color(1, this.value)'>
-            <br>
-            <label for="pc-body">Left Grip</label>
-            <br>
-            <input type="color" id="pc_grip_l" name="pc-body" value="#e66465" onchange='set_procon_color(2, this.value)'>
-            <br>
-            <label for="pc-body">Right Grip</label>
-            <br>
-            <input type="color" id="pc_grip_r" name="pc-body" value="#e66465" onchange='set_procon_color(3, this.value)'>
-            <br>
-            <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
-          </div>
+              <h3>L Trigger</h3>
 
-        </div>
-      </div>
+              <div class="sora_radio_container">
+                <input type="radio" name="radio_dl" id="dinput_lx" checked onchange="set_trigger_mode(0, 0)">
+                <label for="dinput_lx">Off</label>
+                <input type="radio" name="radio_dl" id="dinput_l0" onchange="set_trigger_mode(0, 1)">
+                <label for="dinput_l0">Digital</label>
+                <input type="radio" name="radio_dl" id="dinput_l1" onchange="set_trigger_mode(0, 2)">
+                <label for="dinput_l1">Lite</label>
+                <input type="radio" name="radio_dl" id="dinput_l2" onchange="set_trigger_mode(0, 3)">
+                <label for="dinput_l2">Heavy</label>
+              </div>
 
-      <!-- LED COLOR SETTINGS -->
-      <!-- --------------- -->
-      <div class="wrap-collapsible">
+              <div class="line"></div>
 
+              <h3>R Trigger</h3>
+              <div class="sora_radio_container">
+                <input type="radio" name="radio_dr" id="dinput_rx" checked onchange="set_trigger_mode(1, 0)">
+                <label for="dinput_rx">Off</label>
+                <input type="radio" name="radio_dr" id="dinput_r0" onchange="set_trigger_mode(1, 1)">
+                <label for="dinput_r0">Digital</label>
+                <input type="radio" name="radio_dr" id="dinput_r1" onchange="set_trigger_mode(1, 2)">
+                <label for="dinput_r1">Lite</label>
+                <input type="radio" name="radio_dr" id="dinput_r2" onchange="set_trigger_mode(1, 3)">
+                <label for="dinput_r2">Heavy</label>
+              </div>
 
+              <div class="line"></div>
 
-        <input id="led_collapsible" class="toggle" type="checkbox">
+              <p>L Trigger Threshold</p>
 
-        <label for="led_collapsible" id="led_collapsible_toggle" class="lbl-toggle">LED Color Settings</label>
+              <div class="slider">
+                <input type="range" min="0" max="255" value="0" id="ltValue" oninput="ltTextValue.innerText = this.value" onchange="set_trigger_threshold(0, this.value)">
+                <p id="ltTextValue">0</p>
+              </div>
 
-        <div class="collapsible-content">
+              <p>R Trigger Threshold</p>
 
-          <div class="content-inner">
-            <p>LED Brightness</p>
+              <div class="slider">
+                <input type="range" min="0" max="255" value="0" id="rtValue" oninput="rtTextValue.innerText = this.value" onchange="set_trigger_threshold(1, this.value)">
+                <p id="rtTextValue">0</p>
+              </div>
 
-            <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="ledValue" oninput="ledTextValue.innerText = this.value" onchange="set_rgb_brightness(this.value)">
-              <p id="ledTextValue">0</p>
-            </div>
-
-            <div class="line"></div>
-
-            <label for="led_left_stick">Left Stick</label>
-            <br>
-            <input type="color" id="led_left_stick" name="led_left_stick" value="#e66465" onchange='set_rgb_color(0, this.value)'>
-            <br>
-            <label for="led_right_stick">Right Stick</label>
-            <br>
-            <input type="color" id="led_right_stick" name="led_right_stick" value="#e66465" onchange='set_rgb_color(1, this.value)'>
-            <br>
-            <label for="led_button_a">A Button</label>
-            <br>
-            <input type="color" id="led_button_a" name="led_button_a" value="#e66465" onchange='set_rgb_color(2, this.value)'>
-            <br>
-            <label for="led_button_b">B Button</label>
-            <br>
-            <input type="color" id="led_button_b" name="led_button_b" value="#e66465" onchange='set_rgb_color(3, this.value)'>
-            <br>
-            <label for="led_button_x">X Button</label>
-            <br>
-            <input type="color" id="led_button_x" name="led_button_x" value="#e66465" onchange='set_rgb_color(4, this.value)'>
-            <br>
-            <label for="led_button_y">Y Button</label>
-            <br>
-            <input type="color" id="led_button_y" name="led_button_y" value="#e66465" onchange='set_rgb_color(5, this.value)'>
-            <br>
-            <label for="led_button_d">D-Pad</label>
-            <br>
-            <input type="color" id="led_button_d" name="led_button_d" value="#e66465" onchange='set_rgb_color(6, this.value)'>
-            <br>
-            <label for="led_button_m">Menu Buttons</label>
-            <br>
-            <input type="color" id="led_button_m" name="led_button_m" value="#e66465" onchange='set_rgb_color(7, this.value)'>
-            <br>
-
-            <div class="line"></div>
-
-            <button type="button" id="save_led_colors" onclick="save_rgb()">Save LEDs</button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- TRIGGER SETTINGS
-      <div class="wrap-collapsible">
-
-        <input id="trigger_collapsible" class="toggle" type="checkbox">
-
-        <label for="trigger_collapsible" id="trigger_collapsible_toggle" class="lbl-toggle">Trigger Settings</label>
-
-        <div class="collapsible-content">
-
-          <div class="content-inner">
-
-            <h3>L Trigger</h3>
-
-            <div class="sora_radio_container">
-              <input type="radio" name="radio_dl" id="dinput_lx" checked onchange="set_trigger_mode(0, 0)">
-              <label for="dinput_lx">Off</label>
-              <input type="radio" name="radio_dl" id="dinput_l0" onchange="set_trigger_mode(0, 1)">
-              <label for="dinput_l0">Digital</label>
-              <input type="radio" name="radio_dl" id="dinput_l1" onchange="set_trigger_mode(0, 2)">
-              <label for="dinput_l1">Lite</label>
-              <input type="radio" name="radio_dl" id="dinput_l2" onchange="set_trigger_mode(0, 3)">
-              <label for="dinput_l2">Heavy</label>
-            </div>
-
-            <div class="line"></div>
-
-            <h3>R Trigger</h3>
-            <div class="sora_radio_container">
-              <input type="radio" name="radio_dr" id="dinput_rx" checked onchange="set_trigger_mode(1, 0)">
-              <label for="dinput_rx">Off</label>
-              <input type="radio" name="radio_dr" id="dinput_r0" onchange="set_trigger_mode(1, 1)">
-              <label for="dinput_r0">Digital</label>
-              <input type="radio" name="radio_dr" id="dinput_r1" onchange="set_trigger_mode(1, 2)">
-              <label for="dinput_r1">Lite</label>
-              <input type="radio" name="radio_dr" id="dinput_r2" onchange="set_trigger_mode(1, 3)">
-              <label for="dinput_r2">Heavy</label>
-            </div>
-
-            <div class="line"></div>
-
-            <p>L Trigger Threshold</p>
-
-            <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="ltValue" oninput="ltTextValue.innerText = this.value" onchange="set_trigger_threshold(0, this.value)">
-              <p id="ltTextValue">0</p>
-            </div>
-
-            <p>R Trigger Threshold</p>
-
-            <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="rtValue" oninput="rtTextValue.innerText = this.value" onchange="set_trigger_threshold(1, this.value)">
-              <p id="rtTextValue">0</p>
             </div>
 
           </div>
+        </div>-->
 
-        </div>
-      </div>-->
+        <!-- ANALOG SETTINGS -->
+        <!-- --------------- -->
+        <div class="wrap-collapsible">
 
-      <!-- ANALOG SETTINGS -->
-      <!-- --------------- -->
-      <div class="wrap-collapsible">
+          <input id="analog_collapsible" class="toggle" type="checkbox">
 
-        <input id="analog_collapsible" class="toggle" type="checkbox">
+          <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">Analog Calibration</label>
 
-        <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">Analog Calibration</label>
+          <div class="collapsible-content">
 
-        <div class="collapsible-content">
+            <div class="content-inner">
 
-          <div class="content-inner">
-
-            <h3>Stick Calibration</h3>
-            To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to facilitate proper calibration. Press 'Stop' to cancel calibration.
-            <div class="invisigrid-trio">
-              <button type="button" id="start_calibration_button" onclick="start_analog_calibration()">Start</button>
-              <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()" disabled>Stop</button>
-              <button type="button" id="save_calibration_button" onclick="save_analog_calibration()" disabled>Save</button>
+              <h3>Stick Calibration</h3>
+              To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to facilitate proper calibration. Press 'Stop' to cancel calibration.
+              <div class="invisigrid-trio">
+                <button type="button" id="start_calibration_button" onclick="start_analog_calibration()">Start</button>
+                <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()" disabled>Stop</button>
+                <button type="button" id="save_calibration_button" onclick="save_analog_calibration()" disabled>Save</button>
+              </div>
             </div>
-          </div>
 
-        </div>
-      </div>
-
-      <!-- SNAPBACK SETTINGS -->
-      <!-- --------------- -->
-      <div class="wrap-collapsible">
-
-        <input id="snapback-collapsible" class="toggle" type="checkbox">
-
-        <label for="snapback-collapsible" id="snapback-collapsible-toggle", class="lbl-toggle">Snapback Settings</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
-            <h3>Axis Select</h3>
-            <div class="sora_radio_container">
-              <input type="radio" name="radio_snapback" id="sb_ax" checked onchange="set_snapback_axis(0)">
-              <label for="sb_ax">AX</label>
-              <input type="radio" name="radio_snapback" id="sb_ay" onchange="set_snapback_axis(1)">
-              <label for="sb_ay">AY</label>
-              <input type="radio" name="radio_snapback" id="sb_cx" onchange="set_snapback_axis(2)">
-              <label for="sb_cx">CX</label>
-              <input type="radio" name="radio_snapback" id="sb_cy" onchange="set_snapback_axis(3)">
-              <label for="sb_cy">CY</label>
-            </div>
-            <br>
-            <h3>Axis Snapback Intensity</h3>
-            <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="snapback_intensity" oninput="snapback_intensity_text.innerText = this.value" onchange="set_snapback_intensity(this.value)">
-              <p id="snapback_intensity_text">0</p>
-            </div>
-            <canvas id="snapback_canvas" width="326" height="300"></canvas>
           </div>
         </div>
+
+        <!-- SNAPBACK SETTINGS -->
+        <!-- --------------- -->
+        <div class="wrap-collapsible">
+
+          <input id="snapback-collapsible" class="toggle" type="checkbox">
+
+          <label for="snapback-collapsible" id="snapback-collapsible-toggle", class="lbl-toggle">Snapback Settings</label>
+          <div class="collapsible-content">
+            <div class="content-inner">
+              <h3>Axis Select</h3>
+              <div class="sora_radio_container">
+                <input type="radio" name="radio_snapback" id="sb_ax" checked onchange="set_snapback_axis(0)">
+                <label for="sb_ax">AX</label>
+                <input type="radio" name="radio_snapback" id="sb_ay" onchange="set_snapback_axis(1)">
+                <label for="sb_ay">AY</label>
+                <input type="radio" name="radio_snapback" id="sb_cx" onchange="set_snapback_axis(2)">
+                <label for="sb_cx">CX</label>
+                <input type="radio" name="radio_snapback" id="sb_cy" onchange="set_snapback_axis(3)">
+                <label for="sb_cy">CY</label>
+              </div>
+              <br>
+              <h3>Axis Snapback Intensity</h3>
+              <div class="slider">
+                <input type="range" min="0" max="255" value="0" id="snapback_intensity" oninput="snapback_intensity_text.innerText = this.value" onchange="set_snapback_intensity(this.value)">
+                <p id="snapback_intensity_text">0</p>
+              </div>
+              <canvas id="snapback_canvas" width="326" height="300"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONFIG BUTTONS  -->
+        <!-- --------------- -->
+        <!--
+        <div class="invisigrid" style="visibility:hidden">
+          <button type="button" id="default_button" onclick="doDefault()" disabled>Reset All</button>
+        </div>-->
+        <br>
+        <button type="button" id="save_button" onclick="doSave()" disabled>Save All</button>
+
+        <div class="line"></div>
+
+        <br>
+
+        <canvas id="analog_canvas" width="300" height="120"></canvas>
+
+        <!-- INPUT TESTER    -->
+        <!-- --------------- -->
+        <div class="input-container">
+          <div class="grid-item">X Axis</div>
+          <div class="grid-item" id="x_axis">0</div>
+
+          <div class="grid-item">Y Axis</div>
+          <div class="grid-item" id="y_axis">0</div>
+
+          <div class="grid-item">CX Axis</div>
+          <div class="grid-item" id="cx_axis">0</div>
+
+          <div class="grid-item">CY Axis</div>
+          <div class="grid-item" id="cy_axis">0</div>
+
+          <div class="grid-item">Trigger L</div>
+          <div class="grid-item" id="tl_axis">0</div>
+
+          <div class="grid-item">L Button</div>
+          <div class="grid-item" id="tl_button">0</div>
+
+          <div class="grid-item">Trigger R</div>
+          <div class="grid-item" id="tr_axis">0</div>
+
+          <div class="grid-item">R Button</div>
+          <div class="grid-item" id="tr_button">0</div>
+        </div>
+
+
       </div>
-
-      <!-- CONFIG BUTTONS  -->
-      <!-- --------------- -->
-      <!--
-      <div class="invisigrid" style="visibility:hidden">
-        <button type="button" id="default_button" onclick="doDefault()" disabled>Reset All</button>
-      </div>-->
-      <br>
-      <button type="button" id="save_button" onclick="doSave()" disabled>Save All</button>
-
-      <div class="line"></div>
-
-      <br>
-
-      <canvas id="analog_canvas" width="300" height="120"></canvas>
-
-      <!-- INPUT TESTER    -->
-      <!-- --------------- -->
-      <div class="input-container">
-        <div class="grid-item">X Axis</div>
-        <div class="grid-item" id="x_axis">0</div>
-
-        <div class="grid-item">Y Axis</div>
-        <div class="grid-item" id="y_axis">0</div>
-
-        <div class="grid-item">CX Axis</div>
-        <div class="grid-item" id="cx_axis">0</div>
-
-        <div class="grid-item">CY Axis</div>
-        <div class="grid-item" id="cy_axis">0</div>
-      </div>
-
   </div>
 </div>
   <div class="footer">
@@ -343,7 +294,11 @@
     2023, Hand Held Legend
   </div>
 
-<script>updateStickGraph(128, 128, 128, 128);</script>
+  <script src="/js/modal.js"></script>
+  <script src="resources/procon_toolkit/controller.js"></script>
+  <script src="https://unpkg.com/external-svg-loader@1.6.8/dist/svg-loader.min.js"></script>
+  <script src="https://unpkg.com/@jaames/iro@5.5.2/dist/iro.min.js"></script>
+  <script>updateStickGraph(128, 128, 128, 128);</script>
 
 </body>
 
