@@ -32,8 +32,8 @@
 
     <div class="box">
       <div class="invisigrid">
-        <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
-        <button type="button" id="disconnect_button" onclick="doDeviceDisconnect()" disabled>Disconnect</button>
+        <button type="button" id="connect_button" onclick="connect_controller()">Connect</button>
+        <button type="button" id="disconnect_button" onclick="disconnect_controller()" disabled>Disconnect</button>
       </div>
 
       <div class="message-box" id="ood" disabled="true">
@@ -334,18 +334,6 @@
 
         <div class="grid-item">CY Axis</div>
         <div class="grid-item" id="cy_axis">0</div>
-
-        <div class="grid-item">Trigger L</div>
-        <div class="grid-item" id="tl_axis">0</div>
-
-        <div class="grid-item">L Button</div>
-        <div class="grid-item" id="tl_button">0</div>
-
-        <div class="grid-item">Trigger R</div>
-        <div class="grid-item" id="tr_axis">0</div>
-
-        <div class="grid-item">R Button</div>
-        <div class="grid-item" id="tr_button">0</div>
       </div>
 
   </div>
