@@ -1,0 +1,30 @@
+:root {
+  --margin-small: 0.25rem;
+  --margin-normal: 1rem;
+  --transparent-bg: hsla(0, 0%, 100%, 0.555);
+  --blur-amt: 10px;
+  --border-radius: 5rem;
+  --box-shadow: inset 0 0.15rem 0.15rem  0 rgba(0, 0, 0, 0.15);
+  --button-color-active: #00b7ffd5;
+  --button-color-disabled: #5a5a5ad5;
+  --button-text-idle: rgba(0, 0, 0, 0.596);
+  --button-text-hover: #FFF;
+}
+
+@keyframes fadeIn {
+  from {
+          opacity: 0;
+      }
+  to  {
+          opacity: 1;
+      }
+  }
+
+  @keyframes fadeOut {
+      from {
+              opacity: 1;
+          }
+      to  {
+              opacity: 0;
+          }
+  }

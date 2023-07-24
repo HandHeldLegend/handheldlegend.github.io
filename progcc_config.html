@@ -2,14 +2,14 @@
 <html>
 
 <head>
-<!--  <script src="/js/gcp_config/gc_pocket_config.js"></script>-->
+  <!--  <script src="/js/gcp_config/gc_pocket_config.js"></script>-->
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
   <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
   <link rel="stylesheet" href="/css/slider.css" type="text/css">
   <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
   <link rel="stylesheet" href="/css/modal.css" type="text/css">
-  <link rel="stylesheet" href="resources/procon_toolkit/controller.css">
+  <link rel="stylesheet" href="/css/progccColor.css">
 </head>
 
 <body>
@@ -50,7 +50,7 @@
 
           <input id="socials-qr" class="toggle" type="checkbox">
 
-          <label for="socials-qr" id="socials-toggle", class="lbl-toggle">Social Media</label>
+          <label for="socials-qr" id="socials-toggle" , class="lbl-toggle">Social Media</label>
           <div class="collapsible-content">
             <div class="content-inner">
               <h2>HandHeldLegend Twitter</h2>
@@ -64,64 +64,41 @@
         </div>
         <!-- --------------- -->
 
-        <!-- MODE EXPLAINER
+        <!-- PROCON COLOR SETTINGS -->
         <div class="wrap-collapsible">
 
-          <input id="mode-explainer" class="toggle" type="checkbox">
+          <input id="color-settings" class="toggle" type="checkbox">
 
-          <label for="mode-explainer" id="explainer-collapsible-toggle", class="lbl-toggle">Trigger Mode Info</label>
+          <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">Color Settings</label>
           <div class="collapsible-content">
             <div class="content-inner">
-              <h3>Off</h3>
-              All analog inputs and digital inputs are forwarded as is.
-              <div class="line"></div>
-              <h3>Digital</h3>
-              When the analog value is greater than the trigger threshold, the digital button is pressed.
-              <div class="line"></div>
-              <h3>Lite</h3>
-              When the digital value is pressed, a lite analog value (85) is sent. No digital button sent.
-              Great for trigger plugs.
-              <div class="line"></div>
-              <h3>Heavy</h3>
-              When the digital value is pressed, a heavy analog value (255) is sent. Digital button is sent.
-              Also useful for trigger plugs.
-            </div>
-          </div>
-        </div>-->
 
-        <!-- PROCON COLOR SETTINGS -->
-        <!-- --------------- -->
-        <div class="wrap-collapsible">
-
-          <input id="color-modal" class="modal-toggle" type="checkbox">
-
-          <label for="color-modal" id="color-collapsible-toggle" class="lbl-toggle">ProCon Color Settings</label>
-
-          <div class="modal">
-            <div class="modal-content">
-              <div class="modal-header">
-                <span>ProCon Color Settings</span>
-                <label for="color-modal" class="close-button">&#10006;</label>
-              </div>
-
-              <section id="lightConfig">
-                <svg class="controller" data-src="resources/procon_toolkit/controller.svg" data-cache="disabled" data-unique-ids="disabled" data-css-scoping="disabled" data-loading="lazy" oniconload="onControllerLoad(this)"></svg>
-
+                <svg class="controller-led" data-src="resources/progcc_config/controller.svg" data-cache="disabled"
+                  data-unique-ids="disabled" data-css-scoping="disabled" data-loading="lazy"
+                  oniconload="onProgccColorLoad(this)"></svg>
+                  <!--
                 <div id="lightSidebar">
                   <label for="lightingEffect">Lighting Effect</label>
                   <select id="lightingEffect">
                     <option>Static</option>
-                  </select>
+                  </select>-->
 
-                  <div id="colorPicker"></div>
+                  <div class="controller-color-picker">
+                  <div id="colorPicker"></div></div>
 
                   <label for="lightHex">Hex Value</label>
                   <div id="hexBox">
-                    <input id="lightHex" type="text" disabled/>
-                    <button id="copyButton" class="small">Copy</button>
+                    <input id="lightHex" type="text" disabled />
+                    <button
+                      id="copyButton"
+                      class="small"
+                      onclick="colorCopy()">Copy</button>
+                    <button
+                      id="pasteButton"
+                      class="small"
+                      onclick="colorPaste()">Paste</button>
                   </div>
                 </div>
-              </section>
 
               <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
             </div>
@@ -200,11 +177,15 @@
             <div class="content-inner">
 
               <h3>Stick Calibration</h3>
-              To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to facilitate proper calibration. Press 'Stop' to cancel calibration.
+              To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both
+              sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to
+              facilitate proper calibration. Press 'Stop' to cancel calibration.
               <div class="invisigrid-trio">
                 <button type="button" id="start_calibration_button" onclick="start_analog_calibration()">Start</button>
-                <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()" disabled>Stop</button>
-                <button type="button" id="save_calibration_button" onclick="save_analog_calibration()" disabled>Save</button>
+                <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()"
+                  disabled>Stop</button>
+                <button type="button" id="save_calibration_button" onclick="save_analog_calibration()"
+                  disabled>Save</button>
               </div>
             </div>
 
@@ -217,7 +198,8 @@
 
           <input id="snapback-collapsible" class="toggle" type="checkbox">
 
-          <label for="snapback-collapsible" id="snapback-collapsible-toggle", class="lbl-toggle">Snapback Settings</label>
+          <label for="snapback-collapsible" id="snapback-collapsible-toggle" , class="lbl-toggle">Snapback
+            Settings</label>
           <div class="collapsible-content">
             <div class="content-inner">
               <h3>Axis Select</h3>
@@ -234,7 +216,9 @@
               <br>
               <h3>Axis Snapback Intensity</h3>
               <div class="slider">
-                <input type="range" min="0" max="255" value="0" id="snapback_intensity" oninput="snapback_intensity_text.innerText = this.value" onchange="set_snapback_intensity(this.value)">
+                <input type="range" min="0" max="255" value="0" id="snapback_intensity"
+                  oninput="snapback_intensity_text.innerText = this.value"
+                  onchange="set_snapback_intensity(this.value)">
                 <p id="snapback_intensity_text">0</p>
               </div>
               <canvas id="snapback_canvas" width="326" height="300"></canvas>
@@ -287,15 +271,13 @@
 
 
       </div>
+    </div>
   </div>
-</div>
   <div class="footer">
     <a href="https://handheldlegend.github.io/css.html" target="_blank">CSS Attributions</a> | Site by Mitch Cairns | ©
     2023, Hand Held Legend
   </div>
-
-  <script src="/js/modal.js"></script>
-  <script src="resources/procon_toolkit/controller.js"></script>
+  <script src="js/progcc_config/progcc_color.js"></script>
   <script src="https://unpkg.com/external-svg-loader@1.6.8/dist/svg-loader.min.js"></script>
   <script src="https://unpkg.com/@jaames/iro@5.5.2/dist/iro.min.js"></script>
   <script>updateStickGraph(128, 128, 128, 128);</script>

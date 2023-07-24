@@ -1,33 +1,40 @@
+@import url('root.css');
+
 
 .modal {
     display: none;
-
-    position: fixed;
-    top: 0;
     left: 0;
     right: 0;
     z-index: 101;
-
-    background-color: rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    height: 100vh;
-
     align-items: center;
     justify-content: center;
 }
 
+.modal:target {
+    display: block;
+}
+
 .modal-content {
+    opacity: 0;
     flex-grow: 1;
     margin: 2rem 3rem;
     padding-bottom: 1rem;
 
     background-color: #fff;
     border-radius: 2rem;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    background-color: hsla(0, 0%, 100%, 0.555);
-
+    backdrop-filter: blur(var(--blur-amt));
+    -webkit-backdrop-filter: blur(var(--blur-amt));
+    background-color: var(--transparent-bg);
     overflow: hidden;
+
+    animation-name: fadeOut;
+    animation-duration: 0.25s;
+}
+
+.modal:target .modal-content{
+    opacity: 1;
+    animation-name: fadeIn;
+    animation-duration: 0.25s;
 }
 
 .modal-header {
@@ -35,7 +42,7 @@
     align-items: center;
     justify-content: space-between;
 
-    background-color: hsla(0, 0%, 100%, 0.555);
+    background-color: var(--transparent-bg);
     border-top-left-radius: 2rem;
     border-top-right-radius: 2rem;
 
@@ -43,28 +50,25 @@
     margin-bottom: 1rem;
 }
 
-.modal-header > label {
+.modal-header button {
     cursor: pointer;
-
-    font-size: 1.5rem;
+    margin-right: 0;
+    text-align:center;
+    padding: 0em;
+    font-size: 1.0rem;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
+    background-color: var(--button-color-active);
+    color: var(--button-text-idle);
     width: 2rem;
     height: 2rem;
+    transition: all 0.25s ease-out;
 }
 
-.modal-toggle {
-    display: none;
+.modal-header button:hover {
+    color: var(--button-text-hover);
 }
 
-.modal-toggle:checked ~ .modal{
-    display: flex;
+.modal:target{
+    visibility: visible;
+    display: block;
 }
-
-body.modal-open {
-    overflow-y: hidden;
-    position: fixed;
-    width: 100vw;
-}
-

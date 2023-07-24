@@ -11,26 +11,25 @@
     }
 }
 
-.controller {
-    flex-grow: 5;
-
-    border-bottom: none;
-    margin: 2rem;
-    height: fit-content;
-    width: 70%;
-    max-height: 50vh;
+.controller-led {
+    height: 14rem;
+    width: auto;
 }
 
-.controller .clickable {
+.svgButtonClickable {
     cursor: pointer;
+    stroke: rgba(128, 128, 128, 0);
+    transition: stroke 0.25s ease-out, fill 0.25s ease-out;
 }
 
-.controller .clickable:hover {
-    stroke: gray;
+.svgButtonClickable:hover {
+    stroke: rgba(255, 255, 255, 0.521);
+    transition: stroke 0.25s ease-out, fill 0.25s ease-out;
 }
 
-.controller .clickable.active {
-    stroke: white;
+.svgButtonClickable.active {
+    stroke: rgba(255, 255, 255, 0.815);
+    transition: stroke 0.25s ease-out, fill 0.25s ease-out;
 }
 
 #lightSidebar {
@@ -44,12 +43,15 @@
 
 #colorPicker {
     margin: 1rem 0;
+    opacity: 1;
     display: flex;
+    transition: opacity 0.25s ease-out;
 }
 
 #colorPicker:not(.enabled) {
     pointer-events: none;
     opacity: 0.5;
+    transition: opacity 0.25s ease-out;
 }
 
 #hexBox {
@@ -62,4 +64,3 @@
     font-size: 1.25rem;
     width: 10rem;
 }
-

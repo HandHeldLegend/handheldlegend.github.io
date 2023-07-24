@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Exo:400,700');
+@import url('root.css');
 
 * {
     margin: 0;
@@ -60,6 +61,7 @@ body {
 .box {
     width: 40rem;
     color: rgb(0, 0, 0);
+    border-radius: 2rem;
     padding: 1rem;
     margin-left: auto;
     margin-right: auto;
@@ -69,14 +71,16 @@ body {
     text-align: center;
     z-index: 5;
     position: relative;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    background-color: hsla(0, 0%, 100%, 0.555);
+    backdrop-filter: blur(var(--blur-amt));
+    -webkit-backdrop-filter: blur(var(--blur-amt));
+    background-color: var(--transparent-bg);
+    transition: all 0.25s ease-out;
 }
 
 .box-popup
 {
     width: 40rem;
+    border-radius: var(--border-radius);
     color: rgb(0, 0, 0);
     padding: 1rem;
     margin-left: auto;
@@ -91,10 +95,10 @@ body {
 
 .box-popup:before {
     content: "";
-    border-radius: 2rem;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    background-color: hsla(0, 0%, 100%, 0.555);
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(var(--blur-amt));
+    -webkit-backdrop-filter: blur(var(--blur-amt));
+    background-color: var(--transparent-bg);
     top: 0;
     left: 0;
     width: 100%;
@@ -105,6 +109,7 @@ body {
 
 .box-inner {
     position: relative;
+    transition: all 0.25s ease-out;
 }
 
 canvas {
@@ -112,7 +117,7 @@ canvas {
     border: #23d57c;
     background-color: rgba(255, 89, 89, 0.445);
     border-radius: 1rem;
-    box-shadow: inset 0 0.15rem 0.15rem  0 rgba(0, 0, 0, 0.15);
+    box-shadow: var(--box-shadow);
 }
 
 .footer {
@@ -122,35 +127,12 @@ canvas {
     left: 0;
     text-align: center;
 
-    background-color: hsla(0, 0%, 100%, 0.555);
+    background-color: var(--transparent-bg);
     color: rgb(0, 0, 0);
     padding: 1rem;
     font-size: 1rem;
 
     z-index: 0;
-}
-
-button {
-    font-family: inherit;
-    display: block;
-    font-size: 1.5rem;
-    text-align: center;
-    padding: 0.3rem;
-    width:auto;
-    margin: 0.25rem;
-    margin-left: auto;
-    margin-right: auto;
-    color: rgba(0, 0, 0, 0.596);
-    background: #00b7ffd5;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    transition: all 0.25s ease-out;
-    border-color: #ffffff00;
-    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
-}
-
-button.small {
-    font-size: 1rem;
 }
 
 .message-box[disabled="false"] {
@@ -178,15 +160,6 @@ button.small {
     width: 0;
     margin: 0;
     padding: 0;
-}
-
-button:disabled{
-    background: #5a5a5ad5;
-    cursor: default;
-}
-
-button:enabled:hover {
-    color: #FFF;
 }
 
 img {
@@ -237,9 +210,45 @@ fieldset {
 }
 
 .wrap-collapsible {
-    margin-top: 1rem;
     margin-left: auto;
     margin-right: auto;
+}
+
+button {
+    font-family: inherit;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.3rem;
+    width:auto;
+    margin-top: var(--margin-small);
+    margin-left: auto;
+    margin-right: auto;
+    color: rgba(0, 0, 0, 0.596);
+    background: #00b7ffd5;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease-out;
+    border-color: #ffffff00;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+}
+
+.controller-color-picker-container{
+    width: inherit;
+}
+
+
+button:disabled{
+    background: #5a5a5ad5;
+    cursor: default;
+}
+
+button:enabled:hover {
+    color: #FFF;
+}
+
+button.small {
+    font-size: 1rem;
 }
 
 .lbl-toggle {
@@ -248,6 +257,7 @@ fieldset {
     text-align: center;
     padding: 0.3rem;
     width:22rem;
+    margin-top: var(--margin-small);
     margin-left: auto;
     margin-right: auto;
     color: rgba(0, 0, 0, 0.596);
