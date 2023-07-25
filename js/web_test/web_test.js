@@ -12,4 +12,6 @@ async function clickButton()
   device = await navigator.hid.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
 
   await device.open();
+
+  console.log(device);
 };
