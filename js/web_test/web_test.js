@@ -1,17 +1,13 @@
 let device;
 
-// Add an event listener to the Connect button
-const connectButton = document.getElementById('connectButton');
 async function clickButton()
 {
-  addEventListener("connect", (event) => {
-    console.log("Device connected.");
-  });
-
   // Request permission to access the gamepad
   device = await navigator.hid.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
+  console.log(device);
+  await device[0].open();
 
-  await device.open();
+  document.getElementById("text_test").innerHTML = device[0].productName;
 
   console.log(device);
 };
