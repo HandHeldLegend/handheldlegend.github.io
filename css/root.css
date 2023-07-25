@@ -1,5 +1,5 @@
 :root {
-  --margin-small: 0.25rem;
+  --margin-small: 0.15rem;
   --margin-normal: 1rem;
   --transparent-bg: hsla(0, 0%, 100%, 0.555);
   --blur-amt: 10px;
@@ -9,6 +9,7 @@
   --button-color-disabled: #5a5a5ad5;
   --button-text-idle: rgba(0, 0, 0, 0.596);
   --button-text-hover: #FFF;
+  --mobile-page-width: 760px;
 }
 
 @keyframes fadeIn {

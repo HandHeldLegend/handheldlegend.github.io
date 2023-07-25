@@ -28,7 +28,7 @@ const readInputReport = device => {
 const connectButton = document.getElementById('connectButton');
 connectButton.addEventListener('click', () => {
   // Request permission to access the gamepad
-  navigator.usb.requestDevice({ filters: [{ vendorId: 0x20D6, productId: 0xA714 }] })
+  navigator.usb.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] })
     .then(device => {
       // Open a connection to the gamepad
       return device.open();
