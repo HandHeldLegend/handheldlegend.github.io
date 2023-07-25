@@ -1,0 +1,5 @@
+#tutImage {
+    width: 90%;
+    border-radius: 1rem;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.45);
+}

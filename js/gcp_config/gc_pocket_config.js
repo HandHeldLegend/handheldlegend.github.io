@@ -1,3 +1,5 @@
+const debug = false;
+
 // Use these to filter devices
 const GC_VID = 0x20D6;
 const GC_PID = 0xA714;
@@ -53,13 +55,20 @@ loaded_data = null;
 // CONNECT and DISCONNECT functions
 async function doConnect() {
 
-    console.log("Connecting...");
-    // Set up disconnect listener
-    navigator.hid.addEventListener('disconnect', ({device}) => {
-        onDeviceDisconnect(device);
-    });
+    if (debug)
+    {
+        enableAllSettings(true);
+    }
+    else
+    {
+        console.log("Connecting...");
+        // Set up disconnect listener
+        navigator.hid.addEventListener('disconnect', ({device}) => {
+            onDeviceDisconnect(device);
+        });
 
-    await openDevice();
+        await openDevice();
+    }
 }
 
 async function openDevice() {

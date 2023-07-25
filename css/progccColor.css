@@ -15,7 +15,7 @@
     display: flex;
     margin-left: auto;
     margin-right: auto;
-    width: 30%;
+    width: 35%;
     flex-wrap: nowrap;
     flex-direction: column;
     transition: all .25s ease-in-out;
@@ -37,9 +37,13 @@
     text-align: left;
 }
 
-@media(min-width: 700px) {
+@media(max-width: 850px) {
     #lightConfig {
         flex-direction: row;
+    }
+
+    #progccColorPicker {
+        width: fit-content;
     }
 }
 
@@ -82,14 +86,24 @@
     margin-right: auto;
 }
 
-#colorPicker {
-    opacity: 1;
-    display: flex;
+.IroBox {
+    margin-left: auto;
+    margin-right: auto;
+}
+.IroSlider {
+    margin-left: auto;
+    margin-right: auto;
+}
 
+#colorPicker {
+    width: inherit;
+    opacity: 1;
+    cursor: pointer;
     transition: opacity 0.25s ease-out;
 }
 
 #colorPicker:not(.enabled) {
+    width: inherit;
     pointer-events: none;
     opacity: 0.5;
     transition: opacity 0.25s ease-out;

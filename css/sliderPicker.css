@@ -16,6 +16,13 @@
     transition: all 0.25s ease-out;
 }
 
+@media(max-width: 850px) {
+
+    .slider {
+        width: 90%;
+    }
+}
+
 .slider p {
     font-size: 1.25rem;
     font-family: inherit;

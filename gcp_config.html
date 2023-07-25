@@ -3,11 +3,14 @@
 
 <head>
   <script src="/js/gcp_config/gc_pocket_config.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
   <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
-  <link rel="stylesheet" href="/css/slider.css" type="text/css">
-  <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
+  <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
+  <link rel="stylesheet" href="/css/radioPicker.css" type="text/css">
+  <link rel="stylesheet" href="/css/gcpocketConfig.css" type="text/css">
+  <link rel="stylesheet" href="/css/containers.css" type="text/css">
 </head>
 
 <body>
@@ -32,7 +35,7 @@
     <div class="box">
       <p>To configure your device, plug in your device while holding the 'Config' or 'Previous' button.</p>
       <p>A blue LED will illuminate to let you know you've entered the correct mode.</p>
-      <img src="/resources/gc_pocket/adapter_layout.jpg">
+      <img id="tutImage" src="/resources/gc_pocket/adapter_layout.jpg">
       <p>Next, click the 'Connect' button to select your device.</p>
     </div>
 
@@ -49,33 +52,41 @@
 
       <!-- SOCIALS -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="socials-qr" class="toggle" type="checkbox">
 
-        <label for="socials-qr" id="socials-toggle", class="lbl-toggle">Social Media</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
-            <h2>HandHeldLegend Twitter</h2>
-            <img src="/resources/qr/hhl.png">
-            <div class="line"></div>
-            <h2>Discord for Support</h2>
-            <img src="/resources/qr/discord.png">
+        <label for="socials-qr" id="socials-toggle" , class="lbl-toggle">Social Media</label>
+        <div class="dropdown">
+          <div class="collapsible-row-double">
+
+            <div class="collapsible-column">
+              <h2>Twitter</h2>
+              <img src="/resources/qr/hhl.png">
+            </div>
+
+            <div class="collapsible-column">
+              <h2>Discord</h2>
+              <img src="/resources/qr/discord.png">
+            </div>
 
           </div>
+
+
+
         </div>
       </div>
       <!-- --------------- -->
 
       <!-- MODE EXPLAINER -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="mode-explainer" class="toggle" type="checkbox">
 
-        <label for="mode-explainer" id="explainer-collapsible-toggle", class="lbl-toggle">Trigger Mode Info</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
+        <label for="mode-explainer" id="explainer-collapsible-toggle" , class="lbl-toggle">Trigger Mode Info</label>
+        <div class="dropdown">
+          <div class="full-width">
             <h3>Off</h3>
             All analog inputs and digital inputs are forwarded as is.
             <div class="line"></div>
@@ -95,34 +106,38 @@
 
       <!-- SYSTEM SETTINGS -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="system-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="system-collapsible" id="system-collapsible-toggle" class="lbl-toggle" disabled="true">System Settings</label>
+        <label for="system-collapsible" id="system-collapsible-toggle" class="lbl-toggle" disabled="true">System
+          Settings</label>
 
-        <div class="collapsible-content">
+        <div class="dropdown">
 
-          <div class="content-inner">
+          <div class="full-width">
 
             <p>LED Brightness</p>
 
             <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="ledValue" oninput="ledTextValue.innerText = this.value" onchange="cmdLedUpdate(this.value)">
+              <input type="range" min="0" max="255" value="0" id="ledValue"
+                oninput="ledTextValue.innerText = this.value" onchange="cmdLedUpdate(this.value)">
               <p id="ledTextValue">0</p>
             </div>
 
             <p>L Trigger Threshold</p>
 
             <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="ltValue" oninput="ltTextValue.innerText = this.value" onchange="cmdTriggerThreshUpdate(0, this.value)">
+              <input type="range" min="0" max="255" value="0" id="ltValue" oninput="ltTextValue.innerText = this.value"
+                onchange="cmdTriggerThreshUpdate(0, this.value)">
               <p id="ltTextValue">0</p>
             </div>
 
             <p>R Trigger Threshold</p>
 
             <div class="slider">
-              <input type="range" min="0" max="255" value="0" id="rtValue" oninput="rtTextValue.innerText = this.value" onchange="cmdTriggerThreshUpdate(1, this.value)">
+              <input type="range" min="0" max="255" value="0" id="rtValue" oninput="rtTextValue.innerText = this.value"
+                onchange="cmdTriggerThreshUpdate(1, this.value)">
               <p id="rtTextValue">0</p>
             </div>
 
@@ -133,20 +148,21 @@
 
       <!-- DINPUT SETTINGS -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="dinput-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="dinput-collapsible" id="dinput-collapsible-toggle" class="lbl-toggle" disabled="true">DInput Settings | Blue Mode</label>
+        <label for="dinput-collapsible" id="dinput-collapsible-toggle" class="lbl-toggle" disabled="true">DInput
+          Settings
+          | Blue Mode</label>
 
-        <div class="collapsible-content">
+        <div class="dropdown">
 
-          <div class="content-inner">
-
+          <div class="full-width">
             <h3>L Trigger</h3>
-
             <div class="sora_radio_container">
-              <input type="radio" name="radio_dl" id="dinput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 0)">
+              <input type="radio" name="radio_dl" id="dinput_lx" checked
+                onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 0)">
               <label for="dinput_lx">Off</label>
               <input type="radio" name="radio_dl" id="dinput_l0" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 1)">
               <label for="dinput_l0">Digital</label>
@@ -155,12 +171,14 @@
               <input type="radio" name="radio_dl" id="dinput_l2" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 0, 3)">
               <label for="dinput_l2">Heavy</label>
             </div>
-
             <div class="line"></div>
+          
+
 
             <h3>R Trigger</h3>
             <div class="sora_radio_container">
-              <input type="radio" name="radio_dr" id="dinput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 0)">
+              <input type="radio" name="radio_dr" id="dinput_rx" checked
+                onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 0)">
               <label for="dinput_rx">Off</label>
               <input type="radio" name="radio_dr" id="dinput_r0" onchange="cmdTriggerUpdate(USB_MODE_DINPUT, 1, 1)">
               <label for="dinput_r0">Digital</label>
@@ -171,34 +189,36 @@
             </div>
 
             <div class="line"></div>
-
+          
             <h3>Z Jump</h3>
 
             <div class="sora_radio_container">
-              <input type="radio" name="radio_dzjump" id="dinput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 0)">
+              <input type="radio" name="radio_dzjump" id="dinput_zjump_off" checked
+                onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 0)">
               <label for="dinput_zjump_off">Off</label>
               <input type="radio" name="radio_dzjump" id="dinput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 1)">
               <label for="dinput_zjump_x">X</label>
               <input type="radio" name="radio_dzjump" id="dinput_zjump_y" onchange="cmdZJumpUpdate(USB_MODE_DINPUT, 2)">
               <label for="dinput_zjump_y">Y</label>
             </div>
-
           </div>
 
         </div>
+
       </div>
 
       <!-- SWITCH SETTINGS -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="ninput-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="ninput-collapsible" id="ninput-collapsible-toggle" class="lbl-toggle" disabled="true">NS Settings | Yellow Mode</label>
+        <label for="ninput-collapsible" id="ninput-collapsible-toggle" class="lbl-toggle" disabled="true">NS Settings |
+          Yellow Mode</label>
 
-        <div class="collapsible-content">
+        <div class="dropdown">
 
-          <div class="content-inner">
+          <div class="full-width">
 
             <h3>L Trigger</h3>
             <div class="sora_radio_container">
@@ -223,7 +243,8 @@
             <h3>Z Jump</h3>
 
             <div class="sora_radio_container">
-              <input type="radio" name="radio_nzjump" id="ninput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_NS, 0)">
+              <input type="radio" name="radio_nzjump" id="ninput_zjump_off" checked
+                onchange="cmdZJumpUpdate(USB_MODE_NS, 0)">
               <label for="ninput_zjump_off">Off</label>
               <input type="radio" name="radio_nzjump" id="ninput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_NS, 1)">
               <label for="ninput_zjump_x">X</label>
@@ -238,15 +259,16 @@
 
       <!-- GC MODE SETTINGS -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="ginput-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="ginput-collapsible" id="ginput-collapsible-toggle" class="lbl-toggle" disabled="true">GC Settings | Purple Mode</label>
+        <label for="ginput-collapsible" id="ginput-collapsible-toggle" class="lbl-toggle" disabled="true">GC Settings |
+          Purple Mode</label>
 
-        <div class="collapsible-content">
+        <div class="dropdown">
 
-          <div class="content-inner">
+          <div class="full-width">
 
             <h3>L Trigger</h3>
             <div class="sora_radio_container">
@@ -279,7 +301,8 @@
             <h3>Z Jump</h3>
 
             <div class="sora_radio_container">
-              <input type="radio" name="radio_gzjump" id="ginput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_GC, 0)">
+              <input type="radio" name="radio_gzjump" id="ginput_zjump_off" checked
+                onchange="cmdZJumpUpdate(USB_MODE_GC, 0)">
               <label for="ginput_zjump_off">Off</label>
               <input type="radio" name="radio_gzjump" id="ginput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_GC, 1)">
               <label for="ginput_zjump_x">X</label>
@@ -294,17 +317,19 @@
 
       <!-- XINPUT SETTINGS -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="xinput-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="xinput-collapsible" id="xinput-collapsible-toggle", class="lbl-toggle" disabled="true">XINPUT Settings | Green Mode</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
+        <label for="xinput-collapsible" id="xinput-collapsible-toggle" , class="lbl-toggle" disabled="true">XINPUT
+          Settings | Green Mode</label>
+        <div class="dropdown">
+          <div class="full-width">
 
             <h3>L Trigger</h3>
             <div class="sora_radio_container">
-              <input type="radio" name="radio_xl" id="xinput_lx" checked onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 0)">
+              <input type="radio" name="radio_xl" id="xinput_lx" checked
+                onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 0)">
               <label for="xinput_lx">Off</label>
               <input type="radio" name="radio_xl" id="xinput_l1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 0, 1)">
               <label for="xinput_l1">Digital</label>
@@ -314,7 +339,8 @@
 
             <h3>R Trigger</h3>
             <div class="sora_radio_container">
-              <input type="radio" name="radio_xr" id="xinput_rx" checked onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 0)">
+              <input type="radio" name="radio_xr" id="xinput_rx" checked
+                onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 0)">
               <label for="xinput_rx">Off</label>
               <input type="radio" name="radio_xr" id="xinput_r1" onchange="cmdTriggerUpdate(USB_MODE_XINPUT, 1, 1)">
               <label for="xinput_r1">Digital</label>
@@ -325,7 +351,8 @@
             <h3>Z Jump</h3>
 
             <div class="sora_radio_container">
-              <input type="radio" name="radio_xzjump" id="xinput_zjump_off" checked onchange="cmdZJumpUpdate(USB_MODE_XINPUT, 0)">
+              <input type="radio" name="radio_xzjump" id="xinput_zjump_off" checked
+                onchange="cmdZJumpUpdate(USB_MODE_XINPUT, 0)">
               <label for="xinput_zjump_off">Off</label>
               <input type="radio" name="radio_xzjump" id="xinput_zjump_x" onchange="cmdZJumpUpdate(USB_MODE_XINPUT, 1)">
               <label for="xinput_zjump_x">X</label>
@@ -338,38 +365,43 @@
       </div>
 
       <!-- ANALOG ACCELERATION SETTINGS -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="acceleration-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="acceleration-collapsible" id="acceleration-collapsible-toggle", class="lbl-toggle" disabled="true">Analog Acceleration</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
+        <label for="acceleration-collapsible" id="acceleration-collapsible-toggle" , class="lbl-toggle"
+          disabled="true">Analog Acceleration</label>
+        <div class="dropdown">
+          <div class="full-width">
             <p>Left X Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="100" value="0" id="lx_accel_id" oninput="lx_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(0, this.value)">
+              <input type="range" min="0" max="100" value="0" id="lx_accel_id"
+                oninput="lx_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(0, this.value)">
               <p id="lx_accel_value">0</p>
             </div>
 
             <p>Left Y Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="100" value="0" id="ly_accel_id" oninput="ly_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(1, this.value)">
+              <input type="range" min="0" max="100" value="0" id="ly_accel_id"
+                oninput="ly_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(1, this.value)">
               <p id="ly_accel_value">0</p>
             </div>
 
             <p>Right X Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="100" value="0" id="rx_accel_id" oninput="rx_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(2, this.value)">
+              <input type="range" min="0" max="100" value="0" id="rx_accel_id"
+                oninput="rx_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(2, this.value)">
               <p id="rx_accel_value">0</p>
             </div>
 
             <p>Right Y Axis</p>
 
             <div class="slider">
-              <input type="range" min="0" max="100" value="0" id="ry_accel_id" oninput="ry_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(3, this.value)">
+              <input type="range" min="0" max="100" value="0" id="ry_accel_id"
+                oninput="ry_accel_value.innerText = this.value-50" onchange="cmdAccelUpdate(3, this.value)">
               <p id="ry_accel_value">0</p>
             </div>
           </div>
@@ -421,13 +453,14 @@
 
       <!-- SNAPBACK VIEWER -->
       <!-- --------------- -->
-      <div class="wrap-collapsible">
+      <div class="collapsible">
 
         <input id="snapback-collapsible" class="toggle" type="checkbox" disabled="true">
 
-        <label for="snapback-collapsible" id="snapback-collapsible-toggle", class="lbl-toggle" disabled="true">Snapback Viewer</label>
-        <div class="collapsible-content">
-          <div class="content-inner">
+        <label for="snapback-collapsible" id="snapback-collapsible-toggle" , class="lbl-toggle" disabled="true">Snapback
+          Viewer</label>
+        <div class="dropdown">
+          <div class="full-width">
             <h3>Axis Select</h3>
             <div class="sora_radio_container">
               <input type="radio" name="radio_snapback" id="sb_ax" checked onchange="updateSnapbackAxis(0)">
@@ -444,14 +477,14 @@
         </div>
       </div>
 
+    </div>
   </div>
-</div>
   <div class="footer">
     <a href="https://handheldlegend.github.io/css.html" target="_blank">CSS Attributions</a> | Site by Mitch Cairns | ©
     2022, Hand Held Legend
   </div>
 
-<script>updateStickGraph(128, 128, 128, 128);</script>
+  <script>updateStickGraph(128, 128, 128, 128);</script>
 
 </body>
 

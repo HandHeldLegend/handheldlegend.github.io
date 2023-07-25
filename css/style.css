@@ -22,7 +22,8 @@ html {
 body {
     font-family: 'Exo', sans-serif;
     background: linear-gradient(-45deg, #fff06c, #ff7272, #548efc, #23d57c);
-    background-size: 400% 500%;
+    background-size: 120% 120%;
+    background-attachment: fixed;
     animation: gradient 15s ease infinite;
 
     overflow-x: hidden;
@@ -54,7 +55,7 @@ body {
     padding-top: 2rem;
     padding-bottom: 6rem;
     text-align: center;
-
+    height: fit-content;
     z-index: 0;
 }
 
@@ -75,6 +76,12 @@ body {
     -webkit-backdrop-filter: blur(var(--blur-amt));
     background-color: var(--transparent-bg);
     transition: all 0.25s ease-out;
+}
+
+@media (max-width: 850px) {
+    .box {
+        width: 90vw;
+    }
 }
 
 .box-popup
@@ -162,11 +169,6 @@ canvas {
     padding: 0;
 }
 
-img {
-    border-radius: 1rem;
-    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.45);
-}
-
 h1 {
     text-align: center;
     color: #fff;
@@ -189,10 +191,6 @@ h3 {
 
 @media screen
 and (max-width: 850px) {
-    .box {
-        width: 90%;
-    }
-
     h1 {
         font-size: 2rem;
     }
@@ -254,13 +252,13 @@ button.small {
 /* end dropdown styling */
 
 .line {
-    width: 20rem;
+    width: 60%;
     height: 0;
     border: 2px solid #44444470;
     fill: #333333;
     border-radius: 1rem;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: inherit;
+    margin-right: inherit;
     margin: 0.35rem;
     display: inline-block;
 }

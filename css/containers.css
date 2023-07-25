@@ -1,21 +1,23 @@
 @import url('root.css');
 
-.wrap-collapsible {
+.collapsible {
     margin-left: auto;
     margin-right: auto;
+    width: 95%;
 }
 
 /* Dropdown styling */
-.toggle {
+.collapsible .toggle {
     display: none;
 }
 
-.lbl-toggle {
+/* Label Styling */
+.collapsible .lbl-toggle {
     display: block;
     font-size: 1.5rem;
     text-align: center;
     padding: 0.3rem;
-    width:98%;
+    width:inherit;
     margin-top: var(--margin-small);
     margin-left: auto;
     margin-right: auto;
@@ -27,20 +29,20 @@
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
 }
 
-.lbl-toggle:hover {
+.collapsible .lbl-toggle:hover {
     color: #FFF;
 }
 
-.lbl-toggle[disabled="true"]:hover {
+.collapsible .lbl-toggle[disabled="true"]:hover {
     color: rgba(0, 0, 0, 0.596);
 }
 
-.lbl-toggle[disabled="true"] {
+.collapsible .lbl-toggle[disabled="true"] {
     background: #5a5a5ad5;
     cursor: default;
 }
 
-.lbl-toggle::before {
+.collapsible .lbl-toggle::before {
     content: ' ';
     display: inline-block;
     border-top: 0.45rem solid transparent;
@@ -52,12 +54,12 @@
     transition: transform .2s ease-out;
 }
 
-.toggle:checked+.lbl-toggle::before {
-    transform: rotate(90deg) translateX(-.14rem);
+.collapsible .line {
+    width: 90%;
 }
 
-.collapsible-content {
-    background: rgba(68, 171, 255, 0.2);
+.collapsible .dropdown {
+    background: var(--dropdown-color);
     border-bottom-right-radius: 1rem;
     border-bottom-left-radius: 1rem;
     height: fit-content;
@@ -65,29 +67,68 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    width: 99.5%;
+    width: inherit;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 1rem;
     overflow: hidden;
-    transition: max-height .35s ease-in-out;
+
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+
+    transition: all .25s ease-in-out;
+}
+
+.collapsible .toggle:checked+.lbl-toggle::before {
+    transform: rotate(90deg) translateX(-.14rem);
+}
+.collapsible .toggle:checked+.lbl-toggle+.dropdown {
+    max-height: 50em;
+    width: inherit;
+    height: fit-content;
+
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-bottom: 1rem;
+}
+.collapsible .toggle:checked+.lbl-toggle {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.collapsible-row-double {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    height: fit-content;
+    width: 98%;
+    flex-direction: row;
 }
 
 .collapsible-column {
     display: flex;
+    width: 50%;
     margin-left: auto;
     margin-right: auto;
-    width: 49%;
+    height: fit-content;
     flex-wrap: nowrap;
     flex-direction: column;
     transition: all .25s ease-in-out;
     height: fit-content;
 }
 
-@media(max-width: 850px) {
-    .collapsible-content {
-        flex-direction: column;
-    }
+.collapsible .full-width {
+    width: 98%;
+    height: fit-content;
+}
 
+.collapsible-half-width
+{
+    width: 48%;
+    height: fit-content;
+}
+
+@media(max-width: 850px) {
     .collapsible-column {
         width: 90%;
     }
@@ -97,33 +138,18 @@
     height: fit-content;
 }
 
-.dual-row {
-    display: flex;
-    margin: 0.1rem;
+.dropdown img {
+    margin-left: auto;
+    margin-right: auto;
     height: fit-content;
-    max-width: 95%;
-    flex-direction: row;
+    border-radius: 1rem;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.45);
 }
 
-.toggle:checked+.lbl-toggle+.collapsible-content {
-    max-height: 50em;
-    height: fit-content;
-}
 
-.toggle:checked+.lbl-toggle {
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-}
 
-.collapsible-content .content-inner {
-    
-    border-bottom: 0.15rem solid rgba(0, 105, 255, .45);
-    color:rgb(0, 0, 0);
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
-    padding: .5rem 1rem;
-}
 
-.collapsible-content p {
+
+.dropdown p {
     margin-bottom: 0;
 }
