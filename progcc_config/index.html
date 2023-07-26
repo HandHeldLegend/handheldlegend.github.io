@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
-  <link rel="stylesheet" href="/css/progccColor.css">
-  <link rel="stylesheet" href="/css/containers.css">
+  <link rel="stylesheet" href="/css/progccColor.css" type="text/css">
+  <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
+  <link rel="stylesheet" href="/css/containers.css" type="text/css">
 
   <!-- Meta Tags required for
        Progressive Web App -->
@@ -102,9 +103,52 @@
             <div class="line"></div>
 
             <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
+          </div>
+        </div>
+      </div>
 
+      <!-- SNAPBACK SETTINGS -->
+      <!-- ---------------   -->
+      <div class="collapsible">
+        <input id="snapback-settings" class="toggle" type="checkbox">
 
+        <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">Snapback Settings</label>
+        <div class="dropdown">
+          <div class="full-width">
 
+            <p>LX</p>
+            <div class="slider">
+              <input type="range" min="0" max="7" value="0" id="lx_snapback"
+                oninput="lx_snapbackText.innerText = this.value" onchange="snapback_set_value(0, this.value)">
+              <p id="lx_snapbackText">0</p>
+            </div>
+            <div class="line"></div>
+
+            <p>LY</p>
+            <div class="slider">
+              <input type="range" min="0" max="7" value="0" id="ly_snapback"
+                oninput="ly_snapbackText.innerText = this.value" onchange="snapback_set_value(1, this.value)">
+              <p id="ly_snapbackText">0</p>
+            </div>
+            <div class="line"></div>
+
+            <p>RX</p>
+            <div class="slider">
+              <input type="range" min="0" max="7" value="0" id="rx_snapback"
+                oninput="rx_snapbackText.innerText = this.value" onchange="snapback_set_value(2, this.value)">
+              <p id="rx_snapbackText">0</p>
+            </div>
+            <div class="line"></div>
+
+            <p>RY</p>
+            <div class="slider">
+              <input type="range" min="0" max="7" value="0" id="ry_snapback"
+                oninput="ry_snapbackText.innerText = this.value" onchange="snapback_set_value(3, this.value)">
+              <p id="ry_snapbackText">0</p>
+            </div>
+            <div class="line"></div>
+
+            <button type="button" id="save_snapback" onclick="saveButton()">Save</button>
 
           </div>
         </div>
@@ -222,11 +266,11 @@
     <a href="https://handheldlegend.github.io/css.html" target="_blank">CSS Attributions</a> | Site by Mitch Cairns | ©
     2023, Hand Held Legend
   </div>
+  <script src="/js/progcc_config/progcc_snapback.js"></script>
   <script src="/js/progcc_config/progcc_config.js"></script>
   <script src="/js/progcc_config/progcc_color.js"></script>
   <script src="https://unpkg.com/external-svg-loader@1.6.8/dist/svg-loader.min.js"></script>
   <script src="https://unpkg.com/@jaames/iro@5.5.2/dist/iro.min.js"></script>
-  <script>updateStickGraph(128, 128, 128, 128);</script>
 
 </body>
 
