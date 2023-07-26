@@ -3,9 +3,18 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/css/progccColor.css">
   <link rel="stylesheet" href="/css/containers.css">
+
+  <!-- Meta Tags required for
+       Progressive Web App -->
+  <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
+  <meta name="theme-color" content="black">
+
+  <!-- Manifest File link -->
+  <link rel="manifest" href="/progcc_config/manifest.json">
 </head>
 
 <body>
@@ -61,76 +70,76 @@
               </div>
 
             </div>
-            
-          
 
+
+
+          </div>
+        </div>
+        <!-- --------------- -->
+
+        <!-- PROCON COLOR SETTINGS -->
+        <div class="collapsible">
+
+          <input id="color-settings" class="toggle" type="checkbox">
+
+          <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">Color Settings</label>
+          <div class="dropdown">
+            <div id="progccColorSvg">
+              <svg class="controller-led" data-src="resources/progcc_config/controller.svg" data-cache="disabled"
+                data-unique-ids="disabled" data-css-scoping="disabled" data-loading="lazy"
+                oniconload="onProgccColorLoad(this)"></svg>
+            </div>
+
+            <div id="progccColorPicker">
+              <div id="colorPicker"></div>
+              <input id="lightHex" type="text" enabled />
+              <div id="progccColorPickerCP">
+                <button id="copyButton" class="small" onclick="colorCopy()">Copy</button>
+                <button id="pasteButton" class="small" onclick="colorPaste()">Paste</button>
+              </div>
+            </div>
+
+            <div class="line"></div>
+
+            <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
+
+
+
+
+          </div>
         </div>
       </div>
-      <!-- --------------- -->
 
-      <!-- PROCON COLOR SETTINGS -->
+      <!-- ANALOG SETTINGS -->
+      <!-- --------------- -->
       <div class="collapsible">
 
-        <input id="color-settings" class="toggle" type="checkbox">
+        <input id="analog_collapsible" class="toggle" type="checkbox">
 
-        <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">Color Settings</label>
+        <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">Analog Calibration</label>
+
         <div class="dropdown">
-          <div id="progccColorSvg">
-            <svg class="controller-led" data-src="resources/progcc_config/controller.svg" data-cache="disabled"
-              data-unique-ids="disabled" data-css-scoping="disabled" data-loading="lazy"
-              oniconload="onProgccColorLoad(this)"></svg>
-          </div>
 
-          <div id="progccColorPicker">
-            <div id="colorPicker"></div>
-            <input id="lightHex" type="text" enabled />
-            <div id="progccColorPickerCP">
-              <button id="copyButton" class="small" onclick="colorCopy()">Copy</button>
-              <button id="pasteButton" class="small" onclick="colorPaste()">Paste</button>
+          <div class="content-inner">
+
+            <h3>Stick Calibration</h3>
+            To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both
+            sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to
+            facilitate proper calibration. Press 'Stop' to cancel calibration.
+            <div class="invisigrid-trio">
+              <button type="button" id="start_calibration_button" onclick="start_analog_calibration()">Start</button>
+              <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()"
+                disabled>Stop</button>
+              <button type="button" id="save_calibration_button" onclick="save_analog_calibration()"
+                disabled>Save</button>
             </div>
           </div>
 
-          <div class="line"></div>
-
-          <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
-
-
-
-
         </div>
       </div>
-    </div>
 
-    <!-- ANALOG SETTINGS -->
-    <!-- --------------- -->
-    <div class="collapsible">
-
-      <input id="analog_collapsible" class="toggle" type="checkbox">
-
-      <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">Analog Calibration</label>
-
-      <div class="dropdown">
-
-        <div class="content-inner">
-
-          <h3>Stick Calibration</h3>
-          To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both
-          sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to
-          facilitate proper calibration. Press 'Stop' to cancel calibration.
-          <div class="invisigrid-trio">
-            <button type="button" id="start_calibration_button" onclick="start_analog_calibration()">Start</button>
-            <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()"
-              disabled>Stop</button>
-            <button type="button" id="save_calibration_button" onclick="save_analog_calibration()"
-              disabled>Save</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- SNAPBACK SETTINGS -->
-    <!-- --------------- 
+      <!-- SNAPBACK SETTINGS -->
+      <!-- --------------- 
     <div class="collapsible">
 
       <input id="snapback-collapsible" class="toggle" type="checkbox">
@@ -162,9 +171,9 @@
       </div>
     </div>-->
 
-    <!-- CONFIG BUTTONS  -->
-    <!-- --------------- -->
-    <!--
+      <!-- CONFIG BUTTONS  -->
+      <!-- --------------- -->
+      <!--
         <div class="invisigrid" style="visibility:hidden">
           <button type="button" id="default_button" onclick="doDefault()" disabled>Reset All</button>
         </div>
@@ -177,8 +186,8 @@
 
     <canvas id="analog_canvas" width="300" height="120"></canvas>-->
 
-    <!-- INPUT TESTER    -->
-    <!-- --------------- 
+      <!-- INPUT TESTER    -->
+      <!-- --------------- 
     <div class="input-container">
       <div class="grid-item">X Axis</div>
       <div class="grid-item" id="x_axis">0</div>
@@ -206,7 +215,7 @@
     </div>-->
 
 
-  </div>
+    </div>
   </div>
   </div>
   <div class="footer">
