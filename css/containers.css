@@ -54,10 +54,6 @@
     transition: transform .2s ease-out;
 }
 
-.collapsible .line {
-    width: 90%;
-}
-
 .collapsible .dropdown {
     background: var(--dropdown-color);
     border-bottom-right-radius: 1rem;
@@ -118,8 +114,19 @@
 }
 
 .collapsible .full-width {
-    width: 98%;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
     height: fit-content;
+}
+
+.collapsible .full-width button {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .collapsible-half-width
@@ -145,10 +152,6 @@
     border-radius: 1rem;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.45);
 }
-
-
-
-
 
 .dropdown p {
     margin-bottom: 0;

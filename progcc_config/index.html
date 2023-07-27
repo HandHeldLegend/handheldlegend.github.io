@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/css/progccColor.css" type="text/css">
+  <link rel="stylesheet" href="/css/progccAnalog.css" type="text/css">
   <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
   <link rel="stylesheet" href="/css/containers.css" type="text/css">
 
@@ -39,12 +40,16 @@
 
     <div class="box">
       <div class="box-inner">
-        <div class="invisigrid">
+        <div class="row">
           <button type="button" id="connect_button" onclick="connectButton()">Connect Device</button>
           <button type="button" id="disconnect_button" onclick="doDeviceDisconnect()" disabled>Disconnect</button>
         </div>
 
-
+        <div class="circle">
+          <div class="inner-stick"></div>
+          <div class="analog-center"></div>
+          <div id="circle-analog-pointer" class="analog-position"></div>
+        </div>
         <div class="message-box" id="ood" disabled="true">
           <h2>Your device is out of date!</h2>
           <a href="https://handheldlegend.github.io/gc_pocket.html" target="_blank">See our firmware page to update.</a>
@@ -94,15 +99,18 @@
             <div id="progccColorPicker">
               <div id="colorPicker"></div>
               <input id="lightHex" type="text" enabled />
-              <div id="progccColorPickerCP">
+              <div class="row">
                 <button id="copyButton" class="small" onclick="colorCopy()">Copy</button>
                 <button id="pasteButton" class="small" onclick="colorPaste()">Paste</button>
               </div>
             </div>
 
-            <div class="line"></div>
+            <div class="full-width">
+              <div class="line"></div>
+              <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
+            </div>
 
-            <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
+
           </div>
         </div>
       </div>
@@ -146,8 +154,6 @@
                 oninput="ry_snapbackText.innerText = this.value" onchange="snapback_set_value(3, this.value)">
               <p id="ry_snapbackText">0</p>
             </div>
-            <div class="line"></div>
-
             <button type="button" id="save_snapback" onclick="saveButton()">Save</button>
 
           </div>
@@ -165,17 +171,66 @@
         <div class="dropdown">
 
           <div class="content-inner">
-
-            <h3>Stick Calibration</h3>
+            <div class="full-width">
+            <p>
             To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both
             sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to
-            facilitate proper calibration. Press 'Stop' to cancel calibration.
-            <div class="invisigrid-trio">
+            facilitate proper calibration. Press 'Stop' to cancel calibration.</p></div>
+            <div class="row">
               <button type="button" id="start_calibration_button" onclick="start_analog_calibration()">Start</button>
               <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()"
                 disabled>Stop</button>
               <button type="button" id="save_calibration_button" onclick="save_analog_calibration()"
                 disabled>Save</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- OCTAGON SETTINGS -->
+      <!-- --------------- -->
+      <div class="collapsible">
+
+        <input id="octagon_collapsible" class="toggle" type="checkbox">
+
+        <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">Octagon Calibration</label>
+
+        <div class="dropdown">
+
+          <div class="content-inner">
+            <div class="full-width">
+            <p>To calibrate your controller for an octagon gate, move your analog stick to one of the octagon corners,
+            then press the button below to update the angle. Press save when you are happy with the results.</p>
+
+            <div class="line"></div></div>
+
+            <div class="collapsible-row-double">
+
+              <div class="collapsible-column">
+                <input id="octagon-angle-text-l" type="text" disabled />
+                <div class="octagon">
+                  <div class="inner-stick"></div>
+                  <div class="analog-center"></div>
+                  <div id="octo-analog-pointer-l" class="analog-position"></div>
+                </div>
+              </div>
+
+              <div class="collapsible-column">
+                <input id="octagon-angle-text-r" type="text" disabled />
+                <div class="octagon">
+                  <div class="inner-stick"></div>
+                  <div class="analog-center"></div>
+                  <div id="octo-analog-pointer-r" class="analog-position"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="row">
+              <button type="button" id="update_octagon_button" onclick="start_analog_calibration()">Update</button>
+              <button type="button" id="save_octagon_button" onclick="save_analog_calibration()" disabled>Save</button>
             </div>
           </div>
 
@@ -267,6 +322,7 @@
     2023, Hand Held Legend
   </div>
   <script src="/js/progcc_config/progcc_snapback.js"></script>
+  <script src="/js/progcc_config/progcc_input.js"></script>
   <script src="/js/progcc_config/progcc_config.js"></script>
   <script src="/js/progcc_config/progcc_color.js"></script>
   <script src="https://unpkg.com/external-svg-loader@1.6.8/dist/svg-loader.min.js"></script>

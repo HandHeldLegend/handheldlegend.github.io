@@ -1,0 +1,62 @@
+@import url('root.css');
+
+:root {
+  --asize: 12rem;
+}
+
+.octagon {
+  margin-top: var(--margin-small);
+  margin-bottom: var(--margin-small);
+  position: relative;
+  background: rgba(255, 0, 0, 0.425);
+  width: var(--asize);
+  height: var(--asize);
+  margin-left: auto;
+  margin-right: auto;
+  clip-path: polygon(50% 0%, 85.35534% 14.64466%, 100% 50%, 85.35534% 85.35534%, 50% 100%, 14.64466% 85.35534%, 0% 50%, 14.64466% 14.64466%);
+  -webkit-clip-path: polygon(50% 0%, 85.35534% 14.64466%, 100% 50%, 85.35534% 85.35534%, 50% 100%, 14.64466% 85.35534%, 0% 50%, 14.64466% 14.64466%);
+}
+
+.inner-stick {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.473);
+  width: 95%;
+  height: 95%;
+  left: 2.5%;
+  top: 2.5%;
+  -webkit-clip-path: inherit;
+  clip-path: inherit;
+}
+
+.circle {
+
+  position: relative;
+  background: rgba(255, 0, 0, 0.425);
+  width: var(--asize);
+  height: var(--asize);
+
+  clip-path: circle(50% at 50% 50%);
+  -webkit-clip-path: circle(50% at 50% 50%);
+}
+
+.analog-position {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.829);
+  transform: translate(-50%, -50%);
+}
+
+.analog-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 50%;
+  background: rgba(108, 118, 255, 0.822);
+  transform: translate(-50%, -50%);
+}

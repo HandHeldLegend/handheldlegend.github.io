@@ -76,6 +76,17 @@ body {
     -webkit-backdrop-filter: blur(var(--blur-amt));
     background-color: var(--transparent-bg);
     transition: all 0.25s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 @media (max-width: 850px) {
@@ -197,8 +208,8 @@ and (max-width: 850px) {
 }
 
 p {
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
     text-align: center;
     color: rgb(0, 0, 0);
     font-size: 1.25rem;
@@ -211,6 +222,22 @@ fieldset {
     padding: 1rem;
 }
 
+input[type="text"] {
+    font: inherit;
+    text-align: center;
+    text-anchor: middle;
+    text-justify: auto;
+    max-width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 2rem;
+    background: #8bff95ad;
+    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+    border-radius: 2rem;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+}
+
 
 button {
     font-family: inherit;
@@ -218,10 +245,11 @@ button {
     font-size: 1.5rem;
     text-align: center;
     padding: 0.3rem;
-    width:auto;
+    width: fit-content;
     margin-top: var(--margin-small);
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: var(--margin-small);
+    margin-left: var(--margin-small);
+    margin-right: var(--margin-small);
     color: rgba(0, 0, 0, 0.596);
     background: #00b7ffd5;
     cursor: pointer;
@@ -229,10 +257,6 @@ button {
     transition: all 0.25s ease-out;
     border-color: #ffffff00;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
-}
-
-.controller-color-picker-container{
-    width: inherit;
 }
 
 
@@ -252,14 +276,15 @@ button.small {
 /* end dropdown styling */
 
 .line {
-    width: 60%;
+    width: 50%;
     height: 0;
     border: 2px solid #44444470;
     fill: #333333;
     border-radius: 1rem;
-    margin-left: inherit;
-    margin-right: inherit;
-    margin: 0.35rem;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
     display: inline-block;
 }
 

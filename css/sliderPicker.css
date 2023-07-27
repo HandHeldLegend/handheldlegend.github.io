@@ -1,25 +1,30 @@
+@import url('root.css');
+
 .slider {
-    position: relative;
-    top: 50%;
-    left: 50%;
-    margin-top: 1.35rem;
-    transform: translate(-50%,-50%);
-    width: 20rem;
-    height: 0.35rem;
+    position:initial;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+    width: 75%;
+    height: 0.34rem;
     padding: 1rem;
-    padding-left: 0.35rem;
     background: #8bff95ad;
-    border-radius: 20px;
+    border-radius: 1rem;
     display: flex;
     align-items: center;
     box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
     transition: all 0.25s ease-out;
 }
 
+.slider input[type="range"] {
+    display: flex;
+}
+
 @media(max-width: 850px) {
 
     .slider {
-        width: 90%;
+        width: 80%;
     }
 }
 

@@ -5,6 +5,8 @@ const WEBUSB_CMD_SNAPBACK       = 0x02;
 const WEBUSB_CMD_SNAPBACK_GET   = 0xA2;
 const WEBUSB_CMD_SAVEALL        = 0xF1;
 
+
+
 async function sendReport(reportID, data)
 {
   var dataOut1 = [reportID];
@@ -30,14 +32,30 @@ const listen = async () => {
   };
 
 async function connectButton() {
-    // Request permission to access the ProGCC
-    device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
-    await device.open();
-    await device.selectConfiguration(1);
-    await device.claimInterface(1);
-    // Get data
-    listen();
-    await snapback_get_values();
+
+    var devices = await navigator.usb.getDevices({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
+    
+    if(devices[0])
+    {
+        console.log("Already got device.");
+        device = devices[0];
+    }
+    else
+    {
+        console.log("Need device permission or not found.");
+        // Request permission to access the ProGCC
+        device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
+    }
+
+    if (device != null)
+    {
+        await device.open();
+        await device.selectConfiguration(1);
+        await device.claimInterface(1);
+        // Get data
+        listen();
+        await snapback_get_values();
+    }
 }
 
 async function saveButton() {

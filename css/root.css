@@ -1,5 +1,5 @@
 :root {
-  --margin-small: 0.15rem;
+  --margin-small: 0.25rem;
   --margin-normal: 1rem;
   --transparent-bg: hsla(0, 0%, 100%, 0.555);
   --blur-amt: 10px;
