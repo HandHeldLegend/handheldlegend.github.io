@@ -34,7 +34,10 @@
   background: rgba(255, 0, 0, 0.425);
   width: var(--asize);
   height: var(--asize);
-
+  margin-top: var(--margin-small);
+  margin-bottom: var(--margin-small);
+  margin-left: auto;
+  margin-right: auto;
   clip-path: circle(50% at 50% 50%);
   -webkit-clip-path: circle(50% at 50% 50%);
 }

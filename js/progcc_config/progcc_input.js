@@ -1,6 +1,7 @@
 var gp;
 
-let circle_stick_center = document.getElementById('circle-analog-pointer').style;
+let circle_stick_center_l = document.getElementById('circle-analog-pointer-l').style;
+let circle_stick_center_r = document.getElementById('circle-analog-pointer-r').style;
 
 let octo_stick_center_l = document.getElementById('octo-analog-pointer-l').style;
 let octo_angle_l = document.getElementById('octagon-angle-text-l');
@@ -78,7 +79,8 @@ function poll()
 
         var lnp = op + 'translate(' + lx.toString() + 'rem,' + ly.toString() + 'rem)';
         var rnp = op + 'translate(' + rx.toString() + 'rem,' + ry.toString() + 'rem)';
-        circle_stick_center.transform = lnp;
+        circle_stick_center_l.transform = lnp;
+        circle_stick_center_r.transform = rnp;
 
         octo_stick_center_l.transform = lnp;
         octo_angle_l.value = la.toString();

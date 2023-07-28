@@ -1,60 +1,91 @@
 let device = null;
+let connectButtonElement = document.getElementById("connectButton");
+let disconnectButtonElement = document.getElementById("disconnectButton");
 
-const WEBUSB_CMD_RGB_SET            = 0x01;
-const WEBUSB_CMD_RGB_GET            = 0xA1;
+let menuToggles = document.getElementsByClassName("toggle");
+let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
+let selectedToggle = null;
 
-const WEBUSB_CMD_SNAPBACK_SET       = 0x02;
-const WEBUSB_CMD_SNAPBACK_GET       = 0xA2;
+const WEBUSB_CMD_RGB_SET = 0x01;
+const WEBUSB_CMD_RGB_GET = 0xA1;
 
-const WEBUSB_CMD_SAVEALL        = 0xF1;
+const WEBUSB_CMD_SNAPBACK_SET = 0x02;
+const WEBUSB_CMD_SNAPBACK_GET = 0xA2;
 
-async function sendReport(reportID, data)
-{
-  var dataOut1 = [reportID];
-  var dataOut = new Uint8Array(dataOut1.concat(data));
+const WEBUSB_CMD_CALIBRATION_START = 0x03;
+const WEBUSB_CMD_CALIBRATION_STOP = 0xA3;
 
-  await device.transferOut(2, dataOut);
+const WEBUSB_CMD_OCTAGON_SET = 0x04;
+
+const WEBUSB_CMD_SAVEALL = 0xF1;
+
+enableMenus(false);
+
+async function sendReport(reportID, data) {
+    var dataOut1 = [reportID];
+    var dataOut = new Uint8Array(dataOut1.concat(data));
+
+    await device.transferOut(2, dataOut);
 }
 
 const listen = async () => {
-    const result = await device.transferIn(2, 64);
-    switch(result.data.getUint8(0))
-    {
-        case WEBUSB_CMD_SNAPBACK_GET:
-            snapback_place_values(result.data);
-            break;
+    if (device != null) {
+        const result = await device.transferIn(2, 64);
+        switch (result.data.getUint8(0)) {
+            case WEBUSB_CMD_SNAPBACK_GET:
+                snapback_place_values(result.data);
+                break;
 
-        case WEBUSB_CMD_SAVEALL:
-            console.log("Got Settings Saved OK.");
-            window.alert("Saved Settings.");
-            break;
+            case WEBUSB_CMD_SAVEALL:
+                console.log("Got Settings Saved OK.");
+                window.alert("Saved Settings.");
+                break;
 
-        case WEBUSB_CMD_RGB_GET:
-            console.log("Got RGB Values.");
-            color_place_values(result.data);
-            break;
+            case WEBUSB_CMD_RGB_GET:
+                console.log("Got RGB Values.");
+                color_place_values(result.data);
+                break;
+        }
+        listen();
     }
-    listen();
-  };
+};
+
+// Set connect and disconnect listeners
+navigator.usb.addEventListener("connect", (event) => {
+    console.log("Device plugged.");
+
+});
+
+navigator.usb.addEventListener("disconnect", (event) => {
+    console.log("Device unplugged.");
+    if (event.device == device) {
+        device = null;
+        enableMenus(false);
+    }
+});
+
+async function disconnectButton() {
+    if (device != null) {
+        await device.close();
+    }
+    enableMenus(false);
+}
 
 async function connectButton() {
 
     var devices = await navigator.usb.getDevices({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
-    
-    if(devices[0])
-    {
+
+    if (devices[0]) {
         console.log("Already got device.");
         device = devices[0];
     }
-    else
-    {
+    else {
         console.log("Need device permission or not found.");
         // Request permission to access the ProGCC
         device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
     }
 
-    if (device != null)
-    {
+    if (device != null) {
         await device.open();
         await device.selectConfiguration(1);
         await device.claimInterface(1);
@@ -62,6 +93,7 @@ async function connectButton() {
         listen();
         await snapback_get_values();
         await color_get_values();
+        enableMenus(true);
     }
 }
 
@@ -70,47 +102,50 @@ async function saveButton() {
     await device.transferOut(2, dataOut);
 }
 
-function rgbToHex(r, g, b) {
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-function hexToRgb(hex) {
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
-
-async function set_rgb_color(ledGroup, hexColor) {
-
-    var rgb = hexToRgb(hexColor);
-
-    if (device != null) {
-        await sendReport(WEBUSB_CMD_RGB_SET, [ledGroup, rgb.r, rgb.g, rgb.b]);
-    }
-    else
+function setActiveMenu(id) {
+    if (id == selectedToggle)
     {
-        console.log("Connect ProGCC first.");
+        return;
     }
+    if (selectedToggle != null)
+    {
+        document.getElementById(selectedToggle).checked = false;
+    }
+    selectedToggle = id;
 }
 
+function enableMenus(enable) {
+    if (enable) {
+        Array.from(menuToggles).forEach(element => {
+            element.removeAttribute('disabled');
+            element.setAttribute('onclick', "setActiveMenu(this.id)");
+        });
 
-// Analog stick calibration
-function start_analog_calibration() {
+        Array.from(menuToggleLabels).forEach(element => {
+            element.removeAttribute('disabled');
+        });
 
-}
+        // Disable connect button
+        connectButtonElement.setAttribute('disabled', 'true');
 
-function stop_analog_calibration() {
+        // Enable disconnect button
+        disconnectButtonElement.removeAttribute('disabled');
 
-}
+    }
+    else {
+        Array.from(menuToggles).forEach(element => {
+            element.setAttribute('disabled', 'true');
+            element.checked = false;
+        });
 
-function save_analog_calibration() {
+        Array.from(menuToggleLabels).forEach(element => {
+            element.setAttribute('disabled', 'true');
+        });
 
-}
+        // Disable disconnect button
+        disconnectButtonElement.setAttribute('disabled', 'true');
 
-// Snapback viewer functions
-function get_snapback_axis(axis) {
-
+        // Enable connect button
+        connectButtonElement.removeAttribute('disabled');
+    }
 }
