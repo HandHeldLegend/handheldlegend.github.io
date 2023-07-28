@@ -32,6 +32,6 @@ async function snapback_get_values()
 
 async function snapback_set_value(axis, value)
 {
-    var dataOut = new Uint8Array([WEBUSB_CMD_SNAPBACK, axis, value]);
+    var dataOut = new Uint8Array([WEBUSB_CMD_SNAPBACK_SET, axis, value]);
     await device.transferOut(2, dataOut);
 }

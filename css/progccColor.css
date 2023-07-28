@@ -16,18 +16,9 @@
     margin-left: auto;
     margin-right: auto;
     width: 35%;
-    flex-wrap: nowrap;
     flex-direction: column;
     transition: all .25s ease-in-out;
     min-height: 10rem;
-}
-
-#progccColorPickerCP {
-    display: flex;
-    margin: 0.1rem;
-    height: fit-content;
-    max-width: 95%;
-    flex-direction: row;
 }
 
 #lightConfig {
@@ -96,14 +87,13 @@
 }
 
 #colorPicker {
-    width: inherit;
+    width: 100%;
     opacity: 1;
     cursor: pointer;
     transition: opacity 0.25s ease-out;
 }
 
 #colorPicker:not(.enabled) {
-    width: inherit;
     pointer-events: none;
     opacity: 0.5;
     transition: opacity 0.25s ease-out;
