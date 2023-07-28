@@ -13,7 +13,72 @@ const RGB_GROUP_X = 8;
 const RGB_GROUP_A = 9;
 const RGB_GROUP_B = 10;
 
-async function onColorFinished(id, hexColor) {
+var currentColor = "#FFFFFF";
+let activeButtonId = null;
+
+let colorPickerElement = document.getElementById('colorPicker');
+let colorPicker = null;
+
+let hexBoxElement = document.getElementById('colorHexBox');
+
+
+function color_page_init() {
+    var els = document.querySelectorAll('.svgButtonClickable');
+
+    els.forEach(function (element) {
+        element.addEventListener('click', function () {
+            color_button_clicked(element.id);
+        });
+    });
+
+    colorPicker = new iro.ColorPicker('#colorPicker', {
+        width: 200,
+        layout: [
+            {
+                component: iro.ui.Box,
+                options: {}
+            },
+            {
+                component: iro.ui.Slider,
+                options: {
+                    sliderType: 'hue'
+                }
+
+            }
+        ]
+    });
+
+    colorPicker.on('input:end', (color) => {
+        color_picker_changed(color.hexString);
+    });
+
+    colorPicker.on('color:change', (color) => {
+        svg_set_hex(activeButtonId, color.hexString);
+        hexbox_set_hex(color.hexString);
+    });
+
+}
+
+function hexbox_set_hex(hex)
+{
+    hexBoxElement.value = hex;
+}
+
+function svg_set_rgb(id, r, g, b)
+{
+    var hexString = "#" + rgbToHex(r, g, b);
+    console.log(hexString);
+    var el = document.getElementById(id);
+    el.style.fill = hexString;
+}
+
+function svg_set_hex(id, hex)
+{
+    var el = document.getElementById(id);
+    el.style.fill = hex;
+}
+
+async function color_set_value(id, hexColor) {
     var group = 0;
 
     switch (id) {
@@ -68,6 +133,8 @@ async function onColorFinished(id, hexColor) {
 
     if (group > -1)
     {
+        // Set SVG Element Color
+        svg_set_hex(activeButtonId, hexColor);
         await set_rgb_color(group, hexColor);
     }
     else
@@ -76,12 +143,6 @@ async function onColorFinished(id, hexColor) {
     }
 
 }
-
-var currentColor = "#FFFFFF";
-let activeButtonId = null;
-let colorPickerEl = null;
-let hexBoxEl = null;
-let colorPicker = null;
 
 function colorCopy() {
     currentColor = colorPicker.color.hexString;
@@ -92,20 +153,20 @@ function colorPaste() {
     colorPicker.color.hexString = currentColor;
 }
 
-function colorSelectButton(id) {
+function rgbToHex(r, g, b) {
+    return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
+
+function color_button_clicked(id) {
     console.log("Button picked: " + id);
-
-    if (activeButtonId == null) {
-        colorPickerEl.classList.add('enabled');
-    }
-
-    if (activeButtonId != null) {
-        document.getElementById(activeButtonId).classList.remove('active');
-    }
 
     activeButtonId = id;
     var buttonEl = document.getElementById(id);
     buttonEl.classList.add('active');
+
+    colorPickerElement.classList.add('enabled');
+    hexBoxElement.removeAttribute('disabled');
+
 
     if (buttonEl.style.fill != "") {
         var c = buttonEl.style.fill;
@@ -117,48 +178,83 @@ function colorSelectButton(id) {
     }
 }
 
-function onProgccColorLoad(element) {
-    colorPickerEl = document.getElementById('colorPicker');
+// This updates controller RGB
+function color_picker_changed(value)
+{
+    console.log("Color picker changed: " + value);
+    hexBoxElement.value = value;
 
-    var els = document.querySelectorAll('.svgButtonClickable');
+    // Update RGB
+    color_set_value(activeButtonId, value);
+}
 
-    els.forEach(function (element) {
-        element.addEventListener('click', function () {
-            colorSelectButton(element.id);
-        });
-    });
+// This updates controller RGB
+function color_hexbox_changed(value)
+{
+    console.log("Color hexbox changed: " + value);
+    let hexRegex = /^[0-9A-Fa-f]{0,6}$/g;
+    // Remove '#' if it's there
+    if (value[0] === '#') {
+        value = value.substr(1);
+    }
 
-    hexBoxEl = document.getElementById('lightHex');
-    hexBoxEl.value = "#ffffff";
+    // Check if it's a valid hex color
+    if (!hexRegex.test(value)) {
+        alert("Invalid character, enter a valid hexadecimal color code");
+        return;
+    }
 
-    colorPicker = new iro.ColorPicker('#colorPicker', {
-        width: 200,
-        layout: [
-            {
-                component: iro.ui.Box,
-                options: {}
-            },
-            {
-                component: iro.ui.Slider,
-                options: {
-                    sliderType: 'hue'
-                }
+    // Add leading zeroes if the length is less than 6
+    while (value.length < 6) {
+        value = '0' + value;
+    }
 
-            }
-        ]
-    });
+    // Add '#' at the beginning
+    value = '#' + value;
 
-    colorPicker.on('color:change', (color) => {
-        if (activeButtonId != null) {
-            document.getElementById(activeButtonId).style.fill = color.rgbaString;
-            hexBoxEl.value = color.hexString;
-        }
+    // Append value back to source
+    hexBoxElement.value = value;
 
-    });
+    // Apply color to color picker
+    colorPicker.color.hexString = value;
 
-    colorPicker.on('input:end', (color) => {
-        console.log("Color set: " + color.hexString);
-        onColorFinished(activeButtonId, color.hexString).then(null);
-    });
+    // Apply color to SVG
+    svg_set_hex(activeButtonId, value);
 
+    // Update RGB
+    color_set_value(activeButtonId, value);
+}
+
+async function color_get_values()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_RGB_GET]);
+    await device.transferOut(2, dataOut);
+}
+
+function color_place_values(data)
+{
+    console.log(data);
+    var d = new Uint8Array(data.buffer);
+    var i = 1;
+    svg_set_rgb("rightStick", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("leftStick", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("dpad", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("minusButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("captureButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("homeButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("plusButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("yButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("xButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("aButton", d[i], d[i+1], d[i+2]);
+    i=i+3;
+    svg_set_rgb("bButton", d[i], d[i+1], d[i+2]);
 }

@@ -92,13 +92,13 @@
           <div class="dropdown">
             <div id="progccColorSvg">
               <svg class="controller-led" data-src="/resources/progcc_config/controller.svg" data-cache="disabled"
-                data-unique-ids="disabled" data-css-scoping="disabled" data-loading="lazy"
-                oniconload="onProgccColorLoad(this)"></svg>
+                data-unique-ids="disabled" data-css-scoping="disabled"
+                oniconload="color_page_init()"></svg>
             </div>
 
             <div id="progccColorPicker">
               <div id="colorPicker"></div>
-              <input id="lightHex" type="text" enabled />
+              <input id="colorHexBox" disabled type="text" value="#FFFFFF" onchange="color_hexbox_changed(this.value)" />
               <div class="row">
                 <button id="copyButton" class="small" onclick="colorCopy()">Copy</button>
                 <button id="pasteButton" class="small" onclick="colorPaste()">Paste</button>
@@ -107,7 +107,7 @@
 
             <div class="full-width">
               <div class="line"></div>
-              <button type="button" id="save_color_button" onclick="save_procon_color()">Save Colors</button>
+              <button type="button" id="save_color_button" onclick="saveButton()">Save</button>
             </div>
 
 

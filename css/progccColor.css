@@ -87,14 +87,13 @@
 }
 
 #colorPicker {
-    width: inherit;
+    width: 100%;
     opacity: 1;
     cursor: pointer;
     transition: opacity 0.25s ease-out;
 }
 
 #colorPicker:not(.enabled) {
-    width: inherit;
     pointer-events: none;
     opacity: 0.5;
     transition: opacity 0.25s ease-out;

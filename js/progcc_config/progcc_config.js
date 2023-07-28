@@ -1,11 +1,12 @@
 let device = null;
 
-const WEBUSB_CMD_RGB            = 0x01;
-const WEBUSB_CMD_SNAPBACK       = 0x02;
-const WEBUSB_CMD_SNAPBACK_GET   = 0xA2;
+const WEBUSB_CMD_RGB_SET            = 0x01;
+const WEBUSB_CMD_RGB_GET            = 0xA1;
+
+const WEBUSB_CMD_SNAPBACK_SET       = 0x02;
+const WEBUSB_CMD_SNAPBACK_GET       = 0xA2;
+
 const WEBUSB_CMD_SAVEALL        = 0xF1;
-
-
 
 async function sendReport(reportID, data)
 {
@@ -26,6 +27,11 @@ const listen = async () => {
         case WEBUSB_CMD_SAVEALL:
             console.log("Got Settings Saved OK.");
             window.alert("Saved Settings.");
+            break;
+
+        case WEBUSB_CMD_RGB_GET:
+            console.log("Got RGB Values.");
+            color_place_values(result.data);
             break;
     }
     listen();
@@ -55,6 +61,7 @@ async function connectButton() {
         // Get data
         listen();
         await snapback_get_values();
+        await color_get_values();
     }
 }
 
@@ -81,7 +88,7 @@ async function set_rgb_color(ledGroup, hexColor) {
     var rgb = hexToRgb(hexColor);
 
     if (device != null) {
-        await sendReport(WEBUSB_CMD_RGB, [ledGroup, rgb.r, rgb.g, rgb.b]);
+        await sendReport(WEBUSB_CMD_RGB_SET, [ledGroup, rgb.r, rgb.g, rgb.b]);
     }
     else
     {
