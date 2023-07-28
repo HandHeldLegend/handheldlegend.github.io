@@ -5,6 +5,7 @@
     margin-right: auto;
     background: repeating-linear-gradient(-20deg, rgb(255, 103, 103), rgb(255, 137, 172), rgb(207, 87, 255));
     background-blend-mode: lighten;
+    transition: all 0.25s ease-out;
 }
 
 #installButton:disabled {
@@ -14,4 +15,5 @@
     margin-right: auto;
     background: repeating-linear-gradient(-20deg, rgb(255, 103, 103), rgb(255, 137, 172), rgb(207, 87, 255));
     background-blend-mode: lighten;
+    transition: all 0.25s ease-out;
 }

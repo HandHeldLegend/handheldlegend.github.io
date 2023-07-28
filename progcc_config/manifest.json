@@ -1,7 +1,7 @@
 {
   "name": "ProGCC Config Tool",
   "short_name": "ProGCC",
-  "start_url": "index.html",
+  "start_url": "/progcc_config/index.html",
   "display": "standalone",
   "background_color": "#22172b",
   "theme_color": "black",

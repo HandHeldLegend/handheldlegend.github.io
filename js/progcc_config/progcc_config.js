@@ -24,7 +24,6 @@ enableMenus(false);
 /** This code works only on properly formatted PWAs **/
 var beforeInstallPrompt = null;
 
-
 window.addEventListener("beforeinstallprompt", eventHandler, errorHandler);
 
 function eventHandler(event) {
