@@ -21,6 +21,31 @@ const WEBUSB_CMD_SAVEALL = 0xF1;
 
 enableMenus(false);
 
+/** This code works only on properly formatted PWAs **/
+var beforeInstallPrompt = null;
+
+
+window.addEventListener("beforeinstallprompt", eventHandler, errorHandler);
+
+function eventHandler(event) {
+  beforeInstallPrompt = event;
+  document.getElementById("installButton").removeAttribute("disabled");
+}
+
+function errorHandler(event) {
+  console.log("error: " + event);
+}
+
+function installButton() {
+  if (beforeInstallPrompt) {
+    beforeInstallPrompt.prompt();
+  }
+  else
+  {
+    console.log("Already installed.");
+  }
+}
+
 async function sendReport(reportID, data) {
     var dataOut1 = [reportID];
     var dataOut = new Uint8Array(dataOut1.concat(data));
