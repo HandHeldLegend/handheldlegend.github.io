@@ -110,14 +110,24 @@ async function connectButton() {
     }
 
     if (device != null) {
-        await device.open();
-        await device.selectConfiguration(1);
-        await device.claimInterface(1);
-        // Get data
-        listen();
-        await snapback_get_values();
-        await color_get_values();
-        enableMenus(true);
+
+        try {
+            await device.open();
+            await device.selectConfiguration(1);
+            await device.claimInterface(1);
+            // Get data
+            listen();
+            await snapback_get_values();
+            await color_get_values();
+            enableMenus(true);
+        }
+        catch(error)
+        {
+            window.alert("Please connect a valid ProGCC device.");
+        }
+        
+
+        
     }
 }
 
