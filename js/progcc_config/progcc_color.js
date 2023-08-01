@@ -84,7 +84,6 @@ function hexbox_set_hex(hex) {
 
 function svg_set_rgb(id, r, g, b) {
     var hexString = "#" + rgbToHex(r, g, b);
-    console.log(hexString);
     var el = document.getElementById(id);
     el.style.fill = hexString;
 }
@@ -248,7 +247,6 @@ async function color_get_values() {
 }
 
 function color_place_values(data) {
-    console.log(data);
     var d = new Uint8Array(data.buffer);
     var i = 1;
     svg_set_rgb("rightStick", d[i], d[i + 1], d[i + 2]);

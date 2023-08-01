@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/css/progccConfig.css" type="text/css">
   <link rel="stylesheet" href="/css/progccColor.css" type="text/css">
   <link rel="stylesheet" href="/css/progccAnalog.css" type="text/css">
+  <link rel="stylesheet" href="/css/progccRemap.css" type="text/css">
   <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
   <link rel="stylesheet" href="/css/containers.css" type="text/css">
 
@@ -75,8 +76,6 @@
 
             </div>
 
-
-
           </div>
         </div>
         <!-- --------------- -->
@@ -89,8 +88,8 @@
           <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">Color Settings</label>
           <div class="dropdown">
             <div id="progccColorSvg">
-              <svg class="controller-led" data-src="svg/controller.svg" data-cache="disabled"
-                data-unique-ids="disabled" data-css-scoping="disabled" oniconload="color_page_init()"></svg>
+              <svg class="controller-led" data-src="svg/controller.svg" data-cache="disabled" data-unique-ids="disabled"
+                data-css-scoping="disabled" oniconload="color_page_init()"></svg>
             </div>
 
             <div id="progccColorPicker">
@@ -172,8 +171,9 @@
             <div class="full-width">
               <p>
                 To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both
-                sticks fully 4-5 times. The 'Save' button will become enabled when enough data has been captured to
-                facilitate proper calibration. Press 'Stop' to cancel calibration.</p>
+                sticks fully 4-5 times. The controller LEDs will turn blue when enough data has been captured to
+                facilitate proper calibration. Press 'Stop' to complete calibration. If you are satisfied with the
+                results, press 'Save'.</p>
             </div>
 
             <div class="line"></div>
@@ -197,11 +197,10 @@
               <div class="line"></div>
             </div>
             <div class="row">
-              <button type="button" id="start_calibration_button" onclick="start_analog_calibration()" disabled>Start</button>
-              <button type="button" id="stop_calibration_button" onclick="stop_analog_calibration()"
+              <button type="button" id="start_calibration_button" onclick="analog_start_calibration()">Start</button>
+              <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
                 disabled>Stop</button>
-              <button type="button" id="save_calibration_button" onclick="save_analog_calibration()"
-                disabled>Save</button>
+              <button type="button" id="save_calibration_button" onclick="saveButton()" disabled>Save</button>
             </div>
           </div>
 
@@ -258,57 +257,150 @@
         </div>
       </div>
 
-      <!-- CONFIG BUTTONS  -->
+      <!-- REMAPPING -->
       <!-- --------------- -->
-      <!--
-        <div class="invisigrid" style="visibility:hidden">
-          <button type="button" id="default_button" onclick="doDefault()" disabled>Reset All</button>
+      <div class="collapsible">
+
+        <input id="remapping" class="toggle" type="checkbox">
+
+        <label for="remapping" id="remapping-toggle" , class="lbl-toggle">Remapping</label>
+        <div class="dropdown">
+            <div class="full-width">
+              <p>To remap a button, click one of the blue squares. Next, press the desired button on your ProGCC.</p>
+              <p>The real button in green is then mapped to the button in blue.</p>
+              <div class="line"></div>
+            </div>
+            <div class="remap-row">
+              <!-- A -->
+              <button type="button" class="button-map-init" id="bi_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
+              <button type="button" class="button-map-view" id="bm_a">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- B -->
+              <button type="button" class="button-map-init" id="bi_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
+              <button type="button" class="button-map-view" id="bm_b">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- X -->
+              <button type="button" class="button-map-init" id="bi_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
+              <button type="button" class="button-map-view" id="bm_x">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Y -->
+              <button type="button" class="button-map-init" id="bi_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
+              <button type="button" class="button-map-view" id="bm_y">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Up -->
+              <button type="button" class="button-map-init" id="bi_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
+              <button type="button" class="button-map-view" id="bm_dup">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Down -->
+              <button type="button" class="button-map-init" id="bi_ddown" onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
+              <button type="button" class="button-map-view" id="bm_ddown">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Left -->
+              <button type="button" class="button-map-init" id="bi_dleft" onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
+              <button type="button" class="button-map-view" id="bm_dleft">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Right -->
+              <button type="button" class="button-map-init" id="bi_dright" onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
+              <button type="button" class="button-map-view" id="bm_dright">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Plus -->
+              <button type="button" class="button-map-init" id="bi_plus"
+                onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
+              <button type="button" class="button-map-view" id="bm_plus">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Minus -->
+              <button type="button" class="button-map-init" id="bi_minus"
+                onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
+              <button type="button" class="button-map-view" id="bm_minus">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- L -->
+              <button type="button" class="button-map-init" id="bi_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
+              <button type="button" class="button-map-view" id="bm_l">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- ZL -->
+              <button type="button" class="button-map-init" id="bi_zl"
+                onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
+              <button type="button" class="button-map-view" id="bm_zl">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- R -->
+              <button type="button" class="button-map-init" id="bi_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
+              <button type="button" class="button-map-view" id="bm_r">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- ZR -->
+              <button type="button" class="button-map-init" id="bi_zr"
+                onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
+              <button type="button" class="button-map-view" id="bm_zr">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Stick L -->
+              <button type="button" class="button-map-init" id="bi_stickl"
+                onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
+              <button type="button" class="button-map-view" id="bm_stickl">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Stick R -->
+              <button type="button" class="button-map-init" id="bi_stickr"
+                onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
+              <button type="button" class="button-map-view" id="bm_stickr">...</button>
+            </div>
+
+            <div class="full-width">
+              <div class="line"></div>
+              <div class="row">
+                <button type="button" id="reset_remap_button" onclick="remap_set_default()">Reset</button>
+                <button type="button" id="save_remap_button" onclick="saveButton()">Save</button>
+              </div>
+            </div>
+
         </div>
-    <br>
-    <button type="button" id="save_button" onclick="doSave()" disabled>Save All</button>
 
-    <div class="line"></div>
-
-    <br>
-
-    <canvas id="analog_canvas" width="300" height="120"></canvas>-->
-
-      <!-- INPUT TESTER    -->
-      <!-- --------------- 
-    <div class="input-container">
-      <div class="grid-item">X Axis</div>
-      <div class="grid-item" id="x_axis">0</div>
-
-      <div class="grid-item">Y Axis</div>
-      <div class="grid-item" id="y_axis">0</div>
-
-      <div class="grid-item">CX Axis</div>
-      <div class="grid-item" id="cx_axis">0</div>
-
-      <div class="grid-item">CY Axis</div>
-      <div class="grid-item" id="cy_axis">0</div>
-
-      <div class="grid-item">Trigger L</div>
-      <div class="grid-item" id="tl_axis">0</div>
-
-      <div class="grid-item">L Button</div>
-      <div class="grid-item" id="tl_button">0</div>
-
-      <div class="grid-item">Trigger R</div>
-      <div class="grid-item" id="tr_axis">0</div>
-
-      <div class="grid-item">R Button</div>
-      <div class="grid-item" id="tr_button">0</div>
-    </div>-->
+        
 
 
+
+      </div>
     </div>
+    <!-- --------------- -->
+
+
+
+  </div>
   </div>
   </div>
   <div class="footer">
-    <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch Cairns | ©
+    <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
+    Cairns | ©
     2023, Hand Held Legend
   </div>
+  <script src="/js/progcc_config/progcc_remap.js"></script>
   <script src="/js/progcc_config/progcc_snapback.js"></script>
   <script src="/js/progcc_config/progcc_analog.js"></script>
   <script src="/js/progcc_config/progcc_input.js"></script>

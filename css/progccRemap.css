@@ -1,0 +1,113 @@
+@import url('root.css');
+
+.remap-row {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);;
+    padding: 0.25rem;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: #e9e9e95b;
+    border-radius: 0.3rem;
+    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+}
+
+@media(max-width: 850px) {
+    .remap-row {
+        width: 33.5%;
+    }   
+}
+
+.remap-row .button-map-init {
+    font-family: inherit;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.3rem;
+    height: 3rem;
+    width: 3rem;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+    margin-left: var(--margin-small);
+    margin-right: var(--margin-small);
+    color: rgba(0, 0, 0, 0.596);
+    background: #ff85ffd5;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.25s ease-out;
+    border-color: #ffffff00;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+}
+
+@media (hover: hover) {
+    .remap-row .button-map-init:enabled:hover {
+        transform: translateY(-0.2rem);
+    }
+}
+
+
+
+.remap-row .button-map-init:disabled {
+    font-family: inherit;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.3rem;
+    height: 3rem;
+    width: 3rem;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+    margin-left: var(--margin-small);
+    margin-right: var(--margin-small);
+    color: rgba(0, 0, 0, 0.596);
+    background: #818181d5;
+    cursor: default;
+    transition: all 0.25s ease-out;
+    border-color: #ffffff00;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+}
+
+.remap-row .button-map-view:enabled {
+    height: 3rem;
+    width: 3rem;
+    font-family: inherit;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.3rem;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+    margin-left: var(--margin-small);
+    margin-right: var(--margin-small);
+    color: rgba(0, 0, 0, 0.596);
+    background: #76ffa4d5;
+    cursor: default;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease-out;
+    border-color: #ffffff00;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+}
+
+.remap-row .button-map-view:disabled {
+    background: #f8ff76d5;
+    height: 3rem;
+    width: 3rem;
+    font-family: inherit;
+    display: block;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 0.3rem;
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+    margin-left: var(--margin-small);
+    margin-right: var(--margin-small);
+    color: rgba(0, 0, 0, 0.596);
+    cursor: default;
+    border-radius: 0.5rem;
+    transition: all 0.25s ease-out;
+    border-color: #ffffff00;
+    border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+}

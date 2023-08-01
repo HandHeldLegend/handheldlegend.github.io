@@ -124,11 +124,6 @@
     height: fit-content;
 }
 
-.collapsible .full-width button {
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .collapsible-half-width
 {
     width: 48%;

@@ -15,6 +15,11 @@ const WEBUSB_CMD_SNAPBACK_GET = 0xA2;
 const WEBUSB_CMD_CALIBRATION_START = 0x03;
 const WEBUSB_CMD_CALIBRATION_STOP = 0xA3;
 
+const WEBUSB_CMD_REMAP_SET = 0x06;
+const WEBUSB_CMD_REMAP_GET = 0xA6;
+
+const WEBUSB_CMD_REMAP_DEFAULT = 0x07;
+
 const WEBUSB_CMD_OCTAGON_SET = 0x04;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
@@ -56,6 +61,15 @@ const listen = async () => {
     if (device != null) {
         const result = await device.transferIn(2, 64);
         switch (result.data.getUint8(0)) {
+
+            case WEBUSB_CMD_CALIBRATION_START:
+                analog_start_calibration_confirm();
+                break;
+
+            case WEBUSB_CMD_CALIBRATION_STOP:
+                analog_stop_calibration_confirm();
+                break;
+
             case WEBUSB_CMD_SNAPBACK_GET:
                 snapback_place_values(result.data);
                 break;
@@ -68,6 +82,11 @@ const listen = async () => {
             case WEBUSB_CMD_RGB_GET:
                 console.log("Got RGB Values.");
                 color_place_values(result.data);
+                break;
+
+            case WEBUSB_CMD_REMAP_GET:
+                console.log("Got remap values.");
+                remap_place_values(result.data);
                 break;
         }
         listen();
@@ -119,6 +138,7 @@ async function connectButton() {
             listen();
             await snapback_get_values();
             await color_get_values();
+            await remap_get_values();
             enableMenus(true);
         }
         catch(error)
@@ -168,11 +188,13 @@ function enableMenus(enable) {
     }
     else {
         Array.from(menuToggles).forEach(element => {
+            if (element.id == "socials-qr") return;
             element.setAttribute('disabled', 'true');
             element.checked = false;
         });
 
         Array.from(menuToggleLabels).forEach(element => {
+            if (element.id == "socials-toggle") return;
             element.setAttribute('disabled', 'true');
         });
 
@@ -182,4 +204,6 @@ function enableMenus(enable) {
         // Enable connect button
         connectButtonElement.removeAttribute('disabled');
     }
+
+    analog_stop_calibration_confirm();
 }
