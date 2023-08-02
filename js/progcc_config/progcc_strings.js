@@ -14,7 +14,7 @@ var eng_strings = {
     calibrateDesc: "To calibrate your sticks, ensure both sticks are fully centered, then press start. Slowly rotate both sticks fully 4-5 times. The controller LEDs will turn blue when enough data has been captured to facilitate proper calibration. Press 'Stop' to complete calibration. If you are satisfied with the results, press 'Save'.",
     start: 'Start',
     stop: 'Stop',
-    octagonTitle: 'Octacon Calibration',
+    octagonTitle: 'Octagon Calibration',
     octagonDesc: 'To calibrate your controller for an octagon gate, move your analog stick to one of the octagon corners, then press the button below to update the angle. Press save when you are happy with the results.',
     update: 'Update',
     remapTitle: 'Remapping',
