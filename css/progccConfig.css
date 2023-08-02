@@ -1,3 +1,11 @@
+#langButton {
+    display: block;
+    width: 4rem;
+    margin-left: auto;
+    margin-right: -0.25rem;
+    margin-top: -0.25rem;
+}
+
 #installButton {
     visibility: visible;
     display: block;
@@ -17,3 +25,4 @@
     background-blend-mode: lighten;
     transition: all 0.25s ease-out;
 }
+
