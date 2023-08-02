@@ -89,7 +89,6 @@ const listen = async () => {
                 remap_place_values(result.data);
                 break;
         }
-        listen();
     }
 };
 
@@ -109,10 +108,13 @@ navigator.usb.addEventListener("disconnect", (event) => {
 
 async function disconnectButton() {
     if (device != null) {
+        clearInterval(listen_id);
         await device.close();
     }
     enableMenus(false);
 }
+
+var listen_id = null;
 
 async function connectButton() {
 
@@ -140,6 +142,10 @@ async function connectButton() {
             await color_get_values();
             await remap_get_values();
             enableMenus(true);
+
+            listen_id = setInterval(() => {
+                listen().then(null);
+            }, 100);
         }
         catch(error)
         {
