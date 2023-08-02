@@ -96,13 +96,15 @@ function getStringsByURLHash() {
     } else if (hash === '#en') {
         replacePlaceholders(document.body, eng_strings);
     }
-    else if (timeZone()) {
+    else if (!timeZone()) {
+        console.log("Time zone is JP");
         langButton.setAttribute('onclick', 'changeLang(0)');
         langButton.innerHTML = "EN";
         replacePlaceholders(document.body, jp_strings);
     }
     else
     {
+        console.log("Time zone is EN");
         replacePlaceholders(document.body, eng_strings);
     }
 }
