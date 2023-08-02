@@ -1,6 +1,10 @@
 #langButton {
+    background: rgb(142, 247, 255);
     display:block;
     width: 4rem;
+    height: 2rem;
+    line-height: 1rem;
+    text-align: center;
     margin-left: auto;
     margin-right: -0.25rem;
     margin-top: -0.25rem;
