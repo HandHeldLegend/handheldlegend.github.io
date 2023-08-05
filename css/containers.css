@@ -151,3 +151,11 @@
 .dropdown p {
     margin-bottom: 0;
 }
+
+.message-box {
+    background: rgba(255, 198, 198, 0.877);
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+}

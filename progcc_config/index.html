@@ -52,346 +52,356 @@
           <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>{disconnect}</button>
         </div>
 
-        <div class="message-box" id="ood" disabled="true">
+        <div class="message-box" id="ood">
+
           <h2>Your device is out of date!</h2>
-          <a href="https://handheldlegend.github.io/gc_pocket.html" target="_blank">See our firmware page to update.</a>
-        </div>
-
-        <!-- SOCIALS -->
-        <!-- --------------- -->
-        <div class="collapsible">
-
-          <input id="socials-qr" class="toggle" type="checkbox">
-
-          <label for="socials-qr" id="socials-toggle" , class="lbl-toggle">{social}</label>
-          <div class="dropdown">
-            <div class="collapsible-row-double">
-
-              <div class="collapsible-column">
-                <h2>Twitter</h2>
-                <img src="/resources/qr/hhl.png">
-              </div>
-
-              <div class="collapsible-column">
-                <h2>Discord</h2>
-                <img src="/resources/qr/discord.png">
-              </div>
-
-            </div>
-
-          </div>
-        </div>
-        <!-- --------------- -->
-
-        <!-- PROCON COLOR SETTINGS -->
-        <div class="collapsible">
-
-          <input id="color-settings" class="toggle" type="checkbox">
-
-          <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">{colorTitle}</label>
-          <div class="dropdown">
-            <div id="progccColorSvg">
-              <svg class="controller-led" data-src="svg/controller.svg" data-cache="disabled" data-unique-ids="disabled"
-                data-css-scoping="disabled" oniconload="color_page_init()"></svg>
-            </div>
-
-            <div id="progccColorPicker">
-              <div id="colorPicker"></div>
-              <input id="colorHexBox" disabled type="text" value="#FFFFFF"
-                onchange="color_hexbox_changed(this.value)" />
-              <div class="row">
-                <button id="copyButton" class="small" onclick="color_copy()">{copy}</button>
-                <button id="pasteButton" class="small" onclick="color_paste()">{paste}</button>
-              </div>
-            </div>
-
-            <div class="full-width">
-              <div class="line"></div>
-              <div class="row">
-                <button type="button" id="save_color_button" onclick="saveButton()">{save}</button>
-              </div>
-            </div>
-
-
-          </div>
-        </div>
-      </div>
-
-      <!-- SNAPBACK SETTINGS -->
-      <!-- ---------------   -->
-      <div class="collapsible">
-        <input id="snapback-settings" class="toggle" type="checkbox">
-
-        <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
-        <div class="dropdown">
+          Click the button below to reset your controller to FW update mode.
+          <button type="button" id="fwButton" onclick="fwButton()">{bootloader}</button>
           <div class="full-width">
-
-            <p>LX</p>
-            <div class="slider">
-              <input type="range" min="0" max="7" value="0" id="lx_snapback"
-                oninput="lx_snapbackText.innerText = this.value" onchange="snapback_set_value(0, this.value)">
-              <p id="lx_snapbackText">0</p>
-            </div>
             <div class="line"></div>
-
-            <p>LY</p>
-            <div class="slider">
-              <input type="range" min="0" max="7" value="0" id="ly_snapback"
-                oninput="ly_snapbackText.innerText = this.value" onchange="snapback_set_value(1, this.value)">
-              <p id="ly_snapbackText">0</p>
-            </div>
-            <div class="line"></div>
-
-            <p>RX</p>
-            <div class="slider">
-              <input type="range" min="0" max="7" value="0" id="rx_snapback"
-                oninput="rx_snapbackText.innerText = this.value" onchange="snapback_set_value(2, this.value)">
-              <p id="rx_snapbackText">0</p>
-            </div>
-            <div class="line"></div>
-
-            <p>RY</p>
-            <div class="slider">
-              <input type="range" min="0" max="7" value="0" id="ry_snapback"
-                oninput="ry_snapbackText.innerText = this.value" onchange="snapback_set_value(3, this.value)">
-              <p id="ry_snapbackText">0</p>
-            </div>
-            <div class="row">
-              <button type="button" id="save_snapback" onclick="saveButton()">{save}</button>
-            </div>
-
           </div>
+          Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown
+          in your file manager.
+          <a id="downloadLink" href="/path/to/your/file" download>
+            <button type="button" id="installButton">Download</button>
+          </a>
         </div>
-      </div>
 
-      <!-- ANALOG SETTINGS -->
+      <!-- SOCIALS -->
       <!-- --------------- -->
       <div class="collapsible">
 
-        <input id="analog_collapsible" class="toggle" type="checkbox">
+        <input id="socials-qr" class="toggle" type="checkbox">
 
-        <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">{calibrateTitle}</label>
-
+        <label for="socials-qr" id="socials-toggle" , class="lbl-toggle">{social}</label>
         <div class="dropdown">
+          <div class="collapsible-row-double">
 
-          <div class="content-inner">
-            <div class="full-width">
-              <p>{calibrateDesc}</p>
+            <div class="collapsible-column">
+              <h2>Twitter</h2>
+              <img src="/resources/qr/hhl.png">
             </div>
 
-            <div class="line"></div>
-
-            <div class="collapsible-row-double">
-              <div class="collapsible-column">
-                <div class="circle">
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="circle-analog-pointer-l" class="analog-position"></div>
-                </div>
-              </div>
-
-              <div class="collapsible-column">
-                <div class="circle">
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="circle-analog-pointer-r" class="analog-position"></div>
-                </div>
-              </div>
-              <div class="line"></div>
+            <div class="collapsible-column">
+              <h2>Discord</h2>
+              <img src="/resources/qr/discord.png">
             </div>
-            <div class="row">
-              <button type="button" id="start_calibration_button" onclick="analog_start_calibration()">{start}</button>
-              <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
-                disabled>{stop}</button>
-              <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
-            </div>
+
           </div>
 
         </div>
       </div>
-
-      <!-- OCTAGON SETTINGS -->
       <!-- --------------- -->
+
+      <!-- PROCON COLOR SETTINGS -->
       <div class="collapsible">
 
-        <input id="octagon_collapsible" class="toggle" type="checkbox">
+        <input id="color-settings" class="toggle" type="checkbox">
 
-        <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
-
+        <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">{colorTitle}</label>
         <div class="dropdown">
+          <div id="progccColorSvg">
+            <svg class="controller-led" data-src="svg/controller.svg" data-cache="disabled" data-unique-ids="disabled"
+              data-css-scoping="disabled" oniconload="color_page_init()"></svg>
+          </div>
 
-          <div class="content-inner">
-            <div class="full-width">
-              <p>{octagonDesc}</p>
-
-              <div class="line"></div>
-            </div>
-
-            <div class="collapsible-row-double">
-
-              <div class="collapsible-column">
-                <input id="octagon-angle-text-l" type="text" disabled />
-                <div class="octagon">
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="octo-analog-pointer-l" class="analog-position"></div>
-                </div>
-              </div>
-
-              <div class="collapsible-column">
-                <input id="octagon-angle-text-r" type="text" disabled />
-                <div class="octagon">
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="octo-analog-pointer-r" class="analog-position"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="line"></div>
-
+          <div id="progccColorPicker">
+            <div id="colorPicker"></div>
+            <input id="colorHexBox" disabled type="text" value="#FFFFFF" onchange="color_hexbox_changed(this.value)" />
             <div class="row">
-              <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
-              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+              <button id="copyButton" class="small" onclick="color_copy()">{copy}</button>
+              <button id="pasteButton" class="small" onclick="color_paste()">{paste}</button>
             </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- REMAPPING -->
-      <!-- --------------- -->
-      <div class="collapsible">
-
-        <input id="remapping" class="toggle" type="checkbox">
-
-        <label for="remapping" id="remapping-toggle" , class="lbl-toggle">{remapTitle}</label>
-        <div class="dropdown">
-          <div class="full-width">
-            <p>{remapDesc}</p>
-            <p>{remapDesc2}</p>
-            <div class="line"></div>
-          </div>
-          <div class="remap-row">
-            <!-- A -->
-            <button type="button" class="button-map-init" id="bi_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
-            <button type="button" class="button-map-view" id="bm_a">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- B -->
-            <button type="button" class="button-map-init" id="bi_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
-            <button type="button" class="button-map-view" id="bm_b">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- X -->
-            <button type="button" class="button-map-init" id="bi_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
-            <button type="button" class="button-map-view" id="bm_x">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Y -->
-            <button type="button" class="button-map-init" id="bi_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
-            <button type="button" class="button-map-view" id="bm_y">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Up -->
-            <button type="button" class="button-map-init" id="bi_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
-            <button type="button" class="button-map-view" id="bm_dup">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Down -->
-            <button type="button" class="button-map-init" id="bi_ddown"
-              onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
-            <button type="button" class="button-map-view" id="bm_ddown">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Left -->
-            <button type="button" class="button-map-init" id="bi_dleft"
-              onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
-            <button type="button" class="button-map-view" id="bm_dleft">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Right -->
-            <button type="button" class="button-map-init" id="bi_dright"
-              onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
-            <button type="button" class="button-map-view" id="bm_dright">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Plus -->
-            <button type="button" class="button-map-init" id="bi_plus"
-              onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
-            <button type="button" class="button-map-view" id="bm_plus">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Minus -->
-            <button type="button" class="button-map-init" id="bi_minus"
-              onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
-            <button type="button" class="button-map-view" id="bm_minus">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- L -->
-            <button type="button" class="button-map-init" id="bi_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
-            <button type="button" class="button-map-view" id="bm_l">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- ZL -->
-            <button type="button" class="button-map-init" id="bi_zl" onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
-            <button type="button" class="button-map-view" id="bm_zl">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- R -->
-            <button type="button" class="button-map-init" id="bi_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
-            <button type="button" class="button-map-view" id="bm_r">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- ZR -->
-            <button type="button" class="button-map-init" id="bi_zr" onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
-            <button type="button" class="button-map-view" id="bm_zr">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Stick L -->
-            <button type="button" class="button-map-init" id="bi_stickl"
-              onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
-            <button type="button" class="button-map-view" id="bm_stickl">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Stick R -->
-            <button type="button" class="button-map-init" id="bi_stickr"
-              onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
-            <button type="button" class="button-map-view" id="bm_stickr">...</button>
           </div>
 
           <div class="full-width">
             <div class="line"></div>
             <div class="row">
-              <button type="button" id="reset_remap_button" onclick="remap_set_default()">{reset}</button>
-              <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
+              <button type="button" id="save_color_button" onclick="saveButton()">{save}</button>
             </div>
           </div>
 
+
         </div>
+      </div>
+    </div>
 
+    <!-- SNAPBACK SETTINGS -->
+    <!-- ---------------   -->
+    <div class="collapsible">
+      <input id="snapback-settings" class="toggle" type="checkbox">
 
+      <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
+      <div class="dropdown">
+        <div class="full-width">
 
+          <p>LX</p>
+          <div class="slider">
+            <input type="range" min="0" max="7" value="0" id="lx_snapback"
+              oninput="lx_snapbackText.innerText = this.value" onchange="snapback_set_value(0, this.value)">
+            <p id="lx_snapbackText">0</p>
+          </div>
+          <div class="line"></div>
 
+          <p>LY</p>
+          <div class="slider">
+            <input type="range" min="0" max="7" value="0" id="ly_snapback"
+              oninput="ly_snapbackText.innerText = this.value" onchange="snapback_set_value(1, this.value)">
+            <p id="ly_snapbackText">0</p>
+          </div>
+          <div class="line"></div>
+
+          <p>RX</p>
+          <div class="slider">
+            <input type="range" min="0" max="7" value="0" id="rx_snapback"
+              oninput="rx_snapbackText.innerText = this.value" onchange="snapback_set_value(2, this.value)">
+            <p id="rx_snapbackText">0</p>
+          </div>
+          <div class="line"></div>
+
+          <p>RY</p>
+          <div class="slider">
+            <input type="range" min="0" max="7" value="0" id="ry_snapback"
+              oninput="ry_snapbackText.innerText = this.value" onchange="snapback_set_value(3, this.value)">
+            <p id="ry_snapbackText">0</p>
+          </div>
+          <div class="row">
+            <button type="button" id="save_snapback" onclick="saveButton()">{save}</button>
+          </div>
+
+          <div class="snapback-visualizer">
+            <svg id="waveform-output" width="100%", height="100%"></svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALOG SETTINGS -->
+    <!-- --------------- -->
+    <div class="collapsible">
+
+      <input id="analog_collapsible" class="toggle" type="checkbox">
+
+      <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">{calibrateTitle}</label>
+
+      <div class="dropdown">
+
+        <div class="content-inner">
+          <div class="full-width">
+            <p>{calibrateDesc}</p>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="collapsible-row-double">
+            <div class="collapsible-column">
+              <div class="circle">
+                <div class="inner-stick"></div>
+                <div class="analog-center"></div>
+                <div id="circle-analog-pointer-l" class="analog-position"></div>
+              </div>
+            </div>
+
+            <div class="collapsible-column">
+              <div class="circle">
+                <div class="inner-stick"></div>
+                <div class="analog-center"></div>
+                <div id="circle-analog-pointer-r" class="analog-position"></div>
+              </div>
+            </div>
+            <div class="line"></div>
+          </div>
+          <div class="row">
+            <button type="button" id="start_calibration_button" onclick="analog_start_calibration()">{start}</button>
+            <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
+              disabled>{stop}</button>
+            <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
+          </div>
+        </div>
 
       </div>
     </div>
+
+    <!-- OCTAGON SETTINGS -->
     <!-- --------------- -->
+    <div class="collapsible">
+
+      <input id="octagon_collapsible" class="toggle" type="checkbox">
+
+      <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
+
+      <div class="dropdown">
+
+        <div class="content-inner">
+          <div class="full-width">
+            <p>{octagonDesc}</p>
+
+            <div class="line"></div>
+          </div>
+
+          <div class="collapsible-row-double">
+
+            <div class="collapsible-column">
+              <input id="octagon-angle-text-l" type="text" disabled />
+              <div class="octagon">
+                <div class="inner-stick"></div>
+                <div class="analog-center"></div>
+                <div id="octo-analog-pointer-l" class="analog-position"></div>
+              </div>
+            </div>
+
+            <div class="collapsible-column">
+              <input id="octagon-angle-text-r" type="text" disabled />
+              <div class="octagon">
+                <div class="inner-stick"></div>
+                <div class="analog-center"></div>
+                <div id="octo-analog-pointer-r" class="analog-position"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="line"></div>
+
+          <div class="row">
+            <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
+            <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REMAPPING -->
+    <!-- --------------- -->
+    <div class="collapsible">
+
+      <input id="remapping" class="toggle" type="checkbox">
+
+      <label for="remapping" id="remapping-toggle" , class="lbl-toggle">{remapTitle}</label>
+      <div class="dropdown">
+        <div class="full-width">
+          <p>{remapDesc}</p>
+          <p>{remapDesc2}</p>
+          <div class="line"></div>
+        </div>
+        <div class="remap-row">
+          <!-- A -->
+          <button type="button" class="button-map-init" id="bi_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
+          <button type="button" class="button-map-view" id="bm_a">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- B -->
+          <button type="button" class="button-map-init" id="bi_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
+          <button type="button" class="button-map-view" id="bm_b">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- X -->
+          <button type="button" class="button-map-init" id="bi_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
+          <button type="button" class="button-map-view" id="bm_x">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Y -->
+          <button type="button" class="button-map-init" id="bi_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
+          <button type="button" class="button-map-view" id="bm_y">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Dpad Up -->
+          <button type="button" class="button-map-init" id="bi_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
+          <button type="button" class="button-map-view" id="bm_dup">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Dpad Down -->
+          <button type="button" class="button-map-init" id="bi_ddown" onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
+          <button type="button" class="button-map-view" id="bm_ddown">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Dpad Left -->
+          <button type="button" class="button-map-init" id="bi_dleft" onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
+          <button type="button" class="button-map-view" id="bm_dleft">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Dpad Right -->
+          <button type="button" class="button-map-init" id="bi_dright"
+            onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
+          <button type="button" class="button-map-view" id="bm_dright">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Plus -->
+          <button type="button" class="button-map-init" id="bi_plus" onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
+          <button type="button" class="button-map-view" id="bm_plus">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Minus -->
+          <button type="button" class="button-map-init" id="bi_minus"
+            onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
+          <button type="button" class="button-map-view" id="bm_minus">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- L -->
+          <button type="button" class="button-map-init" id="bi_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
+          <button type="button" class="button-map-view" id="bm_l">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- ZL -->
+          <button type="button" class="button-map-init" id="bi_zl" onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
+          <button type="button" class="button-map-view" id="bm_zl">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- R -->
+          <button type="button" class="button-map-init" id="bi_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
+          <button type="button" class="button-map-view" id="bm_r">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- ZR -->
+          <button type="button" class="button-map-init" id="bi_zr" onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
+          <button type="button" class="button-map-view" id="bm_zr">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Stick L -->
+          <button type="button" class="button-map-init" id="bi_stickl"
+            onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
+          <button type="button" class="button-map-view" id="bm_stickl">...</button>
+        </div>
+
+        <div class="remap-row">
+          <!-- Stick R -->
+          <button type="button" class="button-map-init" id="bi_stickr"
+            onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
+          <button type="button" class="button-map-view" id="bm_stickr">...</button>
+        </div>
+
+        <div class="full-width">
+          <div class="line"></div>
+          <div class="row">
+            <button type="button" id="reset_remap_button" onclick="remap_set_default()">{reset}</button>
+            <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+
+    </div>
+  </div>
+  <!-- --------------- -->
 
 
 

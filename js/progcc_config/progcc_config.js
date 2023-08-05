@@ -6,6 +6,9 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
+const WEBUSB_CMD_FW_SET = 0x0F;
+const WEBUSB_CMD_FW_GET = 0xAF;
+
 const WEBUSB_CMD_RGB_SET = 0x01;
 const WEBUSB_CMD_RGB_GET = 0xA1;
 
@@ -14,6 +17,9 @@ const WEBUSB_CMD_SNAPBACK_GET = 0xA2;
 
 const WEBUSB_CMD_CALIBRATION_START = 0x03;
 const WEBUSB_CMD_CALIBRATION_STOP = 0xA3;
+
+const WEBUSB_CMD_ANALYZE_START= 0x05;
+const WEBUSB_CMD_ANALYZE_STOP = 0xA5;
 
 const WEBUSB_CMD_REMAP_SET = 0x06;
 const WEBUSB_CMD_REMAP_GET = 0xA6;
@@ -68,6 +74,12 @@ const listen = async () => {
 
             case WEBUSB_CMD_CALIBRATION_STOP:
                 analog_stop_calibration_confirm();
+                break;
+
+            case WEBUSB_CMD_ANALYZE_STOP:
+                console.log("Got waveform for analysis.");
+                let nu = new Uint8Array(result.data.buffer, result.data.byteOffset, result.data.byteLength);
+                snapback_visualizer_plot(nu);
                 break;
 
             case WEBUSB_CMD_SNAPBACK_GET:
@@ -159,6 +171,11 @@ async function connectButton() {
 
 async function saveButton() {
     var dataOut = new Uint8Array([WEBUSB_CMD_SAVEALL]);
+    await device.transferOut(2, dataOut);
+}
+
+async function fwButton() {
+    var dataOut = new Uint8Array([WEBUSB_CMD_FW_SET]);
     await device.transferOut(2, dataOut);
 }
 
