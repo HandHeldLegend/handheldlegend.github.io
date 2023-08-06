@@ -165,7 +165,6 @@ function _get_id_from_mapcode(mapcode) {
 
 function remap_place_values(data)
 {
-
     var unset = (data.getUint8(17)<<8) | (data.getUint8(18));
 
     // Find the index of the value mapped to this button

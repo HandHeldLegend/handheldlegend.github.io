@@ -21,6 +21,11 @@ var eng_strings = {
     remapTitle: 'Remapping',
     remapDesc: 'To remap a button, click one of the button icons. Next, press the desired button on your ProGCC.',
     remapDesc2: "Click 'Save' when you are happy with the results.",
+    fwMsg1: 'Your device is out of date!',
+    fwMsg2: 'Click the button below to reset your controller to FW update mode.',
+    fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager.',
+    download: 'Download',
+    bootloader: 'Bootloader'
 };
 
 var jp_strings = {
@@ -34,7 +39,8 @@ var jp_strings = {
     colorTitle: 'カラー設定',
     copy: 'コピー',
     paste: '貼り付け',
-    snapbackTitle: 'スナップバック設定',
+    snapbackTitle: '反動',
+    snapbackDesc: '楽しむ',
     calibrateTitle: 'アナログスティックの調整',
     calibrateDesc: "スティックを調整するには、両方のスティックが完全に中央にあることを確認し、スタートを押します。両方のスティックをゆっくりと4～5回ほど回転させます。適切な調整を行うのに十分なデータが取得されると、コントローラのLEDが青色に点灯します。'停止'を押して調整を完了します。調整が完了して問題がなければ'保存'を押してください。",
     start: 'スタート',
@@ -45,6 +51,11 @@ var jp_strings = {
     remapTitle: 'リマッピング',
     remapDesc: 'ボタンをリマップするには、ボタンアイコンの1つをクリックします。次に、ProGCCで目的のボタンを押します。',
     remapDesc2: "結果に満足したら、'保存'をクリックします。",
+    fwMsg1: 'あなたのデバイスは古いです！',
+    fwMsg2: '下のボタンをクリックして、コントローラーをFWアップデートモードにリセットしてください。',
+    fwInstall: '次に、下のボタンをクリックして最新のファームウェアをダウンロードしてください。.uf2ファイルをファイルマネージャーに表示されたRPI-RP2デバイスにコピーしてください。',
+    download: 'ダウンロード',
+    bootloader: 'ブートローダー'
 };
 
 let en_radio = document.getElementById("lang_en");
@@ -103,8 +114,7 @@ function getStringsByURLHash() {
         langButton.innerHTML = "EN";
         replacePlaceholders(document.body, jp_strings);
     }
-    else
-    {
+    else {
         console.log("Time zone is EN");
         replacePlaceholders(document.body, eng_strings);
     }

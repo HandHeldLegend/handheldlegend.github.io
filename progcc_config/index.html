@@ -52,18 +52,17 @@
           <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>{disconnect}</button>
         </div>
 
-        <div class="message-box" id="ood">
+        <div class="message-box" id="ood" disabled="true">
 
-          <h2>Your device is out of date!</h2>
-          Click the button below to reset your controller to FW update mode.
+          <h2>{fwMsg1}</h2>
+          {fwMsg2}
           <button type="button" id="fwButton" onclick="fwButton()">{bootloader}</button>
           <div class="full-width">
             <div class="line"></div>
           </div>
-          Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown
-          in your file manager.
-          <a id="downloadLink" href="/path/to/your/file" download>
-            <button type="button" id="installButton">Download</button>
+          {fwInstall}
+          <a id="downloadLink" href="https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2" download>
+            <button type="button" id="fwButton">{download}</button>
           </a>
         </div>
 

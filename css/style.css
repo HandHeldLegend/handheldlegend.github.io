@@ -169,11 +169,11 @@ canvas {
     border-radius: 0.5rem;
     border-color: #ffffff00;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
-    transition: all 0.25s ease-out;
 }
 
 .message-box[disabled="true"] {
     visibility: hidden;
+    display: none;
     height: 0;
     width: 0;
     margin: 0;

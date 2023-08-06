@@ -6,6 +6,8 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
+const FIRMWARE_VERSION = 0x0A01;
+
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
 
@@ -101,6 +103,11 @@ const listen = async () => {
                     console.log("Got remap values.");
                     remap_place_values(result.data);
                     break;
+
+                case WEBUSB_CMD_FW_GET:
+                    console.log("Got FW version.");
+                    fw_check_value(result.data);
+                    break;
             }
         }
         catch (err) {
@@ -118,6 +125,7 @@ const listen = async () => {
         console.log("Device unplugged.");
         if (event.device == device) {
             device = null;
+            enableDisconnect(false);
             enableMenus(false);
         }
     });
@@ -127,6 +135,7 @@ const listen = async () => {
             clearInterval(listen_id);
             await device.close();
         }
+        enableDisconnect(false);
         enableMenus(false);
     }
 
@@ -152,12 +161,9 @@ const listen = async () => {
                 await device.open();
                 await device.selectConfiguration(1);
                 await device.claimInterface(1);
-                // Get data
-                listen();
-                await snapback_get_values();
-                await color_get_values();
-                await remap_get_values();
-                enableMenus(true);
+ 
+                await fw_get_value();
+                enableDisconnect(true);
 
                 listen_id = setInterval(() => {
 
@@ -188,6 +194,47 @@ const listen = async () => {
         await device.transferOut(2, dataOut);
     }
 
+    async function fw_get_value()
+    {
+        var dataOut = new Uint8Array([WEBUSB_CMD_FW_GET]);
+        await device.transferOut(2, dataOut);
+    }
+
+    function fw_display_box(enable)
+    {
+        if(enable)
+        {
+            document.getElementById("ood").removeAttribute("disabled");
+        }
+        else 
+        {
+            document.getElementById("ood").setAttribute("disabled", "true");
+        }
+    }
+
+    function fw_check_value(data)
+    {
+        var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
+        if (fw != FIRMWARE_VERSION)
+        {
+            console.log("Version mismatch. Current: " + FIRMWARE_VERSION + " | Rec: " + fw);
+            fw_display_box(true)
+        }
+        else
+        {
+            try {
+                fw_display_box(false)
+                enableMenus(true);
+                remap_get_values();
+                color_get_values();
+            }
+            catch(err)
+            {
+
+            }
+        }
+    }
+
     function setActiveMenu(id) {
         if (id == selectedToggle) {
             return;
@@ -196,6 +243,26 @@ const listen = async () => {
             document.getElementById(selectedToggle).checked = false;
         }
         selectedToggle = id;
+    }
+
+    function enableDisconnect(enable)
+    {
+        if(enable)
+        {
+            // Disable connect button
+            connectButtonElement.setAttribute('disabled', 'true');
+
+            // Enable disconnect button
+            disconnectButtonElement.removeAttribute('disabled');
+        }
+        else
+        {
+            // Disable disconnect button
+            disconnectButtonElement.setAttribute('disabled', 'true');
+
+            // Enable connect button
+            connectButtonElement.removeAttribute('disabled');
+        }
     }
 
     function enableMenus(enable) {
@@ -208,13 +275,6 @@ const listen = async () => {
             Array.from(menuToggleLabels).forEach(element => {
                 element.removeAttribute('disabled');
             });
-
-            // Disable connect button
-            connectButtonElement.setAttribute('disabled', 'true');
-
-            // Enable disconnect button
-            disconnectButtonElement.removeAttribute('disabled');
-
         }
         else {
             Array.from(menuToggles).forEach(element => {
@@ -227,12 +287,6 @@ const listen = async () => {
                 if (element.id == "socials-toggle") return;
                 element.setAttribute('disabled', 'true');
             });
-
-            // Disable disconnect button
-            disconnectButtonElement.setAttribute('disabled', 'true');
-
-            // Enable connect button
-            connectButtonElement.removeAttribute('disabled');
         }
 
         analog_stop_calibration_confirm();
