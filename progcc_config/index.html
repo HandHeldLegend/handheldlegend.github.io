@@ -134,7 +134,7 @@
       <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
       <div class="dropdown">
         <div class="full-width">
-
+          <!--
           <p>LX</p>
           <div class="slider">
             <input type="range" min="0" max="7" value="0" id="lx_snapback"
@@ -167,8 +167,8 @@
           </div>
           <div class="row">
             <button type="button" id="save_snapback" onclick="saveButton()">{save}</button>
-          </div>
-
+          </div>-->
+          <p>{snapbackDesc}</p>
           <div class="snapback-visualizer">
             <svg id="waveform-output" width="100%", height="100%"></svg>
           </div>
@@ -329,8 +329,7 @@
 
         <div class="remap-row">
           <!-- Dpad Right -->
-          <button type="button" class="button-map-init" id="bi_dright"
-            onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
+          <button type="button" class="button-map-init" id="bi_dright" onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
           <button type="button" class="button-map-view" id="bm_dright">...</button>
         </div>
 

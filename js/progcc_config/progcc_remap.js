@@ -19,17 +19,17 @@ const MAPCODE_B_STICKL = 14;
 const MAPCODE_B_STICKR = 15;
 
 let remap_buttons = document.getElementsByClassName("button-map-init");
-let remap_labels = document.getElementsByClassName("button-map-view");
+let remap_view = document.getElementsByClassName("button-map-view");
 
 async function remap_init_new(code)
 {
-    for(let i = 0; i < remap_buttons.length; i++)
+    for(let i = 0; i < remap_view.length; i++)
     {
         remap_buttons[i].setAttribute("disabled", true);
-        if (_remap_get_mapcode(remap_labels[i].id) == code)
+        if(i==code)
         {
-            remap_labels[i].textContent = "...";
-            remap_labels[i].setAttribute("disabled", true);
+            var id = _get_id_from_mapcode(code);
+            document.getElementById(id).setAttribute("disabled", true);
         }
     }
 
@@ -52,46 +52,65 @@ async function remap_get_values()
 
 function _remap_get_char(code)
 {
+    var ret = "...";
     switch(code) {
         case MAPCODE_DUP:
-            return '\u2191'; // Unicode for upward arrow
+            ret= '\u2191'; // Unicode for upward arrow
+            break;
         case MAPCODE_DDOWN:
-            return '\u2193'; // Unicode for downward arrow
+            ret= '\u2193'; // Unicode for downward arrow
+            break;
         case MAPCODE_DLEFT:
-            return '\u2190'; // Unicode for leftward arrow
+            ret= '\u2190'; // Unicode for leftward arrow
+            break;
         case MAPCODE_DRIGHT:
-            return '\u2192'; // Unicode for rightward arrow
+            ret= '\u2192'; // Unicode for rightward arrow
+            break;
 
         case MAPCODE_B_A:
-            return 'A';
+            ret= 'A';
+            break;
         case MAPCODE_B_B:
-            return 'B';
+            ret= 'B';
+            break;
         case MAPCODE_B_X:
-            return 'X';
+            ret= 'X';
+            break;
         case MAPCODE_B_Y:
-            return 'Y';
+            ret= 'Y';
+            break;
 
         case MAPCODE_T_L:
-            return 'L';
+            ret= 'L';
+            break;
         case MAPCODE_T_ZL:
-            return 'ZL';
+            ret= 'ZL';
+            break;
         case MAPCODE_T_R:
-            return 'R';
+            ret= 'R';
+            break;
         case MAPCODE_T_ZR:
-            return 'ZR';
+            ret= 'ZR';
+            break;
 
         case MAPCODE_B_PLUS:
-            return '+';
+            ret= '+';
+            break;
         case MAPCODE_B_MINUS:
-            return '-';
+            ret= '-';
+            break;
         case MAPCODE_B_STICKL:
-            return 'SL';
+            ret= 'SL';
+            break;
         case MAPCODE_B_STICKR:
-            return 'SR';
+            ret= 'SR';
+            break;
 
         default:
-            return ''; // Return an empty string for invalid mapCode
+            ret=''; // Return an empty string for invalid mapCode
+            break;
     }
+    return ret;
 }
 
 function _remap_get_mapcode(id) {
@@ -115,20 +134,69 @@ function _remap_get_mapcode(id) {
         case 'bm_minus': return MAPCODE_B_MINUS;
         case 'bm_stickl': return MAPCODE_B_STICKL;
         case 'bm_stickr': return MAPCODE_B_STICKR;
-
         default: return -1; // return -1 or throw an error if the id is invalid
+    }
+}
+
+function _get_id_from_mapcode(mapcode) {
+    switch (mapcode) {
+        case MAPCODE_DUP: return 'bm_dup';
+        case MAPCODE_DDOWN: return 'bm_ddown';
+        case MAPCODE_DLEFT: return 'bm_dleft';
+        case MAPCODE_DRIGHT: return 'bm_dright';
+
+        case MAPCODE_B_A: return 'bm_a';
+        case MAPCODE_B_B: return 'bm_b';
+        case MAPCODE_B_X: return 'bm_x';
+        case MAPCODE_B_Y: return 'bm_y';
+
+        case MAPCODE_T_L: return 'bm_l';
+        case MAPCODE_T_ZL: return 'bm_zl';
+        case MAPCODE_T_R: return 'bm_r';
+        case MAPCODE_T_ZR: return 'bm_zr';
+
+        case MAPCODE_B_PLUS: return 'bm_plus';
+        case MAPCODE_B_MINUS: return 'bm_minus';
+        case MAPCODE_B_STICKL: return 'bm_stickl';
+        case MAPCODE_B_STICKR: return 'bm_stickr';
+        default: return null; // return null or throw an error if the mapcode is invalid
     }
 }
 
 function remap_place_values(data)
 {
-    for(let i = 0; i < remap_labels.length; i++)
-    {
-        remap_buttons[i].removeAttribute("disabled");
-        remap_labels[i].removeAttribute("disabled");
 
-        // Get the map code based on what the current label is.
-        let mp = _remap_get_mapcode(remap_labels[i].id);
-        remap_labels[i].textContent = _remap_get_char(data.getUint8(mp+1));
+    var unset = (data.getUint8(17)<<8) | (data.getUint8(18));
+
+    // Find the index of the value mapped to this button
+    for(var u = 0; u < 16; u++)
+    {
+        //console.log(remap_view[u].id);
+        var output_mapcode = _remap_get_mapcode(remap_view[u].id);
+        //console.log(output_mapcode);
+        var assignment = data.getUint8(output_mapcode+1);
+        //console.log(assignment);
+        var out_char = _remap_get_char(assignment);
+        //console.log(out_char);
+
+        // Check if the button has no output enabled
+        var bit = (1<<output_mapcode) & unset;
+        //console.log(bit);
+
+        if (bit>0)
+        {
+            // Button is unset, make sure its ID is cleared
+            //console.log(remap_view[u].id + " is disabled.");
+            remap_view[u].innerText = "...";
+        }
+        else
+        {
+            //console.log("X");
+            remap_view[u].innerText = out_char;
+        }
+
+        remap_view[u].removeAttribute("disabled");
+        remap_buttons[u].removeAttribute("disabled");
     }
+
 }

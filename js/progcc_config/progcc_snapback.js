@@ -66,8 +66,8 @@ function snapback_visualizer_plot(data)
     createLine(h * 0.5, 'blue');
 
     // Create upper and lower lines (18% above and below center)
-    createLine(h * (0.5+0.18), 'red');  // Above
-    createLine(h * (0.5-0.18), 'red');  // Below
+    createLine(h * (0.5+0.09), 'red');  // Above
+    createLine(h * (0.5-0.09), 'red');  // Below
 
     var line = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
     line.style.fill = 'none';
