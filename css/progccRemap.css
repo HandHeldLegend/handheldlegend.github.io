@@ -28,7 +28,7 @@
     text-align: center;
     padding: 0.3rem;
     height: 3rem;
-    width: 3rem;
+    width: 3.85rem;
     margin-top: var(--margin-small);
     margin-bottom: var(--margin-small);
     margin-left: var(--margin-small);
@@ -36,7 +36,7 @@
     color: rgba(0, 0, 0, 0.596);
     background: #ff85ffd5;
     cursor: pointer;
-    border-radius: 50%;
+    border-radius: 0.6rem;
     transition: all 0.25s ease-out;
     border-color: #ffffff00;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
@@ -48,8 +48,6 @@
     }
 }
 
-
-
 .remap-row .button-map-init:disabled {
     font-family: inherit;
     display: block;
@@ -57,7 +55,6 @@
     text-align: center;
     padding: 0.3rem;
     height: 3rem;
-    width: 3rem;
     margin-top: var(--margin-small);
     margin-bottom: var(--margin-small);
     margin-left: var(--margin-small);
@@ -84,8 +81,8 @@
     margin-right: var(--margin-small);
     color: rgba(0, 0, 0, 0.596);
     background: #76ffa4d5;
+    border-radius: 0;
     cursor: default;
-    border-radius: 0.5rem;
     transition: all 0.25s ease-out;
     border-color: #ffffff00;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
@@ -106,8 +103,12 @@
     margin-right: var(--margin-small);
     color: rgba(0, 0, 0, 0.596);
     cursor: default;
-    border-radius: 0.5rem;
     transition: all 0.25s ease-out;
     border-color: #ffffff00;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+}
+
+.remap-row:has(.button-map-init[unused]) {
+    display: none;
+    visibility: hidden;
 }

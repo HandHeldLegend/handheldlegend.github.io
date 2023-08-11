@@ -133,40 +133,6 @@
       <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
       <div class="dropdown">
         <div class="full-width">
-          <!--
-          <p>LX</p>
-          <div class="slider">
-            <input type="range" min="0" max="7" value="0" id="lx_snapback"
-              oninput="lx_snapbackText.innerText = this.value" onchange="snapback_set_value(0, this.value)">
-            <p id="lx_snapbackText">0</p>
-          </div>
-          <div class="line"></div>
-
-          <p>LY</p>
-          <div class="slider">
-            <input type="range" min="0" max="7" value="0" id="ly_snapback"
-              oninput="ly_snapbackText.innerText = this.value" onchange="snapback_set_value(1, this.value)">
-            <p id="ly_snapbackText">0</p>
-          </div>
-          <div class="line"></div>
-
-          <p>RX</p>
-          <div class="slider">
-            <input type="range" min="0" max="7" value="0" id="rx_snapback"
-              oninput="rx_snapbackText.innerText = this.value" onchange="snapback_set_value(2, this.value)">
-            <p id="rx_snapbackText">0</p>
-          </div>
-          <div class="line"></div>
-
-          <p>RY</p>
-          <div class="slider">
-            <input type="range" min="0" max="7" value="0" id="ry_snapback"
-              oninput="ry_snapbackText.innerText = this.value" onchange="snapback_set_value(3, this.value)">
-            <p id="ry_snapbackText">0</p>
-          </div>
-          <div class="row">
-            <button type="button" id="save_snapback" onclick="saveButton()">{save}</button>
-          </div>-->
           <p>{snapbackDesc}</p>
           <div class="snapback-visualizer">
             <svg id="waveform-output" width="100%", height="100%"></svg>
@@ -279,108 +245,120 @@
 
       <label for="remapping" id="remapping-toggle" , class="lbl-toggle">{remapTitle}</label>
       <div class="dropdown">
+        
         <div class="full-width">
           <p>{remapDesc}</p>
           <p>{remapDesc2}</p>
           <div class="line"></div>
+          <div class="sora_radio_container" id="rp_radio_picker">
+            <input type="radio" name="radio_remap_profile" id="rp_switch" checked
+              onchange="remap_switch_profile(INPUT_MODE_SWITCH)">
+            <label for="rp_switch">Switch</label>
+            <input type="radio" name="radio_remap_profile" id="rp_xinput" onchange="remap_switch_profile(INPUT_MODE_XINPUT)">
+            <label for="rp_xinput">XInput</label>
+            <input type="radio" name="radio_remap_profile" id="rp_gamecube" onchange="remap_switch_profile(INPUT_MODE_GAMECUBE)">
+            <label for="rp_gamecube">GC</label>
+            <input type="radio" name="radio_remap_profile" id="rp_n64" onchange="remap_switch_profile(INPUT_MODE_N64)">
+            <label for="rp_n64">N64</label>
+          </div>
         </div>
         <div class="remap-row">
           <!-- A -->
-          <button type="button" class="button-map-init" id="bi_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
-          <button type="button" class="button-map-view" id="bm_a">...</button>
+          <button type="button" class="button-map-init" id="bo_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
+          <button type="button" class="button-map-view" id="bi_a">...</button>
         </div>
 
         <div class="remap-row">
           <!-- B -->
-          <button type="button" class="button-map-init" id="bi_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
-          <button type="button" class="button-map-view" id="bm_b">...</button>
+          <button type="button" class="button-map-init" id="bo_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
+          <button type="button" class="button-map-view" id="bi_b">...</button>
         </div>
 
         <div class="remap-row">
           <!-- X -->
-          <button type="button" class="button-map-init" id="bi_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
-          <button type="button" class="button-map-view" id="bm_x">...</button>
+          <button type="button" class="button-map-init" id="bo_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
+          <button type="button" class="button-map-view" id="bi_x">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Y -->
-          <button type="button" class="button-map-init" id="bi_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
-          <button type="button" class="button-map-view" id="bm_y">...</button>
+          <button type="button" class="button-map-init" id="bo_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
+          <button type="button" class="button-map-view" id="bi_y">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Dpad Up -->
-          <button type="button" class="button-map-init" id="bi_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
-          <button type="button" class="button-map-view" id="bm_dup">...</button>
+          <button type="button" class="button-map-init" id="bo_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
+          <button type="button" class="button-map-view" id="bi_dup">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Dpad Down -->
-          <button type="button" class="button-map-init" id="bi_ddown" onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
-          <button type="button" class="button-map-view" id="bm_ddown">...</button>
+          <button type="button" class="button-map-init" id="bo_ddown" onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
+          <button type="button" class="button-map-view" id="bi_ddown">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Dpad Left -->
-          <button type="button" class="button-map-init" id="bi_dleft" onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
-          <button type="button" class="button-map-view" id="bm_dleft">...</button>
+          <button type="button" class="button-map-init" id="bo_dleft" onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
+          <button type="button" class="button-map-view" id="bi_dleft">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Dpad Right -->
-          <button type="button" class="button-map-init" id="bi_dright" onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
-          <button type="button" class="button-map-view" id="bm_dright">...</button>
+          <button type="button" class="button-map-init" id="bo_dright" onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
+          <button type="button" class="button-map-view" id="bi_dright">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Plus -->
-          <button type="button" class="button-map-init" id="bi_plus" onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
-          <button type="button" class="button-map-view" id="bm_plus">...</button>
+          <button type="button" class="button-map-init" id="bo_plus" onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
+          <button type="button" class="button-map-view" id="bi_plus">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Minus -->
-          <button type="button" class="button-map-init" id="bi_minus"
+          <button type="button" class="button-map-init" id="bo_minus"
             onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
-          <button type="button" class="button-map-view" id="bm_minus">...</button>
+          <button type="button" class="button-map-view" id="bi_minus">...</button>
         </div>
 
         <div class="remap-row">
           <!-- L -->
-          <button type="button" class="button-map-init" id="bi_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
-          <button type="button" class="button-map-view" id="bm_l">...</button>
+          <button type="button" class="button-map-init" id="bo_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
+          <button type="button" class="button-map-view" id="bi_l">...</button>
         </div>
 
         <div class="remap-row">
           <!-- ZL -->
-          <button type="button" class="button-map-init" id="bi_zl" onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
-          <button type="button" class="button-map-view" id="bm_zl">...</button>
+          <button type="button" class="button-map-init" id="bo_zl" onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
+          <button type="button" class="button-map-view" id="bi_zl">...</button>
         </div>
 
         <div class="remap-row">
           <!-- R -->
-          <button type="button" class="button-map-init" id="bi_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
-          <button type="button" class="button-map-view" id="bm_r">...</button>
+          <button type="button" class="button-map-init" id="bo_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
+          <button type="button" class="button-map-view" id="bi_r">...</button>
         </div>
 
         <div class="remap-row">
           <!-- ZR -->
-          <button type="button" class="button-map-init" id="bi_zr" onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
-          <button type="button" class="button-map-view" id="bm_zr">...</button>
+          <button type="button" class="button-map-init" id="bo_zr" onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
+          <button type="button" class="button-map-view" id="bi_zr">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Stick L -->
-          <button type="button" class="button-map-init" id="bi_stickl"
+          <button type="button" class="button-map-init" id="bo_stickl"
             onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
-          <button type="button" class="button-map-view" id="bm_stickl">...</button>
+          <button type="button" class="button-map-view" id="bi_stickl">...</button>
         </div>
 
         <div class="remap-row">
           <!-- Stick R -->
-          <button type="button" class="button-map-init" id="bi_stickr"
+          <button type="button" class="button-map-init" id="bo_stickr"
             onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
-          <button type="button" class="button-map-view" id="bm_stickr">...</button>
+          <button type="button" class="button-map-view" id="bi_stickr">...</button>
         </div>
 
         <div class="full-width">

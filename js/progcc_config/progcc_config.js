@@ -6,7 +6,7 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const FIRMWARE_VERSION = 0x0A01;
+const FIRMWARE_VERSION = 0x0A03;
 
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
@@ -31,6 +31,12 @@ const WEBUSB_CMD_REMAP_DEFAULT = 0x07;
 const WEBUSB_CMD_OCTAGON_SET = 0x04;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
+
+const INPUT_MODE_SWITCH = 0;
+const INPUT_MODE_XINPUT = 1;
+const INPUT_MODE_GAMECUBE = 2;
+const INPUT_MODE_N64 = 3;
+const INPUT_MODE_SNES = 4;
 
 enableMenus(false);
 

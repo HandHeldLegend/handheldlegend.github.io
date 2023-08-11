@@ -23,7 +23,7 @@ var eng_strings = {
     remapDesc2: "Click 'Save' when you are happy with the results.",
     fwMsg1: 'Your device is out of date!',
     fwMsg2: 'Click the button below to reset your controller to FW update mode.',
-    fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager.',
+    fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager. Be sure to recalibrate after updating!',
     download: 'Download',
     bootloader: 'Bootloader'
 };
