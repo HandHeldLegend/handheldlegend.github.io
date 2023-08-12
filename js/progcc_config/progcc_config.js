@@ -6,7 +6,7 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const FIRMWARE_VERSION = 0x0A03;
+const FIRMWARE_VERSION = 0x0A04;
 
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
@@ -27,6 +27,8 @@ const WEBUSB_CMD_REMAP_SET = 0x06;
 const WEBUSB_CMD_REMAP_GET = 0xA6;
 
 const WEBUSB_CMD_REMAP_DEFAULT = 0x07;
+
+const WEBUSB_CMD_GCSP_SET = 0x08;
 
 const WEBUSB_CMD_OCTAGON_SET = 0x04;
 

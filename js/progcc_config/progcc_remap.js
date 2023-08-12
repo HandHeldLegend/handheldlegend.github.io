@@ -260,6 +260,10 @@ function remap_place_values(data) {
     console.log(data);
     var unset = (data.getUint8(18) << 8) | (data.getUint8(19));
 
+    // GC SP data is a subset of the remapping data
+    // Place it here
+    gcsp_place_value(data.getUint8(20));
+
     var disabled = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
     // First, account for any buttons that should be disabled
@@ -352,7 +356,7 @@ function _remap_place_profile_icons(mode) {
         bo_x: 'X',
         bo_y: 'Y',
 
-        bo_l: '...',
+        bo_l: 'SP',
         bo_zl: 'LT',
         bo_r: 'Z',
         bo_zr: 'RT',
