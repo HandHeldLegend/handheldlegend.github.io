@@ -25,7 +25,9 @@ var eng_strings = {
     fwMsg2: 'Click the button below to reset your controller to FW update mode.',
     fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager. Be sure to recalibrate after updating!',
     download: 'Download',
-    bootloader: 'Bootloader'
+    bootloader: 'Bootloader',
+    gamecubeTitle: 'GameCube SP Function',
+    gamecubeDesc: 'Select the function for SP mapping.',
 };
 
 var jp_strings = {
@@ -55,7 +57,9 @@ var jp_strings = {
     fwMsg2: '下のボタンをクリックして、コントローラーをFWアップデートモードにリセットしてください。',
     fwInstall: '次に、下のボタンをクリックして最新のファームウェアをダウンロードしてください。.uf2ファイルをファイルマネージャーに表示されたRPI-RP2デバイスにコピーしてください。',
     download: 'ダウンロード',
-    bootloader: 'ブートローダー'
+    bootloader: 'ブートローダー',
+    gamecubeTitle: 'ゲームキューブSP機能',
+    gamecubeDesc: 'SPマッピングの機能を選択してください。',
 };
 
 let en_radio = document.getElementById("lang_en");
