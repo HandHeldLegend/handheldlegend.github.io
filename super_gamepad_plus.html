@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <script type="module" src="/js/install-button.js?module"> </script>
+  <script type="module" src="/js/esp32webtool/install-button.js"> </script>
   <link rel="stylesheet" href="/css/style.css" type="text/css">
 </head>
 
@@ -42,8 +42,19 @@
       <p>Dpad Right -> GameCube Mode</p>
       <div class="line"></div>
       <p>If no USB cable is connected, the controller will boot into wireless mode.</p>
-    </div>
+
+    <div class="line"></div>
+      <h2>HOJA EFM8UB1 Update Required</h2>
+      <p>This update can only be run from Windows currently.</p>
+      <p>After flashing the ESP32 firmware, hold L and R while plugging in.</p>
+      <p>This will enable USB bootloader on the EFM8UB1. Download the zip file linked</p>
+      <p>unzip it, and run the included .bat file to update the firmware.</p>
+      <p>Unplug and replug to finalize the firmware install.</p>
+      <a href="/firmware/hoja_efm8usb/open_controller_usb_3.23.2023.zip" target="_blank">EFM8UB1 3.23.2023 Download
+        Zip</a>
+
   </div>
+
 </body>
 
 </html>
