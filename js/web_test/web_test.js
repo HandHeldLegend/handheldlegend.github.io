@@ -60,7 +60,7 @@ function poll()
 
         if( (ry>THRESHOLD) && !tracking)
         {
-          max_x = THRESHOLD;
+          max_x = ry;
           tracking = true;
         }
         else if (tracking)
