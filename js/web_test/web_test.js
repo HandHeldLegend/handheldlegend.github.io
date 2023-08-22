@@ -66,11 +66,11 @@ function poll()
           if(Math.abs(ry)>Math.abs(max_x))
           {
             max_x = ry;
-            output.innerText = max_x.toString();
           }
 
           if (Math.abs(ry)<THRESHOLD)
           {
+            output.innerText = max_x.toString();
             tracking = false;
           }
         }
