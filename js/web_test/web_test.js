@@ -40,11 +40,12 @@ function rumble(length) {
 
 setInterval(() => {
   poll();
-}, 1);
+}, 8);
 
 var max_x = 0;
 var tracking = false;
 const THRESHOLD = 30;
+var inc = 0;
 
 function poll()
 {
@@ -56,21 +57,22 @@ function poll()
         var rx = gp.axes[2] * 100;
         var ry = gp.axes[3] * 100;
 
-        if( (Math.abs(ry)>THRESHOLD) && !tracking)
+        if( (ry>THRESHOLD) && !tracking)
         {
-          max_x = 0;
+          max_x = THRESHOLD;
           tracking = true;
         }
         else if (tracking)
         {
-          if(Math.abs(ry)>Math.abs(max_x))
+          if(ry>max_x)
           {
             max_x = ry;
           }
 
-          if (Math.abs(ry)<THRESHOLD)
+          if (ry<THRESHOLD)
           {
-            output.innerText = max_x.toString();
+            inc++;
+            output.innerText = inc.toString() + ": " + max_x.toString();
             tracking = false;
           }
         }
