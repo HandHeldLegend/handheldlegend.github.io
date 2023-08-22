@@ -47,7 +47,7 @@ var tracking = false;
 const THRESHOLD = 30;
 var inc = 0;
 
-/*
+
 function poll()
 {
     gp = navigator.getGamepads()[0];
@@ -78,7 +78,7 @@ function poll()
           }
         }
     }  
-}*/
+}
 
 var countdown = 0;
 var ellapsed = 0;
@@ -91,6 +91,7 @@ var largest_time = 0;
 var avg = 0;
 var overflowed = 0;
 
+/*
 function poll()
 {
     gp = navigator.getGamepads()[0];
@@ -141,7 +142,7 @@ function poll()
           }
         }
     }  
-}
+}*/
 
 window.addEventListener("gamepadconnected", (e) => {
 
