@@ -44,7 +44,7 @@ setInterval(() => {
 
 var max_x = 0;
 var tracking = false;
-const THRESHOLD = 30;
+const THRESHOLD = 75;
 var inc = 0;
 
 
