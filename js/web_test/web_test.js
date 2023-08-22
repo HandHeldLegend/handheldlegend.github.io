@@ -1,29 +1,94 @@
 let device;
+var gp;
+let output = document.getElementById("out");
 
-const delay = (delayInms) => {
-  return new Promise(resolve => setTimeout(resolve, delayInms));
+const buttonMapping = {
+  0: 'A',
+  1: 'X',
+  2: 'B',
+  3: 'Y',
+  4: 'RSL',
+  5: 'RSR',
+  9: 'PLUS',
+  11: 'RA',
+  12: 'HOME',
+  14: 'R',
+  15: 'RT',
+  16: 'LEFT',
+  17: 'DOWN',
+  18: 'UP',
+  19: 'RIGHT',
+  20: 'LSL',
+  21: 'LSR',
+  24: 'MINUS',
+  26: 'LA',
+  29: 'CAPTURE',
+  30: 'L',
+  31: 'LT'  
 }
 
-async function sendReport(reportID, data)
-{
-  var dataOut1 = [reportID];
-  var dataOut = new Uint8Array(dataOut1.concat(data));
-
-  await device.transferOut(2, dataOut);
+function rumble(length) {
+  if (gp.connected && gp != null) {
+      gp.vibrationActuator.playEffect("dual-rumble", {
+          startDelay: 0,
+          duration: length,
+          weakMagnitude: 1.0,
+          strongMagnitude: 1.0,
+      });
+  }
 }
 
-async function clickButton()
+setInterval(() => {
+  poll();
+}, 1);
+
+var max_x = 0;
+var tracking = false;
+const THRESHOLD = 30;
+
+function poll()
 {
-  // Request permission to access the gamepad
-  device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
-  console.log(device);
-  
-  await device.open();
-  await device.selectConfiguration(1);
-  await device.claimInterface(1);
+    gp = navigator.getGamepads()[0];
+    if (gp != null)
+    {
+        var lx = gp.axes[0] * 100;
+        var ly = gp.axes[1] * 100;
+        var rx = gp.axes[2] * 100;
+        var ry = gp.axes[3] * 100;
 
-  console.log(device.productName);
+        if( (Math.abs(ry)>THRESHOLD) && !tracking)
+        {
+          max_x = 0;
+          tracking = true;
+        }
+        else if (tracking)
+        {
+          if(Math.abs(ry)>Math.abs(max_x))
+          {
+            max_x = ry;
+            output.innerText = max_x.toString();
+          }
 
-  await sendReport(1, [0, 255, 0, 0]);
-  await sendReport(1, [1, 0, 255, 0]);
-};
+          if (Math.abs(ry)<THRESHOLD)
+          {
+            tracking = false;
+          }
+        }
+    }  
+}
+
+window.addEventListener("gamepadconnected", (e) => {
+
+  console.log(
+      e.gamepad
+  );
+
+  gp = navigator.getGamepads()[0];
+  rumble(500);
+
+});
+
+window.addEventListener( "gamepaddisconnected", (e) => {
+      console.log("Gamepad disconnected.");
+  },
+);
