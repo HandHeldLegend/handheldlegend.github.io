@@ -40,13 +40,14 @@ function rumble(length) {
 
 setInterval(() => {
   poll();
-}, 8);
+}, 1);
 
 var max_x = 0;
 var tracking = false;
 const THRESHOLD = 30;
 var inc = 0;
 
+/*
 function poll()
 {
     gp = navigator.getGamepads()[0];
@@ -74,6 +75,69 @@ function poll()
             inc++;
             output.innerText = inc.toString() + ": " + max_x.toString();
             tracking = false;
+          }
+        }
+    }  
+}*/
+
+var countdown = 0;
+var ellapsed = 0;
+var lastTime = 0;
+
+var last_x = 0;
+var last_y = 0;
+
+var largest_time = 0;
+var avg = 0;
+var overflowed = 0;
+
+function poll()
+{
+    gp = navigator.getGamepads()[0];
+    if (gp != null)
+    {
+        var p = gp.buttons[0].pressed;
+        if (p && !tracking)
+        {
+          tracking = true;
+          countdown = 1000;
+          largest_time = 0;
+          avg = 8;
+          overflowed = 0;
+          lastTime = Date.now();
+          output.innerText = "Tracking...: ";
+        }
+        else if (countdown>0)
+        {
+          var lx = gp.axes[0] * 100;
+          var ly = gp.axes[1] * 100;
+          
+          if ( (lx != last_x) || (ly != last_y))
+          {
+            var t = Date.now();
+            ellapsed = t - lastTime;
+            if (ellapsed > largest_time)
+            {
+              largest_time = ellapsed;
+            }
+            if(ellapsed>16)
+            {
+              overflowed++;
+            }
+            avg += ellapsed;
+            avg *= 0.5;
+            lastTime = t;
+            countdown--;
+
+            last_x = lx;
+            last_y = ly;
+          }
+
+          if (countdown == 0)
+          {
+            tracking = false;
+            output.innerText = "Largest Latency: " + largest_time.toString() + "\nAvg: " + avg.toString() + 
+            "\nTimes we went over 16ms: " + overflowed.toString();
           }
         }
     }  
