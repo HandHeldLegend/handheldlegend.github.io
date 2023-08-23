@@ -228,6 +228,14 @@ const listen = async () => {
             console.log("Version mismatch. Current: " + FIRMWARE_VERSION + " | Rec: " + fw);
             fw_display_box(true)
         }
+        // FIX LATER
+        else if (fw == FIRMWARE_VERSION-1)
+        {
+            fw_display_box(true);
+            enableMenus(true);
+            remap_get_values();
+            color_get_values();
+        }
         else
         {
             try {
