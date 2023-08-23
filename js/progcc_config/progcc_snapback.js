@@ -40,6 +40,14 @@ var t_data = [0,0];
 
 function snapback_visualizer_plot(data)
 {
+
+    // DEBUG
+    console.log("Got snapback plot.");
+    console.log(data);
+    var interval = (data[2] << 24) | (data[3] << 16) | (data[4] << 8) | (data[5]);
+    console.log("Interval: " + interval.toString());
+
+
     var svg = document.getElementById('waveform-output');
 
     var h = svg.getBoundingClientRect().height;

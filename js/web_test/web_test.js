@@ -44,7 +44,7 @@ setInterval(() => {
 
 var max_x = 0;
 var tracking = false;
-const THRESHOLD = 75;
+const THRESHOLD = 50;
 var inc = 0;
 
 
@@ -70,7 +70,7 @@ function poll()
             max_x = ry;
           }
 
-          if (ry<THRESHOLD)
+          if (ry<=THRESHOLD)
           {
             inc++;
             output.innerText = inc.toString() + ": " + max_x.toString();
