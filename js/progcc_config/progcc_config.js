@@ -223,18 +223,20 @@ const listen = async () => {
     function fw_check_value(data)
     {
         var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
-        if (fw != FIRMWARE_VERSION)
-        {
-            console.log("Version mismatch. Current: " + FIRMWARE_VERSION + " | Rec: " + fw);
-            fw_display_box(true)
-        }
-        // FIX LATER
-        else if (fw == FIRMWARE_VERSION-1)
+
+        // REMOVE LATER
+        if (fw == FIRMWARE_VERSION-1)
         {
             fw_display_box(true);
             enableMenus(true);
             remap_get_values();
             color_get_values();
+        }
+        // REMOVE LATER END
+        else if (fw != FIRMWARE_VERSION)
+        {
+            console.log("Version mismatch. Current: " + FIRMWARE_VERSION + " | Rec: " + fw);
+            fw_display_box(true)
         }
         else
         {
