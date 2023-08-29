@@ -239,6 +239,33 @@
         </div>
       </div>
 
+      <!-- GYRO SETTINGS -->
+      <!-- --------------- -->
+      <div class="collapsible">
+
+        <input id="gyro_collapsible" class="toggle" type="checkbox">
+
+        <label for="gyro_collapsible" id="gyro_collapsible_toggle" class="lbl-toggle">{gyroTitle}</label>
+
+        <div class="dropdown">
+
+
+            <div class="full-width">
+              <p>{gyroDesc}</p>
+
+
+              <div class="line"></div>
+
+              <div class="row">
+                <button type="button" id="start_imu_calibration_button"
+                  onclick="imu_start_calibration()">{start}</button>
+              </div>
+            </div>
+
+
+        </div>
+      </div>
+
       <!-- REMAPPING -->
       <!-- --------------- -->
       <div class="collapsible">
@@ -391,22 +418,22 @@
 
         <div class="dropdown">
 
-            <div class="full-width">
-              <p>{gamecubeDesc}</p>
-              <div class="line"></div>
-              <div class="sora_radio_container" id="radio_gc_sp_picker">
-                <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
-                <label for="gc_sp_0">Off</label>
-                <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1)">
-                <label for="gc_sp_1">LT</label>
-                <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2)">
-                <label for="gc_sp_2">RT</label>
-              </div>
-              <div class="line"></div>
+          <div class="full-width">
+            <p>{gamecubeDesc}</p>
+            <div class="line"></div>
+            <div class="sora_radio_container" id="radio_gc_sp_picker">
+              <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
+              <label for="gc_sp_0">Off</label>
+              <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1)">
+              <label for="gc_sp_1">LT</label>
+              <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2)">
+              <label for="gc_sp_2">RT</label>
+            </div>
+            <div class="line"></div>
             <div class="row">
               <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
             </div>
-            </div>
+          </div>
 
         </div>
       </div>

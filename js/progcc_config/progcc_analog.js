@@ -30,3 +30,9 @@ async function analog_stop_calibration()
     var dataOut = new Uint8Array([WEBUSB_CMD_CALIBRATION_STOP]);
     await device.transferOut(2, dataOut);
 }
+
+async function imu_start_calibration()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_IMU_CALIBRATION_START]);
+    await device.transferOut(2, dataOut);
+}
