@@ -134,7 +134,6 @@ const listen = async () => {
     // Set connect and disconnect listeners
     navigator.usb.addEventListener("connect", (event) => {
         console.log("Device plugged.");
-
     });
 
     navigator.usb.addEventListener("disconnect", (event) => {
@@ -151,6 +150,7 @@ const listen = async () => {
             clearInterval(listen_id);
             await device.close();
         }
+        device=null;
         enableDisconnect(false);
         enableMenus(false);
     }
@@ -171,33 +171,29 @@ const listen = async () => {
             device = await navigator.usb.requestDevice({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
         }
 
-        if (device != null) {
+        try {
+            await device.open();
+            await device.selectConfiguration(1);
+            await device.claimInterface(1);
 
-            try {
-                await device.open();
-                await device.selectConfiguration(1);
-                await device.claimInterface(1);
- 
-                await fw_get_value();
-                enableDisconnect(true);
+            await fw_get_value();
+            enableDisconnect(true);
+            enableMenus(true);
 
-                listen_id = setInterval(() => {
+            listen_id = setInterval(() => {
 
-                    try {
-                        listen();
-                    }
-                    catch (err) {
+                try {
+                    listen();
+                }
+                catch (err) {
 
-                    }
-                }, 8);
-            }
-            catch (error) {
-                window.alert("Please connect a valid ProGCC device.");
-            }
-
-
-
+                }
+            }, 8);
         }
+        catch (error) {
+            window.alert("Please connect a valid ProGCC device.");
+        }
+
     }
 
     async function saveButton() {
