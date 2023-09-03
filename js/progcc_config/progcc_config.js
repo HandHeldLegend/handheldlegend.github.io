@@ -6,7 +6,7 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const FIRMWARE_VERSION = 0x0A07;
+const FIRMWARE_VERSION = 0x0A08;
 
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
@@ -33,6 +33,8 @@ const WEBUSB_CMD_GCSP_SET = 0x08;
 const WEBUSB_CMD_IMU_CALIBRATION_START = 0x09;
 
 const WEBUSB_CMD_OCTAGON_SET = 0x04;
+
+const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
 
@@ -118,6 +120,10 @@ const listen = async () => {
                     console.log("Got FW version.");
                     fw_check_value(result.data);
                     break;
+
+                case WEBUSB_CMD_INPUT_REPORT:
+                    input_process_data(result.data);
+                    break;
             }
         }
         catch (err) {
@@ -183,7 +189,7 @@ const listen = async () => {
                     catch (err) {
 
                     }
-                }, 100);
+                }, 8);
             }
             catch (error) {
                 window.alert("Please connect a valid ProGCC device.");

@@ -1,5 +1,3 @@
-var gp;
-
 let circle_stick_center_l = document.getElementById('circle-analog-pointer-l').style;
 let circle_stick_center_r = document.getElementById('circle-analog-pointer-r').style;
 
@@ -64,49 +62,25 @@ function rumble(length) {
     }
 }
 
-function poll()
-{
-    gp = navigator.getGamepads()[0];
-    if (gp != null)
-    {
-        var lx = gp.axes[0] * 5.5;
-        var ly = gp.axes[1] * 5.5;
-        var rx = gp.axes[2] * 5.5;
-        var ry = gp.axes[3] * 5.5;
+const SCALE_CONST = 0.04705882352941176470588235294118;
 
-        var la = calculateAngle(lx, ly, 0, 0);
-        var ra = calculateAngle(rx, ry, 0, 0);
+function input_process_data(data) {
+    var lx = (data.getUint8(1)-128) * SCALE_CONST;
+    var ly = (data.getUint8(2)-128) * -SCALE_CONST;
+    var rx = (data.getUint8(3)-128) * SCALE_CONST;
+    var ry = (data.getUint8(4)-128) * -SCALE_CONST;
 
-        var lnp = op + 'translate(' + lx.toString() + 'rem,' + ly.toString() + 'rem)';
-        var rnp = op + 'translate(' + rx.toString() + 'rem,' + ry.toString() + 'rem)';
-        circle_stick_center_l.transform = lnp;
-        circle_stick_center_r.transform = rnp;
+    var la = calculateAngle(lx, ly, 0, 0);
+    var ra = calculateAngle(rx, ry, 0, 0);
 
-        octo_stick_center_l.transform = lnp;
-        octo_angle_l.value = la.toString();
+    var lnp = op + 'translate(' + lx.toString() + 'rem,' + ly.toString() + 'rem)';
+    var rnp = op + 'translate(' + rx.toString() + 'rem,' + ry.toString() + 'rem)';
+    circle_stick_center_l.transform = lnp;
+    circle_stick_center_r.transform = rnp;
 
-        octo_stick_center_r.transform = rnp;
-        octo_angle_r.value = ra.toString();
+    octo_stick_center_l.transform = lnp;
+    octo_angle_l.value = la.toString();
 
-    }  
+    octo_stick_center_r.transform = rnp;
+    octo_angle_r.value = ra.toString();
 }
-
-setInterval(() => {
-    poll();
-}, 8);
-
-window.addEventListener("gamepadconnected", (e) => {
-
-    console.log(
-        e.gamepad
-    );
-
-    gp = navigator.getGamepads()[0];
-    rumble(500);
-
-});
-
-window.addEventListener( "gamepaddisconnected", (e) => {
-        console.log("Gamepad disconnected.");
-    },
-);
