@@ -113,8 +113,9 @@ const listen = async () => {
 
                 case WEBUSB_CMD_REMAP_GET:
                     console.log("Got remap values.");
-                    received_command = WEBUSB_CMD_REMAP_GET;
                     remap_place_values(result.data);
+
+                    color_get_values();
                     break;
 
                 case WEBUSB_CMD_FW_GET:
@@ -242,13 +243,8 @@ const listen = async () => {
             try {
                 fw_display_box(false)
                 enableMenus(true);
-
-                listen_command = WEBUSB_CMD_REMAP_GET;
                 remap_get_values();
-
-                await (received_command == listen_command)
-
-                color_get_values();
+                
             }
             catch(err)
             {
