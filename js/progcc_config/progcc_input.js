@@ -62,7 +62,7 @@ function rumble(length) {
     }
 }
 
-const SCALE_CONST = 0.04705882352941176470588235294118;
+const SCALE_CONST = 0.04509803921568627450980392156863;
 
 function input_process_data(data) {
     var lx = (data.getUint8(1)-128) * SCALE_CONST;
