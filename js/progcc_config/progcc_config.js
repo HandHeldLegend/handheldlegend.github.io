@@ -157,6 +157,8 @@ const listen = async () => {
 
     var listen_id = null;
 
+    var response_code = 0x00;
+
     async function connectButton() {
 
         var devices = await navigator.usb.getDevices({ filters: [{ vendorId: 0x057E, productId: 0x2009 }] });
@@ -228,16 +230,8 @@ const listen = async () => {
     {
         var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
 
-        // REMOVE LATER
-        if (fw == FIRMWARE_VERSION-1)
-        {
-            fw_display_box(true);
-            enableMenus(true);
-            remap_get_values();
-            color_get_values();
-        }
         // REMOVE LATER END
-        else if (fw != FIRMWARE_VERSION)
+        if (fw != FIRMWARE_VERSION)
         {
             console.log("Version mismatch. Current: " + FIRMWARE_VERSION + " | Rec: " + fw);
             fw_display_box(true)
