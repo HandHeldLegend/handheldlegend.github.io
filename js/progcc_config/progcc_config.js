@@ -113,6 +113,7 @@ const listen = async () => {
 
                 case WEBUSB_CMD_REMAP_GET:
                     console.log("Got remap values.");
+                    received_command = WEBUSB_CMD_REMAP_GET;
                     remap_place_values(result.data);
                     break;
 
@@ -156,8 +157,8 @@ const listen = async () => {
     }
 
     var listen_id = null;
-
-    var response_code = 0x00;
+    var listen_command = 0x00;
+    var received_command = 0x00;
 
     async function connectButton() {
 
@@ -241,7 +242,12 @@ const listen = async () => {
             try {
                 fw_display_box(false)
                 enableMenus(true);
+
+                listen_command = WEBUSB_CMD_REMAP_GET;
                 remap_get_values();
+
+                await (received_command == listen_command)
+
                 color_get_values();
             }
             catch(err)
