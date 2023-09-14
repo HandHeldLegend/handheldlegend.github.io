@@ -70,8 +70,13 @@ function input_process_data(data) {
     var rx = (data.getUint8(3)-128) * SCALE_CONST;
     var ry = (data.getUint8(4)-128) * -SCALE_CONST;
 
+    
+
     var la = calculateAngle(lx, ly, 0, 0);
     var ra = calculateAngle(rx, ry, 0, 0);
+
+    if(Math.abs(lx)<0.5 && Math.abs(ly)<0.5) la=0;
+    if(Math.abs(rx)<0.5 && Math.abs(ry)<0.5) ra=0;
 
     var lnp = op + 'translate(' + lx.toString() + 'rem,' + ly.toString() + 'rem)';
     var rnp = op + 'translate(' + rx.toString() + 'rem,' + ry.toString() + 'rem)';
