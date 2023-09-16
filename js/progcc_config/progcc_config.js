@@ -6,7 +6,7 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const FIRMWARE_VERSION = 0x0A0A;
+const FIRMWARE_VERSION = 0x0A0B;
 
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
@@ -20,6 +20,8 @@ const WEBUSB_CMD_SNAPBACK_GET = 0xA2;
 const WEBUSB_CMD_CALIBRATION_START = 0x03;
 const WEBUSB_CMD_CALIBRATION_STOP = 0xA3;
 
+const WEBUSB_CMD_OCTAGON_SET = 0x04;
+
 const WEBUSB_CMD_ANALYZE_START = 0x05;
 const WEBUSB_CMD_ANALYZE_STOP = 0xA5;
 
@@ -32,7 +34,8 @@ const WEBUSB_CMD_GCSP_SET = 0x08;
 
 const WEBUSB_CMD_IMU_CALIBRATION_START = 0x09;
 
-const WEBUSB_CMD_OCTAGON_SET = 0x04;
+const WEBUSB_CMD_VIBRATE_SET = 0x0A;
+const WEBUSB_CMD_VIBRATE_GET = 0xAA;
 
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
@@ -43,6 +46,22 @@ const INPUT_MODE_XINPUT = 1;
 const INPUT_MODE_GAMECUBE = 2;
 const INPUT_MODE_N64 = 3;
 const INPUT_MODE_SNES = 4;
+
+async function config_get_chain(cmd)
+{   
+    if(cmd==WEBUSB_CMD_FW_GET)
+    {
+        await remap_get_values();
+    }
+    else if(cmd==WEBUSB_CMD_REMAP_GET)
+    {
+        await color_get_values();
+    }
+    else if (cmd==WEBUSB_CMD_RGB_GET)
+    {
+        await vibrate_get_value();
+    }
+}
 
 enableMenus(false);
 
@@ -76,6 +95,7 @@ async function sendReport(reportID, data) {
     await device.transferOut(2, dataOut);
 }
 
+
 const listen = async () => {
     if (device != null) {
         try {
@@ -97,10 +117,6 @@ const listen = async () => {
                     snapback_visualizer_plot(nu);
                     break;
 
-                case WEBUSB_CMD_SNAPBACK_GET:
-                    snapback_place_values(result.data);
-                    break;
-
                 case WEBUSB_CMD_SAVEALL:
                     console.log("Got Settings Saved OK.");
                     window.alert("Saved Settings.");
@@ -114,8 +130,6 @@ const listen = async () => {
                 case WEBUSB_CMD_REMAP_GET:
                     console.log("Got remap values.");
                     remap_place_values(result.data);
-
-                    color_get_values();
                     break;
 
                 case WEBUSB_CMD_FW_GET:
@@ -126,7 +140,14 @@ const listen = async () => {
                 case WEBUSB_CMD_INPUT_REPORT:
                     input_process_data(result.data);
                     break;
+
+                case WEBUSB_CMD_VIBRATE_GET:
+                    console.log("Got vibrate value.");
+                    vibrate_place_value(result.data);
+                    break;
             }
+
+            await config_get_chain(result.data.getUint8(0));
         }
         catch (err) {
 
@@ -308,4 +329,22 @@ const listen = async () => {
         }
 
         analog_stop_calibration_confirm();
+    }
+
+    async function vibrate_get_value()
+    {
+        var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATE_GET]);
+        await device.transferOut(2, dataOut);
+    }
+
+    async function vibrate_set_value(value)
+    {
+        var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATE_SET, value]);
+        await device.transferOut(2, dataOut);
+    }
+
+    function vibrate_place_value(data)
+    {
+        document.getElementById("vibeTextValue").innerText = String(data.getUint8(1));
+        document.getElementById("vibeValue").value = data.getUint8(1);
     }

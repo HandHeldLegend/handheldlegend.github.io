@@ -93,6 +93,30 @@
         </div>
         <!-- --------------- -->
 
+        <!-- VIBRATION SETTING -->
+      <!-- --------------- -->
+      <div class="collapsible">
+
+        <input id="vibration_collapsible" class="toggle" type="checkbox">
+
+        <label for="vibration_collapsible" id="vibration_collapsible_toggle" class="lbl-toggle">{vibrationTitle}</label>
+
+        <div class="dropdown">
+            <div class="full-width">
+              <p>{vibrationDesc}</p>
+              <div class="slider">
+                <input type="range" min="0" max="100" value="0" id="vibeValue"
+                  oninput="vibeTextValue.innerText = this.value" onchange="vibrate_set_value(this.value)">
+                <p id="vibeTextValue">0</p>
+              </div>
+              <div class="row">
+              <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
+            </div>
+            </div>
+            
+        </div>
+      </div>
+
         <!-- PROCON COLOR SETTINGS -->
         <div class="collapsible">
 
@@ -452,7 +476,7 @@
   <div class="footer">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
-    2023, Hand Held Legend | Updated 9.13.2023
+    2023, Hand Held Legend | Updated 9.16.2023
   </div>
   <script src="/js/progcc_config/progcc_strings.js"></script>
   <script src="/js/progcc_config/progcc_gcsp.js"></script>

@@ -30,6 +30,8 @@ var eng_strings = {
     gamecubeDesc: 'Select the function for SP mapping.',
     gyroTitle: 'Gyroscope',
     gyroDesc: 'First, place your controller on a flat, stable surface. Press Start and the LEDs will change to yellow. When calibration is complete you will see the confirmation message.',
+    vibrationTitle: 'Vibration',
+    vibrationDesc: 'Vibration Intensity',
 };
 
 var jp_strings = {
@@ -64,6 +66,8 @@ var jp_strings = {
     gamecubeDesc: 'SPマッピングの機能を選択してください。',
     gyroTitle: "ジャイロスコープ",
     gyroDesc: "まず、コントローラーを平らで安定した表面に置いてください。[Start]を押すと、LEDは黄色に変わります。キャリブレーションが完了すると、確認メッセージが表示されます。",
+    vibrationTitle: 'ランブル',
+    vibrationDesc: 'ランブル強度',
 };
 
 let en_radio = document.getElementById("lang_en");
