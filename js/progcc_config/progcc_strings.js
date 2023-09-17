@@ -88,8 +88,6 @@ function replacePlaceholders(element, placeholders) {
 // replace placeholders in body element
 //replacePlaceholders(document.body, eng_strings);
 
-
-
 function changeLang(lang) {
     if (lang) {
         window.location.href = '#jp';

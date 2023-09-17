@@ -256,6 +256,20 @@ function _get_output_id(mapcode) {
     }
 }
 
+function _remap_enable_profile_radio(name, enable)
+{
+    var e = document.getElementById(name);
+    e.style.display = (enable) ? "" : "none";
+}
+
+function remap_enable_menu(enable, joybus, serial) {
+    enable_dropdown_element("remapping", "remapping-toggle", enable);
+
+    _remap_enable_profile_radio("rp_ginput_label", joybus);
+    _remap_enable_profile_radio("rp_n64_label", joybus);
+
+}
+
 function remap_place_values(data) {
     console.log(data);
     var unset = (data.getUint8(18) << 8) | (data.getUint8(19));

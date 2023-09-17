@@ -6,10 +6,10 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const FIRMWARE_VERSION = 0x0A0C;
-
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
+
+const WEBUSB_CMD_CAPABILITIES_GET = 0xBE;
 
 const WEBUSB_CMD_RGB_SET = 0x01;
 const WEBUSB_CMD_RGB_GET = 0xA1;
@@ -61,9 +61,13 @@ async function config_get_chain(cmd)
     {
         await vibrate_get_value();
     }
+    else if (cmd==WEBUSB_CMD_VIBRATE_GET)
+    {
+        await capabilities_get_value();
+    }
 }
 
-enableMenus(false);
+//enableMenus(false);
 
 /** This code works only on properly formatted PWAs **/
 var beforeInstallPrompt = null;
@@ -88,13 +92,13 @@ function installButton() {
     }
 }
 
+// Used for color stuff :)
 async function sendReport(reportID, data) {
     var dataOut1 = [reportID];
     var dataOut = new Uint8Array(dataOut1.concat(data));
 
     await device.transferOut(2, dataOut);
 }
-
 
 const listen = async () => {
     if (device != null) {
@@ -145,9 +149,18 @@ const listen = async () => {
                     console.log("Got vibrate value.");
                     vibrate_place_value(result.data);
                     break;
-            }
 
-            await config_get_chain(result.data.getUint8(0));
+                case WEBUSB_CMD_CAPABILITIES_GET:
+                    console.log("Got capabilities value.");
+                    capabilities_parse(result.data);
+                    break;
+            }
+            
+            if(result.data.getUint8(0)!=WEBUSB_CMD_FW_GET)
+            {
+                await config_get_chain(result.data.getUint8(0));
+            }
+            
         }
         catch (err) {
 
@@ -164,7 +177,7 @@ const listen = async () => {
         if (event.device == device) {
             device = null;
             enableDisconnect(false);
-            enableMenus(false);
+            enable_all_menus(false);
         }
     });
 
@@ -175,7 +188,7 @@ const listen = async () => {
         }
         device=null;
         enableDisconnect(false);
-        enableMenus(false);
+        enable_all_menus(false);
     }
 
     var listen_id = null;
@@ -203,7 +216,6 @@ const listen = async () => {
 
             await fw_get_value();
             enableDisconnect(true);
-            enableMenus(true);
 
             listen_id = setInterval(() => {
 
@@ -252,20 +264,24 @@ const listen = async () => {
     function fw_check_value(data)
     {
         var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
+        var id = (data.getUint8(3) << 8) | (data.getUint8(4));
 
-        // REMOVE LATER END
-        if (fw != FIRMWARE_VERSION)
+        if(CONFIG_DEVICES[id] == undefined)
         {
-            console.log("Version mismatch. Current: " + FIRMWARE_VERSION + " | Rec: " + fw);
-            fw_display_box(true)
+            console.log("Device mismatch.");
+            fw_display_box(true);
+        }
+        // REMOVE LATER END
+        else if (CONFIG_DEVICES[id] != fw)
+        {
+            console.log("Version mismatch. Current: " + fw + " | New: " + CONFIG_DEVICES[id]);
+            fw_display_box(true);
         }
         else
         {
             try {
-                fw_display_box(false)
-                enableMenus(true);
-                remap_get_values();
-                
+                fw_display_box(false);
+                config_get_chain(WEBUSB_CMD_FW_GET);
             }
             catch(err)
             {
@@ -304,33 +320,6 @@ const listen = async () => {
         }
     }
 
-    function enableMenus(enable) {
-        if (enable) {
-            Array.from(menuToggles).forEach(element => {
-                element.removeAttribute('disabled');
-                element.setAttribute('onclick', "setActiveMenu(this.id)");
-            });
-
-            Array.from(menuToggleLabels).forEach(element => {
-                element.removeAttribute('disabled');
-            });
-        }
-        else {
-            Array.from(menuToggles).forEach(element => {
-                if (element.id == "socials-qr") return;
-                element.setAttribute('disabled', 'true');
-                element.checked = false;
-            });
-
-            Array.from(menuToggleLabels).forEach(element => {
-                if (element.id == "socials-toggle") return;
-                element.setAttribute('disabled', 'true');
-            });
-        }
-
-        analog_stop_calibration_confirm();
-    }
-
     async function vibrate_get_value()
     {
         var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATE_GET]);
@@ -348,3 +337,47 @@ const listen = async () => {
         document.getElementById("vibeTextValue").innerText = String(data.getUint8(1));
         document.getElementById("vibeValue").value = data.getUint8(1);
     }
+
+    function vibrate_enable_menu(enable)
+    {
+        enable_dropdown_element("vibration_collapsible", "vibration_collapsible_toggle", enable);
+    }
+
+    function gcspecial_enable_menu(enable)
+    {
+        enable_dropdown_element("gamecube_collapsible", "gamecube_collapsible_toggle", enable);
+    }
+
+    async function capabilities_get_value()
+    {
+        var dataOut = new Uint8Array([WEBUSB_CMD_CAPABILITIES_GET]);
+        await device.transferOut(2, dataOut);
+    }
+
+    function capabilities_parse(data)
+    {
+        var data_low = data.getUint8(1);
+        console.log(data_low);
+        var data_hi = data.getUint8(2);
+        var c = {
+            analog_stick_left:      (data_low & 0x1) ? true : false,
+            analog_stick_right:     (data_low & 0x2) ? true : false,
+            analog_trigger_left:    (data_low & 0x4) ? true : false,
+            analog_trigger_right:   (data_low & 0x8) ? true : false,
+            gyroscope:              (data_low & 0x10) ? true : false,
+            bluetooth:              (data_low & 0x20) ? true : false,
+            rgb:                    (data_low & 0x40) ? true : false,
+            rumble:                 (data_low & 0x80) ? true : false,
+            nintendo_serial:        (data_hi & 0x1) ? true : false,
+            nintendo_joybus:        (data_hi & 0x2) ? true : false
+        };
+
+        analog_enable_menu((c.analog_stick_left | c.analog_stick_right), c.analog_stick_left, c.analog_stick_right);
+        imu_enable_menu(c.gyroscope);
+        color_enable_menu(c.rgb);
+        vibrate_enable_menu(c.rumble);
+        remap_enable_menu(true, c.nintendo_joybus, c.nintendo_serial);
+        gcspecial_enable_menu(c.nintendo_joybus);
+    }
+
+    enable_all_menus(false);

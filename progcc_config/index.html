@@ -187,7 +187,7 @@
 
             <div class="collapsible-row-double">
               <div class="collapsible-column">
-                <div class="circle">
+                <div class="circle" id="left-stick-ui" hidden>
                   <div class="inner-stick"></div>
                   <div class="analog-center"></div>
                   <div id="circle-analog-pointer-l" class="analog-position"></div>
@@ -195,7 +195,7 @@
               </div>
 
               <div class="collapsible-column">
-                <div class="circle">
+                <div class="circle" id="right-stick-ui" hidden>
                   <div class="inner-stick"></div>
                   <div class="analog-center"></div>
                   <div id="circle-analog-pointer-r" class="analog-position"></div>
@@ -235,7 +235,7 @@
 
               <div class="collapsible-column">
                 <input id="octagon-angle-text-l" type="text" disabled />
-                <div class="octagon">
+                <div class="octagon" id="leftocto-stick-ui" hidden>
                   <div class="inner-stick"></div>
                   <div class="analog-center"></div>
                   <div id="octo-analog-pointer-l" class="analog-position"></div>
@@ -244,7 +244,7 @@
 
               <div class="collapsible-column">
                 <input id="octagon-angle-text-r" type="text" disabled />
-                <div class="octagon">
+                <div class="octagon" id="rightocto-stick-ui" hidden>
                   <div class="inner-stick"></div>
                   <div class="analog-center"></div>
                   <div id="octo-analog-pointer-r" class="analog-position"></div>
@@ -309,13 +309,13 @@
               <label for="rp_switch">Switch</label>
               <input type="radio" name="radio_remap_profile" id="rp_xinput"
                 onchange="remap_switch_profile(INPUT_MODE_XINPUT)">
-              <label for="rp_xinput">XInput</label>
+              <label for="rp_xinput" id="rp_xinput_label">XInput</label>
               <input type="radio" name="radio_remap_profile" id="rp_gamecube"
                 onchange="remap_switch_profile(INPUT_MODE_GAMECUBE)">
-              <label for="rp_gamecube">GC</label>
+              <label for="rp_gamecube" id="rp_ginput_label">GC</label>
               <input type="radio" name="radio_remap_profile" id="rp_n64"
                 onchange="remap_switch_profile(INPUT_MODE_N64)">
-              <label for="rp_n64">N64</label>
+              <label for="rp_n64" id="rp_n64_label">N64</label>
             </div>
           </div>
           <div class="remap-row">
@@ -476,16 +476,18 @@
   <div class="footer">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
-    2023, Hand Held Legend | Updated 9.16.2023.r1
+    2023, Hand Held Legend | Updated 9.16.2023.r2
   </div>
+  <script src="/js/progcc_config/progcc_version.js"></script>
+  <script src="/js/progcc_config/progcc_global.js"></script>
   <script src="/js/progcc_config/progcc_strings.js"></script>
   <script src="/js/progcc_config/progcc_gcsp.js"></script>
   <script src="/js/progcc_config/progcc_remap.js"></script>
   <script src="/js/progcc_config/progcc_snapback.js"></script>
   <script src="/js/progcc_config/progcc_analog.js"></script>
   <script src="/js/progcc_config/progcc_input.js"></script>
-  <script src="/js/progcc_config/progcc_config.js"></script>
   <script src="/js/progcc_config/progcc_color.js"></script>
+  <script src="/js/progcc_config/progcc_config.js"></script>
   <script src="/js/progcc_config/svg-loader.min.js"></script>
   <script src="/js/progcc_config/iro.min.js"></script>
 

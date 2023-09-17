@@ -36,6 +36,10 @@ function hexToRgb(hex) {
     return {r: r, g: g, b: b};
 }
 
+function color_enable_menu(enable)
+{
+    enable_dropdown_element("color-settings", "color-settings-toggle", enable);
+}
 
 function rgbToHex(r, g, b) {
     return ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
