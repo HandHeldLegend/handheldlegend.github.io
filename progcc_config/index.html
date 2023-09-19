@@ -67,41 +67,70 @@
           </a>
         </div>
 
-        <!-- SOCIALS -->
+        <!-- INFO -->
         <!-- --------------- -->
         <div class="collapsible">
 
-          <input id="socials-qr" class="toggle" type="checkbox">
+          <input id="info-drop" class="toggle" type="checkbox">
 
-          <label for="socials-qr" id="socials-toggle" , class="lbl-toggle">{social}</label>
+          <label for="info-drop" id="info-toggle" , class="lbl-toggle">{information}</label>
           <div class="dropdown">
             <div class="collapsible-row-double">
-
-              <div class="collapsible-column">
-                <h2>Twitter</h2>
-                <img src="/resources/qr/hhl.png">
-              </div>
-
-              <div class="collapsible-column">
-                <h2>Discord</h2>
-                <img src="/resources/qr/discord.png">
-              </div>
-
+              <row>
+                <h2>Switch Mode</h2>
+                Hold A on plug
+              </row>
+              <row>
+                <h2>XInput Mode</h2>
+                Hold X on plug
+              </row>
             </div>
+
+            <div class="line"></div>
+
+            <div class="collapsible-row-double">
+              <row>
+                <h2>GC USB Mode</h2>
+                Hold + on plug
+              </row>
+              <row>
+                <h2>GC Classic Mode</h2>
+                Hold → on plug
+              </row>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+              <row>
+                <h2>N64 Classic Mode</h2>
+                Hold ↓ on plug
+              </row>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+            <div class="row">
+              <button type="button" onclick="window.open('https:/\/\discord.gg/5z4cFv4rC2', '_blank')">{discord}</button>
+              <button type="button" onclick="window.open('https:/\/\twitter.com/MitchHHL', '_blank')">{twitter}</button>
+            </div>
+          </div>
 
           </div>
         </div>
         <!-- --------------- -->
 
         <!-- VIBRATION SETTING -->
-      <!-- --------------- -->
-      <div class="collapsible">
+        <!-- --------------- -->
+        <div class="collapsible">
 
-        <input id="vibration_collapsible" class="toggle" type="checkbox">
+          <input id="vibration_collapsible" class="toggle" type="checkbox">
 
-        <label for="vibration_collapsible" id="vibration_collapsible_toggle" class="lbl-toggle">{vibrationTitle}</label>
+          <label for="vibration_collapsible" id="vibration_collapsible_toggle"
+            class="lbl-toggle">{vibrationTitle}</label>
 
-        <div class="dropdown">
+          <div class="dropdown">
             <div class="full-width">
               <p>{vibrationDesc}</p>
               <div class="slider">
@@ -110,12 +139,12 @@
                 <p id="vibeTextValue">0</p>
               </div>
               <div class="row">
-              <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
+                <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
+              </div>
             </div>
-            </div>
-            
+
+          </div>
         </div>
-      </div>
 
         <!-- PROCON COLOR SETTINGS -->
         <div class="collapsible">
@@ -274,17 +303,16 @@
         <div class="dropdown">
 
 
-            <div class="full-width">
-              <p>{gyroDesc}</p>
+          <div class="full-width">
+            <p>{gyroDesc}</p>
 
 
-              <div class="line"></div>
+            <div class="line"></div>
 
-              <div class="row">
-                <button type="button" id="start_imu_calibration_button"
-                  onclick="imu_start_calibration()">{start}</button>
-              </div>
+            <div class="row">
+              <button type="button" id="start_imu_calibration_button" onclick="imu_start_calibration()">{start}</button>
             </div>
+          </div>
 
 
         </div>
@@ -476,7 +504,7 @@
   <div class="footer">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
-    2023, Hand Held Legend | Updated 9.16.2023.r2
+    2023, Hand Held Legend | Updated 9.18.2023
   </div>
   <script src="/js/progcc_config/progcc_version.js"></script>
   <script src="/js/progcc_config/progcc_global.js"></script>

@@ -5,7 +5,7 @@ var eng_strings = {
     disconnect: 'Disconnect',
     save: 'Save',
     reset: 'Reset',
-    social: 'Social Media',
+    information: 'Mode Info/Support',
     colorTitle: 'Color Settings',
     copy: 'Copy',
     paste: 'Paste',
@@ -32,6 +32,8 @@ var eng_strings = {
     gyroDesc: 'First, place your controller on a flat, stable surface. Press Start and the LEDs will change to yellow. When calibration is complete you will see the confirmation message.',
     vibrationTitle: 'Vibration',
     vibrationDesc: 'Vibration Intensity',
+    twitter: 'Twitter',
+    discord: 'Discord',
 };
 
 var jp_strings = {
@@ -41,7 +43,7 @@ var jp_strings = {
     disconnect: '切断',
     save: '保存',
     reset: 'リセット',
-    social: 'ソーシャルメディア',
+    information: 'モード情報/サポート',
     colorTitle: 'カラー設定',
     copy: 'コピー',
     paste: '貼り付け',
@@ -68,6 +70,8 @@ var jp_strings = {
     gyroDesc: "まず、コントローラーを平らで安定した表面に置いてください。[Start]を押すと、LEDは黄色に変わります。キャリブレーションが完了すると、確認メッセージが表示されます。",
     vibrationTitle: 'ランブル',
     vibrationDesc: 'ランブル強度',
+    twitter: 'Twitter',
+    discord: 'Discord',
 };
 
 let en_radio = document.getElementById("lang_en");
