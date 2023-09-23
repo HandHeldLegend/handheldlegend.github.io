@@ -68,12 +68,14 @@ function _remap_enable_profile_switcher(enable)
     var xi = document.getElementById("rp_xinput");
     var gc = document.getElementById("rp_gamecube");
     var n64 = document.getElementById("rp_n64");
+    var snes = document.getElementById("rp_snes");
     if(enable)
     {
         sw.removeAttribute('disabled');
         xi.removeAttribute('disabled');
         gc.removeAttribute('disabled');
         n64.removeAttribute('disabled');
+        snes.removeAttribute('disabled');
     }
     else
     {
@@ -81,6 +83,7 @@ function _remap_enable_profile_switcher(enable)
         xi.setAttribute('disabled', true);
         gc.setAttribute('disabled', true);
         n64.setAttribute('disabled', true);
+        snes.setAttribute('disabled', true);
     }
     
 }
@@ -276,7 +279,7 @@ function remap_place_values(data) {
 
     // GC SP data is a subset of the remapping data
     // Place it here
-    gcsp_place_value(data.getUint8(20));
+    gcsp_place_value(data.getUint8(20), data.getUint8(21));
 
     var disabled = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
@@ -403,6 +406,28 @@ function _remap_place_profile_icons(mode) {
         bo_stickr: '...'
     };
 
+    const snes_map = {
+        bo_dup: 'D\u2191',         // Unicode for upward arrow
+        bo_ddown: 'D\u2193',      // Unicode for downward arrow
+        bo_dleft: 'D\u2190',      // Unicode for leftward arrow
+        bo_dright: 'D\u2192',     // Unicode for rightward arrow
+
+        bo_a: 'A',
+        bo_b: 'B',
+        bo_x: 'X',
+        bo_y: 'Y',
+
+        bo_l: 'L',
+        bo_zl: '...',
+        bo_r: 'R',
+        bo_zr: '...',
+
+        bo_plus: 'Strt',
+        bo_minus: 'Sel',
+        bo_stickl: '...',
+        bo_stickr: '...'
+    };
+
     var map;
     switch (mode) {
         default:
@@ -417,6 +442,9 @@ function _remap_place_profile_icons(mode) {
             break;
         case 3:
             map = n64_map;
+            break;
+        case 4:
+            map = snes_map;
             break;
     }
 

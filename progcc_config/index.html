@@ -60,6 +60,13 @@
           <div class="full-width">
             <div class="line"></div>
           </div>
+
+          <div class="full-width" id="fwChangeLog">
+          </div>
+
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
           {fwInstall}
           <a id="downloadLink"
             href="https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2" download>
@@ -75,6 +82,7 @@
 
           <label for="info-drop" id="info-toggle" , class="lbl-toggle">{information}</label>
           <div class="dropdown">
+            <div class="full-width">
             <div class="collapsible-row-double">
               <row>
                 <h2>Switch Mode</h2>
@@ -84,28 +92,37 @@
                 <h2>XInput Mode</h2>
                 Hold X on plug
               </row>
-            </div>
+            </div></div>
 
             <div class="line"></div>
 
+            <div class="full-width">
             <div class="collapsible-row-double">
+              
               <row>
                 <h2>GC USB Mode</h2>
-                Hold + on plug
+                Hold Y on plug
               </row>
               <row>
-                <h2>GC Classic Mode</h2>
-                Hold → on plug
+                <h2>GC Mode</h2>
+                Hold D→ on plug
               </row>
+            </div>
             </div>
 
             <div class="line"></div>
 
             <div class="full-width">
+              <div class="collapsible-row-double">
               <row>
-                <h2>N64 Classic Mode</h2>
-                Hold ↓ on plug
+                <h2>N64 Mode</h2>
+                Hold D↓ on plug
               </row>
+              <row>
+                <h2>SNES Mode</h2>
+                Hold D← on plug
+              </row>
+            </div>
             </div>
 
             <div class="line"></div>
@@ -332,18 +349,27 @@
             <p>{remapDesc2}</p>
             <div class="line"></div>
             <div class="sora_radio_container" id="rp_radio_picker">
+
               <input type="radio" name="radio_remap_profile" id="rp_switch" checked
                 onchange="remap_switch_profile(INPUT_MODE_SWITCH)">
               <label for="rp_switch">Switch</label>
+
               <input type="radio" name="radio_remap_profile" id="rp_xinput"
                 onchange="remap_switch_profile(INPUT_MODE_XINPUT)">
               <label for="rp_xinput" id="rp_xinput_label">XInput</label>
+
               <input type="radio" name="radio_remap_profile" id="rp_gamecube"
                 onchange="remap_switch_profile(INPUT_MODE_GAMECUBE)">
               <label for="rp_gamecube" id="rp_ginput_label">GC</label>
+
               <input type="radio" name="radio_remap_profile" id="rp_n64"
                 onchange="remap_switch_profile(INPUT_MODE_N64)">
               <label for="rp_n64" id="rp_n64_label">N64</label>
+
+              <input type="radio" name="radio_remap_profile" id="rp_snes"
+                onchange="remap_switch_profile(INPUT_MODE_SNES)">
+              <label for="rp_snes" id="rp_snes_label">SNES</label>
+
             </div>
           </div>
           <div class="remap-row">
@@ -476,12 +502,20 @@
             <div class="sora_radio_container" id="radio_gc_sp_picker">
               <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
               <label for="gc_sp_0">Off</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1)">
-              <label for="gc_sp_1">LT</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2)">
-              <label for="gc_sp_2">RT</label>
+              <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1, 0)">
+              <label for="gc_sp_1">Light L</label>
+              <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2, 0)">
+              <label for="gc_sp_2">Light R</label>
+              <input type="radio" name="radio_gc_sp" id="gc_sp_3" onchange="gcsp_set_value(3, 0)">
+              <label for="gc_sp_3">Reset</label>
             </div>
             <div class="line"></div>
+            <p>{gamecubeTrigger}</p>
+            <div class="slider">
+              <input type="range" min="50" max="255" value="50" id="lightValue"
+                oninput="lightTextValue.innerText = this.value.toString()" onchange="gcsp_set_value(0xFF, this.value)">
+              <p id="lightTextValue">50</p>
+            </div>
             <div class="row">
               <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
             </div>

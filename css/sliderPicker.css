@@ -6,7 +6,7 @@
     margin-right: auto;
     margin-top: var(--margin-small);
     margin-bottom: var(--margin-small);
-    width: 75%;
+    width: 50%;
     height: 0.34rem;
     padding: 1rem;
     background: #8bff95ad;
@@ -24,7 +24,8 @@
 @media(max-width: 850px) {
 
     .slider {
-        width: 80%;
+        min-width: 15rem;
+        width: 50%;
     }
 }
 

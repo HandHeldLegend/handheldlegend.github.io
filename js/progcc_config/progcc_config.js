@@ -275,6 +275,7 @@ const listen = async () => {
         else if (CONFIG_DEVICES[id] != fw)
         {
             console.log("Version mismatch. Current: " + fw + " | New: " + CONFIG_DEVICES[id]);
+            replace_firmware_strings(id);
             fw_display_box(true);
         }
         else
