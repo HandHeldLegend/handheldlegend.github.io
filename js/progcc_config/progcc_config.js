@@ -266,7 +266,22 @@ const listen = async () => {
         var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
         var id = (data.getUint8(3) << 8) | (data.getUint8(4));
 
-        if(CONFIG_DEVICES[id] == undefined)
+        const vendor_enable = new URLSearchParams(window.location.search).get('vendor');
+
+        if(vendor_enable!=null)
+        {
+            console.log("Vendor Enable.");
+
+            try {
+                fw_display_box(false);
+                config_get_chain(WEBUSB_CMD_FW_GET);
+            }
+            catch(err)
+            {
+
+            }
+        }
+        else if(CONFIG_DEVICES[id] == undefined)
         {
             console.log("Device mismatch.");
             fw_display_box(true);

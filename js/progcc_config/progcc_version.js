@@ -1,16 +1,14 @@
 const CONFIG_DEVICES = 
 {
-    0xA001 : 0x0A12, // ProGCC 3
+    0xA001 : 0x0A13, // ProGCC 3
 };
 
 const FW_CHANGELOG = 
 {
     0xA001 : // ProGCC 3
-    `9.22.2023 Update:<br>
-    - Fixes USB issue with Slippi<br>
-    - Adds light trigger adjustment<br>
-    - Add SNES/NES Classic mode<br>
-    - Add training mode reset SP option for GC Input<br>
+    `10.2.2023 Update:<br>
+    - Adds dual Z map option<br>
+    - Adjust rumble sensitivity parameters<br>
     `
 }
 

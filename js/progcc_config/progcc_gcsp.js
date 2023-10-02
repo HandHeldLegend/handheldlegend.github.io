@@ -3,6 +3,7 @@ let gc0 = document.getElementById("gc_sp_0");
 let gc1 = document.getElementById("gc_sp_1");
 let gc2 = document.getElementById("gc_sp_2");
 let gc3 = document.getElementById("gc_sp_3");
+let gc4 = document.getElementById("gc_sp_4");
 
 function gcsp_place_value(val, light)
 {
@@ -10,6 +11,7 @@ function gcsp_place_value(val, light)
     gc1.checked = false;
     gc2.checked = false;
     gc3.checked = false;
+    gc4.checked = false;
 
     var el = null;
     switch(val)
@@ -29,6 +31,10 @@ function gcsp_place_value(val, light)
 
         case 3:
             el=gc3;
+            break;
+
+        case 4:
+            el=gc4;
             break;
     }
 
