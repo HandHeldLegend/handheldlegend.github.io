@@ -1,15 +1,16 @@
 const CONFIG_DEVICES = 
 {
-    0xA001 : 0x0A14, // ProGCC 3
+    0xA001 : 0x0A15, // ProGCC 3
 };
 
 const FW_CHANGELOG = 
 {
     0xA001 : // ProGCC 3
-    `10.2.2023r1 Update:<br>
+    `10.2.2023r2 Update:<br>
     - Adds dual Z map option<br>
     - Adjust rumble sensitivity parameters<br>
     - Test fix for rumble disabling mid-play<br>
+    - Forcing rumble fix update<br>
     `
 }
 
