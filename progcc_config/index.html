@@ -83,60 +83,99 @@
           <label for="info-drop" id="info-toggle" , class="lbl-toggle">{information}</label>
           <div class="dropdown">
             <div class="full-width">
-            <div class="collapsible-row-double">
-              <row>
-                <h2>Switch Mode</h2>
-                Hold A on plug
-              </row>
-              <row>
-                <h2>XInput Mode</h2>
-                Hold X on plug
-              </row>
-            </div></div>
-
-            <div class="line"></div>
-
-            <div class="full-width">
-            <div class="collapsible-row-double">
-              
-              <row>
-                <h2>GC USB Mode</h2>
-                Hold Y on plug
-              </row>
-              <row>
-                <h2>GC Mode</h2>
-                Hold D→ on plug
-              </row>
-            </div>
+              <div class="collapsible-row-double">
+                <row>
+                  <h2>Switch Mode</h2>
+                  Hold A on plug
+                </row>
+                <row>
+                  <h2>XInput Mode</h2>
+                  Hold X on plug
+                </row>
+              </div>
             </div>
 
             <div class="line"></div>
 
             <div class="full-width">
               <div class="collapsible-row-double">
-              <row>
-                <h2>N64 Mode</h2>
-                Hold D↓ on plug
-              </row>
-              <row>
-                <h2>SNES Mode</h2>
-                Hold D← on plug
-              </row>
-            </div>
+
+                <row>
+                  <h2>GC USB Mode</h2>
+                  Hold Y on plug
+                </row>
+                <row>
+                  <h2>GC Mode</h2>
+                  Hold D→ on plug
+                </row>
+              </div>
             </div>
 
             <div class="line"></div>
 
             <div class="full-width">
-            <div class="row">
-              <button type="button" onclick="window.open('https:/\/\/discord.gg/5z4cFv4rC2', '_blank')">{discord}</button>
-              <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">{twitter}</button>
+              <div class="collapsible-row-double">
+                <row>
+                  <h2>N64 Mode</h2>
+                  Hold D↓ on plug
+                </row>
+                <row>
+                  <h2>SNES Mode</h2>
+                  Hold D← on plug
+                </row>
+              </div>
             </div>
-          </div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+              <div class="row">
+                <button type="button"
+                  onclick="window.open('https:/\/\/discord.gg/5z4cFv4rC2', '_blank')">{discord}</button>
+                <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">{twitter}</button>
+              </div>
+            </div>
 
           </div>
         </div>
         <!-- --------------- -->
+
+        <!-- Script to determine if arrows are pressed or released-->
+        <script>
+          var keysPressed = false;
+          var setLaterMain = false;
+          var setLaterFloor = false;
+          var toSetMain = 0;
+          var toSetFloor = 0;
+          function areArrowKeysPressed(event) {
+            return ['ArrowLeft', 'ArrowRight'].includes(event.key) && (event.type === 'keydown');
+          }
+
+          // Usage:
+          document.addEventListener('keydown', function (e) {
+            if (areArrowKeysPressed(e)) {
+              keysPressed = true;
+            }
+          });
+
+          document.addEventListener('keyup', function (e) {
+            if (!areArrowKeysPressed(e)) {
+              keysPressed = false;
+
+              if(setLaterMain)
+              {
+                vibrate_set_value(toSetMain);
+                setLaterMain = false;
+              }
+
+              if(setLaterFloor)
+              {
+                vibratefloor_set_value(toSetFloor);
+                setLaterFloor = false;
+              }
+            }
+          });
+        </script>
 
         <!-- VIBRATION SETTING -->
         <!-- --------------- -->
@@ -151,9 +190,16 @@
             <div class="full-width">
               <p>{vibrationDesc}</p>
               <div class="slider">
-                <input type="range" min="0" max="100" value="0" id="vibeValue"
-                  oninput="vibeTextValue.innerText = this.value" onchange="vibrate_set_value(this.value)">
+                <input type="range" min="0" max="50" value="0" id="vibeValue"
+                  oninput="vibeTextValue.innerText = this.value" onchange="if(!keysPressed){vibrate_set_value(this.value)}else {setLaterMain=true; toSetMain=this.value}">
                 <p id="vibeTextValue">0</p>
+              </div>
+              <div class="line"></div>
+              <p>{vibrationDesc2}</p>
+              <div class="slider">
+                <input type="range" min="0" max="50" value="0" id="vibeFloorValue"
+                  oninput="vibeFloorTextValue.innerText = this.value" onchange="if(!keysPressed){vibratefloor_set_value(this.value)}else {setLaterFloor=true; toSetFloor=this.value}">
+                <p id="vibeFloorTextValue">0</p>
               </div>
               <div class="row">
                 <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>

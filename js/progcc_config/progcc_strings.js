@@ -33,6 +33,7 @@ var eng_strings = {
     gyroDesc: 'First, place your controller on a flat, stable surface. Press Start and the LEDs will change to yellow. When calibration is complete you will see the confirmation message.',
     vibrationTitle: 'Vibration',
     vibrationDesc: 'Vibration Intensity',
+    vibrationDesc2: 'Vibration Floor <br>Set this as low as you can to the point <br>where you barely feel a rumble.',
     twitter: 'Twitter',
     discord: 'Discord',
 };
@@ -72,6 +73,7 @@ var jp_strings = {
     gyroDesc: "まず、コントローラーを平らで安定した表面に置いてください。[Start]を押すと、LEDは黄色に変わります。キャリブレーションが完了すると、確認メッセージが表示されます。",
     vibrationTitle: 'ランブル',
     vibrationDesc: 'ランブル強度',
+    vibrationDesc2: '振動の最低限度<br>振動をほんのりと感じるまで<br>この値をできるだけ低く設定してください。',
     twitter: 'Twitter',
     discord: 'Discord',
 };

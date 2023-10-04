@@ -37,6 +37,9 @@ const WEBUSB_CMD_IMU_CALIBRATION_START = 0x09;
 const WEBUSB_CMD_VIBRATE_SET = 0x0A;
 const WEBUSB_CMD_VIBRATE_GET = 0xAA;
 
+const WEBUSB_CMD_VIBRATEFLOOR_SET = 0x0B;
+const WEBUSB_CMD_VIBRATEFLOOR_GET = 0xAB;
+
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
@@ -62,6 +65,10 @@ async function config_get_chain(cmd)
         await vibrate_get_value();
     }
     else if (cmd==WEBUSB_CMD_VIBRATE_GET)
+    {
+        await vibratefloor_get_value();
+    }
+    else if (cmd==WEBUSB_CMD_VIBRATEFLOOR_GET)
     {
         await capabilities_get_value();
     }
@@ -148,6 +155,11 @@ const listen = async () => {
                 case WEBUSB_CMD_VIBRATE_GET:
                     console.log("Got vibrate value.");
                     vibrate_place_value(result.data);
+                    break;
+
+                case WEBUSB_CMD_VIBRATEFLOOR_GET:
+                    console.log("Got vibrate floor value.");
+                    vibratefloor_place_value(result.data);
                     break;
 
                 case WEBUSB_CMD_CAPABILITIES_GET:
@@ -352,6 +364,24 @@ const listen = async () => {
     {
         document.getElementById("vibeTextValue").innerText = String(data.getUint8(1));
         document.getElementById("vibeValue").value = data.getUint8(1);
+    }
+
+    async function vibratefloor_get_value()
+    {
+        var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATEFLOOR_GET]);
+        await device.transferOut(2, dataOut);
+    }
+
+    async function vibratefloor_set_value(value)
+    {
+        var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATEFLOOR_SET, value]);
+        await device.transferOut(2, dataOut);
+    }
+
+    function vibratefloor_place_value(data)
+    {
+        document.getElementById("vibeFloorTextValue").innerText = String(data.getUint8(1));
+        document.getElementById("vibeFloorValue").value = data.getUint8(1);
     }
 
     function vibrate_enable_menu(enable)
