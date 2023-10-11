@@ -177,7 +177,8 @@ const listen = async () => {
         catch (err) {
 
         }
-    };}
+    };
+}
 
     // Set connect and disconnect listeners
     navigator.usb.addEventListener("connect", (event) => {
