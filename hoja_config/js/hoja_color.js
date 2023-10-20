@@ -182,6 +182,9 @@ function color_paste() {
 function color_button_clicked(id) {
     console.log("Button picked: " + id);
 
+    if(activeButtonId != null)
+    document.getElementById(activeButtonId).classList.remove('active');
+
     activeButtonId = id;
     var buttonEl = document.getElementById(id);
     buttonEl.classList.add('active');

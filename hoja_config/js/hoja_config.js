@@ -427,4 +427,4 @@ const listen = async () => {
         gcspecial_enable_menu(c.nintendo_joybus);
     }
 
-    enable_all_menus(false);
+    enable_all_menus(true);

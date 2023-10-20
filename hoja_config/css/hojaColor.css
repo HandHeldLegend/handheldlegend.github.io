@@ -1,9 +1,8 @@
 #hojaColorSvg {
     margin-top: 1rem;
     display: flex;
-    margin-left: auto;
-    margin-right: auto;
-    width: 60%;
+    margin-left: 1%;
+    width: 49%;
     flex-wrap: nowrap;
     flex-direction: column;
     transition: all .25s ease-in-out;
@@ -13,9 +12,8 @@
 #hojaColorPicker {
     margin-top: 1rem;
     display: flex;
-    margin-left: auto;
-    margin-right: auto;
-    width: 35%;
+    margin-right: 1%;
+    width: 49%;
     flex-direction: column;
     transition: all .25s ease-in-out;
     min-height: 10rem;
@@ -29,22 +27,35 @@
 }
 
 @media(max-width: 850px) {
+
+    #hojaColorSvg {
+        margin-left: auto;
+        margin-right: auto;
+        height: auto;
+        width: 100%;
+    }
+
     #lightConfig {
         flex-direction: row;
     }
 
     #hojaColorPicker {
+        margin-left: auto;
+        margin-right: auto;
         width: fit-content;
+    }
+
+    .controller-led {
+        height: auto;
+        max-width: 25rem;
+        margin:auto;
     }
 }
 
 /* Controller SVG Container class */
 .controller-led {
     width: 100%;
-    height: auto;
-    max-width: 20rem;
-    margin:auto;
-    
+    height: 100%;
 }
 
 .svgButtonClickable {
