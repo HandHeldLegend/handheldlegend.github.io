@@ -1,12 +1,12 @@
 {
-  "name": "ProGCC Config Tool",
-  "short_name": "ProGCC",
-  "start_url": "/progcc_config/index.html",
+  "name": "HOJA Config Tool",
+  "short_name": "HOJA",
+  "start_url": "/hoja_config/index.html",
   "display": "standalone",
   "background_color": "#22172b",
   "theme_color": "black",
   "scope": ".",
-  "description": "This is a tool to configure your ProGCC 3.",
+  "description": "This is a tool to configure your HOJA enabled gamepad.",
   "icons": [
     {
       "src": "images/icon_transparent.png",

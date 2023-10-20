@@ -160,7 +160,7 @@ async function color_set_value(id, hexColor) {
             await sendReport(WEBUSB_CMD_RGB_SET, [group, rgb.r, rgb.g, rgb.b]);
         }
         else {
-            console.log("Connect ProGCC first.");
+            console.log("Connect Controller first.");
         }
     }
     else {

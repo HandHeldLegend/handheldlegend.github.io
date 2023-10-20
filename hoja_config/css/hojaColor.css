@@ -1,4 +1,4 @@
-#progccColorSvg {
+#hojaColorSvg {
     margin-top: 1rem;
     display: flex;
     margin-left: auto;
@@ -10,7 +10,7 @@
     min-height: 10rem;
 }
 
-#progccColorPicker {
+#hojaColorPicker {
     margin-top: 1rem;
     display: flex;
     margin-left: auto;
@@ -33,7 +33,7 @@
         flex-direction: row;
     }
 
-    #progccColorPicker {
+    #hojaColorPicker {
         width: fit-content;
     }
 }

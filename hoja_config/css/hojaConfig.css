@@ -1,5 +1,5 @@
 #langButton {
-    background: rgb(142, 247, 255);
+    background: var(--sub-button-color-active);
     display:block;
     width: 4rem;
     height: 2rem;
