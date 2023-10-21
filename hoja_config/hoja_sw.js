@@ -13,6 +13,9 @@ const urlsToCache = [
     'js/svg-loader.min.js',
     'js/iro.min.js',
     'js/hoja_config.js',
+
+    'svg/procontroller.svg',
+    'svg/snescontroller.svg',
   
     // Image Files
     //'../css/spooky/jak1.svg',
