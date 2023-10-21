@@ -220,8 +220,8 @@
           <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">{colorTitle}</label>
           <div class="dropdown">
             <div id="hojaColorSvg">
-              <svg class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled" data-unique-ids="disabled"
-                data-css-scoping="disabled" oniconload="color_page_init()"></svg>
+              <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled" data-unique-ids="disabled"
+                data-css-scoping="disabled"></svg>
             </div>
 
             <div id="hojaColorPicker">
@@ -600,9 +600,9 @@
   <script src="js/hoja_analog.js"></script>
   <script src="js/hoja_input.js"></script>
   <script src="js/hoja_color.js"></script>
-  <script src="js/hoja_config.js"></script>
   <script src="js/svg-loader.min.js"></script>
   <script src="js/iro.min.js"></script>
+  <script src="js/hoja_config.js"></script>
 
 </body>
 

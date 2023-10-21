@@ -1,4 +1,4 @@
-const CONFIG_DEVICES = 
+const DEVICE_FW_VERSIONS = 
 {
     0xA001 : 0x0A16, // ProGCC 3
     0xA002 : 0x0A00, // ProGCC 3+

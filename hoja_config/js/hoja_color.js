@@ -21,6 +21,34 @@ let colorPicker = null;
 
 let hexBoxElement = document.getElementById('colorHexBox');
 
+function color_set_device(device_id)
+{
+    let device="procontroller";
+    let sig_id = (device_id & 0xF000) >> 12;
+
+    if( (sig_id == 0xB))
+    {
+        console.log("Loaded SNES svg");
+        device="snescontroller";
+    }
+    else console.log("Loaded ProCon svg");
+
+    let loader = document.getElementById("colorSvgLoader");
+
+    if(device=="snescontroller")
+    {
+        loader.setAttribute('data-src', 'svg/snescontroller.svg');
+    }
+    else if(device=="procontroller")
+    {
+        loader.setAttribute('data-src', 'svg/procontroller.svg');
+    }
+
+    loader.setAttribute('oniconload', 'color_page_init()');
+
+    //loader.reload();
+}
+
 function hexToRgb(hex) {
     // Ensure the hex color starts with '#'
     if (hex[0] !== '#') {
@@ -53,7 +81,10 @@ function color_page_init() {
             color_button_clicked(element.id);
         });
     });
+}
 
+function color_page_picker_init()
+{
     colorPicker = new iro.ColorPicker('#colorPicker', {
         width: 200,
         layout: [
@@ -79,7 +110,6 @@ function color_page_init() {
         svg_set_hex(activeButtonId, color.hexString);
         hexbox_set_hex(color.hexString);
     });
-
 }
 
 function hexbox_set_hex(hex) {
@@ -88,8 +118,17 @@ function hexbox_set_hex(hex) {
 
 function svg_set_rgb(id, r, g, b) {
     var hexString = "#" + rgbToHex(r, g, b);
-    var el = document.getElementById(id);
-    el.style.fill = hexString;
+
+    try
+    {
+        var el = document.getElementById(id);
+        el.style.fill = hexString;
+    }
+    catch(err)
+    {
+
+    }
+    
 }
 
 function svg_set_hex(id, hex) {
