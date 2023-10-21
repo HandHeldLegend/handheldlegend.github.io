@@ -177,7 +177,8 @@ const listen = async () => {
         catch (err) {
 
         }
-    };}
+    };
+}
 
     // Set connect and disconnect listeners
     navigator.usb.addEventListener("connect", (event) => {
@@ -278,6 +279,8 @@ const listen = async () => {
         var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
         var id = (data.getUint8(3) << 8) | (data.getUint8(4));
 
+        console.log("Device ID: " + id.toString());
+
         const vendor_enable = new URLSearchParams(window.location.search).get('vendor');
 
         if(vendor_enable!=null)
@@ -293,21 +296,22 @@ const listen = async () => {
 
             }
         }
-        else if(CONFIG_DEVICES[id] == undefined)
+        else if(DEVICE_FW_VERSIONS[id] == undefined)
         {
             console.log("Device mismatch.");
             fw_display_box(true);
         }
         // REMOVE LATER END
-        else if (CONFIG_DEVICES[id] != fw)
+        else if (DEVICE_FW_VERSIONS[id] != fw)
         {
-            console.log("Version mismatch. Current: " + fw + " | New: " + CONFIG_DEVICES[id]);
+            console.log("Version mismatch. Current: " + fw + " | New: " + DEVICE_FW_VERSIONS[id]);
             replace_firmware_strings(id);
             fw_display_box(true);
         }
         else
         {
             try {
+                color_set_device(id);
                 fw_display_box(false);
                 config_get_chain(WEBUSB_CMD_FW_GET);
             }
@@ -426,4 +430,17 @@ const listen = async () => {
         gcspecial_enable_menu(c.nintendo_joybus);
     }
 
+    color_page_picker_init();
     enable_all_menus(false);
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('hoja_sw.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(err => {
+            console.log('Service Worker registration failed:', err);
+          });
+      }
+      

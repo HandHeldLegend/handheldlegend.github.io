@@ -1,5 +1,5 @@
 var eng_strings = {
-    title: 'ProGCC Firmware Configurator',
+    title: 'HOJA Firmware Config',
     install: 'Install App',
     connect: 'Connect',
     disconnect: 'Disconnect',
@@ -19,11 +19,11 @@ var eng_strings = {
     octagonDesc: 'To calibrate your controller for an octagon gate, move your analog stick to one of the octagon corners, then press the button below to update the angle. Press save when you are happy with the results.',
     update: 'Update',
     remapTitle: 'Remapping',
-    remapDesc: 'To remap a button, click one of the button icons. Next, press the desired button on your ProGCC.',
+    remapDesc: 'To remap a button, click one of the button icons. Next, press the desired button on your controller.',
     remapDesc2: "Click 'Save' when you are happy with the results.",
     fwMsg1: 'Your device is out of date!',
     fwMsg2: 'Click the button below to reset your controller to FW update mode.',
-    fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager. Be sure to recalibrate after updating!',
+    fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager.',
     download: 'Download',
     bootloader: 'Bootloader',
     gamecubeTitle: 'GameCube SP Function',
@@ -39,7 +39,7 @@ var eng_strings = {
 };
 
 var jp_strings = {
-    title: 'ProGCCファームウェア設定',
+    title: '「HOJA」ファームウェア設定',
     install: 'アプリをインストール',
     connect: '接続',
     disconnect: '切断',
@@ -59,7 +59,7 @@ var jp_strings = {
     octagonDesc: "八角ガイドシェル用にスティックを調整するには、アナログスティックを八角形の角の1つにスティックを傾け、下の'更新'を押して角度を更新します。調整が完了して問題がなければ'保存'を押してください。",
     update: '更新',
     remapTitle: 'リマッピング',
-    remapDesc: 'ボタンをリマップするには、ボタンアイコンの1つをクリックします。次に、ProGCCで目的のボタンを押します。',
+    remapDesc: 'ボタンをリマップするには、ボタンアイコンの1つをクリックします。次に、「HOJA」で目的のボタンを押します。',
     remapDesc2: "結果に満足したら、'保存'をクリックします。",
     fwMsg1: 'あなたのデバイスは古いです！',
     fwMsg2: '下のボタンをクリックして、コントローラーをFWアップデートモードにリセットしてください。',

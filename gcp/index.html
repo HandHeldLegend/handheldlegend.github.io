@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script type="module" src="/js/esp32webtool/install-button.js"> </script>
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="css/gcp_config.css" type="text/css">
+  <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
+  <link rel="stylesheet" href="/css/radioPicker.css" type="text/css">
+  <link rel="stylesheet" href="/css/containers.css" type="text/css">
+
+  <!-- Meta Tags required for
+       Progressive Web App -->
+  <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
+  <meta name="theme-color" content="black">
+
+  <!-- Manifest File link -->
+  <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+  <div class="context">
+
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+
+    <h1>{title}</h1>
+
+    <div class="box">
+      <div class="box-inner">
+        <button type="button" id="installButton" onclick="installButton()" >{install}</button>
+        <div class="row">
+          <button type="button" id="connectButton" onclick="connectButton()">{connect}</button>
+          <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>{disconnect}</button>
+        </div>
+
+        <div class="message-box" id="ood" >
+
+          <h2>{fwMsg1}</h2>
+          {fwMsg2}
+          <button type="button" id="fwButton" onclick="fwButton()">{bootloader}</button>
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
+
+          <div class="full-width" id="fwChangeLog">
+          </div>
+
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
+          {fwInstall}
+          <a id="install_rp2040"
+            href="https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2" download>
+            <button type="button" id="fwButton">{download}</button>
+          </a>
+          <esp-web-install-button id="install_esp32" manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>
+        </div>
+
+        <!-- INFO -->
+        <!-- --------------- -->
+        <div class="collapsible">
+
+          <input id="info-drop" class="toggle" type="checkbox">
+
+          <label for="info-drop" id="info-toggle" , class="lbl-toggle">{information}</label>
+          <div class="dropdown">
+            <div class="full-width">
+            <div class="collapsible-row-double">
+              <row>
+                <h2>Switch Mode</h2>
+                Hold A on plug
+              </row>
+              <row>
+                <h2>XInput Mode</h2>
+                Hold X on plug
+              </row>
+            </div></div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+            <div class="collapsible-row-double">
+              
+              <row>
+                <h2>GC USB Mode</h2>
+                Hold Y on plug
+              </row>
+              <row>
+                <h2>GC Mode</h2>
+                Hold D→ on plug
+              </row>
+            </div>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+              <div class="collapsible-row-double">
+              <row>
+                <h2>N64 Mode</h2>
+                Hold D↓ on plug
+              </row>
+              <row>
+                <h2>SNES Mode</h2>
+                Hold D← on plug
+              </row>
+            </div>
+            </div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+            <div class="row">
+              <button type="button" onclick="window.open('https:/\/\/discord.gg/5z4cFv4rC2', '_blank')">{discord}</button>
+              <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">{twitter}</button>
+            </div>
+          </div>
+
+          </div>
+        </div>
+        <!-- --------------- -->
+
+    <!-- VIBRATION SETTING -->
+    <!-- --------------- -->
+    <div class="collapsible">
+
+        <input id="vibration_collapsible" class="toggle" type="checkbox">
+
+        <label for="vibration_collapsible" id="vibration_collapsible_toggle"
+        class="lbl-toggle">{vibrationTitle}</label>
+
+        <div class="dropdown">
+        <div class="full-width">
+            <p>{vibrationDesc}</p>
+            <div class="slider">
+            <input type="range" min="0" max="100" value="0" id="vibeValue"
+                oninput="vibeTextValue.innerText = this.value" onchange="vibrate_set_value(this.value)">
+            <p id="vibeTextValue">0</p>
+            </div>
+            <div class="row">
+            <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
+            </div>
+        </div>
+
+        </div>
+    </div>
+
+
+    <!-- GAMECUBE SETTINGS -->
+    <!-- --------------- -->
+    <div class="collapsible">
+
+    <input id="gamecube_collapsible" class="toggle" type="checkbox">
+
+    <label for="gamecube_collapsible" id="gamecube_collapsible_toggle" class="lbl-toggle">{gamecubeTitle}</label>
+
+    <div class="dropdown">
+
+        <div class="full-width">
+        <p>{gamecubeDesc}</p>
+        <div class="line"></div>
+        <div class="sora_radio_container" id="radio_gc_sp_picker">
+            <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
+            <label for="gc_sp_0">Off</label>
+            <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1, 0)">
+            <label for="gc_sp_1">Light L</label>
+            <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2, 0)">
+            <label for="gc_sp_2">Light R</label>
+            <input type="radio" name="radio_gc_sp" id="gc_sp_3" onchange="gcsp_set_value(3, 0)">
+            <label for="gc_sp_3">Reset</label>
+            <input type="radio" name="radio_gc_sp" id="gc_sp_4" onchange="gcsp_set_value(4, 0)">
+            <label for="gc_sp_4">Dual Z</label>
+        </div>
+        <div class="line"></div>
+        <p>{gamecubeTrigger}</p>
+        <div class="slider">
+            <input type="range" min="50" max="255" value="50" id="lightValue"
+            oninput="lightTextValue.innerText = this.value.toString()" onchange="gcsp_set_value(0xFF, this.value)">
+            <p id="lightTextValue">50</p>
+        </div>
+        <div class="row">
+            <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
+        </div>
+        </div>
+
+    </div>
+    </div>
+
+
+    <!-- FIRMWARE UPDATES -->
+    <!-- --------------- -->
+    <div class="collapsible">
+
+        <input id="firmware_collapsible" class="toggle" type="checkbox">
+
+        <label for="firmware_collapsible" id="firmware_collapsible_toggle"
+        class="lbl-toggle">{firmwareTitle}</label>
+
+        <div class="dropdown">
+        <div class="full-width">
+            
+        </div>
+
+        </div>
+    </div>
+
+
+
+    </div>
+  </div>
+  <!-- --------------- -->
+
+
+
+  </div>
+  </div>
+  </div>
+  <div class="footer">
+    <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
+    Cairns | ©
+    2023, Hand Held Legend | Updated 10.2.2023r1
+  </div>
+  <script src="js/gcp_config.js"></script>
+
+</body>
+
+</html>

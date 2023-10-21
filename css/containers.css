@@ -22,7 +22,7 @@
     margin-left: auto;
     margin-right: auto;
     color: rgba(0, 0, 0, 0.596);
-    background: #00b7ffd5;
+    background: var(--button-color-active);
     cursor: pointer;
     border-radius: 0.5rem;
     transition: all 0.25s ease-out;

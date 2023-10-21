@@ -1,19 +1,25 @@
 const CONFIG_DEVICES = 
 {
-    0xA001 : 0x0A16, // ProGCC 3
+    0xA000 : 0x0A00, // GCPocket (ESP32-S3)
+    0xA001 : 0x0A00, // GCPocket+ (RP2040)
 };
 
 const FW_CHANGELOG = 
 {
-    0xA001 : // ProGCC 3
-    `10.4.2023 Update:<br>
-    - Add new rumble floor option.<br>
-    - This allows calibration for different rumble resistance.<br>
+    0xA000 : // GCPocket (ESP32-S3)
+    `10.3.2023 Update:<br>
+    - No changes
+    `,
+
+    0xA001 : // GCPocket+ (RP2040)
+    `10.3.2023 Update:<br>
+    - No changes
     `
 }
 
 const FW_UPDATE_URLS = 
 {
+    0xA000 : "google.com",
     0xA001 : "google.com",
 };
 
