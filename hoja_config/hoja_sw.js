@@ -1,3 +1,5 @@
+// SW Updated Date: 10/22/2023
+
 const CACHE_NAME = 'hoja-pwa-cache-v1';
 const urlsToCache = [
     // HTML files
