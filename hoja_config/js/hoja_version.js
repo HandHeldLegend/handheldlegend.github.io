@@ -3,6 +3,7 @@ const DEVICE_FW_VERSIONS =
     0xA001 : 0x0A16, // ProGCC 3
     0xA002 : 0x0A00, // ProGCC 3+
     0xB001 : 0x0A00, // SuperGamepad+
+    0xA00A : 0x0A00, // ThingamaPro (Esca)
 };
 
 const MODEM_FW = 0xA001; // Current BT Modem firmware
@@ -37,6 +38,7 @@ const FW_UPDATE_URLS =
     0xA002 : "google.com",
     0xB001 : "google.com",
     0xB002 : "google.com",
+    0xA00A : "google.com"
 };
 
 function replace_firmware_strings(id)
