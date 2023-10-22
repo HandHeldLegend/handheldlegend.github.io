@@ -1,5 +1,8 @@
 const CACHE_NAME = 'hoja-pwa-cache-v1';
 const urlsToCache = [
+    // HTML files
+    'index.html',
+
     // JS Files
     'js/hoja_version.js',
     'js/hoja_global.js',
