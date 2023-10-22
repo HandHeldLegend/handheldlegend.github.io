@@ -45,6 +45,5 @@ function replace_firmware_strings(id)
     var e = document.getElementById("fwChangeLog");
     e.innerHTML = FW_CHANGELOG[id];
     var f = document.getElementById("downloadLink");
-    console.log("Setting DL Link: " + FW_UPDATE_URLS[id]);
-    f.setAttribute(href, FW_UPDATE_URLS[id]);
+    f.setAttribute('href', FW_UPDATE_URLS[id]);
 }

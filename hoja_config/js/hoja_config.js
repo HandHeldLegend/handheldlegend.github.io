@@ -312,7 +312,6 @@ const listen = async () => {
         {
             try {
                 color_set_device(id);
-                replace_firmware_strings(id);
                 fw_display_box(false);
                 config_get_chain(WEBUSB_CMD_FW_GET);
             }
