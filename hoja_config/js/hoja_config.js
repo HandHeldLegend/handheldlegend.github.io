@@ -438,7 +438,7 @@ const listen = async () => {
         navigator.serviceWorker.register('hoja_sw.js')
           .then(registration => {
             console.log('Service Worker registered with scope:', registration.scope);
-            location.reload();
+            
           })
           .catch(err => {
             console.log('Service Worker registration failed:', err);
