@@ -1,6 +1,6 @@
 // SW Updated Date: 10/22/2023
 
-const CACHE_NAME = 'hoja-pwa-cache-v1';
+const CACHE_NAME = 'hoja-pwa-cache-v2';
 const urlsToCache = [
     // HTML files
     'index.html',
@@ -48,8 +48,37 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
+
+        caches.keys().then(cacheNames => {
+          return Promise.all(
+              cacheNames.map(cache => {
+                  if (cache !== CACHE_NAME) {
+                      console.log("Deleting stale cache (Install).");
+                      var s = caches.delete(cache);
+                      return s;
+                  }
+              })
+          );
+      })
+
         console.log('Opened cache');
         return cache.addAll(urlsToCache);
+      })
+  );
+});
+
+self.addEventListener('activate', event => {
+  // Clean up old caches
+  event.waitUntil(
+      caches.keys().then(cacheNames => {
+          return Promise.all(
+              cacheNames.map(cache => {
+                  if (cache !== CACHE_NAME) {
+                      console.log("Deleting stale cache (Activate).");
+                      return caches.delete(cache);
+                  }
+              })
+          );
       })
   );
 });
