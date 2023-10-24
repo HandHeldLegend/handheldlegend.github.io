@@ -1,6 +1,6 @@
 const DEVICE_FW_VERSIONS = 
 {
-    0xA001 : 0x0A16, // ProGCC 3
+    0xA001 : 0x0A17, // ProGCC 3
     0xA002 : 0x0A00, // ProGCC 3+
     0xB001 : 0x0A00, // SuperGamepad+
     0xA00A : 0x0A00, // ThingamaPro (Esca)
@@ -11,9 +11,9 @@ const MODEM_FW = 0xA001; // Current BT Modem firmware
 const FW_CHANGELOG = 
 {
     0xA001 : // ProGCC 3
-    `10.4.2023 Update:<br>
-    - Add new rumble floor option.<br>
-    - This allows calibration for different rumble resistance.<br>
+    `10.24.2023 Update:<br>
+    - Fixes dual Z mode.<br>
+    - Update webUSB notification URL.<br>
     `,
     0xA002 : // ProGCC 3+
     `10.4.2023 Update:<br>
