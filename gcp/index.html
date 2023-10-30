@@ -37,21 +37,26 @@
       <li></li>
     </ul>
 
-    <h1>{title}</h1>
+    <h1>GC Pocket Update Tool</h1>
 
     <div class="box">
       <div class="box-inner">
-        <button type="button" id="installButton" onclick="installButton()" >{install}</button>
+        <!--<button type="button" id="installButton" onclick="installButton()" >{install}</button>-->
         <div class="row">
-          <button type="button" id="connectButton" onclick="connectButton()">{connect}</button>
-          <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>{disconnect}</button>
+          <button type="button" id="connectButton" onclick="connectButton()">Connect</button>
+          <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>Disconnect</button>
         </div>
 
-        <div class="message-box" id="ood" >
+        <!-- FW UPDATE MSG BOX -->
+        <div class="message-box" id="firmware-update-box" disabled="true">
 
           <h2>{fwMsg1}</h2>
           {fwMsg2}
+
+          <div class="row">
           <button type="button" id="fwButton" onclick="fwButton()">{bootloader}</button>
+          </div>
+
           <div class="full-width">
             <div class="line"></div>
           </div>
@@ -63,11 +68,30 @@
             <div class="line"></div>
           </div>
           {fwInstall}
+
+          <div class="row">
           <a id="install_rp2040"
-            href="https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2" download>
+            href="https://github.com/HandHeldLegend/GC-Adapter-RP2040/raw/master/FW/build/gc_adapter_rp2040.uf2" download>
             <button type="button" id="fwButton">{download}</button>
+          </a></div>
+          <!--<esp-web-install-button id="install_esp32" manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>-->
+        </div>
+
+        <!-- INITIAL FW INSTALL MSG BOX RP2040 -->
+        <div class="message-box" id="rp2040-initialize-board-box" disabled="true">
+          <h2>Initialize Device</h2>
+          To initialize your new GC Pocket+, hold down both buttons, then plug in the device via USB.
+          Download the firmware using the button below, then drag the firmware to the RPI-RP2 device in your file explorer/Finder app. 
+
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
+
+          <div class="row">
+          <a id="downloadLink"
+            href="https://github.com/HandHeldLegend/GC-Adapter-RP2040/raw/master/FW/build/gc_adapter_rp2040.uf2" download>
+            <button type="button" id="fwButton">Download</button></div>
           </a>
-          <esp-web-install-button id="install_esp32" manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>
         </div>
 
         <!-- INFO -->
@@ -76,17 +100,24 @@
 
           <input id="info-drop" class="toggle" type="checkbox">
 
-          <label for="info-drop" id="info-toggle" , class="lbl-toggle">{information}</label>
+          <label for="info-drop" id="info-toggle" , class="lbl-toggle">Usage Info</label>
           <div class="dropdown">
+
+            <p>Use either button to cycle the mode. The LED color indicates the current mode.</p>
+
+            <div class="full-width">
+              <div class="line"></div>
+            </div>
+
             <div class="full-width">
             <div class="collapsible-row-double">
               <row>
                 <h2>Switch Mode</h2>
-                Hold A on plug
+                Yellow LED
               </row>
               <row>
                 <h2>XInput Mode</h2>
-                Hold X on plug
+                Green LED
               </row>
             </div></div>
 
@@ -97,26 +128,11 @@
               
               <row>
                 <h2>GC USB Mode</h2>
-                Hold Y on plug
+                Purple LED
               </row>
               <row>
-                <h2>GC Mode</h2>
-                Hold D→ on plug
-              </row>
-            </div>
-            </div>
-
-            <div class="line"></div>
-
-            <div class="full-width">
-              <div class="collapsible-row-double">
-              <row>
-                <h2>N64 Mode</h2>
-                Hold D↓ on plug
-              </row>
-              <row>
-                <h2>SNES Mode</h2>
-                Hold D← on plug
+                <h2>Slippi Mode</h2>
+                Pink LED
               </row>
             </div>
             </div>
@@ -125,8 +141,8 @@
 
             <div class="full-width">
             <div class="row">
-              <button type="button" onclick="window.open('https:/\/\/discord.gg/5z4cFv4rC2', '_blank')">{discord}</button>
-              <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">{twitter}</button>
+              <button type="button" onclick="window.open('https:/\/\/discord.gg/5z4cFv4rC2', '_blank')">Discord</button>
+              <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">Twitter</button>
             </div>
           </div>
 
@@ -135,7 +151,7 @@
         <!-- --------------- -->
 
     <!-- VIBRATION SETTING -->
-    <!-- --------------- -->
+    <!-- --------------- 
     <div class="collapsible">
 
         <input id="vibration_collapsible" class="toggle" type="checkbox">
@@ -157,11 +173,11 @@
         </div>
 
         </div>
-    </div>
+    </div>-->
 
 
     <!-- GAMECUBE SETTINGS -->
-    <!-- --------------- -->
+    <!-- --------------- 
     <div class="collapsible">
 
     <input id="gamecube_collapsible" class="toggle" type="checkbox">
@@ -198,11 +214,11 @@
         </div>
 
     </div>
-    </div>
+    </div>-->
 
 
-    <!-- FIRMWARE UPDATES -->
-    <!-- --------------- -->
+    <!-- FIRMWARE UPDATES 
+    <!-- ---------------
     <div class="collapsible">
 
         <input id="firmware_collapsible" class="toggle" type="checkbox">
@@ -216,7 +232,7 @@
         </div>
 
         </div>
-    </div>
+    </div> -->
 
 
 
@@ -234,6 +250,8 @@
     Cairns | ©
     2023, Hand Held Legend | Updated 10.2.2023r1
   </div>
+  <script src="js/gcp_version.js"></script>
+  <script src="js/gcp_strings.js"></script>
   <script src="js/gcp_config.js"></script>
 
 </body>

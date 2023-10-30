@@ -153,18 +153,18 @@ canvas {
     z-index: 0;
 }
 
-.message-box[disabled="false"] {
+.message-box {
     font-family: inherit;
     display: block;
     font-size: 1.5rem;
     text-align: center;
     padding: 0.3rem;
-    width: fit-content;
+    width: auto;
     margin: 0.25rem;
     margin-left: auto;
     margin-right: auto;
     color: rgba(0, 0, 0, 0.596);
-    background: #ff5100d5;
+    background: #ff75358c;
     cursor: pointer;
     border-radius: 0.5rem;
     border-color: #ffffff00;
@@ -205,6 +205,11 @@ and (max-width: 850px) {
     h1 {
         font-size: 2rem;
     }
+}
+
+a {
+    color: #3ec21c;
+    text-decoration: none;
 }
 
 p {

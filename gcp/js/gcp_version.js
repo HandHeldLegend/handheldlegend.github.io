@@ -23,9 +23,34 @@ const FW_UPDATE_URLS =
     0xA001 : "google.com",
 };
 
+function version_initialization()
+{
+    // Get the current URL
+    const url = new URL(window.location.href);
+
+    // Try to get the 'init' parameter value
+    const initValue = url.searchParams.get('init');
+
+    if (initValue) {
+        // Perform check based on the 'init' value
+        switch (initValue) {
+            case 'gcpplus':
+                console.log('Init value is gcpplus');
+                document.getElementById('rp2040-initialize-board-box').setAttribute('disabled', 'false');
+                break;
+            default:
+                console.log('Unknown init value:', initValue);
+        }
+    } else {
+        console.log('No init parameter found.');
+    }
+}
+
 function replace_firmware_strings(id)
 {
     console.log("Get changelog for " + id);
     var e = document.getElementById("fwChangeLog");
     e.innerHTML = FW_CHANGELOG[id];
 }
+
+version_initialization();

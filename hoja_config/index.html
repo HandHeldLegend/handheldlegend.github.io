@@ -30,16 +30,16 @@
 
     <!--<ul class="circles"> SPOOKY SEASON-->
     <ul class="spooky">
-      <li><img src="/css/spooky/jak1.svg"/></li>
-      <li><img src="/css/spooky/jak2.svg"/></li>
-      <li><img src="/css/spooky/jak3.svg"/></li>
-      <li><img src="/css/spooky/jak1.svg"/></li>
-      <li><img src="/css/spooky/jak2.svg"/></li>
-      <li><img src="/css/spooky/jak3.svg"/></li>
-      <li><img src="/css/spooky/jak1.svg"/></li>
-      <li><img src="/css/spooky/jak2.svg"/></li>
-      <li><img src="/css/spooky/jak3.svg"/></li>
-      <li><img src="/css/spooky/jak1.svg"/></li>
+      <li><img src="/css/spooky/jak1.svg" /></li>
+      <li><img src="/css/spooky/jak2.svg" /></li>
+      <li><img src="/css/spooky/jak3.svg" /></li>
+      <li><img src="/css/spooky/jak1.svg" /></li>
+      <li><img src="/css/spooky/jak2.svg" /></li>
+      <li><img src="/css/spooky/jak3.svg" /></li>
+      <li><img src="/css/spooky/jak1.svg" /></li>
+      <li><img src="/css/spooky/jak2.svg" /></li>
+      <li><img src="/css/spooky/jak3.svg" /></li>
+      <li><img src="/css/spooky/jak1.svg" /></li>
     </ul>
 
     <h1>{title}</h1>
@@ -55,6 +55,7 @@
           <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>{disconnect}</button>
         </div>
 
+        <!-- FW Update Message Box -->
         <div class="message-box" id="ood" disabled="true">
 
           <h2>{fwMsg1}</h2>
@@ -76,6 +77,54 @@
             <button type="button" id="fwButton">{download}</button>
           </a>
         </div>
+
+        <!-- BT Baseband Update Box -->
+        <div class="message-box" id="baseband-box" disabled="true">
+
+          <h2>{basebandMsg1}</h2>
+          {basebandMsg2}
+          <div class="row">
+          <button type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button></div>
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
+
+          <div class="full-width" id="basebandChangeLog">
+            Placeholder baseband changelog text.
+          </div>
+
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
+          <div class="full-width">
+            {basebandInstall}
+            <div class="row">
+            <esp-web-install-button id="install_esp32"
+              manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button></div>
+          </div>
+        </div>
+
+        <!-- INITIAL FW INSTALL MSG BOX -->
+        <div class="message-box" id="initialize-board-box" disabled="true">
+
+          <h2>{fwMsgInitTitle}</h2>
+          {fwMsgInit}
+
+          <div class="full-width" id="fwInitialize">
+            {fwInstallInit}
+          </div>
+
+          <div class="full-width">
+            <div class="line"></div>
+          </div>
+
+          <a id="downloadLink"
+            href="https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2" download>
+            <button type="button" id="fwButton">{download}</button>
+          </a>
+        </div>
+
+
 
         <!-- INFO -->
         <!-- --------------- -->
@@ -165,14 +214,12 @@
             if (!areArrowKeysPressed(e)) {
               keysPressed = false;
 
-              if(setLaterMain)
-              {
+              if (setLaterMain) {
                 vibrate_set_value(toSetMain);
                 setLaterMain = false;
               }
 
-              if(setLaterFloor)
-              {
+              if (setLaterFloor) {
                 vibratefloor_set_value(toSetFloor);
                 setLaterFloor = false;
               }
@@ -194,14 +241,16 @@
               <p>{vibrationDesc}</p>
               <div class="slider">
                 <input type="range" min="0" max="50" value="0" id="vibeValue"
-                  oninput="vibeTextValue.innerText = this.value" onchange="if(!keysPressed){vibrate_set_value(this.value)}else {setLaterMain=true; toSetMain=this.value}">
+                  oninput="vibeTextValue.innerText = this.value"
+                  onchange="if(!keysPressed){vibrate_set_value(this.value)}else {setLaterMain=true; toSetMain=this.value}">
                 <p id="vibeTextValue">0</p>
               </div>
               <div class="line"></div>
               <p>{vibrationDesc2}</p>
               <div class="slider">
                 <input type="range" min="0" max="50" value="0" id="vibeFloorValue"
-                  oninput="vibeFloorTextValue.innerText = this.value" onchange="if(!keysPressed){vibratefloor_set_value(this.value)}else {setLaterFloor=true; toSetFloor=this.value}">
+                  oninput="vibeFloorTextValue.innerText = this.value"
+                  onchange="if(!keysPressed){vibratefloor_set_value(this.value)}else {setLaterFloor=true; toSetFloor=this.value}">
                 <p id="vibeFloorTextValue">0</p>
               </div>
               <div class="row">
@@ -220,8 +269,8 @@
           <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">{colorTitle}</label>
           <div class="dropdown">
             <div id="hojaColorSvg">
-              <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled" data-unique-ids="disabled"
-                data-css-scoping="disabled"></svg>
+              <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled"
+                data-unique-ids="disabled" data-css-scoping="disabled"></svg>
             </div>
 
             <div id="hojaColorPicker">
@@ -591,6 +640,7 @@
     Cairns | ©
     2023, Hand Held Legend | Updated 10.24.2023
   </div>
+  <script type="module" src="/js/esp32webtool/install-button.js"></script>
   <script src="js/hoja_version.js"></script>
   <script src="js/hoja_global.js"></script>
   <script src="js/hoja_strings.js"></script>
