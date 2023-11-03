@@ -36,6 +36,10 @@ var eng_strings = {
     vibrationDesc2: 'Vibration Floor <br>Set this as low as you can to the point <br>where you barely feel a rumble.',
     twitter: 'Twitter',
     discord: 'Discord',
+    basebandMsg1: 'Bluetooth Baseband Updater',
+    basebandMsg2: 'Connect your device, then click the button below to enter Baseband update mode. Next, hit the Install button and select the USB COM port.',
+    baseband: 'Baseband',
+    fwMsgInitTitle: 'FW Initializer',
 };
 
 var jp_strings = {

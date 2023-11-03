@@ -47,7 +47,7 @@ class t extends HTMLElement {
 
         const o = document.createElement("button");
         o.setAttribute("id", "esp_installer");
-        o.innerText = "{download}";
+        o.innerText = "Install";
         n.append(o);
 
         // As we're no longer in the shadow DOM, we can apply the styles directly without adopting them.

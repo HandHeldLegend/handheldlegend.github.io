@@ -84,23 +84,15 @@
           <h2>{basebandMsg1}</h2>
           {basebandMsg2}
           <div class="row">
-          <button type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button></div>
+          <button disabled type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button></div>
           <div class="full-width">
             <div class="line"></div>
           </div>
 
-          <div class="full-width" id="basebandChangeLog">
-            Placeholder baseband changelog text.
-          </div>
-
           <div class="full-width">
-            <div class="line"></div>
-          </div>
-          <div class="full-width">
-            {basebandInstall}
             <div class="row">
             <esp-web-install-button id="install_esp32"
-              manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button></div>
+              manifest="https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json"></esp-web-install-button></div>
           </div>
         </div>
 
@@ -108,17 +100,16 @@
         <div class="message-box" id="initialize-board-box" disabled="true">
 
           <h2>{fwMsgInitTitle}</h2>
-          {fwMsgInit}
 
-          <div class="full-width" id="fwInitialize">
-            {fwInstallInit}
+          <div class="full-width" id="fwInitializeInstructions">
+            Placeholder.
           </div>
 
           <div class="full-width">
             <div class="line"></div>
           </div>
 
-          <a id="downloadLink"
+          <a id="downloadLinkInitial"
             href="https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2" download>
             <button type="button" id="fwButton">{download}</button>
           </a>

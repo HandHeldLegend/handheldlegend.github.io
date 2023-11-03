@@ -9,6 +9,8 @@ let selectedToggle = null;
 const WEBUSB_CMD_FW_SET = 0x0F;
 const WEBUSB_CMD_FW_GET = 0xAF;
 
+const WEBUSB_CMD_BB_SET = 0xBB;
+
 const WEBUSB_CMD_CAPABILITIES_GET = 0xBE;
 
 const WEBUSB_CMD_RGB_SET = 0x01;
@@ -249,6 +251,19 @@ async function fwButton() {
     await device.transferOut(2, dataOut);
 }
 
+async function basebandButton() {
+    var dataOut = new Uint8Array([WEBUSB_CMD_BB_SET]);
+    await device.transferOut(2, dataOut);
+}
+
+function baseband_enable_button(enable)
+{
+    if(enable)
+    {
+        document.getElementById("basebandButton").removeAttribute('disabled');
+    }
+}
+
 async function fw_get_value() {
     var dataOut = new Uint8Array([WEBUSB_CMD_FW_GET]);
     await device.transferOut(2, dataOut);
@@ -397,6 +412,7 @@ function capabilities_parse(data) {
     vibrate_enable_menu(c.rumble);
     remap_enable_menu(true, c.nintendo_joybus, c.nintendo_serial);
     gcspecial_enable_menu(c.nintendo_joybus);
+    baseband_enable_button(c.bluetooth);
 }
 
 color_page_picker_init();
