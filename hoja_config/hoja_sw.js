@@ -1,6 +1,6 @@
 // SW Updated Date: 11/3/2023
 
-const CACHE_NAME = 'hoja-pwa-cache-v3a';
+const CACHE_NAME = 'hoja-pwa-cache-v4';
 const urlsToCache = [
     // HTML files
     'index.html',
