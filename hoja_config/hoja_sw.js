@@ -1,6 +1,9 @@
 // SW Updated Date: 11/3/2023
 
-const CACHE_NAME = 'hoja-pwa-cache-v3r2';
+const CACHE_NAME = 'hoja-pwa-cache-v5';
+
+const root_css_url = 'https://handheldlegend.github.io/css/'
+
 const urlsToCache = [
     // HTML files
     'index.html',
@@ -31,15 +34,14 @@ const urlsToCache = [
     //'/images/favicon.ico',
   
     // CSS Files
-    //'/css/style.css',
-    //'/css/hojaConfig.css',
-    //'/css/hojaColor.css',
-    //'/css/hojaAnalog.css',
-    //'/css/hojaRemap.css',
-    //'/css/sliderPicker.css',
-    //'/css/radioPicker.css',
-    //'/css/containers.css',
-    //'/css/spooky/spooky.css'
+    '/css/style.css',
+    'css/hojaConfig.css',
+    'css/hojaColor.css',
+    'css/hojaAnalog.css',
+    'css/hojaRemap.css',
+    '/css/sliderPicker.css',
+    '/css/radioPicker.css',
+    '/css/containers.css',
   ];
   
 
