@@ -24,6 +24,10 @@ function enable_all_menus(enable) {
     imu_enable_menu(enable);
     remap_enable_menu(enable);
     gcspecial_enable_menu(enable);
-
     analog_stop_calibration_confirm();
+
+    if(!enable)
+    {
+        baseband_enable_button(false);
+    }
 }

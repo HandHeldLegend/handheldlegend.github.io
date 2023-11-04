@@ -159,7 +159,7 @@ canvas {
     font-size: 1.5rem;
     text-align: center;
     padding: 0.3rem;
-    width: auto;
+    width: 90%;
     margin: 0.25rem;
     margin-left: auto;
     margin-right: auto;
@@ -208,7 +208,7 @@ and (max-width: 850px) {
 }
 
 a {
-    color: #3ec21c;
+    color: #b82727;
     text-decoration: none;
 }
 

@@ -1,3 +1,26 @@
+#hoja-top-row {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#offline-indicator {
+    color: rgba(0, 0, 0, 0.596);
+    width: 8rem;
+    background: rgba(230, 23, 23, 0.541);
+    border-radius: 1rem;
+    display: block;
+    border-radius: 0.5rem;
+    margin-left: -0.25rem;
+}
+
+#offline-indicator[disabled="true"] {
+    display: none;
+}
+
 #langButton {
     background: var(--sub-button-color-active);
     display:block;

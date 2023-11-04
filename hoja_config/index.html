@@ -28,25 +28,26 @@
 <body>
   <div class="context">
 
-    <!--<ul class="circles"> SPOOKY SEASON-->
-    <ul class="spooky">
-      <li><img src="/css/spooky/jak1.svg" /></li>
-      <li><img src="/css/spooky/jak2.svg" /></li>
-      <li><img src="/css/spooky/jak3.svg" /></li>
-      <li><img src="/css/spooky/jak1.svg" /></li>
-      <li><img src="/css/spooky/jak2.svg" /></li>
-      <li><img src="/css/spooky/jak3.svg" /></li>
-      <li><img src="/css/spooky/jak1.svg" /></li>
-      <li><img src="/css/spooky/jak2.svg" /></li>
-      <li><img src="/css/spooky/jak3.svg" /></li>
-      <li><img src="/css/spooky/jak1.svg" /></li>
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
     </ul>
 
     <h1>{title}</h1>
 
     <div class="box">
       <div class="box-inner">
-
+        <div id="hoja-top-row">
+          <div id="offline-indicator" disabled="true">Offline Mode</div>
+        </div>
         <button type="button" id="langButton" onclick="changeLang(1)">JP</button>
 
         <button type="button" id="installButton" onclick="installButton()" disabled="true">{install}</button>
@@ -92,7 +93,7 @@
           <div class="full-width">
             <div class="row">
             <esp-web-install-button id="install_esp32"
-              manifest="https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json"></esp-web-install-button></div>
+              manifest="https://github.com/HandHeldLegend/HOJA-ESP32-Baseband/raw/master/manifest.json"></esp-web-install-button></div>
           </div>
         </div>
 
@@ -114,8 +115,6 @@
             <button type="button" id="fwButton">{download}</button>
           </a>
         </div>
-
-
 
         <!-- INFO -->
         <!-- --------------- -->

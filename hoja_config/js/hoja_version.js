@@ -1,33 +1,6 @@
-const DEVICE_FW_VERSIONS = 
-{
-    0xA001 : 0x0A18, // ProGCC 3
-    0xA002 : 0x0A00, // ProGCC 3+
-    0xB001 : 0x0A00, // SuperGamepad+
-    0xB002 : 0x0A00, // UniSNES
-    0xA00A : 0x0A00, // ThingamaPro (Esca)
-};
+const HOJA_BACKEND_VERSION = 0xA000; // Current backend firmware (Old called settings version)
 
-const MODEM_FW = 0xA001; // Current BT Modem firmware
-
-const FW_CHANGELOG = 
-{
-    0xA001 : // ProGCC 3
-    `11.3.2023 Update:<br>
-    - Update rumble range.<br>
-    `,
-    0xA002 : // ProGCC 3+
-    `11.3.2023 Update:<br>
-    - Initial firmware
-    `,
-    0xB001 : // SuperGamepad+
-    `11.3.2023 Update:<br>
-    - Initial firmware
-    `,
-    0xB002 : // UniSNES
-    `11.3.2023 Update:<br>
-    - Initial firmware
-    `,
-};
+const HOJA_MODEM_FW = 0xA001; // Current BT Modem firmware
 
 const INIT_INSTRUCTIONS = 
 {
@@ -47,6 +20,15 @@ const INIT_INSTRUCTIONS =
     `,
 }
 
+const DEVICE_FW_MANIFEST_URLS = 
+{
+    0xA001: "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/manifest.json",
+    0xA002 : 0x0A00, // ProGCC 3+
+    0xB001 : 0x0A00, // SuperGamepad+
+    0xB002 : 0x0A00, // UniSNES
+    0xA00A : 0x0A00, // ThingamaPro (Esca)
+}
+
 const FW_UPDATE_URLS = 
 {
     0xA001 : "https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2", // ProGCC 3
@@ -56,19 +38,41 @@ const FW_UPDATE_URLS =
     0xA00A : "https://github.com/mitchellcairns/HOJA-ThingamaPro/raw/master/build/THINGAMAPRO_RP2040.uf2"   // ThingamaPro
 };
 
-function replace_firmware_strings(id)
+
+
+function version_replace_firmware_strings(id, changelog)
 {
     console.log("Get changelog for " + id);
     var e = document.getElementById("fwChangeLog");
-    e.innerHTML = FW_CHANGELOG[id];
+    e.innerHTML = changelog;
 
     var f = document.getElementById("downloadLink");
     f.setAttribute('href', FW_UPDATE_URLS[id]);
-
-    
 }
 
-function enable_firmware_initialization_check()
+function version_get_manifest_data(id) {
+
+    if(!DEVICE_FW_MANIFEST_URLS[id])
+    {
+        console.log("Invalid device ID.");
+        return;
+    }
+
+    var jsonUrl = DEVICE_FW_MANIFEST_URLS[id];
+
+    return fetch(jsonUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.status}`);
+        }
+        return response.json();
+      })
+      .catch((error) => {
+        console.error('Error fetching and parsing JSON:', error);
+      });
+}
+
+function version_firmware_initialization_check()
 {
     // Get the current URL
     const url = new URL(window.location.href);
@@ -89,9 +93,9 @@ function enable_firmware_initialization_check()
     }
 }
 
-enable_firmware_initialization_check();
+version_firmware_initialization_check();
 
-function enable_baseband_check()
+function version_enable_baseband_check()
 {
     // Get the current URL
     const url = new URL(window.location.href);
@@ -105,4 +109,4 @@ function enable_baseband_check()
     }
 }
 
-enable_baseband_check();
+version_enable_baseband_check();
