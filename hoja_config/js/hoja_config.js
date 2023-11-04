@@ -347,6 +347,11 @@ function fw_check_value(data) {
                 }
             }
 
+            if(backend_matched && firmware_matched)
+            {
+                fw_display_box(false);
+            }
+
         });
 
     }

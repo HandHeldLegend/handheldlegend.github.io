@@ -11,6 +11,9 @@ const INIT_INSTRUCTIONS =
     then drag the file to the RP USB device in <br>
     Finder/File Explorer.
     `,
+    0xA002 : // ProGCC 3+
+    `No init instructions for this device yet.
+    `,
     0xB001 : // SuperGamepad+
     `Hold the 'B' button on the<br>
     controller while plugging it in.<br>
@@ -22,11 +25,11 @@ const INIT_INSTRUCTIONS =
 
 const DEVICE_FW_MANIFEST_URLS = 
 {
-    0xA001: "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/manifest.json",
-    0xA002 : 0x0A00, // ProGCC 3+
-    0xB001 : 0x0A00, // SuperGamepad+
-    0xB002 : 0x0A00, // UniSNES
-    0xA00A : 0x0A00, // ThingamaPro (Esca)
+    0xA001  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/manifest.json",
+    0xA002  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/manifest.json", // ProGCC 3+
+    0xB001  : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/manifest.json", // SuperGamepad+
+    0xB002  : 0x0A00, // UniSNES
+    0xA00A  : 0x0A00, // ThingamaPro (Esca)
 }
 
 const FW_UPDATE_URLS = 
