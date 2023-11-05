@@ -347,6 +347,35 @@
                 disabled>{stop}</button>
               <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
             </div>
+
+            <div class="line"></div>
+
+            <div class="full-width">
+              <p>Invert Axis</p>
+
+              <div class="row">
+                <div class="invert_container">
+                  <input type="checkbox" id="lx_invert" name="lx_invert_"
+                  onchange="analog_set_invert(0, this.checked)">
+                  <label for="lx_invert">LX</label>
+
+                  <input type="checkbox" id="ly_invert" name="ly_invert_"
+                  onchange="analog_set_invert(1, this.checked)">
+                  <label for="ly_invert">LY</label>
+
+                  <input type="checkbox" id="rx_invert" name="rx_invert_"
+                  onchange="analog_set_invert(2, this.checked)">
+                  <label for="rx_invert">RX</label>
+
+                  <input type="checkbox" id="ry_invert" name="ry_invert_"
+                  onchange="analog_set_invert(3, this.checked)">
+                  <label for="ry_invert">RY</label>
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
         </div>

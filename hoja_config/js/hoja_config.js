@@ -16,8 +16,8 @@ const WEBUSB_CMD_CAPABILITIES_GET = 0xBE;
 const WEBUSB_CMD_RGB_SET = 0x01;
 const WEBUSB_CMD_RGB_GET = 0xA1;
 
-const WEBUSB_CMD_SNAPBACK_SET = 0x02;
-const WEBUSB_CMD_SNAPBACK_GET = 0xA2;
+const WEBUSB_CMD_ANALOG_INVERT_SET = 0x02;
+const WEBUSB_CMD_ANALOG_INVERT_GET = 0xA2;
 
 const WEBUSB_CMD_CALIBRATION_START = 0x03;
 const WEBUSB_CMD_CALIBRATION_STOP = 0xA3;
@@ -68,6 +68,9 @@ async function config_get_chain(cmd) {
     }
     else if (cmd == WEBUSB_CMD_VIBRATEFLOOR_GET) {
         await capabilities_get_value();
+    }
+    else if (cmd == WEBUSB_CMD_CAPABILITIES_GET) {
+        await analog_get_invert_value();
     }
 }
 
@@ -160,6 +163,11 @@ const listen = async () => {
                 case WEBUSB_CMD_CAPABILITIES_GET:
                     console.log("Got capabilities value.");
                     capabilities_parse(result.data);
+                    break;
+
+                case WEBUSB_CMD_ANALOG_INVERT_GET:
+                    console.log("Got analog inversion value.");
+                    analog_invert_place_values(result.data);
                     break;
             }
 

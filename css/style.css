@@ -95,8 +95,7 @@ body {
     }
 }
 
-.box-popup
-{
+.box-popup {
     width: 40rem;
     border-radius: var(--border-radius);
     color: rgb(0, 0, 0);
@@ -200,8 +199,7 @@ h3 {
     font-size: 1.4rem;
 }
 
-@media screen
-and (max-width: 850px) {
+@media screen and (max-width: 850px) {
     h1 {
         font-size: 2rem;
     }
@@ -237,12 +235,44 @@ input[type="text"] {
     margin-right: auto;
     height: 2rem;
     background: #8bff95ad;
-    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+    box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
     border-radius: 2rem;
     margin-top: var(--margin-small);
     margin-bottom: var(--margin-small);
 }
 
+.invert_container {
+    display: flex;
+}
+
+/* Hide the default checkbox */
+.invert_container input[type="checkbox"] {
+    display: none;
+    transition: all 0.25s ease-out;
+}
+
+/* Style the custom checkbox */
+.invert_container input[type="checkbox"]+label::before {
+    content: " ";
+    /* Unicode checkmark character */
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #000;
+    background-color: #ffffff4d;
+    text-align: center;
+    line-height: 20px;
+    margin: 1rem;
+    transition: all 0.25s ease-out;
+}
+
+/* Style when the checkbox is checked */
+.invert_container input[type="checkbox"]:checked+label::before {
+    content: "\2713";
+    /* Unicode checkmark character */
+    background-color: rgba(94, 94, 248, 0.425);
+    transition: all 0.25s ease-out;
+}
 
 button {
     font-family: inherit;
@@ -265,7 +295,7 @@ button {
 }
 
 
-button:disabled{
+button:disabled {
     background: #5a5a5ad5;
     cursor: default;
 }
@@ -293,7 +323,7 @@ button.small {
     display: inline-block;
 }
 
-.circles{
+.circles {
     position: fixed;
     top: 0;
     left: 0;
@@ -302,7 +332,7 @@ button.small {
     overflow: hidden;
 }
 
-.circles li{
+.circles li {
     position: absolute;
     display: block;
     list-style: none;
@@ -314,7 +344,7 @@ button.small {
 
 }
 
-.circles li:nth-child(1){
+.circles li:nth-child(1) {
     left: 25%;
     width: 80px;
     height: 80px;
@@ -322,7 +352,7 @@ button.small {
 }
 
 
-.circles li:nth-child(2){
+.circles li:nth-child(2) {
     left: 10%;
     width: 20px;
     height: 20px;
@@ -330,14 +360,14 @@ button.small {
     animation-duration: 12s;
 }
 
-.circles li:nth-child(3){
+.circles li:nth-child(3) {
     left: 70%;
     width: 20px;
     height: 20px;
     animation-delay: 4s;
 }
 
-.circles li:nth-child(4){
+.circles li:nth-child(4) {
     left: 40%;
     width: 60px;
     height: 60px;
@@ -345,28 +375,28 @@ button.small {
     animation-duration: 18s;
 }
 
-.circles li:nth-child(5){
+.circles li:nth-child(5) {
     left: 65%;
     width: 20px;
     height: 20px;
     animation-delay: 0s;
 }
 
-.circles li:nth-child(6){
+.circles li:nth-child(6) {
     left: 75%;
     width: 110px;
     height: 110px;
     animation-delay: 3s;
 }
 
-.circles li:nth-child(7){
+.circles li:nth-child(7) {
     left: 35%;
     width: 150px;
     height: 150px;
     animation-delay: 7s;
 }
 
-.circles li:nth-child(8){
+.circles li:nth-child(8) {
     left: 50%;
     width: 25px;
     height: 25px;
@@ -374,7 +404,7 @@ button.small {
     animation-duration: 45s;
 }
 
-.circles li:nth-child(9){
+.circles li:nth-child(9) {
     left: 20%;
     width: 15px;
     height: 15px;
@@ -382,7 +412,7 @@ button.small {
     animation-duration: 35s;
 }
 
-.circles li:nth-child(10){
+.circles li:nth-child(10) {
     left: 85%;
     width: 150px;
     height: 150px;
