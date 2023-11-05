@@ -21,6 +21,13 @@ const INIT_INSTRUCTIONS =
     then drag the file to the RP USB device in <br>
     Finder/File Explorer.
     `,
+
+    0xF001 : // Phob 2.1
+    `Hold the 'Start' button while plugging in.<br>
+    Download the firmware using the below button<br>
+    then drag the file to the RP USB device in <br>
+    Finder/File Explorer.
+    `
 }
 
 const DEVICE_FW_MANIFEST_URLS = 
