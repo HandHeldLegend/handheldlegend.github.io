@@ -30,6 +30,8 @@ const DEVICE_FW_MANIFEST_URLS =
     0xB001  : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/manifest.json", // SuperGamepad+
     0xB002  : 0x0A00, // UniSNES
     0xA00A  : 0x0A00, // ThingamaPro (Esca)
+
+    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/manifest.json" // Phob 2.1
 }
 
 const FW_UPDATE_URLS = 
@@ -38,7 +40,9 @@ const FW_UPDATE_URLS =
     0xA002 : "https://github.com/HandHeldLegend/ProGCC-V3-Plus/raw/master/FW/build/PROGCCPLUS_RP2040.uf2",  // ProGCC 3+
     0xB001 : "https://github.com/mitchellcairns/SuperGamepadPlus/raw/master/FW/build/SUPERGAMEPAD_RP2040.uf2",  // SuperGamepad+
     0xB002 : "https://github.com/HandHeldLegend/UniSNES/raw/master/FW/build/UNISNES_RP2040.uf2",  // UniSNES
-    0xA00A : "https://github.com/mitchellcairns/HOJA-ThingamaPro/raw/master/build/THINGAMAPRO_RP2040.uf2"   // ThingamaPro
+    0xA00A : "https://github.com/mitchellcairns/HOJA-ThingamaPro/raw/master/build/THINGAMAPRO_RP2040.uf2",   // ThingamaPro
+
+    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2" // Phob 2.1
 };
 
 
