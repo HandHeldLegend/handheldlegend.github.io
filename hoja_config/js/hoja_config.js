@@ -105,81 +105,98 @@ async function sendReport(reportID, data) {
     await device.transferOut(2, dataOut);
 }
 
-const listen = async () => {
-    if (device != null) {
+async function handle_input_report(result)
+{
+    switch (result.data.getUint8(0)) {
+
+        case WEBUSB_CMD_CALIBRATION_START:
+            analog_start_calibration_confirm();
+            break;
+
+        case WEBUSB_CMD_CALIBRATION_STOP:
+            analog_stop_calibration_confirm();
+            break;
+
+        case WEBUSB_CMD_ANALYZE_STOP:
+            console.log("Got waveform for analysis.");
+            let nu = new Uint8Array(result.data.buffer, result.data.byteOffset, result.data.byteLength);
+            snapback_visualizer_plot(nu);
+            break;
+
+        case WEBUSB_CMD_SAVEALL:
+            console.log("Got Settings Saved OK.");
+            window.alert("Saved Settings.");
+            break;
+
+        case WEBUSB_CMD_RGB_GET:
+            console.log("Got RGB Values.");
+            color_place_values(result.data);
+            break;
+
+        case WEBUSB_CMD_REMAP_GET:
+            console.log("Got remap values.");
+            remap_place_values(result.data);
+            break;
+
+        case WEBUSB_CMD_FW_GET:
+            console.log("Got FW version.");
+            fw_check_value(result.data);
+            break;
+
+        case WEBUSB_CMD_INPUT_REPORT:
+            input_process_data(result.data);
+            break;
+
+        case WEBUSB_CMD_VIBRATE_GET:
+            console.log("Got vibrate value.");
+            vibrate_place_value(result.data);
+            break;
+
+        case WEBUSB_CMD_VIBRATEFLOOR_GET:
+            console.log("Got vibrate floor value.");
+            vibratefloor_place_value(result.data);
+            break;
+
+        case WEBUSB_CMD_CAPABILITIES_GET:
+            console.log("Got capabilities value.");
+            capabilities_parse(result.data);
+            break;
+
+        case WEBUSB_CMD_ANALOG_INVERT_GET:
+            console.log("Got analog inversion value.");
+            analog_invert_place_values(result.data);
+            break;
+    }
+
+    if (result.data.getUint8(0) != WEBUSB_CMD_FW_GET) {
         try {
-            const result = await device.transferIn(2, 64);
-
-            switch (result.data.getUint8(0)) {
-
-                case WEBUSB_CMD_CALIBRATION_START:
-                    analog_start_calibration_confirm();
-                    break;
-
-                case WEBUSB_CMD_CALIBRATION_STOP:
-                    analog_stop_calibration_confirm();
-                    break;
-
-                case WEBUSB_CMD_ANALYZE_STOP:
-                    console.log("Got waveform for analysis.");
-                    let nu = new Uint8Array(result.data.buffer, result.data.byteOffset, result.data.byteLength);
-                    snapback_visualizer_plot(nu);
-                    break;
-
-                case WEBUSB_CMD_SAVEALL:
-                    console.log("Got Settings Saved OK.");
-                    window.alert("Saved Settings.");
-                    break;
-
-                case WEBUSB_CMD_RGB_GET:
-                    console.log("Got RGB Values.");
-                    color_place_values(result.data);
-                    break;
-
-                case WEBUSB_CMD_REMAP_GET:
-                    console.log("Got remap values.");
-                    remap_place_values(result.data);
-                    break;
-
-                case WEBUSB_CMD_FW_GET:
-                    console.log("Got FW version.");
-                    fw_check_value(result.data);
-                    break;
-
-                case WEBUSB_CMD_INPUT_REPORT:
-                    input_process_data(result.data);
-                    break;
-
-                case WEBUSB_CMD_VIBRATE_GET:
-                    console.log("Got vibrate value.");
-                    vibrate_place_value(result.data);
-                    break;
-
-                case WEBUSB_CMD_VIBRATEFLOOR_GET:
-                    console.log("Got vibrate floor value.");
-                    vibratefloor_place_value(result.data);
-                    break;
-
-                case WEBUSB_CMD_CAPABILITIES_GET:
-                    console.log("Got capabilities value.");
-                    capabilities_parse(result.data);
-                    break;
-
-                case WEBUSB_CMD_ANALOG_INVERT_GET:
-                    console.log("Got analog inversion value.");
-                    analog_invert_place_values(result.data);
-                    break;
-            }
-
-            if (result.data.getUint8(0) != WEBUSB_CMD_FW_GET) {
-                await config_get_chain(result.data.getUint8(0));
-            }
-
+            await config_get_chain(result.data.getUint8(0));
+        } catch (error) {
+            console.error('Error in async function:', error);
         }
-        catch (err) {
+        
+    }
 
-        }
-    };
+    //listen();
+}
+
+function stop_listen() {
+    const result = device.transferIn(2, 0); // Unsubscribe from datain event.
+    result.removeEventListener('datain', () => {});
+}
+
+function listen() {
+
+    if(device==null) 
+    {
+        return;
+    }
+
+    device.transferIn(2, 64)
+        .then(result => {
+            handle_input_report(result);
+            listen();
+        });
 }
 
 // Set connect and disconnect listeners
@@ -191,6 +208,7 @@ navigator.usb.addEventListener("disconnect", (event) => {
     console.log("Device unplugged.");
     if (event.device == device) {
         device = null;
+        stop_listen();
         enableDisconnect(false);
         enable_all_menus(false);
     }
@@ -198,12 +216,12 @@ navigator.usb.addEventListener("disconnect", (event) => {
 
 async function disconnectButton() {
     if (device != null) {
-        clearInterval(listen_id);
-        await device.close();
+        await device.close();        
     }
     device = null;
     enableDisconnect(false);
     enable_all_menus(false);
+    console.log("Device disconnected by button.");
 }
 
 var listen_id = null;
@@ -231,19 +249,10 @@ async function connectButton() {
 
         await fw_get_value();
         enableDisconnect(true);
-
-        listen_id = setInterval(() => {
-
-            try {
-                listen();
-            }
-            catch (err) {
-
-            }
-        }, 8);
+        listen();
     }
     catch (error) {
-        window.alert("Please connect a valid ProGCC device.");
+        window.alert("Please connect a valid HOJA gamepad device.");
     }
 
 }
