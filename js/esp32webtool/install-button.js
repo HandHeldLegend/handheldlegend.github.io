@@ -1,11 +1,11 @@
 const e = async t => {
     let n;
-    import("./install-dialog-30d74d24.js");
+    import("./install-dialog-CwhRt7fj.js");
     try {
         n = await navigator.serial.requestPort()
     } catch (n) {
         return "NotFoundError" === n.name ?
-            void import("./index-832327ec.js").then((n => n.openNoPortPickedDialog((() => e(t))))) :
+            void import("./index-drxht7Uc.js").then((n => n.openNoPortPickedDialog((() => e(t))))) :
             void alert(`Error: ${n.message}`)
     }
     if (!n) return;
