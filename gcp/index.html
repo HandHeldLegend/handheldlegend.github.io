@@ -48,40 +48,36 @@
           <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>Disconnect</button>
         </div>
 
-        <!-- FW UPDATE MSG BOX -->
-        <div class="message-box" id="firmware-update-box" disabled="true">
+        <!-- INITIAL FW INSTALL MSG BOX ESP32-S3 -->
+        <div class="message-box" id="esp32-initialize-board-box" disabled="true">
 
-          <h2>{fwMsg1}</h2>
-          {fwMsg2}
-
-          <div class="row">
-          <button type="button" id="fwButton" onclick="fwButton()">{bootloader}</button>
-          </div>
+          <h2>Install Firmware</h2>
+          To initialize your GC Pocket, first, unplug the device. Hold down both buttons, then plug in the device via USB.
+          Use the button below to install the new firmware to your GC Pocket. Choose 'USB JTag' to flash the appropriate device.
 
           <div class="full-width">
             <div class="line"></div>
           </div>
 
           <div class="full-width" id="fwChangeLog">
+            11.27.2023 Update<br>
+            Brings adapter up to par with 4 port adapter backend.<br>
+            More stable and more clear modes.<br>
           </div>
 
           <div class="full-width">
             <div class="line"></div>
           </div>
-          {fwInstall}
 
           <div class="row">
-          <a id="install_rp2040"
-            href="https://github.com/HandHeldLegend/GC-Adapter-RP2040/raw/master/FW/build/gc_adapter_rp2040.uf2" download>
-            <button type="button" id="fwButton">{download}</button>
-          </a></div>
-          <!--<esp-web-install-button id="install_esp32" manifest="/firmware/gc_pocket_beta/manifest.json"></esp-web-install-button>-->
+          <esp-web-install-button id="install_esp32" manifest="https://raw.githubusercontent.com/HandHeldLegend/GC-Adapter-ESP32-S3/main/FW/esp32manifest.json"></esp-web-install-button>
+          </div>
         </div>
 
         <!-- INITIAL FW INSTALL MSG BOX RP2040 -->
         <div class="message-box" id="rp2040-initialize-board-box" disabled="true">
           <h2>Initialize Device</h2>
-          To initialize your new GC Pocket+, hold down both buttons, then plug in the device via USB.
+          To initialize your GC Pocket+, hold down both buttons, then plug in the device via USB.
           Download the firmware using the button below, then drag the firmware to the RPI-RP2 device in your file explorer/Finder app. 
 
           <div class="full-width">
@@ -133,7 +129,7 @@
               </row>
               <row>
                 <h2>Slippi Mode</h2>
-                Pink LED
+                Cyan LED
               </row>
             </div>
             </div>
@@ -151,89 +147,31 @@
         </div>
         <!-- --------------- -->
 
-    <!-- VIBRATION SETTING -->
-    <!-- --------------- 
-    <div class="collapsible">
+        <!-- Initialization  -->
+        <!-- --------------- -->
+        <div class="collapsible">
 
-        <input id="vibration_collapsible" class="toggle" type="checkbox">
+          <input id="init-drop" class="toggle" type="checkbox">
 
-        <label for="vibration_collapsible" id="vibration_collapsible_toggle"
-        class="lbl-toggle">{vibrationTitle}</label>
+          <label for="init-drop" id="init-toggle" , class="lbl-toggle">Init Instructions</label>
+          <div class="dropdown">
 
-        <div class="dropdown">
-        <div class="full-width">
-            <p>{vibrationDesc}</p>
-            <div class="slider">
-            <input type="range" min="0" max="100" value="0" id="vibeValue"
-                oninput="vibeTextValue.innerText = this.value" onchange="vibrate_set_value(this.value)">
-            <p id="vibeTextValue">0</p>
-            </div>
-            <div class="row">
-            <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
-            </div>
-        </div>
-
-        </div>
-    </div>-->
-
-
-    <!-- GAMECUBE SETTINGS -->
-    <!-- --------------- 
-    <div class="collapsible">
-
-    <input id="gamecube_collapsible" class="toggle" type="checkbox">
-
-    <label for="gamecube_collapsible" id="gamecube_collapsible_toggle" class="lbl-toggle">{gamecubeTitle}</label>
-
-    <div class="dropdown">
-
-        <div class="full-width">
-        <p>{gamecubeDesc}</p>
-        <div class="line"></div>
-        <div class="sora_radio_container" id="radio_gc_sp_picker">
-            <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
-            <label for="gc_sp_0">Off</label>
-            <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1, 0)">
-            <label for="gc_sp_1">Light L</label>
-            <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2, 0)">
-            <label for="gc_sp_2">Light R</label>
-            <input type="radio" name="radio_gc_sp" id="gc_sp_3" onchange="gcsp_set_value(3, 0)">
-            <label for="gc_sp_3">Reset</label>
-            <input type="radio" name="radio_gc_sp" id="gc_sp_4" onchange="gcsp_set_value(4, 0)">
-            <label for="gc_sp_4">Dual Z</label>
-        </div>
-        <div class="line"></div>
-        <p>{gamecubeTrigger}</p>
-        <div class="slider">
-            <input type="range" min="50" max="255" value="50" id="lightValue"
-            oninput="lightTextValue.innerText = this.value.toString()" onchange="gcsp_set_value(0xFF, this.value)">
-            <p id="lightTextValue">50</p>
-        </div>
-        <div class="row">
-            <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
-        </div>
-        </div>
-
-    </div>
-    </div>-->
-
-
-    <!-- FIRMWARE UPDATES 
-    <!-- ---------------
-    <div class="collapsible">
-
-        <input id="firmware_collapsible" class="toggle" type="checkbox">
-
-        <label for="firmware_collapsible" id="firmware_collapsible_toggle"
-        class="lbl-toggle">{firmwareTitle}</label>
-
-        <div class="dropdown">
-        <div class="full-width">
             
-        </div>
 
+            <div class="full-width">
+              <p>Click the button corresponding to your device.</p>
+              <div class="line"></div>
+            </div>
+
+            <div class="full-width">
+            <div class="row">
+              <button type="button" onclick="window.location.href = window.location.href.split('?')[0] + '?init=gcp'">Single Port</button>
+              <button type="button" onclick="window.location.href = window.location.href.split('?')[0] + '?init=gcpplus'">4 Port</button>
+            </div>
+          </div>
+
+          </div>
         </div>
-    </div> -->
 
 
 
@@ -249,10 +187,9 @@
   <div class="footer">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
-    2023, Hand Held Legend | Updated 10.2.2023r1
+    2023, Hand Held Legend
   </div>
   <script src="js/gcp_version.js"></script>
-  <script src="js/gcp_strings.js"></script>
   <script src="js/gcp_config.js"></script>
 
 </body>

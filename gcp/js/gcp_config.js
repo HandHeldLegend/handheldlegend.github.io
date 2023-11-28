@@ -52,7 +52,8 @@ async function connectButton() {
     var devices = await navigator.usb.getDevices({
         filters: [
             { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCP+" },
-            { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCPE" }
+            { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCP" },
+            { vendorId: 0x20D6, productId: 0xA714 }
         ]
     });
 
@@ -62,48 +63,64 @@ async function connectButton() {
     }
     else {
         console.log("Need device permission or not found.");
-        // Request permission to access the GCP
-        device = await navigator.usb.requestDevice({
-            filters: [
-                { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCP+" },
-                { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCPE" }
-            ]
-        });
+
+        try {
+            // Request permission to access the GCP
+            device = await navigator.usb.requestDevice({
+                filters: [
+                    { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCP+" },
+                    { vendorId: 0x057E, productId: 0x2009, serialNumber: "GCP" },
+                    { vendorId: 0x20D6, productId: 0xA714 }
+                ]
+            });
+        }
+        catch (error)
+        {
+            console.log("No valid GCP Device Found.");
+            window.alert("No valid GC Pocket found. Try the initialization instructions below.");
+        }
+        
     }
+
+    console.log(device.serialNumber + " is the serial.");
 
     try {
 
-        switch (device.serialNumber) {
-            case 'GCPE':
-                console.log("GCP ESP32-S3 Detected.");
-                break;
-            case 'GCP+':
-                console.log("GCP+ RP2040 Detected.");
-                break;
-            default:
-                window.alert("Please connect a valid GCP device.");
-                return;
-                break;
+        if(device.vendorId == 0x20D6)
+        {
+            console.log("GCP ESP32-S3 Legacy FW Detected");
+            version_init_enable('gcp');
+        }
+        else
+        {
+            switch (device.serialNumber) {
+                case 'GCP':
+                    console.log("GCP ESP32-S3 Detected.");
+                    version_init_enable('gcp');
+                    break;
+                case 'GCP+':
+                    console.log("GCP+ RP2040 Detected.");
+                    version_init_enable('gcpplus');
+                    break;
+                default:
+                    console.log(device.serialNumber + " is the serial. Unrecognized.");
+                    break;
+            }
         }
 
-        await device.open();
-        await device.selectConfiguration(1);
-        await device.claimInterface(1);
+        
+
+        //await device.open();
+        //await device.selectConfiguration(1);
+        //await device.claimInterface(0);
 
         //await fw_get_value();
         //enableDisconnect(true);
 
-        //listen_id = setInterval(() => {
-        //
-        //    try {
-        //        listen();
-        //    }
-        //    catch (err) {
-        //
-        //    }
-        //}, 8);
     }
     catch (error) {
-        window.alert("Please connect a valid GCP device.");
+        console.log(error);
+        console.log("Please connect a valid GCP device.");
+        window.alert("No valid GC Pocket found. Try the initialization instructions below.");
     }
 }

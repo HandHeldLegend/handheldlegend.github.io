@@ -23,6 +23,25 @@ const FW_UPDATE_URLS =
     0xA001 : "google.com",
 };
 
+function version_init_enable(value)
+{
+    // Perform check based on the 'init' value
+    switch (value) {
+        case 'gcpplus':
+            console.log('Init value is gcpplus');
+            document.getElementById('rp2040-initialize-board-box').setAttribute('disabled', 'false');
+            break;
+
+        case 'gcp':
+            console.log('Init value is gcp');
+            document.getElementById('esp32-initialize-board-box').setAttribute('disabled', 'false');
+            break;
+        default:
+            console.log('Unknown init value:', initValue);
+            break;
+    }
+}
+
 function version_initialization()
 {
     // Get the current URL
@@ -32,15 +51,7 @@ function version_initialization()
     const initValue = url.searchParams.get('init');
 
     if (initValue) {
-        // Perform check based on the 'init' value
-        switch (initValue) {
-            case 'gcpplus':
-                console.log('Init value is gcpplus');
-                document.getElementById('rp2040-initialize-board-box').setAttribute('disabled', 'false');
-                break;
-            default:
-                console.log('Unknown init value:', initValue);
-        }
+        version_init_enable(initValue);
     } else {
         console.log('No init parameter found.');
     }
