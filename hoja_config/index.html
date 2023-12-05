@@ -425,6 +425,19 @@
               <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
               <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
             </div>
+
+            <div class="line"></div>
+            
+            <div class="full-width">
+              <p>{subnotchDesc}</p>
+            <input type="number" id="floatingInput" step="0.1" onchange="" min="-8" max="8" value="0.0000" disabled>
+            </div>  
+            <div class="row">
+              <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>
+              <button type="button" id="set_subangle_button" onclick='analog_update_subangle(document.getElementById("floatingInput").value)' disabled>{update}</button>
+              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+            </div>
+
           </div>
 
         </div>
@@ -661,7 +674,7 @@
   <div class="footer">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
-    2023, Hand Held Legend | Updated 11.3.2023
+    2023, Hand Held Legend | Updated 12.5.2023
   </div>
   <script type="module" src="/js/esp32webtool/install-button.js"></script>
   <script src="js/hoja_version.js"></script>

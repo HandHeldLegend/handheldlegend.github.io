@@ -29,5 +29,6 @@ function enable_all_menus(enable) {
     if(!enable)
     {
         baseband_enable_button(false);
+        analog_subangle_enable_update(false);
     }
 }

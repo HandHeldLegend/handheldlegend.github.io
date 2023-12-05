@@ -63,3 +63,19 @@
   background: rgba(108, 118, 255, 0.822);
   transform: translate(-50%, -50%);
 }
+
+#floatingInput {
+  border-radius: var(--border-radius);
+  border-color: rgba(240, 255, 255, 0.075);
+  text-align: center;
+  background: var(--dropdown-color);
+  box-shadow: var(--box-shadow);
+  font-family: inherit;
+  font-size: inherit;
+  height: 2rem;
+  width: 8.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}

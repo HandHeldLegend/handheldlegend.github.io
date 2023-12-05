@@ -71,6 +71,62 @@ async function analog_update_octagon()
     await device.transferOut(2, dataOut);
 }
 
+function analog_subangle_enable_update(enable)
+{
+    var el = document.getElementById("set_subangle_button");
+    var el2 = document.getElementById("floatingInput");
+    if(enable)
+    {
+        el2.removeAttribute("disabled");
+        el.removeAttribute("disabled");
+    }
+    else
+    {
+        el2.setAttribute("disabled", "true");
+        el.setAttribute("disabled", "true");
+    }
+}
+
+var current_subangle_axis = -1;
+var current_subangle_idx = -1;
+
+async function analog_update_subangle(angle)
+{
+    var f32 = parseFloat(angle);
+    console.log("Sending float : " + angle);
+    var dataOut = new Uint8Array([WEBUSB_CMD_SUBANGLE_SET, current_subangle_axis, current_subangle_idx]);
+    const floatArrayBuffer = new Float32Array([f32]).buffer;
+    const floatUint8Array = new Uint8Array(floatArrayBuffer);
+
+    // Combine the two Uint8Arrays
+    const combinedUint8Array = new Uint8Array(dataOut.length + floatUint8Array.length);
+    combinedUint8Array.set(dataOut, 0); // Copy the first array
+    combinedUint8Array.set(floatUint8Array, dataOut.length); // Copy the second array after the first one
+
+
+    await device.transferOut(2, combinedUint8Array);
+}
+
+function analog_subangle_place_value(data)
+{
+    current_subangle_axis = data.getUint8(1);
+    current_subangle_idx = data.getUint8(2);
+    console.log("Axis: " + current_subangle_axis.toString());
+    console.log("Subangle Idx: " + current_subangle_idx.toString());
+
+    let float = data.getFloat32(3, true);
+
+    document.getElementById("floatingInput").value = parseFloat(float.toFixed(3));
+
+    analog_subangle_enable_update(true);
+}
+
+async function analog_get_subangle_value()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_SUBANGLE_GET]);
+    await device.transferOut(2, dataOut);
+}
+
 function analog_start_calibration_confirm()
 {
     analog_stop_button.removeAttribute("disabled");

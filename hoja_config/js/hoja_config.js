@@ -42,6 +42,9 @@ const WEBUSB_CMD_VIBRATE_GET = 0xAA;
 const WEBUSB_CMD_VIBRATEFLOOR_SET = 0x0B;
 const WEBUSB_CMD_VIBRATEFLOOR_GET = 0xAB;
 
+const WEBUSB_CMD_SUBANGLE_SET = 0x0C;
+const WEBUSB_CMD_SUBANGLE_GET = 0xAC;
+
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
@@ -165,6 +168,11 @@ async function handle_input_report(result)
         case WEBUSB_CMD_ANALOG_INVERT_GET:
             console.log("Got analog inversion value.");
             analog_invert_place_values(result.data);
+            break;
+
+        case WEBUSB_CMD_SUBANGLE_GET:
+            console.log("Got subangle value.");
+            analog_subangle_place_value(result.data);
             break;
     }
 

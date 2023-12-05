@@ -40,6 +40,8 @@ var eng_strings = {
     basebandMsg2: 'Connect your device, then click the button below to enter Baseband update mode. Next, hit the Install button and select the USB COM port.',
     baseband: 'Baseband',
     fwMsgInitTitle: 'FW Initializer',
+    get: 'Get',
+    subnotchDesc: "To update optional sub-notch values, hold the analog stick to the desired sub-notch and press 'Get'. Enter your desired value and press 'Update'. Test the value and press 'Save' when you are happy with the results.",
 };
 
 var jp_strings = {
@@ -80,6 +82,8 @@ var jp_strings = {
     vibrationDesc2: 'ステップ 2：最大振動強度',
     twitter: 'Twitter',
     discord: 'Discord',
+    get: '読む',
+    subnotchDesc: "オプションのサブノッチ値を更新するには、アナログスティックを希望のサブノッチに保持し、 '取得' を押してください。 お好みの値を入力して '更新' を押してください。 結果に満足したら '保存' を押してテストしてください。",
 };
 
 let en_radio = document.getElementById("lang_en");
