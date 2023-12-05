@@ -41,6 +41,9 @@ var eng_strings = {
     baseband: 'Baseband',
     fwMsgInitTitle: 'FW Initializer',
     get: 'Get',
+    octoAdjustTitle: "Cardinal Adjustment",
+    subAdjustTitle: "Sub-Notch Adjustment",
+    octoAdjustDesc: "Hold the analog stick to the desired cardinal direction and press 'Get'. Make your desired adjustment, then press update to test. Press save when you are satisfied with the results.",
     subnotchDesc: "To update optional sub-notch values, hold the analog stick to the desired sub-notch and press 'Get'. Enter your desired value and press 'Update'. Test the value and press 'Save' when you are happy with the results.",
 };
 
@@ -83,7 +86,10 @@ var jp_strings = {
     twitter: 'Twitter',
     discord: 'Discord',
     get: '読む',
-    subnotchDesc: "オプションのサブノッチ値を更新するには、アナログスティックを希望のサブノッチに保持し、 '取得' を押してください。 お好みの値を入力して '更新' を押してください。 結果に満足したら '保存' を押してテストしてください。",
+    octoAdjustTitle: "カーディナル調整",
+    subAdjustTitle: "サブノッチ調整",
+    octoAdjustDesc: "アナログスティックを希望のカーディナル方向に押し続け、「取得」ボタンを押します。希望の調整を行い、テストするには「更新」ボタンを押します。結果に満足したら「保存」ボタンを押してください。",
+    subnotchDesc: "オプションのサブノッチ値を更新するには、アナログスティックを希望のサブノッチに押し続け、「取得」ボタンを押します。希望の値を入力し、「更新」ボタンを押します。値をテストし、結果に満足したら「保存」ボタンを押してください。"
 };
 
 let en_radio = document.getElementById("lang_en");

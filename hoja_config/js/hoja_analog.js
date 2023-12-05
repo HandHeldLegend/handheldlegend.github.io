@@ -87,6 +87,62 @@ function analog_subangle_enable_update(enable)
     }
 }
 
+function analog_octoangle_enable_update(enable)
+{
+    var el = document.getElementById("set_octoangle_button");
+    var el2 = document.getElementById("floatingInputOcto");
+    if(enable)
+    {
+        el2.removeAttribute("disabled");
+        el.removeAttribute("disabled");
+    }
+    else
+    {
+        el2.setAttribute("disabled", "true");
+        el.setAttribute("disabled", "true");
+    }
+}
+
+var current_octoangle_axis = -1;
+var current_octoangle_idx = -1;
+
+async function analog_update_octoangle(angle)
+{
+    var f32 = parseFloat(angle);
+    console.log("Sending float : " + angle);
+    var dataOut = new Uint8Array([WEBUSB_CMD_OCTOANGLE_SET, current_octoangle_axis, current_octoangle_idx]);
+    const floatArrayBuffer = new Float32Array([f32]).buffer;
+    const floatUint8Array = new Uint8Array(floatArrayBuffer);
+
+    // Combine the two Uint8Arrays
+    const combinedUint8Array = new Uint8Array(dataOut.length + floatUint8Array.length);
+    combinedUint8Array.set(dataOut, 0); // Copy the first array
+    combinedUint8Array.set(floatUint8Array, dataOut.length); // Copy the second array after the first one
+
+
+    await device.transferOut(2, combinedUint8Array);
+}
+
+function analog_octoangle_place_value(data)
+{
+    current_octoangle_axis = data.getUint8(1);
+    current_octoangle_idx = data.getUint8(2);
+    console.log("Axis: " + current_octoangle_axis.toString());
+    console.log("Subangle Idx: " + current_octoangle_idx.toString());
+
+    let float = data.getFloat32(3, true);
+
+    document.getElementById("floatingInputOcto").value = parseFloat(float.toFixed(3));
+
+    analog_octoangle_enable_update(true);
+}
+
+async function analog_get_octoangle_value()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_OCTOANGLE_GET]);
+    await device.transferOut(2, dataOut);
+}
+
 var current_subangle_axis = -1;
 var current_subangle_idx = -1;
 

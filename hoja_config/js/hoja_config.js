@@ -45,6 +45,9 @@ const WEBUSB_CMD_VIBRATEFLOOR_GET = 0xAB;
 const WEBUSB_CMD_SUBANGLE_SET = 0x0C;
 const WEBUSB_CMD_SUBANGLE_GET = 0xAC;
 
+const WEBUSB_CMD_OCTOANGLE_SET = 0x0D;
+const WEBUSB_CMD_OCTOANGLE_GET = 0xAD;
+
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
@@ -108,6 +111,20 @@ async function sendReport(reportID, data) {
     await device.transferOut(2, dataOut);
 }
 
+function showToast(message, duration = 2000) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+    toast.style.opacity = 1;
+
+    setTimeout(function () {
+        toast.style.opacity = 0;
+        setTimeout(function () {
+          toast.style.display = 'none';
+        }, 500); // Wait for the transition to complete (500ms)
+      }, duration);
+  }
+
 async function handle_input_report(result)
 {
     switch (result.data.getUint8(0)) {
@@ -128,7 +145,9 @@ async function handle_input_report(result)
 
         case WEBUSB_CMD_SAVEALL:
             console.log("Got Settings Saved OK.");
-            window.alert("Saved Settings.");
+            // Example usage:
+            showToast("Settings saved OK.");
+            console.log("JavaScript operations continue...");
             break;
 
         case WEBUSB_CMD_RGB_GET:
@@ -174,6 +193,11 @@ async function handle_input_report(result)
             console.log("Got subangle value.");
             analog_subangle_place_value(result.data);
             break;
+
+        case WEBUSB_CMD_OCTOANGLE_GET:
+            console.log("Got cardinal value.");
+            analog_octoangle_place_value(result.data);
+            break;
     }
 
     if (result.data.getUint8(0) != WEBUSB_CMD_FW_GET) {
@@ -214,12 +238,16 @@ navigator.usb.addEventListener("connect", (event) => {
 
 navigator.usb.addEventListener("disconnect", (event) => {
     console.log("Device unplugged.");
-    if (event.device == device) {
+    console.log(event);
+
+    if(event.device==device)
+    {
         device = null;
-        stop_listen();
+        //stop_listen();
         enableDisconnect(false);
         enable_all_menus(false);
     }
+    
 });
 
 async function disconnectButton() {

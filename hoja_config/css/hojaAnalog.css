@@ -64,7 +64,7 @@
   transform: translate(-50%, -50%);
 }
 
-#floatingInput {
+.floatingAdjustment {
   border-radius: var(--border-radius);
   border-color: rgba(240, 255, 255, 0.075);
   text-align: center;

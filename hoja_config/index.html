@@ -26,6 +26,7 @@
 </head>
 
 <body>
+  <div id="toast"></div>
   <div class="context">
 
     <ul class="circles">
@@ -429,8 +430,22 @@
             <div class="line"></div>
             
             <div class="full-width">
+              <h3>{octoAdjustTitle}</h3>
+              <p>{octoAdjustDesc}</p>
+            <input class="floatingAdjustment" type="number" id="floatingInputOcto" step="0.1" onchange="" value="0.0000" disabled>
+            </div>  
+            <div class="row">
+              <button type="button" id="get_octoangle_button" onclick="analog_get_octoangle_value()">{get}</button>
+              <button type="button" id="set_octoangle_button" onclick='analog_update_octoangle(document.getElementById("floatingInputOcto").value)' disabled>{update}</button>
+              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+            </div>
+
+            <div class="line"></div>
+            
+            <div class="full-width">
+              <h3>{subAdjustTitle}</h3>
               <p>{subnotchDesc}</p>
-            <input type="number" id="floatingInput" step="0.1" onchange="" min="-8" max="8" value="0.0000" disabled>
+            <input class="floatingAdjustment" type="number" id="floatingInput" step="0.1" onchange="" min="-8" max="8" value="0.0000" disabled>
             </div>  
             <div class="row">
               <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>

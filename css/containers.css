@@ -79,7 +79,7 @@
     transform: rotate(90deg) translateX(-.14rem);
 }
 .collapsible .toggle:checked+.lbl-toggle+.dropdown {
-    max-height: 50em;
+    max-height: 60em;
     width: inherit;
     height: fit-content;
 
