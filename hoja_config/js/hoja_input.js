@@ -39,6 +39,7 @@ function calculateAngle(x1, y1, x2, y2) {
     let dy = y2 - y1;
     let theta = Math.atan2(dy, dx); // This gives the angle in radians
     theta *= 180 / Math.PI; // Convert radians to degrees
+    theta-=90;
 
     // If we want the angle to be between 0 and 360
     if (theta < 0) {
@@ -46,7 +47,7 @@ function calculateAngle(x1, y1, x2, y2) {
     }
 
     // Round to two decimal places
-    theta = Math.round(theta * 100) / 100;
+    theta = Math.round(theta);
 
     return theta;
 }
