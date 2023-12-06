@@ -62,24 +62,42 @@ function rumble(length) {
     }
 }
 
-const SCALE_CONST = 0.04509803921568627450980392156863;
+var octo_scaler = 1;
+var got_scale = false;
+
+var octoele = document.getElementById("leftocto-stick-ui");
+var octocompstyle = window.getComputedStyle(octoele);
+
+function isNumberBetween(number, lowerBound, upperBound) {
+    return number >= lowerBound && number <= upperBound;
+  }
 
 function input_process_data(data) {
-    var lx = (data.getUint8(1)-128) * SCALE_CONST;
-    var ly = (data.getUint8(2)-128) * -SCALE_CONST;
-    var rx = (data.getUint8(3)-128) * SCALE_CONST;
-    var ry = (data.getUint8(4)-128) * -SCALE_CONST;
+
+    if(!got_scale)
+    {
+        console.log("height is " + octocompstyle.height);
+        got_scale = true
+    }
+
+    var height = parseFloat(octocompstyle.height);
+    var octo_scaler = height/270;
+
+
+    var lx = (data.getUint8(1)-128) * octo_scaler;
+    var ly = (data.getUint8(2)-128) * -octo_scaler;
+    var rx = (data.getUint8(3)-128) * octo_scaler;
+    var ry = (data.getUint8(4)-128) * -octo_scaler;
 
     
-
     var la = calculateAngle(lx, ly, 0, 0);
     var ra = calculateAngle(rx, ry, 0, 0);
 
-    if(Math.abs(lx)<0.5 && Math.abs(ly)<0.5) la=0;
-    if(Math.abs(rx)<0.5 && Math.abs(ry)<0.5) ra=0;
+    if(isNumberBetween(data.getUint8(1), 120, 136) && isNumberBetween(data.getUint8(2), 120, 136)) la = 0;
+    if(isNumberBetween(data.getUint8(3), 120, 136) && isNumberBetween(data.getUint8(4), 120, 136)) ra = 0;
 
-    var lnp = op + 'translate(' + lx.toString() + 'rem,' + ly.toString() + 'rem)';
-    var rnp = op + 'translate(' + rx.toString() + 'rem,' + ry.toString() + 'rem)';
+    var lnp = op + 'translate(' + lx.toString() + 'px,' + ly.toString() + 'px)';
+    var rnp = op + 'translate(' + rx.toString() + 'px,' + ry.toString() + 'px)';
     circle_stick_center_l.transform = lnp;
     circle_stick_center_r.transform = rnp;
 

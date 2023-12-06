@@ -2,6 +2,7 @@
 
 :root {
   --asize: 12rem;
+  --a_min_size: 10rem;
 }
 
 .octagon {
@@ -17,17 +18,6 @@
   -webkit-clip-path: polygon(50% 0%, 85.35534% 14.64466%, 100% 50%, 85.35534% 85.35534%, 50% 100%, 14.64466% 85.35534%, 0% 50%, 14.64466% 14.64466%);
 }
 
-.inner-stick {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.473);
-  width: 95%;
-  height: 95%;
-  left: 2.5%;
-  top: 2.5%;
-  -webkit-clip-path: inherit;
-  clip-path: inherit;
-}
-
 .circle {
 
   position: relative;
@@ -41,6 +31,32 @@
   clip-path: circle(50% at 50% 50%);
   -webkit-clip-path: circle(50% at 50% 50%);
 }
+
+@media screen and (max-width: 850px) {
+  .octagon {
+    width: var(--a_min_size);
+    height: var(--a_min_size);
+  }
+
+  .circle {
+    width: var(--a_min_size);
+    height: var(--a_min_size);
+  }
+  
+}
+
+.inner-stick {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.473);
+  width: 95%;
+  height: 95%;
+  left: 2.5%;
+  top: 2.5%;
+  -webkit-clip-path: inherit;
+  clip-path: inherit;
+}
+
+
 
 .analog-position {
   position: absolute;

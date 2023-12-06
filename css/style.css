@@ -215,9 +215,30 @@ h3 {
     font-size: 1.4rem;
 }
 
+p {
+    margin-top: var(--margin-small);
+    margin-bottom: var(--margin-small);
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-size: 1.25rem;
+}
+
+
 @media screen and (max-width: 850px) {
     h1 {
-        font-size: 2rem;
+        font-size: 1.25rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    p {
+        font-size: 1.2rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
     }
 }
 
@@ -226,13 +247,6 @@ a {
     text-decoration: none;
 }
 
-p {
-    margin-top: var(--margin-small);
-    margin-bottom: var(--margin-small);
-    text-align: center;
-    color: rgb(0, 0, 0);
-    font-size: 1.25rem;
-}
 
 fieldset {
     border: 2px solid #44444470;
