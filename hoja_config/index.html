@@ -86,15 +86,17 @@
           <h2>{basebandMsg1}</h2>
           {basebandMsg2}
           <div class="row">
-          <button disabled type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button></div>
+            <button disabled type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button>
+          </div>
           <div class="full-width">
             <div class="line"></div>
           </div>
 
           <div class="full-width">
             <div class="row">
-            <esp-web-install-button id="install_esp32"
-              manifest="https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json"></esp-web-install-button></div>
+              <esp-web-install-button id="install_esp32"
+                manifest="https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json"></esp-web-install-button>
+            </div>
           </div>
         </div>
 
@@ -232,9 +234,8 @@
 
               <p>{vibrationDesc}</p>
               <div class="slider">
-                <input type="range" min="0" max="75" value="0" id="vibeFloorValue"
-                  oninput="vibeFloorTextValue.innerText = this.value"
-                  onchange="if(!keysPressed){vibratefloor_set_value(this.value)}else {setLaterFloor=true; toSetFloor=this.value}">
+                <input type="range" min="0" max="75" value="0" id="vibeFloorValue" oninput="vb_update_base(this.value)"
+                  onchange="vibratefloor_set_value(this.value)">
                 <p id="vibeFloorTextValue">0</p>
               </div>
 
@@ -242,9 +243,8 @@
 
               <p>{vibrationDesc2}</p>
               <div class="slider">
-                <input type="range" min="0" max="50" value="0" id="vibeValue"
-                  oninput="vibeTextValue.innerText = this.value"
-                  onchange="if(!keysPressed){vibrate_set_value(this.value)}else {setLaterMain=true; toSetMain=this.value}">
+                <input type="range" min="0" max="50" value="0" id="vibeValue" oninput="vb_update_max(this.value)"
+                  onchange="vibrate_set_value(this.value)">
                 <p id="vibeTextValue">0</p>
               </div>
 
@@ -288,394 +288,472 @@
 
           </div>
         </div>
-      </div>
 
-      <!-- SNAPBACK SETTINGS -->
-      <!-- ---------------   -->
-      <div class="collapsible">
-        <input id="snapback-settings" class="toggle" type="checkbox">
 
-        <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
-        <div class="dropdown">
-          <div class="full-width">
-            <p>{snapbackDesc}</p>
-            <div class="snapback-visualizer">
-              <svg id="waveform-output" width="100%" , height="100%"></svg>
+        <!-- SNAPBACK SETTINGS -->
+        <!-- ---------------   -->
+        <div class="collapsible">
+          <input id="snapback-settings" class="toggle" type="checkbox">
+
+          <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
+          <div class="dropdown">
+            <div class="full-width">
+              <p>{snapbackDesc}</p>
+              <div class="snapback-visualizer">
+                <svg id="waveform-output" width="100%" , height="100%"></svg>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ANALOG SETTINGS -->
+        <!-- --------------- -->
+        <div class="collapsible">
+
+          <input id="analog_collapsible" class="toggle" type="checkbox">
+
+          <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">{calibrateTitle}</label>
+
+          <div class="dropdown">
+
+            <div class="content-inner">
+              <div class="full-width">
+                <p>{calibrateDesc}</p>
+              </div>
+
+              <div class="line"></div>
+
+              <div class="collapsible-row-double">
+                <div class="collapsible-column">
+                  <div class="circle" id="left-stick-ui" hidden>
+                    <div class="inner-stick"></div>
+                    <div class="analog-center"></div>
+                    <div id="circle-analog-pointer-l" class="analog-position"></div>
+                  </div>
+                </div>
+
+                <div class="collapsible-column">
+                  <div class="circle" id="right-stick-ui" hidden>
+                    <div class="inner-stick"></div>
+                    <div class="analog-center"></div>
+                    <div id="circle-analog-pointer-r" class="analog-position"></div>
+                  </div>
+                </div>
+                <div class="line"></div>
+              </div>
+              <div class="row">
+                <button type="button" id="start_calibration_button"
+                  onclick="analog_start_calibration()">{start}</button>
+                <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
+                  disabled>{stop}</button>
+                <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
+              </div>
+
+              <div class="line"></div>
+
+              <div class="full-width">
+                <p>Invert Axis</p>
+
+                <div class="row">
+                  <div class="invert_container">
+                    <input type="checkbox" id="lx_invert" name="lx_invert_"
+                      onchange="analog_set_invert(0, this.checked)">
+                    <label for="lx_invert">LX</label>
+
+                    <input type="checkbox" id="ly_invert" name="ly_invert_"
+                      onchange="analog_set_invert(1, this.checked)">
+                    <label for="ly_invert">LY</label>
+
+                    <input type="checkbox" id="rx_invert" name="rx_invert_"
+                      onchange="analog_set_invert(2, this.checked)">
+                    <label for="rx_invert">RX</label>
+
+                    <input type="checkbox" id="ry_invert" name="ry_invert_"
+                      onchange="analog_set_invert(3, this.checked)">
+                    <label for="ry_invert">RY</label>
+                  </div>
+
+                </div>
+
+              </div>
+
             </div>
 
           </div>
         </div>
-      </div>
 
-      <!-- ANALOG SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible">
+        <!-- OCTAGON SETTINGS -->
+        <!-- --------------- -->
+        <div class="collapsible">
 
-        <input id="analog_collapsible" class="toggle" type="checkbox">
+          <input id="octagon_collapsible" class="toggle" type="checkbox">
 
-        <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">{calibrateTitle}</label>
+          <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
 
-        <div class="dropdown">
+          <div class="dropdown">
 
-          <div class="content-inner">
-            <div class="full-width">
-              <p>{calibrateDesc}</p>
-            </div>
+            <div class="content-inner">
+              <div class="full-width">
+                <p>{octagonDesc}</p>
 
-            <div class="line"></div>
+                <div class="line"></div>
+              </div>
 
-            <div class="collapsible-row-double">
-              <div class="collapsible-column">
-                <div class="circle" id="left-stick-ui" hidden>
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="circle-analog-pointer-l" class="analog-position"></div>
+              <div class="collapsible-row-double">
+
+                <div class="collapsible-column">
+                  <input id="octagon-angle-text-l" type="text" disabled />
+                  <div class="octagon" id="leftocto-stick-ui" hidden>
+                    <div class="inner-stick"></div>
+                    <div class="analog-center"></div>
+                    <div id="octo-analog-pointer-l" class="analog-position"></div>
+                  </div>
+                </div>
+
+                <div class="collapsible-column">
+                  <input id="octagon-angle-text-r" type="text" disabled />
+                  <div class="octagon" id="rightocto-stick-ui" hidden>
+                    <div class="inner-stick"></div>
+                    <div class="analog-center"></div>
+                    <div id="octo-analog-pointer-r" class="analog-position"></div>
+                  </div>
                 </div>
               </div>
 
-              <div class="collapsible-column">
-                <div class="circle" id="right-stick-ui" hidden>
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="circle-analog-pointer-r" class="analog-position"></div>
-                </div>
-              </div>
               <div class="line"></div>
-            </div>
-            <div class="row">
-              <button type="button" id="start_calibration_button" onclick="analog_start_calibration()">{start}</button>
-              <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
-                disabled>{stop}</button>
-              <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
-            </div>
-
-            <div class="line"></div>
-
-            <div class="full-width">
-              <p>Invert Axis</p>
 
               <div class="row">
-                <div class="invert_container">
-                  <input type="checkbox" id="lx_invert" name="lx_invert_"
-                  onchange="analog_set_invert(0, this.checked)">
-                  <label for="lx_invert">LX</label>
-
-                  <input type="checkbox" id="ly_invert" name="ly_invert_"
-                  onchange="analog_set_invert(1, this.checked)">
-                  <label for="ly_invert">LY</label>
-
-                  <input type="checkbox" id="rx_invert" name="rx_invert_"
-                  onchange="analog_set_invert(2, this.checked)">
-                  <label for="rx_invert">RX</label>
-
-                  <input type="checkbox" id="ry_invert" name="ry_invert_"
-                  onchange="analog_set_invert(3, this.checked)">
-                  <label for="ry_invert">RY</label>
-                </div>
-
+                <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
+                <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
               </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-      <!-- OCTAGON SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible">
-
-        <input id="octagon_collapsible" class="toggle" type="checkbox">
-
-        <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
-
-        <div class="dropdown">
-
-          <div class="content-inner">
-            <div class="full-width">
-              <p>{octagonDesc}</p>
 
               <div class="line"></div>
-            </div>
 
-            <div class="collapsible-row-double">
-
-              <div class="collapsible-column">
-                <input id="octagon-angle-text-l" type="text" disabled />
-                <div class="octagon" id="leftocto-stick-ui" hidden>
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="octo-analog-pointer-l" class="analog-position"></div>
-                </div>
+              <div class="full-width">
+                <h3>{octoAdjustTitle}</h3>
+                <p>{octoAdjustDesc}</p>
+                <input class="floatingAdjustment" type="number" id="floatingInputOcto" step="0.1" onchange=""
+                  value="0.0000" disabled>
+              </div>
+              <div class="row">
+                <button type="button" id="get_octoangle_button" onclick="analog_get_octoangle_value()">{get}</button>
+                <button type="button" id="set_octoangle_button"
+                  onclick='analog_update_octoangle(document.getElementById("floatingInputOcto").value)'
+                  disabled>{update}</button>
+                <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
               </div>
 
-              <div class="collapsible-column">
-                <input id="octagon-angle-text-r" type="text" disabled />
-                <div class="octagon" id="rightocto-stick-ui" hidden>
-                  <div class="inner-stick"></div>
-                  <div class="analog-center"></div>
-                  <div id="octo-analog-pointer-r" class="analog-position"></div>
-                </div>
+              <div class="line"></div>
+
+              <div class="full-width">
+                <h3>{subAdjustTitle}</h3>
+                <p>{subnotchDesc}</p>
+                <input class="floatingAdjustment" type="number" id="floatingInput" step="0.1" onchange="" min="-15"
+                  max="15" value="0.0000" disabled>
+              </div>
+              <div class="row">
+                <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>
+                <button type="button" id="set_subangle_button"
+                  onclick='analog_update_subangle(document.getElementById("floatingInput").value)'
+                  disabled>{update}</button>
+                <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- GYRO SETTINGS -->
+        <!-- --------------- -->
+        <div class="collapsible">
+
+          <input id="gyro_collapsible" class="toggle" type="checkbox">
+
+          <label for="gyro_collapsible" id="gyro_collapsible_toggle" class="lbl-toggle">{gyroTitle}</label>
+
+          <div class="dropdown">
+
+
+            <div class="full-width">
+              <p>{gyroDesc}</p>
+
+
+              <div class="line"></div>
+
+              <div class="row">
+                <button type="button" id="start_imu_calibration_button"
+                  onclick="imu_start_calibration()">{start}</button>
               </div>
             </div>
 
-            <div class="line"></div>
 
-            <div class="row">
-              <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
-              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
-            </div>
+          </div>
+        </div>
 
-            <div class="line"></div>
-            
+        <!-- REMAPPING -->
+        <!-- --------------- -->
+        <div class="collapsible">
+
+          <input id="remapping" class="toggle" type="checkbox">
+
+          <label for="remapping" id="remapping-toggle" , class="lbl-toggle">{remapTitle}</label>
+          <div class="dropdown">
+
             <div class="full-width">
-              <h3>{octoAdjustTitle}</h3>
-              <p>{octoAdjustDesc}</p>
-            <input class="floatingAdjustment" type="number" id="floatingInputOcto" step="0.1" onchange="" value="0.0000" disabled>
-            </div>  
-            <div class="row">
-              <button type="button" id="get_octoangle_button" onclick="analog_get_octoangle_value()">{get}</button>
-              <button type="button" id="set_octoangle_button" onclick='analog_update_octoangle(document.getElementById("floatingInputOcto").value)' disabled>{update}</button>
-              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+              <p>{remapDesc}</p>
+              <p>{remapDesc2}</p>
+              <div class="line"></div>
+              <div class="sora_radio_container" id="rp_radio_picker">
+
+                <input type="radio" name="radio_remap_profile" id="rp_switch" checked
+                  onchange="remap_switch_profile(INPUT_MODE_SWITCH)">
+                <label for="rp_switch">Switch</label>
+
+                <input type="radio" name="radio_remap_profile" id="rp_xinput"
+                  onchange="remap_switch_profile(INPUT_MODE_XINPUT)">
+                <label for="rp_xinput" id="rp_xinput_label">XInput</label>
+
+                <input type="radio" name="radio_remap_profile" id="rp_gamecube"
+                  onchange="remap_switch_profile(INPUT_MODE_GAMECUBE)">
+                <label for="rp_gamecube" id="rp_ginput_label">GC</label>
+
+                <input type="radio" name="radio_remap_profile" id="rp_n64"
+                  onchange="remap_switch_profile(INPUT_MODE_N64)">
+                <label for="rp_n64" id="rp_n64_label">N64</label>
+
+                <input type="radio" name="radio_remap_profile" id="rp_snes"
+                  onchange="remap_switch_profile(INPUT_MODE_SNES)">
+                <label for="rp_snes" id="rp_snes_label">SNES</label>
+
+              </div>
+            </div>
+            <div class="remap-row">
+              <!-- A -->
+              <button type="button" class="button-map-init" id="bo_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
+              <button type="button" class="button-map-view" id="bi_a">...</button>
             </div>
 
-            <div class="line"></div>
-            
+            <div class="remap-row">
+              <!-- B -->
+              <button type="button" class="button-map-init" id="bo_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
+              <button type="button" class="button-map-view" id="bi_b">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- X -->
+              <button type="button" class="button-map-init" id="bo_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
+              <button type="button" class="button-map-view" id="bi_x">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Y -->
+              <button type="button" class="button-map-init" id="bo_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
+              <button type="button" class="button-map-view" id="bi_y">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Up -->
+              <button type="button" class="button-map-init" id="bo_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
+              <button type="button" class="button-map-view" id="bi_dup">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Down -->
+              <button type="button" class="button-map-init" id="bo_ddown"
+                onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
+              <button type="button" class="button-map-view" id="bi_ddown">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Left -->
+              <button type="button" class="button-map-init" id="bo_dleft"
+                onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
+              <button type="button" class="button-map-view" id="bi_dleft">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Dpad Right -->
+              <button type="button" class="button-map-init" id="bo_dright"
+                onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
+              <button type="button" class="button-map-view" id="bi_dright">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Plus -->
+              <button type="button" class="button-map-init" id="bo_plus"
+                onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
+              <button type="button" class="button-map-view" id="bi_plus">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Minus -->
+              <button type="button" class="button-map-init" id="bo_minus"
+                onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
+              <button type="button" class="button-map-view" id="bi_minus">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- L -->
+              <button type="button" class="button-map-init" id="bo_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
+              <button type="button" class="button-map-view" id="bi_l">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- ZL -->
+              <button type="button" class="button-map-init" id="bo_zl"
+                onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
+              <button type="button" class="button-map-view" id="bi_zl">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- R -->
+              <button type="button" class="button-map-init" id="bo_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
+              <button type="button" class="button-map-view" id="bi_r">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- ZR -->
+              <button type="button" class="button-map-init" id="bo_zr"
+                onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
+              <button type="button" class="button-map-view" id="bi_zr">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Stick L -->
+              <button type="button" class="button-map-init" id="bo_stickl"
+                onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
+              <button type="button" class="button-map-view" id="bi_stickl">...</button>
+            </div>
+
+            <div class="remap-row">
+              <!-- Stick R -->
+              <button type="button" class="button-map-init" id="bo_stickr"
+                onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
+              <button type="button" class="button-map-view" id="bi_stickr">...</button>
+            </div>
+
             <div class="full-width">
-              <h3>{subAdjustTitle}</h3>
-              <p>{subnotchDesc}</p>
-            <input class="floatingAdjustment" type="number" id="floatingInput" step="0.1" onchange="" min="-15" max="15" value="0.0000" disabled>
-            </div>  
-            <div class="row">
-              <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>
-              <button type="button" id="set_subangle_button" onclick='analog_update_subangle(document.getElementById("floatingInput").value)' disabled>{update}</button>
-              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+              <div class="line"></div>
+              <div class="row">
+                <button type="button" id="reset_remap_button" onclick="remap_set_default()">{reset}</button>
+                <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
+              </div>
             </div>
 
           </div>
-
         </div>
-      </div>
 
-      <!-- GYRO SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible">
+        <!-- GAMECUBE SETTINGS -->
+        <!-- --------------- -->
+        <div class="collapsible">
 
-        <input id="gyro_collapsible" class="toggle" type="checkbox">
+          <input id="gamecube_collapsible" class="toggle" type="checkbox">
 
-        <label for="gyro_collapsible" id="gyro_collapsible_toggle" class="lbl-toggle">{gyroTitle}</label>
+          <label for="gamecube_collapsible" id="gamecube_collapsible_toggle" class="lbl-toggle">{gamecubeTitle}</label>
 
-        <div class="dropdown">
+          <div class="dropdown">
 
-
-          <div class="full-width">
-            <p>{gyroDesc}</p>
-
-
-            <div class="line"></div>
-
-            <div class="row">
-              <button type="button" id="start_imu_calibration_button" onclick="imu_start_calibration()">{start}</button>
+            <div class="full-width">
+              <p>{gamecubeDesc}</p>
+              <div class="line"></div>
+              <div class="sora_radio_container" id="radio_gc_sp_picker">
+                <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
+                <label for="gc_sp_0">Off</label>
+                <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1, 0)">
+                <label for="gc_sp_1">Light L</label>
+                <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2, 0)">
+                <label for="gc_sp_2">Light R</label>
+                <input type="radio" name="radio_gc_sp" id="gc_sp_3" onchange="gcsp_set_value(3, 0)">
+                <label for="gc_sp_3">Reset</label>
+                <input type="radio" name="radio_gc_sp" id="gc_sp_4" onchange="gcsp_set_value(4, 0)">
+                <label for="gc_sp_4">Dual Z</label>
+              </div>
+              <div class="line"></div>
+              <p>{gamecubeTrigger}</p>
+              <div class="slider">
+                <input type="range" min="50" max="255" value="50" id="lightValue"
+                  oninput="lightTextValue.innerText = this.value.toString()"
+                  onchange="gcsp_set_value(0xFF, this.value)">
+                <p id="lightTextValue">50</p>
+              </div>
+              <div class="row">
+                <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
+              </div>
             </div>
+
           </div>
-
-
         </div>
-      </div>
 
-      <!-- REMAPPING -->
-      <!-- --------------- -->
-      <div class="collapsible">
+        <!-- HARDWARE TEST -->
+        <!-- --------------- -->
+        <div class="collapsible">
 
-        <input id="remapping" class="toggle" type="checkbox">
+          <input id="hwtest_collapsible" class="toggle" type="checkbox">
 
-        <label for="remapping" id="remapping-toggle" , class="lbl-toggle">{remapTitle}</label>
-        <div class="dropdown">
+          <label for="hwtest_collapsible" id="hwtest_collapsible_toggle" class="lbl-toggle">{hwtestTitle}</label>
 
-          <div class="full-width">
-            <p>{remapDesc}</p>
-            <p>{remapDesc2}</p>
-            <div class="line"></div>
-            <div class="sora_radio_container" id="rp_radio_picker">
+          <div class="dropdown">
 
-              <input type="radio" name="radio_remap_profile" id="rp_switch" checked
-                onchange="remap_switch_profile(INPUT_MODE_SWITCH)">
-              <label for="rp_switch">Switch</label>
 
-              <input type="radio" name="radio_remap_profile" id="rp_xinput"
-                onchange="remap_switch_profile(INPUT_MODE_XINPUT)">
-              <label for="rp_xinput" id="rp_xinput_label">XInput</label>
+            <div class="full-width">
+              <p>{hwtestDesc}</p>
+              <br>
 
-              <input type="radio" name="radio_remap_profile" id="rp_gamecube"
-                onchange="remap_switch_profile(INPUT_MODE_GAMECUBE)">
-              <label for="rp_gamecube" id="rp_ginput_label">GC</label>
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_data" disabled>
+                <label for="fwc_data">Data Pin</label>
+              </div>
 
-              <input type="radio" name="radio_remap_profile" id="rp_n64"
-                onchange="remap_switch_profile(INPUT_MODE_N64)">
-              <label for="rp_n64" id="rp_n64_label">N64</label>
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_latch" disabled>
+                <label for="fwc_latch">Latch Pin</label>
+              </div>
 
-              <input type="radio" name="radio_remap_profile" id="rp_snes"
-                onchange="remap_switch_profile(INPUT_MODE_SNES)">
-              <label for="rp_snes" id="rp_snes_label">SNES</label>
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_clock" disabled>
+                <label for="fwc_clock">Clock Pin</label>
+              </div>
 
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_rgb" disabled>
+                <label for="fwc_rgb">RGB Output</label>
+              </div>
+
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_analog" disabled>
+                <label for="fwc_analog">Analog Comms</label>
+              </div>
+
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_imu" disabled>
+                <label for="fwc_imu">IMU Comms</label>
+              </div>
+
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_bluetooth" disabled>
+                <label for="fwc_bluetooth">Bluetooth Comms</label>
+              </div>
+
+              <div class="hwtest_c">
+                <input type="checkbox" id="fwc_battery" disabled>
+                <label for="fwc_battery">Battery Comms</label>
+              </div>
+
+
+              <div class="line"></div>
+
+              <div class="row">
+                <button type="button" id="start_hwtest_button" onclick="fwtest_start()">{start}</button>
+              </div>
             </div>
-          </div>
-          <div class="remap-row">
-            <!-- A -->
-            <button type="button" class="button-map-init" id="bo_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
-            <button type="button" class="button-map-view" id="bi_a">...</button>
-          </div>
 
-          <div class="remap-row">
-            <!-- B -->
-            <button type="button" class="button-map-init" id="bo_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
-            <button type="button" class="button-map-view" id="bi_b">...</button>
-          </div>
 
-          <div class="remap-row">
-            <!-- X -->
-            <button type="button" class="button-map-init" id="bo_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
-            <button type="button" class="button-map-view" id="bi_x">...</button>
           </div>
-
-          <div class="remap-row">
-            <!-- Y -->
-            <button type="button" class="button-map-init" id="bo_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
-            <button type="button" class="button-map-view" id="bi_y">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Up -->
-            <button type="button" class="button-map-init" id="bo_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
-            <button type="button" class="button-map-view" id="bi_dup">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Down -->
-            <button type="button" class="button-map-init" id="bo_ddown"
-              onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
-            <button type="button" class="button-map-view" id="bi_ddown">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Left -->
-            <button type="button" class="button-map-init" id="bo_dleft"
-              onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
-            <button type="button" class="button-map-view" id="bi_dleft">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Right -->
-            <button type="button" class="button-map-init" id="bo_dright"
-              onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
-            <button type="button" class="button-map-view" id="bi_dright">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Plus -->
-            <button type="button" class="button-map-init" id="bo_plus"
-              onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
-            <button type="button" class="button-map-view" id="bi_plus">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Minus -->
-            <button type="button" class="button-map-init" id="bo_minus"
-              onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
-            <button type="button" class="button-map-view" id="bi_minus">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- L -->
-            <button type="button" class="button-map-init" id="bo_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
-            <button type="button" class="button-map-view" id="bi_l">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- ZL -->
-            <button type="button" class="button-map-init" id="bo_zl" onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
-            <button type="button" class="button-map-view" id="bi_zl">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- R -->
-            <button type="button" class="button-map-init" id="bo_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
-            <button type="button" class="button-map-view" id="bi_r">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- ZR -->
-            <button type="button" class="button-map-init" id="bo_zr" onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
-            <button type="button" class="button-map-view" id="bi_zr">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Stick L -->
-            <button type="button" class="button-map-init" id="bo_stickl"
-              onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
-            <button type="button" class="button-map-view" id="bi_stickl">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Stick R -->
-            <button type="button" class="button-map-init" id="bo_stickr"
-              onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
-            <button type="button" class="button-map-view" id="bi_stickr">...</button>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-            <div class="row">
-              <button type="button" id="reset_remap_button" onclick="remap_set_default()">{reset}</button>
-              <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
         </div>
+
       </div>
-
-      <!-- GAMECUBE SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible">
-
-        <input id="gamecube_collapsible" class="toggle" type="checkbox">
-
-        <label for="gamecube_collapsible" id="gamecube_collapsible_toggle" class="lbl-toggle">{gamecubeTitle}</label>
-
-        <div class="dropdown">
-
-          <div class="full-width">
-            <p>{gamecubeDesc}</p>
-            <div class="line"></div>
-            <div class="sora_radio_container" id="radio_gc_sp_picker">
-              <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
-              <label for="gc_sp_0">Off</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1, 0)">
-              <label for="gc_sp_1">Light L</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2, 0)">
-              <label for="gc_sp_2">Light R</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_3" onchange="gcsp_set_value(3, 0)">
-              <label for="gc_sp_3">Reset</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_4" onchange="gcsp_set_value(4, 0)">
-              <label for="gc_sp_4">Dual Z</label>
-            </div>
-            <div class="line"></div>
-            <p>{gamecubeTrigger}</p>
-            <div class="slider">
-              <input type="range" min="50" max="255" value="50" id="lightValue"
-                oninput="lightTextValue.innerText = this.value.toString()" onchange="gcsp_set_value(0xFF, this.value)">
-              <p id="lightTextValue">50</p>
-            </div>
-            <div class="row">
-              <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-
 
     </div>
   </div>
@@ -693,6 +771,7 @@
   </div>
   <script type="module" src="/js/esp32webtool/install-button.js"></script>
   <script src="js/hoja_version.js"></script>
+  <script src="js/hoja_hwtest.js"></script>
   <script src="js/hoja_global.js"></script>
   <script src="js/hoja_strings.js"></script>
   <script src="js/hoja_gcsp.js"></script>

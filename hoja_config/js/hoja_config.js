@@ -51,6 +51,7 @@ const WEBUSB_CMD_OCTOANGLE_GET = 0xAD;
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
+const WEBUSB_CMD_HWTEST_GET = 0xF2;
 
 const INPUT_MODE_SWITCH = 0;
 const INPUT_MODE_XINPUT = 1;
@@ -198,6 +199,12 @@ async function handle_input_report(result)
             console.log("Got cardinal value.");
             analog_octoangle_place_value(result.data);
             break;
+
+        case WEBUSB_CMD_HWTEST_GET:
+            console.log("Got fw test values.");
+            fwtest_place_data(result.data);
+            break;
+
     }
 
     if (result.data.getUint8(0) != WEBUSB_CMD_FW_GET) {
@@ -470,6 +477,33 @@ function enableDisconnect(enable) {
     }
 }
 
+var vibrate_base = 0;
+var vibrate_max = 0;
+
+function vibrate_update_text()
+{
+    var total = vibrate_base + vibrate_max;
+    document.getElementById("vibeFloorTextValue").innerText = String(vibrate_base);
+    document.getElementById("vibeTextValue").innerText = String(total);
+}
+
+function vb_update_base(value) {
+    if (!isNaN(value)) {
+        vibrate_base = Number(value);
+        document.getElementById("vibeFloorValue").value = vibrate_base;
+        vibrate_update_text();
+        
+    }
+}
+
+function vb_update_max(value) {
+    if (!isNaN(value)) {
+        vibrate_max = Number(value);
+        document.getElementById("vibeValue").value = vibrate_max;
+        vibrate_update_text();
+    }
+}
+
 async function vibrate_get_value() {
     var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATE_GET]);
     await device.transferOut(2, dataOut);
@@ -481,8 +515,7 @@ async function vibrate_set_value(value) {
 }
 
 function vibrate_place_value(data) {
-    document.getElementById("vibeTextValue").innerText = String(data.getUint8(1));
-    document.getElementById("vibeValue").value = data.getUint8(1);
+    vb_update_max(data.getUint8(1));
 }
 
 async function vibratefloor_get_value() {
@@ -496,8 +529,7 @@ async function vibratefloor_set_value(value) {
 }
 
 function vibratefloor_place_value(data) {
-    document.getElementById("vibeFloorTextValue").innerText = String(data.getUint8(1));
-    document.getElementById("vibeFloorValue").value = data.getUint8(1);
+    vb_update_base(data.getUint8(1));
 }
 
 function vibrate_enable_menu(enable) {
@@ -537,6 +569,7 @@ function capabilities_parse(data) {
     remap_enable_menu(true, c.nintendo_joybus, c.nintendo_serial);
     gcspecial_enable_menu(c.nintendo_joybus);
     baseband_enable_button(c.bluetooth);
+    fwtest_enable_menu(true);
 }
 
 color_page_picker_init();

@@ -24,6 +24,8 @@ function enable_all_menus(enable) {
     imu_enable_menu(enable);
     remap_enable_menu(enable);
     gcspecial_enable_menu(enable);
+    fwtest_enable_menu(enable);
+
     analog_stop_calibration_confirm();
 
     if(!enable)
@@ -32,4 +34,6 @@ function enable_all_menus(enable) {
         analog_subangle_enable_update(false);
         analog_octoangle_enable_update(false);
     }
+
+    fwtest_reset_button();
 }

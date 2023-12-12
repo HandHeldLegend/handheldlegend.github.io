@@ -45,6 +45,8 @@ var eng_strings = {
     subAdjustTitle: "Sub-Notch Adjustment",
     octoAdjustDesc: "Hold the analog stick to the desired cardinal direction and press 'Get'. Make your desired adjustment, then press update to test. Press save when you are satisfied with the results.",
     subnotchDesc: "To update optional sub-notch values, hold the analog stick to the desired sub-notch and press 'Get'. Enter your desired value and press 'Update'. Test the value and press 'Save' when you are happy with the results.",
+    hwtestTitle: "Hardware Test",
+    hwtestDesc: "Press start to begin a hardware test on supported devices. Once the results are completed you will see which tests passed below.",
 };
 
 var jp_strings = {
@@ -89,7 +91,10 @@ var jp_strings = {
     octoAdjustTitle: "カーディナル調整",
     subAdjustTitle: "サブノッチ調整",
     octoAdjustDesc: "アナログスティックを希望のカーディナル方向に押し続け、「取得」ボタンを押します。希望の調整を行い、テストするには「更新」ボタンを押します。結果に満足したら「保存」ボタンを押してください。",
-    subnotchDesc: "オプションのサブノッチ値を更新するには、アナログスティックを希望のサブノッチに押し続け、「取得」ボタンを押します。希望の値を入力し、「更新」ボタンを押します。値をテストし、結果に満足したら「保存」ボタンを押してください。"
+    subnotchDesc: "オプションのサブノッチ値を更新するには、アナログスティックを希望のサブノッチに押し続け、「取得」ボタンを押します。希望の値を入力し、「更新」ボタンを押します。値をテストし、結果に満足したら「保存」ボタンを押してください。",
+    hwtestTitle: "ハードウェアテスト",
+    hwtestDesc: "サポートされているデバイスでハードウェアテストを開始するには、開始ボタンを押してください。結果が完了すると、合格したテストが以下に表示されます。"
+
 };
 
 let en_radio = document.getElementById("lang_en");

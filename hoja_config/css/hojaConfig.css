@@ -21,6 +21,93 @@
     display: none;
 }
 
+.hwtest_c {
+    height: 1rem;
+    display: flex;
+    width: 70%;
+    margin-left: 25%;
+    margin-bottom: 1rem;
+}
+
+.hwtest_c label {
+    display: flex;
+    margin-left: 1rem;
+}
+
+/* Hide the default checkbox */
+.hwtest_c input[type="checkbox"] {
+    display: none;
+}
+
+/* Style the custom checkbox */
+.hwtest_c input[type="checkbox"]+label::before {
+    content: " ";
+    /* Unicode checkmark character */
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #000;
+    background-color: #ffffff4d;
+    text-align: center;
+    line-height: 1.1rem;
+    transition: all 0.25s ease-out;
+    margin-right: 0.35rem;
+}
+
+/* Style when the checkbox is checked */
+.hwtest_c input[type="checkbox"]:checked+label::before {
+    content: "\2713";
+    /* Unicode checkmark character */
+    background-color: rgba(94, 94, 248, 0.425);
+    transition: all 0.25s ease-out;
+}
+
+/* Style when the checkbox has 'failed' attribute */
+.hwtest_c input[type="checkbox"][failed]+label::before {
+    content: "X";
+    /* Unicode cross character */
+    background-color: rgba(248, 94, 94, 0.425);
+    transition: all 0.25s ease-out;
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.invert_container {
+    display: flex;
+}
+
+/* Hide the default checkbox */
+.invert_container input[type="checkbox"] {
+    display: none;
+    transition: all 0.25s ease-out;
+}
+
+/* Style the custom checkbox */
+.invert_container input[type="checkbox"]+label::before {
+    content: " ";
+    /* Unicode checkmark character */
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #000;
+    background-color: #ffffff4d;
+    text-align: center;
+    line-height: 20px;
+    margin: 1rem;
+    transition: all 0.25s ease-out;
+}
+
+/* Style when the checkbox is checked */
+.invert_container input[type="checkbox"]:checked+label::before {
+    content: "\2713";
+    /* Unicode checkmark character */
+    background-color: rgba(94, 94, 248, 0.425);
+    transition: all 0.25s ease-out;
+}
+
 #langButton {
     background: var(--sub-button-color-active);
     display:block;
