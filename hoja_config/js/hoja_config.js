@@ -48,6 +48,12 @@ const WEBUSB_CMD_SUBANGLE_GET = 0xAC;
 const WEBUSB_CMD_OCTOANGLE_SET = 0x0D;
 const WEBUSB_CMD_OCTOANGLE_GET = 0xAD;
 
+const WEBUSB_CMD_USERCYCLE_SET = 0x0E;
+const WEBUSB_CMD_USERCYCLE_GET = 0xAE;
+
+const WEBUSB_CMD_RGBMODE_SET = 0x10;
+const WEBUSB_CMD_RGBMODE_GET = 0xB0;
+
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
 const WEBUSB_CMD_SAVEALL = 0xF1;
@@ -78,6 +84,12 @@ async function config_get_chain(cmd) {
     }
     else if (cmd == WEBUSB_CMD_CAPABILITIES_GET) {
         await analog_get_invert_value();
+    }
+    else if (cmd == WEBUSB_CMD_ANALOG_INVERT_GET) {
+        await rgb_get_usercycle();
+    }
+    else if (cmd== WEBUSB_CMD_USERCYCLE_GET) {
+        await rgb_get_mode();
     }
 }
 
@@ -121,13 +133,12 @@ function showToast(message, duration = 2000) {
     setTimeout(function () {
         toast.style.opacity = 0;
         setTimeout(function () {
-          toast.style.display = 'none';
+            toast.style.display = 'none';
         }, 500); // Wait for the transition to complete (500ms)
-      }, duration);
-  }
+    }, duration);
+}
 
-async function handle_input_report(result)
-{
+async function handle_input_report(result) {
     switch (result.data.getUint8(0)) {
 
         case WEBUSB_CMD_CALIBRATION_START:
@@ -205,6 +216,16 @@ async function handle_input_report(result)
             fwtest_place_data(result.data);
             break;
 
+        case WEBUSB_CMD_RGBMODE_GET:
+            console.log("Got rgb mode value.");
+            rgb_mode_place_value(result.data);
+            break;
+
+        case WEBUSB_CMD_USERCYCLE_GET:
+            console.log("Got user cycle RGB values.");
+            rgb_usercycle_place_values(result.data);
+            break;
+
     }
 
     if (result.data.getUint8(0) != WEBUSB_CMD_FW_GET) {
@@ -213,7 +234,7 @@ async function handle_input_report(result)
         } catch (error) {
             console.error('Error in async function:', error);
         }
-        
+
     }
 
     //listen();
@@ -221,13 +242,12 @@ async function handle_input_report(result)
 
 function stop_listen() {
     const result = device.transferIn(2, 0); // Unsubscribe from datain event.
-    result.removeEventListener('datain', () => {});
+    result.removeEventListener('datain', () => { });
 }
 
 function listen() {
 
-    if(device==null) 
-    {
+    if (device == null) {
         return;
     }
 
@@ -247,19 +267,18 @@ navigator.usb.addEventListener("disconnect", (event) => {
     console.log("Device unplugged.");
     console.log(event);
 
-    if(event.device==device)
-    {
+    if (event.device == device) {
         device = null;
         //stop_listen();
         enableDisconnect(false);
         enable_all_menus(false);
     }
-    
+
 });
 
 async function disconnectButton() {
     if (device != null) {
-        await device.close();        
+        await device.close();
     }
     device = null;
     enableDisconnect(false);
@@ -318,21 +337,17 @@ async function basebandButton() {
     await device.transferOut(2, dataOut);
 }
 
-function baseband_enable_button(enable)
-{
-    if(enable)
-    {
+function baseband_enable_button(enable) {
+    if (enable) {
         document.getElementById("basebandButton").removeAttribute('disabled');
     }
     else document.getElementById("basebandButton").setAttribute('disabled', 'true');
 }
 
-function offline_indicator_enable(enable)
-{
+function offline_indicator_enable(enable) {
     var oi = document.getElementById("offline-indicator");
 
-    if(enable)
-    {
+    if (enable) {
         oi.removeAttribute('disabled');
     }
     else oi.setAttribute('disabled', 'true');
@@ -371,83 +386,76 @@ function fw_check_value(data) {
         console.log("Network online, checking manifest through web...");
 
         version_get_manifest_data(id)
-        .then((manifest) => {
+            .then((manifest) => {
 
-            if (manifest.fw_version == fw) {
-                console.log("Device firmware is up to date.");
-                firmware_matched = true;
-            }
-            else
-            {
-                console.log("Device firmware is out of date.");
-                version_replace_firmware_strings(id, manifest.changelog);
-                fw_display_box(true);
-            }
-        
-            if(HOJA_BACKEND_VERSION == backend) {
-                console.log("App version backend is up to date.");
-                backend_matched = true;
-            }
-            else
-            {
-                console.log("App version backend is out of date.");
-                version_replace_firmware_strings(id, manifest.changelog);
-                fw_display_box(true);
-            }
-        
-            // If our app version matches, enable the config portions
-            if(backend_matched)
-            {
-                try {
-                    color_set_device(id);
-                    config_get_chain(WEBUSB_CMD_FW_GET);
+                if (manifest.fw_version == fw) {
+                    console.log("Device firmware is up to date.");
+                    firmware_matched = true;
                 }
-                catch (err) {
-        
+                else {
+                    console.log("Device firmware is out of date.");
+                    version_replace_firmware_strings(id, manifest.changelog);
+                    fw_display_box(true);
                 }
-            }
 
-            if(backend_matched && firmware_matched)
-            {
-                fw_display_box(false);
-            }
+                if (HOJA_BACKEND_VERSION == backend) {
+                    console.log("App version backend is up to date.");
+                    backend_matched = true;
+                }
+                else {
+                    console.log("App version backend is out of date.");
+                    version_replace_firmware_strings(id, manifest.changelog);
+                    fw_display_box(true);
+                }
 
-        });
+                // If our app version matches, enable the config portions
+                if (backend_matched) {
+                    try {
+                        color_set_device(id);
+                        config_get_chain(WEBUSB_CMD_FW_GET);
+                    }
+                    catch (err) {
+
+                    }
+                }
+
+                if (backend_matched && firmware_matched) {
+                    fw_display_box(false);
+                }
+
+            });
 
     }
-    else
-    {
+    else {
         console.log("Network offline, comparing app backend only...");
         offline_indicator_enable(true);
-        
+
         var backend_matched = false;
-        
-        if(HOJA_BACKEND_VERSION == backend) {
+
+        if (HOJA_BACKEND_VERSION == backend) {
             console.log("App version backend is up to date.");
             backend_matched = true;
         }
-        else
-        {
+        else {
             console.log("App version backend is out of date.");
         }
-    
+
         // If our app version matches, enable the config portions
-        if(backend_matched)
-        {
+        if (backend_matched) {
             try {
                 color_set_device(id);
                 fw_display_box(false);
                 config_get_chain(WEBUSB_CMD_FW_GET);
             }
             catch (err) {
-    
+
             }
         }
     }
 
-    
 
-    
+
+
 }
 
 function setActiveMenu(id) {
@@ -480,8 +488,7 @@ function enableDisconnect(enable) {
 var vibrate_base = 0;
 var vibrate_max = 0;
 
-function vibrate_update_text()
-{
+function vibrate_update_text() {
     var total = vibrate_base + vibrate_max;
     document.getElementById("vibeFloorTextValue").innerText = String(vibrate_base);
     document.getElementById("vibeTextValue").innerText = String(total);
@@ -492,7 +499,7 @@ function vb_update_base(value) {
         vibrate_base = Number(value);
         document.getElementById("vibeFloorValue").value = vibrate_base;
         vibrate_update_text();
-        
+
     }
 }
 

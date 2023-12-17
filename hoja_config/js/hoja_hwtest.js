@@ -69,7 +69,6 @@ async function fwtest_start()
 
 function fwtest_place_data(data)
 {
-    console.log(data);
     // Combine the two bytes into a uint16_t value
     const val = (data.getUint8(2) << 8) | data.getUint8(1);
 

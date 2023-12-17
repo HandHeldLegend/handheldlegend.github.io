@@ -263,18 +263,86 @@
 
           <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">{colorTitle}</label>
           <div class="dropdown">
-            <div id="hojaColorSvg">
-              <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled"
-                data-unique-ids="disabled" data-css-scoping="disabled"></svg>
+
+            <div class="full-width">
+              <div class="sora_radio_container" id="rp_radio_picker">
+
+                <input type="radio" name="radio_color_mode" id="cm_user" checked onchange="rgb_set_mode(0)">
+                <label for="cm_user" id="cm_user_label">User</label>
+
+                <input type="radio" name="radio_color_mode" id="cm_rainbow" onchange="rgb_set_mode(1)">
+                <label for="cm_rainbow" id="cm_rainbow_label">Rainbow</label>
+
+                <input type="radio" name="radio_color_mode" id="cm_fairy" onchange="rgb_set_mode(2)">
+                <label for="cm_fairy" id="cm_fairy_label">Fairy</label>
+
+                <input type="radio" name="radio_color_mode" id="cm_cycle" onchange="rgb_set_mode(3)">
+                <label for="cm_cycle" id="cm_cycle_label">User Fade</label>
+
+                <input type="radio" name="radio_color_mode" id="cm_cyclefade" onchange="rgb_set_mode(4)">
+                <label for="cm_cyclefade" id="cm_cyclefade_label">User Fairy</label>
+
+              </div>
+            </div>
+            
+            <div class="full-width" id="speed-color-div" >
+              <h3>Animation Speed</h3>
+              <div class="slider">
+                <input type="range" min="1" max="50" value="1" id="speed-color-value" oninput="rgb_update_speed_text(this.value)"
+                  onchange="rgb_set_speed(this.value)">
+                <p id="speed-color-text">1</p>
+              </div>
             </div>
 
-            <div id="hojaColorPicker">
-              <div id="colorPicker"></div>
-              <input id="colorHexBox" disabled type="text" value="#FFFFFF"
-                onchange="color_hexbox_changed(this.value)" />
-              <div class="row">
-                <button id="copyButton" class="small" onclick="color_copy()">{copy}</button>
-                <button id="pasteButton" class="small" onclick="color_paste()">{paste}</button>
+            <div class="full-width" id="cycle-color-div">
+              <!-- Color Pickers -->
+              <div class="color-picker-container">
+                <label for="color-picker-1">Color 1:</label>
+                <input type="color" id="color-picker-1" onchange="rgb_set_usercycle(0, this.value)">
+              </div>
+
+              <div class="color-picker-container">
+                <label for="color-picker-2">Color 2:</label>
+                <input type="color" id="color-picker-2" onchange="rgb_set_usercycle(1, this.value)">
+              </div>
+
+              <div class="color-picker-container">
+                <label for="color-picker-3">Color 3:</label>
+                <input type="color" id="color-picker-3" onchange="rgb_set_usercycle(2, this.value)">
+              </div>
+
+              <div class="color-picker-container">
+                <label for="color-picker-4">Color 4:</label>
+                <input type="color" id="color-picker-4" onchange="rgb_set_usercycle(3, this.value)">
+              </div>
+
+              <div class="color-picker-container">
+                <label for="color-picker-5">Color 5:</label>
+                <input type="color" id="color-picker-5" onchange="rgb_set_usercycle(4, this.value)">
+              </div>
+
+              <div class="color-picker-container">
+                <label for="color-picker-6">Color 6:</label>
+                <input type="color" id="color-picker-6" onchange="rgb_set_usercycle(5, this.value)">
+              </div>
+            </div>
+
+            
+
+            <div id="user-color-div">
+              <div id="hojaColorSvg">
+                <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled"
+                  data-unique-ids="disabled" data-css-scoping="disabled"></svg>
+              </div>
+
+              <div id="hojaColorPicker">
+                <div id="colorPicker"></div>
+                <input id="colorHexBox" disabled type="text" value="#FFFFFF"
+                  onchange="color_hexbox_changed(this.value)" />
+                <div class="row">
+                  <button id="copyButton" class="small" onclick="color_copy()">{copy}</button>
+                  <button id="pasteButton" class="small" onclick="color_paste()">{paste}</button>
+                </div>
               </div>
             </div>
 

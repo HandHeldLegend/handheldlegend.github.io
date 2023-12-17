@@ -317,3 +317,104 @@ function color_place_values(data) {
     i = i + 3;
     svg_set_rgb("bButton", d[i], d[i + 1], d[i + 2]);
 }
+
+async function rgb_get_mode()
+{
+    if (device != null) {
+        await sendReport(WEBUSB_CMD_RGBMODE_GET);
+    }
+}
+
+// A javascript function that either sets an elements style 'display' as 'none' or it removes that element
+// entirely from the DOM. This is used to hide/show the color picker and hex box. Takes in parameter 'hide' and 'id'
+// where 'hide' is a boolean and 'id' is the id of the element to hide/show.
+function hideElement(enable, id) {
+    if (!enable) {
+        document.getElementById(id).setAttribute("disabled", "true");
+    } else {
+        document.getElementById(id).removeAttribute("disabled");
+    }
+}
+
+function _rgb_enable_mode_type(mode)
+{
+    hideElement( (mode == 0) , "user-color-div");
+    hideElement( (mode>2) , "cycle-color-div");
+    hideElement((mode>0), "speed-color-div");
+}
+
+async function rgb_set_mode(mode)
+{
+    
+    _rgb_enable_mode_type(mode);
+    if (device != null) {
+        await sendReport(WEBUSB_CMD_RGBMODE_SET, mode);
+    }
+}
+
+async function rgb_get_usercycle()
+{
+    if (device != null) {
+        await sendReport(WEBUSB_CMD_USERCYCLE_GET);
+    }
+}
+
+async function rgb_set_usercycle(idx, hexColor)
+{
+    var rgb = hexToRgb(hexColor);
+    if (device != null) {
+        await sendReport(WEBUSB_CMD_USERCYCLE_SET, [idx, rgb.r, rgb.g, rgb.b]);
+    }
+}
+
+function _updatecolorpicker(id, r, g, b)
+{
+    console.log("Updating color picker: " + id + " to " + r + ", " + g + ", " + b);
+    var el = document.getElementById(id);
+    el.value = "#" + rgbToHex(r, g, b);
+}
+
+function rgb_update_speed_text(value)
+{
+    document.getElementById("speed-color-text").innerText = value.toString();
+}
+
+async function rgb_set_speed(value)
+{
+    console.log("Setting speed to: " + value);
+    if (device != null) {
+        await sendReport(WEBUSB_CMD_USERCYCLE_SET, [6, value]);
+    }
+}
+
+function rgb_usercycle_place_values(data)
+{
+    var d = new Uint8Array(data.buffer);
+    var speed = d[19];
+
+    console.log("Speed: " + speed);
+
+    _updatecolorpicker("color-picker-1", d[1], d[2], d[3]);
+    _updatecolorpicker("color-picker-2", d[4], d[5], d[6]);
+    _updatecolorpicker("color-picker-3", d[7], d[8], d[9]);
+    _updatecolorpicker("color-picker-4", d[10], d[11], d[12]);
+    _updatecolorpicker("color-picker-5", d[13], d[14], d[15]);
+    _updatecolorpicker("color-picker-6", d[16], d[17], d[18]);
+
+    document.getElementById("speed-color-value").value = speed;
+    rgb_update_speed_text(speed);
+
+}
+
+function rgb_mode_place_value(data) {
+    var number = data.getUint8(1);
+    const radioButtons = document.getElementsByName("radio_color_mode");
+    if (number >= 0 && number <= 4) {
+        radioButtons[number].checked = true;
+    }
+
+    _rgb_enable_mode_type(number);
+}
+
+// Enable default
+_rgb_enable_mode_type(0);

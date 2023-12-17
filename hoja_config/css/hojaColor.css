@@ -1,3 +1,67 @@
+@keyframes display_in {
+    0% {
+        opacity: 0;
+        height: 0;
+        width: 0;
+    }
+    1% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes display_out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        height: 0;
+        width: 0;
+    }   
+}
+
+#cycle-color-div {
+    display: flex;
+    animation: display_in 0.5s ease-in-out;
+}
+
+#cycle-color-div[disabled] {
+    animation: display_out 0.5s ease-in-out;
+    pointer-events: none;
+    opacity: 0;
+    display: none;
+}
+
+#speed-color-div {
+    display:flex;
+    animation: display_in 0.5s ease-in-out;
+}
+
+#speed-color-div[disabled] {
+    animation: display_out 0.5s ease-in-out;
+    pointer-events: none;
+    opacity: 0;
+    display: none;
+}
+
+#user-color-div {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    animation: display_in 0.5s ease-in-out;
+}
+
+#user-color-div[disabled] {
+    display: none;
+    pointer-events: none;
+    opacity: 0;
+    animation: display_out 0.5s ease-in-out;
+}
+
+
 #hojaColorSvg {
     margin-top: 1rem;
     display: flex;
