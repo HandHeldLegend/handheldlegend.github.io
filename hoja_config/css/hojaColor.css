@@ -48,7 +48,7 @@
 }
 
 #user-color-div {
-    display: flex;
+    display: contents;
     margin-left: auto;
     margin-right: auto;
     animation: display_in 0.5s ease-in-out;
