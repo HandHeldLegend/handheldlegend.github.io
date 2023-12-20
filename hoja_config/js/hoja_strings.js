@@ -47,6 +47,7 @@ var eng_strings = {
     subnotchDesc: "To update optional sub-notch values, hold the analog stick to the desired sub-notch and press 'Get'. Enter your desired value and press 'Update'. Test the value and press 'Save' when you are happy with the results.",
     hwtestTitle: "Hardware Test",
     hwtestDesc: "Press start to begin a hardware test on supported devices. Once the results are completed you will see which tests passed below.",
+    epilepsyWarning: "<b>Epilepsy Warning:</b><br>Animated color modes may trigger seizures for people with photosensitive epilepsy.",
 };
 
 var jp_strings = {
@@ -93,8 +94,8 @@ var jp_strings = {
     octoAdjustDesc: "アナログスティックを希望のカーディナル方向に押し続け、「取得」ボタンを押します。希望の調整を行い、テストするには「更新」ボタンを押します。結果に満足したら「保存」ボタンを押してください。",
     subnotchDesc: "オプションのサブノッチ値を更新するには、アナログスティックを希望のサブノッチに押し続け、「取得」ボタンを押します。希望の値を入力し、「更新」ボタンを押します。値をテストし、結果に満足したら「保存」ボタンを押してください。",
     hwtestTitle: "ハードウェアテスト",
-    hwtestDesc: "サポートされているデバイスでハードウェアテストを開始するには、開始ボタンを押してください。結果が完了すると、合格したテストが以下に表示されます。"
-
+    hwtestDesc: "サポートされているデバイスでハードウェアテストを開始するには、開始ボタンを押してください。結果が完了すると、合格したテストが以下に表示されます。",
+    epilepsyWarning: "<b>発作注意：</b><br>アニメーションカラーモードは、光過敏性発作を持つ人に発作を引き起こす可能性があります。",
 };
 
 let en_radio = document.getElementById("lang_en");
