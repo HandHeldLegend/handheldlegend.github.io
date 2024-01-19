@@ -128,11 +128,11 @@ function changeLang(lang) {
 }
 
 function timeZone() {
-    var timezoneOffset = new Date().getTimezoneOffset();
-    if (timezoneOffset > 0) {
-        return 1; // JP
-    } else {
+    var currentTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (currentTimeZone === "Asia/Tokyo") {
         return 0; // EN
+    } else {
+        return 1; // JP
     }
 }
 

@@ -14,6 +14,7 @@ function fwtest_reset_all_checkboxes() {
     fwtest_reset_checkbox("fwc_imu");
     fwtest_reset_checkbox("fwc_bluetooth");
     fwtest_reset_checkbox("fwc_battery");
+    fwtest_reset_checkbox("fwc_rumble");
 }
 
 function fwtest_set_passed(id, passed) {
@@ -81,7 +82,8 @@ function fwtest_place_data(data)
         analog:     (val & (1 << 4)),
         imu:        (val & (1 << 5)),
         bluetooth:  (val & (1 << 6)),
-        battery:    (val & (1 << 7))
+        battery:    (val & (1 << 7)),
+        rumble:     (val & (1 << 8)),
     };
 
     console.log(hwTest);
@@ -95,6 +97,8 @@ function fwtest_place_data(data)
     fwtest_set_passed("fwc_imu",     hwTest.imu);
     fwtest_set_passed("fwc_bluetooth", hwTest.bluetooth);
     fwtest_set_passed("fwc_battery", hwTest.battery);
+
+    fwtest_set_passed("fwc_rumble", hwTest.rumble);
 
     fwtest_reset_button();
     showToast("Got test data OK.");

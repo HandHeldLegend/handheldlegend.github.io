@@ -371,10 +371,12 @@ function fw_check_value(data) {
     var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
     var id = (data.getUint8(3) << 8) | (data.getUint8(4));
     var backend = (data.getUint8(5) << 8) | (data.getUint8(6));
+    var bt_version = (data.getUint8(7)<<8) | (data.getUint8(8));
 
     console.log("Device ID: " + id.toString());
     console.log("FW Verson: " + fw.toString());
     console.log("HOJA Version: " + backend.toString());
+    console.log("BT Baseband Version: " + bt_version);
 
     const vendor_enable = new URLSearchParams(window.location.search).get('vendor');
 
@@ -424,6 +426,16 @@ function fw_check_value(data) {
                 }
 
             });
+
+        // Check baseband version
+        if(bt_version == 0xFFFF)
+        {
+            // BT baseband unused
+        }
+        else if(bt_version != HOJA_BASEBAND_VERSION)
+        {
+            version_enable_baseband_update(true);
+        }
 
     }
     else {

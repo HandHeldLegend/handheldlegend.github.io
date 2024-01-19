@@ -1,6 +1,6 @@
 const HOJA_BACKEND_VERSION = 0x0001; // Current backend firmware (Old called settings version)
 
-const HOJA_MODEM_FW = 0xA001; // Current BT Modem firmware
+const HOJA_BASEBAND_VERSION = 0xA002; // Current BT Modem firmware
 
 const INIT_INSTRUCTIONS = 
 {
@@ -11,7 +11,7 @@ const INIT_INSTRUCTIONS =
     then drag the file to the RP USB device in <br>
     Finder/File Explorer.
     `,
-    0xA002 : // ProGCC 3+
+    0xA002 : // ProGCC 3+ (OG Vibration model)
     `No init instructions for this device yet.
     `,
     0xB001 : // SuperGamepad+
@@ -51,8 +51,6 @@ const FW_UPDATE_URLS =
 
     0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2" // Phob 2.1
 };
-
-
 
 function version_replace_firmware_strings(id, changelog)
 {
@@ -109,6 +107,15 @@ function version_firmware_initialization_check()
 
 version_firmware_initialization_check();
 
+function version_enable_baseband_update(enable)
+{
+    if(enable)
+    {
+        document.getElementById('baseband-box').setAttribute('disabled', 'false');
+    }
+    else document.getElementById('baseband-box').removeAttribute('disabled');
+}
+
 function version_enable_baseband_check()
 {
     // Get the current URL
@@ -119,7 +126,7 @@ function version_enable_baseband_check()
 
     if(initValue)
     {
-        var bb = document.getElementById('baseband-box').setAttribute('disabled', 'false');
+        version_enable_baseband_update(true);
     }
 }
 
