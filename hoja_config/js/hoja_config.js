@@ -380,6 +380,15 @@ function fw_check_value(data) {
 
     const vendor_enable = new URLSearchParams(window.location.search).get('vendor');
 
+    if(vendor_enable)
+    {
+        console.log("Vendor override detected.");
+        color_set_device(id);
+        fw_display_box(false);
+        config_get_chain(WEBUSB_CMD_FW_GET);
+        return;
+    }
+
     var firmware_matched = false;
     var backend_matched = false;
 
