@@ -617,6 +617,7 @@ function notifyUserToUpdate() {
     console.log("Update notif sent.");
     // This could be more fancy, like displaying a modal or a toast
     const updateBanner = document.createElement('div');
+    updateBanner.style.zIndex = '5';
     updateBanner.style.position = 'fixed';
     updateBanner.style.bottom = '0';
     updateBanner.style.width = '100%';
