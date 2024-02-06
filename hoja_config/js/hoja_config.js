@@ -56,6 +56,8 @@ const WEBUSB_CMD_RGBMODE_GET = 0xB0;
 
 const WEBUSB_CMD_INPUT_REPORT = 0xE0;
 
+const WEBUSB_CMD_DEBUG_REPORT = 0xEE;
+
 const WEBUSB_CMD_SAVEALL = 0xF1;
 const WEBUSB_CMD_HWTEST_GET = 0xF2;
 
@@ -140,6 +142,14 @@ function showToast(message, duration = 2000) {
 
 async function handle_input_report(result) {
     switch (result.data.getUint8(0)) {
+
+        case WEBUSB_CMD_DEBUG_REPORT:
+            for(i = 0; i < result.data.getUint8(1); i++)
+            {
+                console.log("Dbg: " + result.data.getUint8(2+i));
+            }
+            showToast("Got debug dump data. (See console).");
+            break;
 
         case WEBUSB_CMD_CALIBRATION_START:
             analog_start_calibration_confirm();

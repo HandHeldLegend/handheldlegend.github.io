@@ -1,6 +1,6 @@
 // SW Updated Date: 1.22.2024
 
-const CACHE_NAME = 'hoja-pwa-cache-v20r2';
+const CACHE_NAME = 'hoja-pwa-cache-v21';
 
 const root_css_url = 'https://handheldlegend.github.io/css/'
 
