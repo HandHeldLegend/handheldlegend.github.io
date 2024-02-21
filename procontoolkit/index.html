@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="js/procon_toolkit.js"></script>
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
+  <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
+  <link rel="stylesheet" href="/css/slider.css" type="text/css">
+  <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
+  <link rel="stylesheet" href="/css/containers.css" type="text/css">
+  <link rel="stylesheet" href="resources/pc_img.css">
+</head>
+
+<body>
+  <div class="context">
+
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+
+    <h1>Pro Controller<br>
+      Configurator</h1>
+
+    <div class="box">
+      <p>To configure your device, connect your Pro Controller via USB. Click 'Connect' then follow the instructions.</p>
+    </div>
+
+    <div class="box">
+        <p>If you found this tool helpful, consider checking out our store.</p>
+        <p>We sell tons of great Pro Controller modding parts and accessories.</p>
+        <a href="https://handheldlegend.com" target="_blank">HHL Shop - Thank you!</a>
+    </div>
+
+    <div class="box">
+
+      <div class="invisigrid">
+        <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
+        <button type="button" id="disconnect_button" onclick="doDisconnect()" disabled>Disconnect</button>
+      </div>
+
+
+      <!-- COLOR SETTINGS -->
+      <!-- --------------- -->
+      <div class="collapsible">
+
+        <input id="color-collapsible" class="toggle" type="checkbox" disabled >
+
+        <label for="color-collapsible" id="color-collapsible-toggle" class="lbl-toggle" disabled="true" >Color Settings</label>
+
+        <div class="dropdown">
+
+          <div class="full-width">
+
+            <div class="procon-container">
+              <div class="procon-body" id="body-mask" style></div>
+              <div class="procon-buttons" id="buttons-mask" style></div>
+              <div class ="procon-l-grip" id="l-grip-mask" style></div>
+              <div class ="procon-r-grip" id="r-grip-mask" style></div>
+              <div class ="procon-shadow"></div>
+            </div>
+
+            <br>
+            
+            <div>
+            <label for="pc-body">Body</label>
+            <br>
+            <input type="color" id="pc_body" name="pc-body" value="#e66465" onchange='setColorData(0, this.value)'>
+            <br>
+            <label for="pc-buttons">Buttons</label>
+            <br>
+            <input type="color" id="pc_buttons" name="pc-buttons" value="#e66465" onchange='setColorData(1, this.value)'>
+            <br>
+            <label for="pc-body">Left Grip</label>
+            <br>
+            <input type="color" id="pc_grip_l" name="pc-body" value="#e66465" onchange='setColorData(2, this.value)'>
+            <br>
+            <label for="pc-body">Right Grip</label>
+            <br>
+            <input type="color" id="pc_grip_r" name="pc-body" value="#e66465" onchange='setColorData(3, this.value)'>
+            <br>
+            </div>
+            
+          </div>
+
+          <div class="row">
+            <button type="button" id="save_color_button" onclick="doSaveColor()">Save Color</button>
+          </div>
+
+        </div>
+      </div>
+
+
+
+      <!-- <p>To calibrate your sticks, swirl both sticks</p>
+      <p>around in a full circle 6-10 times.</p>
+      <p>Release both sticks so they are centered.</p>
+      <p>Click the button below to save the calibration data.</p>
+
+      <div class="wrap-collapsible">
+
+        <input id="calibration-collapsible" class="toggle" type="checkbox"  >
+
+        <label for="calibration-collapsible" id="calibration-collapsible-toggle" class="lbl-toggle"  >Calibration Data</label>
+        <div class="collapsible-content">
+
+          <div class="content-inner">
+
+            <h3>Left Stick Calibration</h3>
+            <div class="input-container">
+              <div class="grid-item">X Max Distance</div>
+              <div class="grid-item" id="lx_max">0</div>
+
+              <div class="grid-item">X Center</div>
+              <div class="grid-item" id="lx_center">0</div>
+
+              <div class="grid-item">X Min Distance</div>
+              <div class="grid-item" id="lx_min">0</div>
+
+              <div class="grid-item">Y Max Distance</div>
+              <div class="grid-item" id="ly_max">0</div>
+
+              <div class="grid-item">Y Center</div>
+              <div class="grid-item" id="ly_center">0</div>
+
+              <div class="grid-item">Y Min Distance</div>
+              <div class="grid-item" id="ly_min">0</div>
+            </div>
+
+            <h3>Right Stick Calibration</h3>
+            <div class="input-container">
+              <div class="grid-item">X Max Distance</div>
+              <div class="grid-item" id="rx_max">0</div>
+
+              <div class="grid-item">X Center</div>
+              <div class="grid-item" id="rx_center">0</div>
+
+              <div class="grid-item">X Min Distance</div>
+              <div class="grid-item" id="rx_min">0</div>
+
+              <div class="grid-item">Y Max Distance</div>
+              <div class="grid-item" id="ry_max">0</div>
+
+              <div class="grid-item">Y Center</div>
+              <div class="grid-item" id="ry_center">0</div>
+
+              <div class="grid-item">Y Min Distance</div>
+              <div class="grid-item" id="ry_min">0</div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+      
+      <button type="button" id="save_button" onclick="doSaveStickSettings()" disabled>Save Calibration</button>
+
+      <div class="line"></div>
+
+      <h3>Scaled Stick Output</h3>
+      <div class="input-container">
+        <div class="grid-item">X Axis</div>
+        <div class="grid-item" id="x_axis">0</div>
+
+        <div class="grid-item">Y Axis</div>
+        <div class="grid-item" id="y_axis">0</div>
+
+        <div class="grid-item">CX Axis</div>
+        <div class="grid-item" id="cx_axis">0</div>
+
+        <div class="grid-item">CY Axis</div>
+        <div class="grid-item" id="cy_axis">0</div>
+      </div>
+
+      <div class="line"></div>
+
+      <h3>Raw Stick Output</h3>
+      <div class="input-container">
+        <div class="grid-item">X Axis</div>
+        <div class="grid-item" id="x_axis_raw">0</div>
+
+        <div class="grid-item">Y Axis</div>
+        <div class="grid-item" id="y_axis_raw">0</div>
+
+        <div class="grid-item">CX Axis</div>
+        <div class="grid-item" id="cx_axis_raw">0</div>
+
+        <div class="grid-item">CY Axis</div>
+        <div class="grid-item" id="cy_axis_raw">0</div>
+      </div> -->
+
+  </div>
+</div>
+  <div class="footer">
+    <a href="https://handheldlegend.github.io/css.html" target="_blank">CSS Attributions</a> | Site by Mitch Cairns | ©
+    2024, Hand Held Legend
+  </div>
+
+</body>
+
+</html>
