@@ -66,7 +66,7 @@ function hexToRgb(hex) {
 
 function color_enable_menu(enable)
 {
-    enable_dropdown_element("color-settings", "color-settings-toggle", enable);
+    enable_dropdown_element("color-collapsible", enable);
 }
 
 function rgbToHex(r, g, b) {

@@ -28,9 +28,9 @@ function analog_invert_place_values(data)
 
 function analog_enable_menu(enable, leftStick, rightStick)
 {
-    enable_dropdown_element( "octagon_collapsible", "octagon_collapsible_toggle", enable);
-    enable_dropdown_element("analog_collapsible", "analog_collapsible_toggle", enable);
-    enable_dropdown_element("snapback-settings", "snapback-settings-toggle", enable);
+    enable_dropdown_element( "octagon-collapsible", enable);
+    enable_dropdown_element("analog-collapsible", enable);
+    enable_dropdown_element("snapback-collapsible", enable);
 
     var lse = document.getElementById("left-stick-ui");
     var rse = document.getElementById("right-stick-ui");
@@ -58,11 +58,6 @@ function analog_enable_menu(enable, leftStick, rightStick)
         rse.removeAttribute("hidden");
         rose.removeAttribute("hidden");
     }
-}
-
-function imu_enable_menu(enable)
-{
-    enable_dropdown_element("gyro_collapsible", "gyro_collapsible_toggle", enable);
 }
 
 async function analog_update_octagon()
@@ -204,11 +199,5 @@ async function analog_start_calibration()
 async function analog_stop_calibration()
 {
     var dataOut = new Uint8Array([WEBUSB_CMD_CALIBRATION_STOP]);
-    await device.transferOut(2, dataOut);
-}
-
-async function imu_start_calibration()
-{
-    var dataOut = new Uint8Array([WEBUSB_CMD_IMU_CALIBRATION_START]);
     await device.transferOut(2, dataOut);
 }

@@ -1,18 +1,20 @@
-function enable_dropdown_element(toggleElementId, labelElementId, enable) {
+function enable_dropdown_element(toggleElementId, enable) {
     var toggleElement = document.getElementById(toggleElementId);
-    var labelElement = document.getElementById(labelElementId);
 
     if (enable) {
-        toggleElement.removeAttribute('disabled');
-        toggleElement.setAttribute('onclick', "setActiveMenu(this.id)");
+        toggleElement.setAttribute('enabled', 'true');
+        var toggleCheck = toggleElement.querySelector('.toggle')
+        toggleCheck.setAttribute('onclick', "setActiveMenu(this.id)");
 
-        labelElement.removeAttribute('disabled');
+        //labelElement.removeAttribute('disabled');
     }
     else {
-        toggleElement.setAttribute('disabled', 'true');
+        if (toggleElement.hasAttribute('enabled'))
+        toggleElement.removeAttribute('enabled');
+    
         toggleElement.checked = false;
 
-        labelElement.setAttribute('disabled', 'true');
+        //labelElement.setAttribute('disabled', 'true');
     }
 }
 
@@ -23,8 +25,9 @@ function enable_all_menus(enable) {
     color_enable_menu(enable);
     imu_enable_menu(enable);
     remap_enable_menu(enable);
-    gcspecial_enable_menu(enable);
+    remapping_sp_enable_menu(enable);
     fwtest_enable_menu(enable);
+    system_enable_menu(enable);
 
     analog_stop_calibration_confirm();
 

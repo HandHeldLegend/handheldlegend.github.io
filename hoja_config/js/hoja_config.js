@@ -6,61 +6,6 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const WEBUSB_CMD_FW_SET = 0x0F;
-const WEBUSB_CMD_FW_GET = 0xAF;
-
-const WEBUSB_CMD_BB_SET = 0xBB;
-
-const WEBUSB_CMD_CAPABILITIES_GET = 0xBE;
-
-const WEBUSB_CMD_RGB_SET = 0x01;
-const WEBUSB_CMD_RGB_GET = 0xA1;
-
-const WEBUSB_CMD_ANALOG_INVERT_SET = 0x02;
-const WEBUSB_CMD_ANALOG_INVERT_GET = 0xA2;
-
-const WEBUSB_CMD_CALIBRATION_START = 0x03;
-const WEBUSB_CMD_CALIBRATION_STOP = 0xA3;
-
-const WEBUSB_CMD_OCTAGON_SET = 0x04;
-
-const WEBUSB_CMD_ANALYZE_START = 0x05;
-const WEBUSB_CMD_ANALYZE_STOP = 0xA5;
-
-const WEBUSB_CMD_REMAP_SET = 0x06;
-const WEBUSB_CMD_REMAP_GET = 0xA6;
-
-const WEBUSB_CMD_REMAP_DEFAULT = 0x07;
-
-const WEBUSB_CMD_GCSP_SET = 0x08;
-
-const WEBUSB_CMD_IMU_CALIBRATION_START = 0x09;
-
-const WEBUSB_CMD_VIBRATE_SET = 0x0A;
-const WEBUSB_CMD_VIBRATE_GET = 0xAA;
-
-const WEBUSB_CMD_VIBRATEFLOOR_SET = 0x0B;
-const WEBUSB_CMD_VIBRATEFLOOR_GET = 0xAB;
-
-const WEBUSB_CMD_SUBANGLE_SET = 0x0C;
-const WEBUSB_CMD_SUBANGLE_GET = 0xAC;
-
-const WEBUSB_CMD_OCTOANGLE_SET = 0x0D;
-const WEBUSB_CMD_OCTOANGLE_GET = 0xAD;
-
-const WEBUSB_CMD_USERCYCLE_SET = 0x0E;
-const WEBUSB_CMD_USERCYCLE_GET = 0xAE;
-
-const WEBUSB_CMD_RGBMODE_SET = 0x10;
-const WEBUSB_CMD_RGBMODE_GET = 0xB0;
-
-const WEBUSB_CMD_INPUT_REPORT = 0xE0;
-
-const WEBUSB_CMD_DEBUG_REPORT = 0xEE;
-
-const WEBUSB_CMD_SAVEALL = 0xF1;
-const WEBUSB_CMD_HWTEST_GET = 0xF2;
-
 const INPUT_MODE_SWITCH = 0;
 const INPUT_MODE_XINPUT = 1;
 const INPUT_MODE_GAMECUBE = 2;
@@ -70,9 +15,9 @@ const INPUT_MODE_SNES = 4;
 // Gets the config items in a set order
 async function config_get_chain(cmd) {
     if (cmd == WEBUSB_CMD_FW_GET) {
-        await remap_get_values();
+        await capabilities_get_value(); 
     }
-    else if (cmd == WEBUSB_CMD_REMAP_GET) {
+    else if (cmd == WEBUSB_CMD_CAPABILITIES_GET ) {
         await color_get_values();
     }
     else if (cmd == WEBUSB_CMD_RGB_GET) {
@@ -82,9 +27,9 @@ async function config_get_chain(cmd) {
         await vibratefloor_get_value();
     }
     else if (cmd == WEBUSB_CMD_VIBRATEFLOOR_GET) {
-        await capabilities_get_value();
+        await remap_get_values();
     }
-    else if (cmd == WEBUSB_CMD_CAPABILITIES_GET) {
+    else if (cmd == WEBUSB_CMD_REMAP_GET) {
         await analog_get_invert_value();
     }
     else if (cmd == WEBUSB_CMD_ANALOG_INVERT_GET) {
@@ -194,11 +139,6 @@ async function handle_input_report(result) {
         case WEBUSB_CMD_VIBRATE_GET:
             console.log("Got vibrate value.");
             vibrate_place_value(result.data);
-            break;
-
-        case WEBUSB_CMD_VIBRATEFLOOR_GET:
-            console.log("Got vibrate floor value.");
-            vibratefloor_place_value(result.data);
             break;
 
         case WEBUSB_CMD_CAPABILITIES_GET:
@@ -325,6 +265,7 @@ async function connectButton() {
     }
     catch (error) {
         window.alert("Please connect a valid HOJA gamepad device.");
+        console.log(error);
     }
 
 }
@@ -514,100 +455,6 @@ function enableDisconnect(enable) {
         // Enable connect button
         connectButtonElement.removeAttribute('disabled');
     }
-}
-
-var vibrate_base = 0;
-var vibrate_max = 0;
-
-function vibrate_update_text() {
-    var total = vibrate_base + vibrate_max;
-    document.getElementById("vibeFloorTextValue").innerText = String(vibrate_base);
-    document.getElementById("vibeTextValue").innerText = String(total);
-}
-
-function vb_update_base(value) {
-    if (!isNaN(value)) {
-        vibrate_base = Number(value);
-        document.getElementById("vibeFloorValue").value = vibrate_base;
-        vibrate_update_text();
-
-    }
-}
-
-function vb_update_max(value) {
-    if (!isNaN(value)) {
-        vibrate_max = Number(value);
-        document.getElementById("vibeValue").value = vibrate_max;
-        vibrate_update_text();
-    }
-}
-
-async function vibrate_get_value() {
-    var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATE_GET]);
-    await device.transferOut(2, dataOut);
-}
-
-async function vibrate_set_value(value) {
-    var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATE_SET, value]);
-    await device.transferOut(2, dataOut);
-}
-
-function vibrate_place_value(data) {
-    vb_update_max(data.getUint8(1));
-}
-
-async function vibratefloor_get_value() {
-    var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATEFLOOR_GET]);
-    await device.transferOut(2, dataOut);
-}
-
-async function vibratefloor_set_value(value) {
-    var dataOut = new Uint8Array([WEBUSB_CMD_VIBRATEFLOOR_SET, value]);
-    await device.transferOut(2, dataOut);
-}
-
-function vibratefloor_place_value(data) {
-    vb_update_base(data.getUint8(1));
-}
-
-function vibrate_enable_menu(enable) {
-    enable_dropdown_element("vibration_collapsible", "vibration_collapsible_toggle", enable);
-}
-
-function gcspecial_enable_menu(enable) {
-    enable_dropdown_element("gamecube_collapsible", "gamecube_collapsible_toggle", enable);
-}
-
-async function capabilities_get_value() {
-    var dataOut = new Uint8Array([WEBUSB_CMD_CAPABILITIES_GET]);
-    await device.transferOut(2, dataOut);
-}
-
-function capabilities_parse(data) {
-    var data_low = data.getUint8(1);
-    console.log(data_low);
-    var data_hi = data.getUint8(2);
-    var c = {
-        analog_stick_left: (data_low & 0x1) ? true : false,
-        analog_stick_right: (data_low & 0x2) ? true : false,
-        analog_trigger_left: (data_low & 0x4) ? true : false,
-        analog_trigger_right: (data_low & 0x8) ? true : false,
-        gyroscope: (data_low & 0x10) ? true : false,
-        bluetooth: (data_low & 0x20) ? true : false,
-        rgb: (data_low & 0x40) ? true : false,
-        rumble: (data_low & 0x80) ? true : false,
-        nintendo_serial: (data_hi & 0x1) ? true : false,
-        nintendo_joybus: (data_hi & 0x2) ? true : false
-    };
-
-    analog_enable_menu((c.analog_stick_left | c.analog_stick_right), c.analog_stick_left, c.analog_stick_right);
-    imu_enable_menu(c.gyroscope);
-    color_enable_menu(c.rgb);
-    vibrate_enable_menu(c.rumble);
-    remap_enable_menu(true, c.nintendo_joybus, c.nintendo_serial);
-    gcspecial_enable_menu(c.nintendo_joybus);
-    baseband_enable_button(c.bluetooth);
-    fwtest_enable_menu(true);
 }
 
 color_page_picker_init();

@@ -1,18 +1,49 @@
 @import url('root.css');
 
-.collapsible {
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+        max-height: 100%;
+    }
+    100% {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
+.collapsible[enabled="true"] {
+    max-height: 1200px;
+    height: auto;
+    opacity: 100;
     margin-left: auto;
     margin-right: auto;
     width: 95%;
+    transition: all 0.35s ease-in-out;
+}
+
+.collapsible {
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 0;
+    opacity: 0;
+    width: 95%;
+    overflow: hidden;
+    transition: all 0.35s ease-in-out;
 }
 
 /* Dropdown styling */
 .collapsible .toggle {
-    display: none;
+    display: block;
+    transition: all 0.25s ease-out;
+    opacity: 0;
+    height: 0;
 }
 
 /* Label Styling */
 .collapsible .lbl-toggle {
+    opacity: 100;
+    height: inherit;
     display: block;
     font-size: 1.5rem;
     text-align: center;
@@ -33,14 +64,10 @@
     color: #FFF;
 }
 
-.collapsible .lbl-toggle[disabled="true"]:hover {
+/*.collapsible .lbl-toggle:hover {
     color: rgba(0, 0, 0, 0.596);
-}
-
-.collapsible .lbl-toggle[disabled="true"] {
-    background: #5a5a5ad5;
-    cursor: default;
-}
+    
+}*/
 
 .collapsible .lbl-toggle::before {
     content: ' ';
