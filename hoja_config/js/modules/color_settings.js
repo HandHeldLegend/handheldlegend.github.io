@@ -295,6 +295,10 @@ function color_hexbox_changed(value) {
 }
 
 async function color_get_values() {
+
+    var did = version_read_id();
+    color_set_device(did);
+
     var dataOut = new Uint8Array([WEBUSB_CMD_RGB_GET]);
     await device.transferOut(2, dataOut);
 }
