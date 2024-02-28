@@ -87,3 +87,53 @@ async function analog_stop_calibration()
     var dataOut = new Uint8Array([WEBUSB_CMD_CALIBRATION_STOP]);
     await device.transferOut(2, dataOut);
 }
+
+async function analog_get_deadzones()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_DEADZONE_GET]);
+    await device.transferOut(2, dataOut);
+}
+
+async function analog_set_deadzone(selection, value)
+{
+    var part1 = value >> 8;
+    var part2 = value & 0xFF;
+    var dataOut = new Uint8Array([WEBUSB_CMD_DEADZONE_SET, selection, part1, part2]);
+    await device.transferOut(2, dataOut);
+}
+
+let _analog_dz_l_inner_slider = document.getElementById("deadzone_inner_left_value");
+let _analog_dz_l_outer_slider = document.getElementById("deadzone_outer_left_value");
+let _analog_dz_r_inner_slider = document.getElementById("deadzone_inner_right_value");
+let _analog_dz_r_outer_slider = document.getElementById("deadzone_outer_right_value");
+
+let _analog_dz_l_out_text = document.getElementById("deadzone_outer_left_text");
+let _analog_dz_l_in_text = document.getElementById("deadzone_inner_left_text");
+let _analog_dz_r_out_text = document.getElementById("deadzone_outer_right_text");
+let _analog_dz_r_in_text = document.getElementById("deadzone_inner_right_text");
+
+function analog_deadzone_update_text(element, value)
+{
+    element.innerText = String(value);
+}
+
+function analog_deadzones_place_values(data)
+{
+    var lInner = data.getUint8(2)<<8 | data.getUint8(1);
+    var lOuter = data.getUint8(4)<<8 | data.getUint8(3);
+    var rInner = data.getUint8(6)<<8 | data.getUint8(5);
+    var rOuter = data.getUint8(8)<<8 | data.getUint8(7);
+
+    analog_deadzone_update_text(_analog_dz_l_in_text, lInner);
+    _analog_dz_l_inner_slider.value = lInner;
+
+    analog_deadzone_update_text(_analog_dz_r_in_text, rInner);
+    _analog_dz_r_inner_slider.value = rInner;
+
+    analog_deadzone_update_text(_analog_dz_r_out_text, rOuter);
+    _analog_dz_r_outer_slider.value = rOuter;
+
+    analog_deadzone_update_text(_analog_dz_l_out_text, lOuter);
+    _analog_dz_l_outer_slider.value = lOuter;
+}
+

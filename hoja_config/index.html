@@ -482,14 +482,14 @@
                 <h2>{deadzoneInner}</h2>
                 <p>Left</p>
                 <div class="slider">
-                  <input type="range" min="0" max="100" value="0" id="deadzone_inner_left_value" oninput="" onchange="">
+                  <input type="range" min="0" max="1000" value="0" id="deadzone_inner_left_value" oninput="analog_deadzone_update_text(_analog_dz_l_in_text, this.value)" onchange="analog_set_deadzone(0, this.value)">
                   <p id="deadzone_inner_left_text">0</p>
                 </div>
 
                 <p>Right</p>
                 <div class="slider">
-                  <input type="range" min="0" max="100" value="0" id="deadzone_inner_right_value" oninput=""
-                    onchange="">
+                  <input type="range" min="0" max="1000" value="0" id="deadzone_inner_right_value" oninput="analog_deadzone_update_text(_analog_dz_r_in_text, this.value)"
+                    onchange="analog_set_deadzone(2, this.value)">
                   <p id="deadzone_inner_right_text">0</p>
                 </div>
 
@@ -503,14 +503,14 @@
                 <h2>{deadzoneOuter}</h2>
                 <p>Left</p>
                 <div class="slider">
-                  <input type="range" min="0" max="100" value="0" id="deadzone_outer_left_value" oninput="" onchange="">
+                  <input type="range" min="0" max="500" value="0" id="deadzone_outer_left_value" oninput="analog_deadzone_update_text(_analog_dz_l_out_text, this.value)" onchange="analog_set_deadzone(1, this.value)">
                   <p id="deadzone_outer_left_text">0</p>
                 </div>
 
                 <p>Right</p>
                 <div class="slider">
-                  <input type="range" min="0" max="100" value="0" id="deadzone_outer_right_value" oninput=""
-                    onchange="">
+                  <input type="range" min="0" max="500" value="0" id="deadzone_outer_right_value" oninput="analog_deadzone_update_text(_analog_dz_r_out_text, this.value)"
+                    onchange="analog_set_deadzone(3, this.value)">
                   <p id="deadzone_outer_right_text">0</p>
                 </div>
 

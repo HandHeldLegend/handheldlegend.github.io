@@ -24,9 +24,6 @@ async function config_get_chain(cmd) {
         await vibrate_get_value();
     }
     else if (cmd == WEBUSB_CMD_VIBRATE_GET) {
-        await vibratefloor_get_value();
-    }
-    else if (cmd == WEBUSB_CMD_VIBRATEFLOOR_GET) {
         await remap_get_values();
     }
     else if (cmd == WEBUSB_CMD_REMAP_GET) {
@@ -37,6 +34,9 @@ async function config_get_chain(cmd) {
     }
     else if (cmd== WEBUSB_CMD_USERCYCLE_GET) {
         await rgb_get_mode();
+    }
+    else if (cmd== WEBUSB_CMD_RGBMODE_GET) {
+        await analog_get_deadzones();
     }
 }
 
@@ -176,6 +176,10 @@ async function handle_input_report(result) {
             rgb_usercycle_place_values(result.data);
             break;
 
+        case WEBUSB_CMD_DEADZONE_GET:
+            console.log("Got user deadzone values.");
+            analog_deadzones_place_values(result.data);
+            break;
     }
 
     if (result.data.getUint8(0) != WEBUSB_CMD_FW_GET) {
