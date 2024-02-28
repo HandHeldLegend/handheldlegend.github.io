@@ -48,13 +48,10 @@ async function vibratefloor_set_value(value) {
 }
 
 function vibrate_enable_menu(enable) {
-    
     var c = capabilities_value_get();
     if(c != null)
     {
-        console.log(c);
-
-        var enable_dropdown = (c.rumble_erm || c.rumble_lra);
+        var enable_dropdown = (c.rumble_erm | c.rumble_lra);
 
         _vibrate_enable_type_radio("erm_switch_label", c.rumble_erm);
         _vibrate_enable_type_radio("lra_switch_label", c.rumble_lra);

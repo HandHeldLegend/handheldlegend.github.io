@@ -22,6 +22,7 @@ function enable_all_menus(enable) {
 
     vibrate_enable_menu(enable);
     analog_enable_menu(enable);
+    octagon_enable_menu(enable);
     color_enable_menu(enable);
     imu_enable_menu(enable);
     remap_enable_menu(enable);

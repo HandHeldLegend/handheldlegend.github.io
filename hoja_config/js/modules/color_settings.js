@@ -66,7 +66,14 @@ function hexToRgb(hex) {
 
 function color_enable_menu(enable)
 {
-    enable_dropdown_element("color-collapsible", enable);
+    var c = capabilities_value_get();
+
+    if(c!=null)
+    {
+        enable_dropdown_element("color-collapsible", c.rgb && enable);
+    }
+    else enable_dropdown_element("color-collapsible", enable);
+    
 }
 
 function rgbToHex(r, g, b) {

@@ -323,12 +323,18 @@ function _remap_enable_profile_radio(name, enable)
     e.style.display = (enable) ? "" : "none";
 }
 
-function remap_enable_menu(enable, joybus, serial) {
+function remap_enable_menu(enable) {
+    var c = capabilities_value_get();
+
+    if(c!=null)
+    {
+        _remap_enable_profile_radio("rp_snes_label", c.nintendo_serial);
+        //_remap_enable_profile_radio("rp_ginput_label", c.nintendo_joybus);
+        // Always enabled because GC USB mode.
+        _remap_enable_profile_radio("rp_n64_label", c.nintendo_joybus);
+    }
+    
     enable_dropdown_element("remapping-collapsible", enable);
-
-    _remap_enable_profile_radio("rp_ginput_label", joybus);
-    _remap_enable_profile_radio("rp_n64_label", joybus);
-
 }
 
 function remap_place_values(data) {
