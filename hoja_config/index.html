@@ -86,7 +86,7 @@
           <h2>{basebandMsg1}</h2>
           {basebandMsg2}
           <div class="row">
-            <button disabled type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button>
+            <button disabled type="button" id="basebandButton" onclick="version_reset_to_baseband()">{baseband}</button>
           </div>
           <div class="full-width">
             <div class="line"></div>
@@ -943,9 +943,11 @@
   <script type="module" src="js/esp/install-button.js"></script>
   <script src="js/hoja_config_codes.js"></script>
   <script src="js/hoja_global.js"></script>
-  <script src="js/hoja_version.js"></script>
   <script src="js/hoja_strings.js"></script>
   <script src="js/hoja_input.js"></script>
+  <script src="js/modules/network.js"></script>
+  <script src="js/modules/device_ids.js"></script>
+  <script src="js/modules/version.js"></script>
   <script src="js/modules/capabilities.js"></script>
   <script src="js/modules/system.js"></script>
   <script src="js/modules/analog_stick.js"></script>

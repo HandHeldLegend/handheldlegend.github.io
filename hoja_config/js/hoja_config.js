@@ -128,8 +128,8 @@ async function handle_input_report(result) {
             break;
 
         case WEBUSB_CMD_FW_GET:
-            console.log("Got FW version.");
-            fw_check_value(result.data);
+            console.log("Got FW Datas.");
+            version_interpret_values_data(result.data);
             break;
 
         case WEBUSB_CMD_INPUT_REPORT:
@@ -213,15 +213,22 @@ navigator.usb.addEventListener("connect", (event) => {
     console.log("Device plugged.");
 });
 
+function doDisconnect()
+{
+    device = null;
+    setActiveMenu(null);
+    enableDisconnect(false);
+    version_disable_notifications();
+    enable_all_menus(false);
+}
+
 navigator.usb.addEventListener("disconnect", (event) => {
     console.log("Device unplugged.");
     console.log(event);
 
     if (event.device == device) {
         device = null;
-        //stop_listen();
-        enableDisconnect(false);
-        enable_all_menus(false);
+        doDisconnect();
     }
 
 });
@@ -230,9 +237,7 @@ async function disconnectButton() {
     if (device != null) {
         await device.close();
     }
-    device = null;
-    enableDisconnect(false);
-    enable_all_menus(false);
+    doDisconnect();
     console.log("Device disconnected by button.");
 }
 
@@ -259,7 +264,7 @@ async function connectButton() {
         await device.selectConfiguration(1);
         await device.claimInterface(1);
 
-        await fw_get_value();
+        await version_get_value();
         enableDisconnect(true);
         listen();
     }
@@ -274,160 +279,6 @@ async function connectButton() {
 async function saveButton() {
     var dataOut = new Uint8Array([WEBUSB_CMD_SAVEALL]);
     await device.transferOut(2, dataOut);
-}
-
-// Resets device into USB bootloader (RP2040)
-async function fwButton() {
-    var dataOut = new Uint8Array([WEBUSB_CMD_FW_SET]);
-    await device.transferOut(2, dataOut);
-}
-
-// Resets HOJA device into baseband update mode
-async function basebandButton() {
-    var dataOut = new Uint8Array([WEBUSB_CMD_BB_SET]);
-    await device.transferOut(2, dataOut);
-}
-
-function baseband_enable_button(enable) {
-    if (enable) {
-        document.getElementById("basebandButton").removeAttribute('disabled');
-    }
-    else document.getElementById("basebandButton").setAttribute('disabled', 'true');
-}
-
-function offline_indicator_enable(enable) {
-    var oi = document.getElementById("offline-indicator");
-
-    if (enable) {
-        oi.removeAttribute('disabled');
-    }
-    else oi.setAttribute('disabled', 'true');
-}
-
-async function fw_get_value() {
-    var dataOut = new Uint8Array([WEBUSB_CMD_FW_GET]);
-    await device.transferOut(2, dataOut);
-}
-
-function fw_display_box(enable) {
-    if (enable) {
-        document.getElementById("ood").removeAttribute("disabled");
-    }
-    else {
-        document.getElementById("ood").setAttribute("disabled", "true");
-    }
-}
-
-function fw_check_value(data) {
-    var fw = (data.getUint8(1) << 8) | (data.getUint8(2));
-    var id = (data.getUint8(3) << 8) | (data.getUint8(4));
-    var backend = (data.getUint8(5) << 8) | (data.getUint8(6));
-    var bt_version = (data.getUint8(7)<<8) | (data.getUint8(8));
-
-    console.log("Device ID: " + id.toString());
-    console.log("FW Verson: " + fw.toString());
-    console.log("HOJA Version: " + backend.toString());
-    console.log("BT Baseband Version: " + bt_version);
-
-    const vendor_enable = new URLSearchParams(window.location.search).get('vendor');
-
-    if(vendor_enable)
-    {
-        console.log("Vendor override detected.");
-        color_set_device(id);
-        fw_display_box(false);
-        config_get_chain(WEBUSB_CMD_FW_GET);
-        return;
-    }
-
-    var firmware_matched = false;
-    var backend_matched = false;
-
-    // Check if we're online or offline
-    if (navigator.onLine) {
-        console.log("Network online, checking manifest through web...");
-
-        version_get_manifest_data(id)
-            .then((manifest) => {
-
-                if (manifest.fw_version == fw) {
-                    console.log("Device firmware is up to date.");
-                    firmware_matched = true;
-                }
-                else {
-                    console.log("Device firmware is out of date.");
-                    version_replace_firmware_strings(id, manifest.changelog);
-                    fw_display_box(true);
-                }
-
-                if (HOJA_BACKEND_VERSION == backend) {
-                    console.log("App version backend is up to date.");
-                    backend_matched = true;
-                }
-                else {
-                    console.log("App version backend is out of date.");
-                    version_replace_firmware_strings(id, manifest.changelog);
-                    fw_display_box(true);
-                }
-
-                // If our app version matches, enable the config portions
-                if (backend_matched) {
-                    try {
-                        color_set_device(id);
-                        config_get_chain(WEBUSB_CMD_FW_GET);
-                    }
-                    catch (err) {
-
-                    }
-                }
-
-                if (backend_matched && firmware_matched) {
-                    fw_display_box(false);
-                }
-
-            });
-
-        // Check baseband version
-        if(bt_version == 0xFFFF)
-        {
-            // BT baseband unused
-        }
-        else if(bt_version != HOJA_BASEBAND_VERSION)
-        {
-            version_enable_baseband_update(true);
-        }
-
-    }
-    else {
-        console.log("Network offline, comparing app backend only...");
-        offline_indicator_enable(true);
-
-        var backend_matched = false;
-
-        if (HOJA_BACKEND_VERSION == backend) {
-            console.log("App version backend is up to date.");
-            backend_matched = true;
-        }
-        else {
-            console.log("App version backend is out of date.");
-        }
-
-        // If our app version matches, enable the config portions
-        if (backend_matched) {
-            try {
-                color_set_device(id);
-                fw_display_box(false);
-                config_get_chain(WEBUSB_CMD_FW_GET);
-            }
-            catch (err) {
-
-            }
-        }
-    }
-
-
-
-
 }
 
 function setActiveMenu(id) {
@@ -458,7 +309,7 @@ function enableDisconnect(enable) {
 }
 
 color_page_picker_init();
-enable_all_menus(false);
+//enable_all_menus(false);
 
 function notifyUserToUpdate() {
     console.log("Update notif sent.");
