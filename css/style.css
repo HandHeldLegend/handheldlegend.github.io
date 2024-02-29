@@ -170,7 +170,7 @@ canvas {
 
 .message-box {
     font-family: inherit;
-    max-height: 500px;
+    max-height: 1000px;
     height: auto;
     display: block;
     font-size: 1.5rem;

@@ -30,24 +30,26 @@ function _version_baseband_enable_notification(enable)
 {
     if(enable)
     {
-        _basebandBoxElement.setAttribute("disabled", "true");
-        _version_baseband_enable_button(false);
+        _basebandBoxElement.setAttribute("disabled", "false");
+        _version_baseband_enable_button(true);
     }
     else
     {
-        _basebandBoxElement.setAttribute("disabled", "false");
-        _version_baseband_enable_button(true);
+        _basebandBoxElement.setAttribute("disabled", "true");
+        _version_baseband_enable_button(false);
     }
 }
 
 function _version_firmware_enable_notification(enable)
 {
-    if(enable)
+    if(enable==true)
     {
+        console.log("Enable FW Update box.");
         _firmwareBoxElement.setAttribute("disabled", "false");
     }
     else
     {
+        console.log("Disable FW Update box.");
         _firmwareBoxElement.setAttribute("disabled", "true");
     }
 }
@@ -140,29 +142,33 @@ function _version_fw_is_up_to_date()
                 if (manifest.fw_version < _fw_version)
                 {
                     console.log("Device firmware is newer than release.");
-                    to_return = true;
+                    _version_firmware_enable_notification(false);
                 }
                 else if (manifest.fw_version == _fw_version)
                 {
                     console.log("Device firmware is up to date.");
-                    to_return = true;
+                    _version_firmware_enable_notification(false);
                 }
                 else 
                 {
                     console.log("Device firmware is out of date.");
-                    to_return = false;
+                    _version_firmware_enable_notification(true);
                 }
+
+                _version_baseband_is_up_to_date();
+                config_get_chain(WEBUSB_CMD_FW_GET);
+
             });
+
+            
         }
         else 
         {
-            console.log("Network not available. Skipping FW checks.");
-            to_return = true;
+            _version_firmware_enable_notification(false);
+            _version_baseband_is_up_to_date();
+            config_get_chain(WEBUSB_CMD_FW_GET);
         }
-
-        return to_return;
     }
-    return false;
 }
 
 function _version_baseband_is_up_to_date()
@@ -179,23 +185,23 @@ function _version_baseband_is_up_to_date()
             else if(_baseband_version == HOJA_BASEBAND_VERSION)
             {
                 console.log("Device baseband is up to date.");
-                return true;
+                _version_baseband_enable_notification(false);
             }
             else
             {
                 console.log("Device baseband is out of date.");
-                return false;
+                _version_baseband_enable_notification(true);
             }
         }
         else
         {
             console.log("Network not available. Skipping Baseband checks.");
-            return true;
+            _version_baseband_enable_notification(false);
         }
     }
 
     console.log("Baseband is unused with this device.");
-    return true;
+    _version_baseband_enable_notification(false);
 }
 
 function version_interpret_values_data(data)
@@ -210,10 +216,5 @@ function version_interpret_values_data(data)
     console.log("HOJA Version: " + _backend_version.toString());
     console.log("BT Baseband Version: " + _baseband_version);
 
-    var _fwupdated = _version_fw_is_up_to_date();
-    var _basebandupdated = _version_baseband_is_up_to_date();
-
-    _version_firmware_enable_notification(_fwupdated);
-    _version_baseband_enable_notification(_basebandupdated);
-    config_get_chain(WEBUSB_CMD_FW_GET);
+    _version_fw_is_up_to_date();
 }
