@@ -34,6 +34,17 @@ function octagon_enable_menu(enable)
     enable_dropdown_element( "octagon-collapsible", enable && (left_enable || right_enable));
 }
 
+var octagon_menu_open = false;
+
+function octagon_enable_spacebar(enable)
+{
+    if(enable)
+    {
+        octagon_menu_open = true;
+    }
+    else octagon_menu_open = false;
+}
+
 async function analog_update_octagon()
 {
     var dataOut = new Uint8Array([WEBUSB_CMD_OCTAGON_SET]);

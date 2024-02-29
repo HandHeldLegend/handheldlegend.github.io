@@ -192,8 +192,14 @@
           var setLaterFloor = false;
           var toSetMain = 0;
           var toSetFloor = 0;
+
           function areArrowKeysPressed(event) {
             return ['ArrowLeft', 'ArrowRight'].includes(event.key) && (event.type === 'keydown');
+          }
+
+          function isSpacePressed(event) {
+            event.preventDefault();
+            return event.key === ' ' && event.type === 'keyup';
           }
 
           // Usage:
@@ -216,6 +222,10 @@
                 vibratefloor_set_value(toSetFloor);
                 setLaterFloor = false;
               }
+            }
+
+            if(isSpacePressed(e) && octagon_menu_open) {
+              analog_update_octagon();
             }
           });
         </script>
@@ -554,7 +564,7 @@
         <!-- --------------- -->
         <div class="collapsible" id="octagon-collapsible">
 
-          <input id="octagon_collapsible" class="toggle" type="checkbox">
+          <input id="octagon_collapsible" class="toggle" type="checkbox" onchange="octagon_enable_spacebar(this.checked)">
 
           <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
 

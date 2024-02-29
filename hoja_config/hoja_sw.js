@@ -1,6 +1,6 @@
 // SW Updated Date: 1.22.2024
 
-const CACHE_NAME = 'hoja-pwa-cache-v25r2';
+const CACHE_NAME = 'hoja-pwa-cache-v25r3';
 
 const root_css_url = 'https://handheldlegend.github.io/css/'
 
@@ -9,19 +9,28 @@ const urlsToCache = [
     'index.html',
 
     // JS Files
-    //'js/hoja_version.js',
-    //'js/hoja_global.js',
-    //'js/hoja_strings.js',
-    //'js/hoja_hwtest.js',
-    //'js/hoja_gcsp.js',
-    //'js/hoja_remap.js',
-    //'js/hoja_snapback.js',
-    //'js/hoja_analog.js',
-    //'js/hoja_input.js',
-    //'js/hoja_color.js',
-    //'js/svg-loader.min.js',
-    //'js/iro.min.js',
-    //'js/hoja_config.js',
+    'js/hoja_config_codes.js',
+    'js/hoja_config.js',
+    'js/hoja_global.js',
+    'js/hoja_strings.js',
+    'js/hoja_input.js',
+
+    'js/svg-loader.min.js',
+    'js/iro.min.js',
+
+    'js/modules/analog_stick.js',
+    'js/modules/capabilities.js',
+    'js/modules/color_settings.js',
+    'js/modules/device_ids.js',
+    'js/modules/gyroscope.js',
+    'js/modules/hardware_test.js',
+    'js/modules/network.js',
+    'js/modules/octagon_calibration.js',
+    'js/modules/remapping.js',
+    'js/modules/snapback_viewer.js',
+    'js/modules/system.js',
+    'js/modules/version.js',
+    'js/modules/vibration.js',
 
     'svg/procontroller.svg',
     'svg/snescontroller.svg',
