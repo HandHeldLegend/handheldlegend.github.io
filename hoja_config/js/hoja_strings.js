@@ -31,9 +31,9 @@ var eng_strings = {
     gamecubeTrigger: 'Light Trigger Value',
     gyroTitle: 'Gyroscope',
     gyroDesc: 'First, place your controller on a flat, stable surface. Press Start and the LEDs will change to yellow. When calibration is complete you will see the confirmation message.',
-    vibrationTitle: 'Vibration',
-    vibrationDesc: 'Step 1: Minimum Vibration Strength',
-    vibrationDesc2: 'Step 2: Maximum Vibration Stength',
+    vibrateTitle: 'Vibration',
+    vibrationStrength: 'Vibration Strength',
+    rumbleType: 'Rumble Type',
     twitter: 'Twitter',
     discord: 'Discord',
     basebandMsg1: 'Bluetooth Baseband Updater',
@@ -48,6 +48,11 @@ var eng_strings = {
     hwtestTitle: "Hardware Test",
     hwtestDesc: "Press start to begin a hardware test on supported devices. Once the results are completed you will see which tests passed below.",
     epilepsyWarning: "<b>Epilepsy Warning:</b><br>Animated color modes may trigger seizures for people with photosensitive epilepsy.",
+    test: 'Test',
+    systemTitle: 'System',
+    defaultMode: 'Boot Mode',
+    deadzoneInner: 'Center Deadzone',
+    deadzoneOuter: 'Edge Deadzone'
 };
 
 var jp_strings = {
@@ -83,9 +88,9 @@ var jp_strings = {
     gamecubeTrigger: 'ライトトリガー値',
     gyroTitle: "ジャイロスコープ",
     gyroDesc: "まず、コントローラーを平らで安定した表面に置いてください。[Start]を押すと、LEDは黄色に変わります。キャリブレーションが完了すると、確認メッセージが表示されます。",
-    vibrationTitle: 'ランブル',
-    vibrationDesc: 'ステップ 1：最小振動強度',
-    vibrationDesc2: 'ステップ 2：最大振動強度',
+    vibrateTitle: 'ランブル',
+    vibrationStrength: '最大振動強度',
+    rumbleType: 'Rumble Type',
     twitter: 'Twitter',
     discord: 'Discord',
     get: '読む',
@@ -96,6 +101,11 @@ var jp_strings = {
     hwtestTitle: "ハードウェアテスト",
     hwtestDesc: "サポートされているデバイスでハードウェアテストを開始するには、開始ボタンを押してください。結果が完了すると、合格したテストが以下に表示されます。",
     epilepsyWarning: "<b>発作注意：</b><br>アニメーションカラーモードは、光過敏性発作を持つ人に発作を引き起こす可能性があります。",
+    test: 'Test',
+    systemTitle: 'System',
+    defaultMode: 'Boot Mode',
+    deadzoneInner: 'Center Deadzone',
+    deadzoneOuter: 'Edge Deadzone'
 };
 
 let en_radio = document.getElementById("lang_en");

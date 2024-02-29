@@ -45,7 +45,7 @@ function fwtest_reset_button()
 function fwtest_enable_menu(enable)
 {
     fwtest_reset_button();
-    enable_dropdown_element("hwtest_collapsible", "hwtest_collapsible_toggle", enable);
+    enable_dropdown_element("hwtest-collapsible", enable);
 
     if(!enable)
     {

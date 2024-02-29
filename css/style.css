@@ -170,6 +170,8 @@ canvas {
 
 .message-box {
     font-family: inherit;
+    max-height: 500px;
+    height: auto;
     display: block;
     font-size: 1.5rem;
     text-align: center;
@@ -180,19 +182,23 @@ canvas {
     margin-right: auto;
     color: rgba(0, 0, 0, 0.596);
     background: #ff75358c;
-    cursor: pointer;
     border-radius: 0.5rem;
     border-color: #ffffff00;
     border-bottom: 0.25rem solid rgba(0, 0, 0, 0.295);
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
 }
 
 .message-box[disabled="true"] {
-    visibility: hidden;
-    display: none;
-    height: 0;
-    width: 0;
-    margin: 0;
+    overflow: hidden;
     padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.5s ease-in-out;
 }
 
 h1 {
@@ -292,13 +298,16 @@ button {
 }
 
 
-button:disabled {
+button[disabled="true"] {
     background: #5a5a5ad5;
     cursor: default;
 }
 
-button:enabled:hover {
+button:hover {
     color: #FFF;
+}
+button[disabled="true"]:hover {
+    color: inherit;
 }
 
 button.small {

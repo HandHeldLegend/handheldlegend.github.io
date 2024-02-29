@@ -62,39 +62,9 @@ const FW_UPDATE_URLS =
     0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2" // Phob 2.1
 };
 
-function version_replace_firmware_strings(id, changelog)
-{
-    console.log("Get changelog for " + id);
-    var e = document.getElementById("fwChangeLog");
-    e.innerHTML = changelog;
 
-    var f = document.getElementById("downloadLink");
-    f.setAttribute('href', FW_UPDATE_URLS[id]);
-}
 
-function version_get_manifest_data(id) {
-
-    if(!DEVICE_FW_MANIFEST_URLS[id])
-    {
-        console.log("Invalid device ID.");
-        return;
-    }
-
-    var jsonUrl = DEVICE_FW_MANIFEST_URLS[id];
-
-    return fetch(jsonUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.status}`);
-        }
-        return response.json();
-      })
-      .catch((error) => {
-        console.error('Error fetching and parsing JSON:', error);
-      });
-}
-
-function version_firmware_initialization_check()
+function devices_firmware_initialization_check()
 {
     // Get the current URL
     const url = new URL(window.location.href);
@@ -114,30 +84,3 @@ function version_firmware_initialization_check()
         document.getElementById("fwInitializeInstructions").innerHTML = INIT_INSTRUCTIONS[initNum];
     }
 }
-
-version_firmware_initialization_check();
-
-function version_enable_baseband_update(enable)
-{
-    if(enable)
-    {
-        document.getElementById('baseband-box').setAttribute('disabled', 'false');
-    }
-    else document.getElementById('baseband-box').removeAttribute('disabled');
-}
-
-function version_enable_baseband_check()
-{
-    // Get the current URL
-    const url = new URL(window.location.href);
-
-    // Try to get the 'init' parameter value
-    const initValue = url.searchParams.get('baseband');
-
-    if(initValue)
-    {
-        version_enable_baseband_update(true);
-    }
-}
-
-version_enable_baseband_check();

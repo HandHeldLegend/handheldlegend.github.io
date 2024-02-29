@@ -86,7 +86,7 @@
           <h2>{basebandMsg1}</h2>
           {basebandMsg2}
           <div class="row">
-            <button disabled type="button" id="basebandButton" onclick="basebandButton()">{baseband}</button>
+            <button disabled type="button" id="basebandButton" onclick="version_reset_to_baseband()">{baseband}</button>
           </div>
           <div class="full-width">
             <div class="line"></div>
@@ -121,7 +121,7 @@
 
         <!-- INFO -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" enabled="true">
 
           <input id="info-drop" class="toggle" type="checkbox">
 
@@ -220,35 +220,87 @@
           });
         </script>
 
-        <!-- VIBRATION SETTING -->
+        <!-- SYSTEM SETTING -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="system-collapsible">
 
-          <input id="vibration_collapsible" class="toggle" type="checkbox">
+          <input id="system_collapsible" class="toggle" type="checkbox">
 
-          <label for="vibration_collapsible" id="vibration_collapsible_toggle"
-            class="lbl-toggle">{vibrationTitle}</label>
+          <label for="system_collapsible" id="system_collapsible_toggle" class="lbl-toggle">{systemTitle}</label>
+
+          <div class="dropdown">
+            <div class="full-width">
+              <p>{defaultMode}</p>
+              
+              <div id="epilepsy-warning">
+                Changing the default mode will require you to hold 'A' when connecting to use the configuration app.
+              </div>
+
+              <div class="sora_radio_container" id="default_mode_radio_picker">
+
+                <input type="radio" name="radio_default_mode" id="default_mode_switch" checked onchange="system_change_mode_radio(0)">
+                <label for="default_mode_switch" id="default_mode_switch_label_label">Switch</label>
+
+                <input type="radio" name="radio_default_mode" id="default_mode_xinput" onchange="system_change_mode_radio(1)">
+                <label for="default_mode_xinput" id="default_mode_xinput_label">XInput</label>
+
+                <input type="radio" name="radio_default_mode" id="default_mode_gcusb" checked onchange="system_change_mode_radio(2)">
+                <label for="default_mode_gcusb" id="default_mode_gcusb_label">Slippi</label>
+
+                <input type="radio" name="radio_default_mode" id="default_mode_gc" onchange="system_change_mode_radio(3)">
+                <label for="default_mode_gc" id="default_mode_gc_label">GC</label>
+
+                <input type="radio" name="radio_default_mode" id="default_mode_n64" checked onchange="system_change_mode_radio(4)">
+                <label for="default_mode_n64" id="default_mode_n64_label">N64</label>
+
+                <input type="radio" name="radio_default_mode" id="default_mode_snes" onchange="system_change_mode_radio(5)">
+                <label for="default_mode_snes" id="default_mode_snes_label">SNES</label>
+
+                
+              </div>
+
+              <div class="row">
+                <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIBRATE SETTING -->
+        <!-- --------------- -->
+        <div class="collapsible" id="vibrate-collapsible">
+
+          <input id="vibrate_collapsible" class="toggle" type="checkbox">
+
+          <label for="vibrate_collapsible" id="vibrate_collapsible_toggle" class="lbl-toggle">{vibrateTitle}</label>
 
           <div class="dropdown">
             <div class="full-width">
 
-              <p>{vibrationDesc}</p>
+              <p>{vibrationStrength}</p>
               <div class="slider">
-                <input type="range" min="0" max="75" value="0" id="vibeFloorValue" oninput="vb_update_base(this.value)"
-                  onchange="vibratefloor_set_value(this.value)">
-                <p id="vibeFloorTextValue">0</p>
+                <input type="range" min="0" max="100" value="0" id="vibration_strength"
+                  oninput="vibrate_update_text()" onchange="vibrate_set_intensity(this.value)">
+                <p id="vibration_strength_text">0</p>
               </div>
+            </div>
 
-              <div class="line"></div>
+            <div class="line"></div>
 
-              <p>{vibrationDesc2}</p>
-              <div class="slider">
-                <input type="range" min="0" max="50" value="0" id="vibeValue" oninput="vb_update_max(this.value)"
-                  onchange="vibrate_set_value(this.value)">
-                <p id="vibeTextValue">0</p>
+            <div class="full-width">
+
+              <p>{rumbleType}</p>
+              <div class="sora_radio_container" id="erm_lra_radio_picker">
+
+                <input type="radio" name="radio_erm_lra_profile" id="erm_switch" checked onchange="vibrate_set_mode(0)">
+                <label for="erm_switch" id="erm_switch_label">ERM</label>
+
+                <input type="radio" name="radio_erm_lra_profile" id="lra_switch" onchange="vibrate_set_mode(1)">
+                <label for="lra_switch" id ="lra_switch_label">LRA</label>
               </div>
 
               <div class="row">
+                <button type="button" id="test_vibe_button" onclick="vibrate_test_start()">{test}</button>
                 <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
               </div>
             </div>
@@ -257,7 +309,7 @@
         </div>
 
         <!-- PROCON COLOR SETTINGS -->
-        <div class="collapsible">
+        <div class="collapsible" id="color-collapsible">
 
           <input id="color-settings" class="toggle" type="checkbox">
 
@@ -284,15 +336,15 @@
 
               </div>
             </div>
-            
-            <div class="full-width" id="speed-color-div" >
+
+            <div class="full-width" id="speed-color-div">
               <div id="epilepsy-warning">
                 <p>{epilepsyWarning}</p>
               </div>
               <h3>Animation Speed</h3>
               <div class="slider">
-                <input type="range" min="1" max="50" value="1" id="speed-color-value" oninput="rgb_update_speed_text(this.value)"
-                  onchange="rgb_set_speed(this.value)">
+                <input type="range" min="1" max="50" value="1" id="speed-color-value"
+                  oninput="rgb_update_speed_text(this.value)" onchange="rgb_set_speed(this.value)">
                 <p id="speed-color-text">1</p>
               </div>
             </div>
@@ -330,7 +382,7 @@
               </div>
             </div>
 
-            
+
 
             <div id="user-color-div">
               <div id="hojaColorSvg">
@@ -363,7 +415,7 @@
 
         <!-- SNAPBACK SETTINGS -->
         <!-- ---------------   -->
-        <div class="collapsible">
+        <div class="collapsible" id="snapback-collapsible">
           <input id="snapback-settings" class="toggle" type="checkbox">
 
           <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
@@ -380,7 +432,7 @@
 
         <!-- ANALOG SETTINGS -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="analog-collapsible">
 
           <input id="analog_collapsible" class="toggle" type="checkbox">
 
@@ -421,6 +473,50 @@
                 <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
               </div>
 
+
+
+              <div class="line"></div>
+
+              <div class="full-width">
+
+                <h2>{deadzoneInner}</h2>
+                <p>Left</p>
+                <div class="slider">
+                  <input type="range" min="0" max="1000" value="0" id="deadzone_inner_left_value" oninput="analog_deadzone_update_text(_analog_dz_l_in_text, this.value)" onchange="analog_set_deadzone(0, this.value)">
+                  <p id="deadzone_inner_left_text">0</p>
+                </div>
+
+                <p>Right</p>
+                <div class="slider">
+                  <input type="range" min="0" max="1000" value="0" id="deadzone_inner_right_value" oninput="analog_deadzone_update_text(_analog_dz_r_in_text, this.value)"
+                    onchange="analog_set_deadzone(2, this.value)">
+                  <p id="deadzone_inner_right_text">0</p>
+                </div>
+
+
+              </div>
+
+              <div class="line"></div>
+
+              <div class="full-width">
+
+                <h2>{deadzoneOuter}</h2>
+                <p>Left</p>
+                <div class="slider">
+                  <input type="range" min="0" max="500" value="0" id="deadzone_outer_left_value" oninput="analog_deadzone_update_text(_analog_dz_l_out_text, this.value)" onchange="analog_set_deadzone(1, this.value)">
+                  <p id="deadzone_outer_left_text">0</p>
+                </div>
+
+                <p>Right</p>
+                <div class="slider">
+                  <input type="range" min="0" max="500" value="0" id="deadzone_outer_right_value" oninput="analog_deadzone_update_text(_analog_dz_r_out_text, this.value)"
+                    onchange="analog_set_deadzone(3, this.value)">
+                  <p id="deadzone_outer_right_text">0</p>
+                </div>
+
+
+              </div>
+
               <div class="line"></div>
 
               <div class="full-width">
@@ -456,7 +552,7 @@
 
         <!-- OCTAGON SETTINGS -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="octagon-collapsible">
 
           <input id="octagon_collapsible" class="toggle" type="checkbox">
 
@@ -538,7 +634,7 @@
 
         <!-- GYRO SETTINGS -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="gyro-collapsible">
 
           <input id="gyro_collapsible" class="toggle" type="checkbox">
 
@@ -565,7 +661,7 @@
 
         <!-- REMAPPING -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="remapping-collapsible">
 
           <input id="remapping" class="toggle" type="checkbox">
 
@@ -718,7 +814,7 @@
 
         <!-- GAMECUBE SETTINGS -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="gcsp-collapsible">
 
           <input id="gamecube_collapsible" class="toggle" type="checkbox">
 
@@ -759,7 +855,7 @@
 
         <!-- HARDWARE TEST -->
         <!-- --------------- -->
-        <div class="collapsible">
+        <div class="collapsible" id="hwtest-collapsible">
 
           <input id="hwtest_collapsible" class="toggle" type="checkbox">
 
@@ -842,21 +938,30 @@
   <div class="footer">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
-    2023, Hand Held Legend | Updated 2.6.2024
+    2023, Hand Held Legend | Updated 2.28.2024
   </div>
   <script type="module" src="js/esp/install-button.js"></script>
-  <script src="js/hoja_version.js"></script>
-  <script src="js/hoja_hwtest.js"></script>
+  <script src="js/hoja_config_codes.js"></script>
   <script src="js/hoja_global.js"></script>
   <script src="js/hoja_strings.js"></script>
-  <script src="js/hoja_gcsp.js"></script>
-  <script src="js/hoja_remap.js"></script>
-  <script src="js/hoja_snapback.js"></script>
-  <script src="js/hoja_analog.js"></script>
   <script src="js/hoja_input.js"></script>
-  <script src="js/hoja_color.js"></script>
+  <script src="js/modules/network.js"></script>
+  <script src="js/modules/device_ids.js"></script>
+  <script src="js/modules/version.js"></script>
+  <script src="js/modules/capabilities.js"></script>
+  <script src="js/modules/system.js"></script>
+  <script src="js/modules/analog_stick.js"></script>
+  <script src="js/modules/color_settings.js"></script>
+  <script src="js/modules/gyroscope.js"></script>
+  <script src="js/modules/hardware_test.js"></script>
+  <script src="js/modules/octagon_calibration.js"></script>
+  <script src="js/modules/remapping.js"></script>
+  <script src="js/modules/snapback_viewer.js"></script>
+  <script src="js/modules/system.js"></script>
+  <script src="js/modules/vibration.js"></script>
   <script src="js/svg-loader.min.js"></script>
   <script src="js/iro.min.js"></script>
+
   <script src="js/hoja_config.js"></script>
 
 </body>
