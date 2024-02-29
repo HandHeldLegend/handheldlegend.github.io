@@ -238,22 +238,22 @@
 
               <div class="sora_radio_container" id="default_mode_radio_picker">
 
-                <input type="radio" name="radio_default_mode" id="default_mode_switch" checked onchange="">
+                <input type="radio" name="radio_default_mode" id="default_mode_switch" checked onchange="system_change_mode_radio(0)">
                 <label for="default_mode_switch" id="default_mode_switch_label_label">Switch</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_xinput" onchange="">
+                <input type="radio" name="radio_default_mode" id="default_mode_xinput" onchange="system_change_mode_radio(1)">
                 <label for="default_mode_xinput" id="default_mode_xinput_label">XInput</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_gcusb" checked onchange="">
-                <label for="default_mode_gcusb" id="default_mode_gcusb_label">GCUSB</label>
+                <input type="radio" name="radio_default_mode" id="default_mode_gcusb" checked onchange="system_change_mode_radio(2)">
+                <label for="default_mode_gcusb" id="default_mode_gcusb_label">Slippi</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_gc" onchange="">
+                <input type="radio" name="radio_default_mode" id="default_mode_gc" onchange="system_change_mode_radio(3)">
                 <label for="default_mode_gc" id="default_mode_gc_label">GC</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_n64" checked onchange="">
+                <input type="radio" name="radio_default_mode" id="default_mode_n64" checked onchange="system_change_mode_radio(4)">
                 <label for="default_mode_n64" id="default_mode_n64_label">N64</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_snes" onchange="">
+                <input type="radio" name="radio_default_mode" id="default_mode_snes" onchange="system_change_mode_radio(5)">
                 <label for="default_mode_snes" id="default_mode_snes_label">SNES</label>
 
                 
@@ -280,7 +280,7 @@
               <p>{vibrationStrength}</p>
               <div class="slider">
                 <input type="range" min="0" max="100" value="0" id="vibration_strength"
-                  oninput="vibrate_update_text()" onchange="">
+                  oninput="vibrate_update_text()" onchange="vibrate_set_intensity(this.value)">
                 <p id="vibration_strength_text">0</p>
               </div>
             </div>
@@ -292,15 +292,15 @@
               <p>{rumbleType}</p>
               <div class="sora_radio_container" id="erm_lra_radio_picker">
 
-                <input type="radio" name="radio_erm_lra_profile" id="erm_switch" checked onchange="">
+                <input type="radio" name="radio_erm_lra_profile" id="erm_switch" checked onchange="vibrate_set_mode(0)">
                 <label for="erm_switch" id="erm_switch_label">ERM</label>
 
-                <input type="radio" name="radio_erm_lra_profile" id="lra_switch" onchange="">
+                <input type="radio" name="radio_erm_lra_profile" id="lra_switch" onchange="vibrate_set_mode(1)">
                 <label for="lra_switch" id ="lra_switch_label">LRA</label>
               </div>
 
               <div class="row">
-                <button type="button" id="test_vibe_button" onclick="vibrate_test()">{test}</button>
+                <button type="button" id="test_vibe_button" onclick="vibrate_test_start()">{test}</button>
                 <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
               </div>
             </div>

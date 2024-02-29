@@ -13,6 +13,12 @@ function _system_set_radio(mode)
     }
 }
 
+function system_change_mode_radio(mode)
+{
+    _system_set_radio(mode);
+    system_mode_set_value(mode);
+}
+
 function system_enable_menu(enable)
 {
     var c = capabilities_value_get();
@@ -24,4 +30,21 @@ function system_enable_menu(enable)
     }
     
     enable_dropdown_element("system-collapsible", enable);
+}
+
+function system_mode_place(data)
+{
+    _system_set_radio(data.getUint8(1));
+}
+
+async function system_mode_get_value()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_BOOTMODE_GET]);
+    await device.transferOut(2, dataOut);
+}
+
+async function system_mode_set_value(mode)
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_BOOTMODE_SET, mode]);
+    await device.transferOut(2, dataOut);
 }

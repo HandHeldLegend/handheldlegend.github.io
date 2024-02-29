@@ -38,6 +38,9 @@ async function config_get_chain(cmd) {
     else if (cmd== WEBUSB_CMD_RGBMODE_GET) {
         await analog_get_deadzones();
     }
+    else if (cmd== WEBUSB_CMD_DEADZONE_GET) {
+        await system_mode_get_value();
+    }
 }
 
 /** This code works only on properly formatted PWAs **/
@@ -179,6 +182,11 @@ async function handle_input_report(result) {
         case WEBUSB_CMD_DEADZONE_GET:
             console.log("Got user deadzone values.");
             analog_deadzones_place_values(result.data);
+            break;
+
+        case WEBUSB_CMD_BOOTMODE_GET:
+            console.log("Got user boot mode.");
+            system_mode_place(result.data);
             break;
     }
 
