@@ -1,8 +1,16 @@
 let _offlineIndicatorElement = document.getElementById("offline-indicator");
 var _offline = false;
 
-function offline_indicator_enable(enable) {
+var _offline_default = "Offline Mode";
+var _offline_github = "Offline Github Error";
+
+function offline_indicator_enable(enable, message) {
     if (enable) {
+        if(!message)
+        {
+          _offlineIndicatorElement.innerText = _offline_default;
+        }
+        else _offlineIndicatorElement.innerText = message;
         _offline = true;
         _offlineIndicatorElement.removeAttribute('disabled');
     }

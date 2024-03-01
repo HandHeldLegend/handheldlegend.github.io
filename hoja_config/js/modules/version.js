@@ -69,6 +69,7 @@ function _version_get_manifest_data(id)
     if(!DEVICE_FW_MANIFEST_URLS[id])
     {
         console.log("Invalid device ID.");
+        offline_indicator_enable(true, "Invalid Device Error");
         return;
     }
 
@@ -77,11 +78,14 @@ function _version_get_manifest_data(id)
     return fetch(jsonUrl)
       .then((response) => {
         if (!response.ok) {
+          offline_indicator_enable(true, "Github Network Error");
           throw new Error(`Network response was not ok: ${response.status}`);
         }
+        offline_indicator_enable(false);
         return response.json();
       })
       .catch((error) => {
+        offline_indicator_enable(true, "JSON Parse Error");
         console.error('Error fetching and parsing JSON:', error);
       });
 }
@@ -173,7 +177,12 @@ function _version_fw_is_up_to_date()
 
 function _version_baseband_is_up_to_date()
 {
-    if(_baseband_version != 0xFFFF || !_baseband_version)
+    if(_baseband_version == 0xFFFE)
+    {
+        console.log("Baseband not initialized.");
+        _version_baseband_enable_notification(true);
+    }
+    else if(_baseband_version != 0xFFFF || !_baseband_version)
     {
         if(network_is_available())
         {
@@ -199,9 +208,13 @@ function _version_baseband_is_up_to_date()
             _version_baseband_enable_notification(false);
         }
     }
+    else
+    {
+        console.log("Baseband is unused with this device.");
+        _version_baseband_enable_notification(false);
+    }
 
-    console.log("Baseband is unused with this device.");
-    _version_baseband_enable_notification(false);
+    
 }
 
 function version_interpret_values_data(data)
