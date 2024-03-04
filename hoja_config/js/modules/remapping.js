@@ -495,19 +495,20 @@ function _remap_place_profile_icons(mode) {
     var map;
     switch (mode) {
         default:
-        case 0:
+        case INPUT_MODE_SWPRO:
             map = pro_map;
             break;
-        case 1:
+        case INPUT_MODE_XINPUT:
             map = xinput_map;
             break;
-        case 2:
+        case INPUT_MODE_GCUSB:
+        case INPUT_MODE_GAMECUBE:
             map = gamecube_map;
             break;
-        case 3:
+        case INPUT_MODE_N64:
             map = n64_map;
             break;
-        case 4:
+        case INPUT_MODE_SNES:
             map = snes_map;
             break;
     }

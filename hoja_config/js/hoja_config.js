@@ -6,12 +6,6 @@ let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 
-const INPUT_MODE_SWITCH = 0;
-const INPUT_MODE_XINPUT = 1;
-const INPUT_MODE_GAMECUBE = 2;
-const INPUT_MODE_N64 = 3;
-const INPUT_MODE_SNES = 4;
-
 // Gets the config items in a set order
 async function config_get_chain(cmd) {
     if (cmd == WEBUSB_CMD_FW_GET) {

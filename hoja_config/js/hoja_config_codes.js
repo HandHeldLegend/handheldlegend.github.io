@@ -59,3 +59,12 @@ const WEBUSB_CMD_DEADZONE_GET = 0x2A;
 
 const WEBUSB_CMD_BOOTMODE_SET = 0x30;
 const WEBUSB_CMD_BOOTMODE_GET = 0x3A;
+
+
+const INPUT_MODE_SWPRO    = 0;
+const INPUT_MODE_XINPUT   = 1;
+const INPUT_MODE_GCUSB    = 2;
+const INPUT_MODE_GAMECUBE = 3;
+const INPUT_MODE_N64      = 4;
+const INPUT_MODE_SNES     = 5;
+const INPUT_MODE_DS4      = 6;
