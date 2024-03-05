@@ -1,6 +1,6 @@
 const HOJA_BACKEND_VERSION = 0x0001; // Current backend firmware (Old called settings version)
 
-const HOJA_BASEBAND_VERSION = 0xA003; // Current BT Modem firmware
+const HOJA_BASEBAND_VERSION = 0xA004; // Current BT Modem firmware
 
 const INIT_INSTRUCTIONS = 
 {
