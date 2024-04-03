@@ -224,7 +224,7 @@
               }
             }
 
-            if(isSpacePressed(e) && octagon_menu_open) {
+            if (isSpacePressed(e) && octagon_menu_open) {
               analog_update_octagon();
             }
           });
@@ -241,32 +241,38 @@
           <div class="dropdown">
             <div class="full-width">
               <p>{defaultMode}</p>
-              
+
               <div id="epilepsy-warning">
                 Changing the default mode will require you to hold 'A' when connecting to use the configuration app.
               </div>
 
               <div class="sora_radio_container" id="default_mode_radio_picker">
 
-                <input type="radio" name="radio_default_mode" id="default_mode_switch" checked onchange="system_change_mode_radio(0)">
+                <input type="radio" name="radio_default_mode" id="default_mode_switch" checked
+                  onchange="system_change_mode_radio(0)">
                 <label for="default_mode_switch" id="default_mode_switch_label_label">Switch</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_xinput" onchange="system_change_mode_radio(1)">
+                <input type="radio" name="radio_default_mode" id="default_mode_xinput"
+                  onchange="system_change_mode_radio(1)">
                 <label for="default_mode_xinput" id="default_mode_xinput_label">XInput</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_gcusb" checked onchange="system_change_mode_radio(2)">
+                <input type="radio" name="radio_default_mode" id="default_mode_gcusb" checked
+                  onchange="system_change_mode_radio(2)">
                 <label for="default_mode_gcusb" id="default_mode_gcusb_label">Slippi</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_gc" onchange="system_change_mode_radio(3)">
+                <input type="radio" name="radio_default_mode" id="default_mode_gc"
+                  onchange="system_change_mode_radio(3)">
                 <label for="default_mode_gc" id="default_mode_gc_label">GC</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_n64" checked onchange="system_change_mode_radio(4)">
+                <input type="radio" name="radio_default_mode" id="default_mode_n64" checked
+                  onchange="system_change_mode_radio(4)">
                 <label for="default_mode_n64" id="default_mode_n64_label">N64</label>
 
-                <input type="radio" name="radio_default_mode" id="default_mode_snes" onchange="system_change_mode_radio(5)">
+                <input type="radio" name="radio_default_mode" id="default_mode_snes"
+                  onchange="system_change_mode_radio(5)">
                 <label for="default_mode_snes" id="default_mode_snes_label">SNES</label>
 
-                
+
               </div>
 
               <div class="row">
@@ -289,8 +295,8 @@
 
               <p>{vibrationStrength}</p>
               <div class="slider">
-                <input type="range" min="0" max="100" value="0" id="vibration_strength"
-                  oninput="vibrate_update_text()" onchange="vibrate_set_intensity(this.value)">
+                <input type="range" min="0" max="100" value="0" id="vibration_strength" oninput="vibrate_update_text()"
+                  onchange="vibrate_set_intensity(this.value)">
                 <p id="vibration_strength_text">0</p>
               </div>
             </div>
@@ -306,7 +312,7 @@
                 <label for="erm_switch" id="erm_switch_label">ERM</label>
 
                 <input type="radio" name="radio_erm_lra_profile" id="lra_switch" onchange="vibrate_set_mode(1)">
-                <label for="lra_switch" id ="lra_switch_label">LRA</label>
+                <label for="lra_switch" id="lra_switch_label">LRA</label>
               </div>
 
               <div class="row">
@@ -450,107 +456,101 @@
 
           <div class="dropdown">
 
-            <div class="content-inner">
-              <div class="full-width">
-                <p>{calibrateDesc}</p>
-              </div>
-
+            <div class="full-width">
+              <p>{calibrateDesc}</p>
               <div class="line"></div>
+            </div>
 
-              <div class="collapsible-row-double">
-                <div class="collapsible-column">
-                  <div class="circle" id="left-stick-ui" hidden>
-                    <div class="inner-stick"></div>
-                    <div class="analog-center"></div>
-                    <div id="circle-analog-pointer-l" class="analog-position"></div>
-                  </div>
-                </div>
+            
 
-                <div class="collapsible-column">
-                  <div class="circle" id="right-stick-ui" hidden>
-                    <div class="inner-stick"></div>
-                    <div class="analog-center"></div>
-                    <div id="circle-analog-pointer-r" class="analog-position"></div>
-                  </div>
+            <div class="collapsible-row-double">
+              <div class="collapsible-column">
+                <div class="circle" id="left-stick-ui" hidden>
+                  <div class="inner-stick"></div>
+                  <div class="analog-center"></div>
+                  <div id="circle-analog-pointer-l" class="analog-position"></div>
                 </div>
-                <div class="line"></div>
               </div>
+
+              <div class="collapsible-column">
+                <div class="circle" id="right-stick-ui" hidden>
+                  <div class="inner-stick"></div>
+                  <div class="analog-center"></div>
+                  <div id="circle-analog-pointer-r" class="analog-position"></div>
+                </div>
+              </div>
+              <div class="line"></div>
+            </div>
+            <div class="row">
+              <button type="button" id="start_calibration_button" onclick="analog_start_calibration()">{start}</button>
+              <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
+                disabled>{stop}</button>
+              <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
+            </div>
+
+            <div class="full-width">
+              <div class="line"></div>
+              <h2>{deadzoneInner}</h2>
+              <p>Left</p>
+              <div class="slider">
+                <input type="range" min="0" max="1000" value="0" id="deadzone_inner_left_value"
+                  oninput="analog_deadzone_update_text(_analog_dz_l_in_text, this.value)"
+                  onchange="analog_set_deadzone(0, this.value)">
+                <p id="deadzone_inner_left_text">0</p>
+              </div>
+
+              <p>Right</p>
+              <div class="slider">
+                <input type="range" min="0" max="1000" value="0" id="deadzone_inner_right_value"
+                  oninput="analog_deadzone_update_text(_analog_dz_r_in_text, this.value)"
+                  onchange="analog_set_deadzone(2, this.value)">
+                <p id="deadzone_inner_right_text">0</p>
+              </div>
+
+
+            </div>
+
+            <div class="full-width">
+              <div class="line"></div>
+              <h2>{deadzoneOuter}</h2>
+              <p>Left</p>
+              <div class="slider">
+                <input type="range" min="0" max="500" value="0" id="deadzone_outer_left_value"
+                  oninput="analog_deadzone_update_text(_analog_dz_l_out_text, this.value)"
+                  onchange="analog_set_deadzone(1, this.value)">
+                <p id="deadzone_outer_left_text">0</p>
+              </div>
+
+              <p>Right</p>
+              <div class="slider">
+                <input type="range" min="0" max="500" value="0" id="deadzone_outer_right_value"
+                  oninput="analog_deadzone_update_text(_analog_dz_r_out_text, this.value)"
+                  onchange="analog_set_deadzone(3, this.value)">
+                <p id="deadzone_outer_right_text">0</p>
+              </div>
+
+
+            </div>
+
+            
+
+            <div class="full-width">
+              <div class="line"></div>
+              <p>Invert Axis</p>
+
               <div class="row">
-                <button type="button" id="start_calibration_button"
-                  onclick="analog_start_calibration()">{start}</button>
-                <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
-                  disabled>{stop}</button>
-                <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
-              </div>
+                <div class="invert_container">
+                  <input type="checkbox" id="lx_invert" name="lx_invert_" onchange="analog_set_invert(0, this.checked)">
+                  <label for="lx_invert">LX</label>
 
+                  <input type="checkbox" id="ly_invert" name="ly_invert_" onchange="analog_set_invert(1, this.checked)">
+                  <label for="ly_invert">LY</label>
 
+                  <input type="checkbox" id="rx_invert" name="rx_invert_" onchange="analog_set_invert(2, this.checked)">
+                  <label for="rx_invert">RX</label>
 
-              <div class="line"></div>
-
-              <div class="full-width">
-
-                <h2>{deadzoneInner}</h2>
-                <p>Left</p>
-                <div class="slider">
-                  <input type="range" min="0" max="1000" value="0" id="deadzone_inner_left_value" oninput="analog_deadzone_update_text(_analog_dz_l_in_text, this.value)" onchange="analog_set_deadzone(0, this.value)">
-                  <p id="deadzone_inner_left_text">0</p>
-                </div>
-
-                <p>Right</p>
-                <div class="slider">
-                  <input type="range" min="0" max="1000" value="0" id="deadzone_inner_right_value" oninput="analog_deadzone_update_text(_analog_dz_r_in_text, this.value)"
-                    onchange="analog_set_deadzone(2, this.value)">
-                  <p id="deadzone_inner_right_text">0</p>
-                </div>
-
-
-              </div>
-
-              <div class="line"></div>
-
-              <div class="full-width">
-
-                <h2>{deadzoneOuter}</h2>
-                <p>Left</p>
-                <div class="slider">
-                  <input type="range" min="0" max="500" value="0" id="deadzone_outer_left_value" oninput="analog_deadzone_update_text(_analog_dz_l_out_text, this.value)" onchange="analog_set_deadzone(1, this.value)">
-                  <p id="deadzone_outer_left_text">0</p>
-                </div>
-
-                <p>Right</p>
-                <div class="slider">
-                  <input type="range" min="0" max="500" value="0" id="deadzone_outer_right_value" oninput="analog_deadzone_update_text(_analog_dz_r_out_text, this.value)"
-                    onchange="analog_set_deadzone(3, this.value)">
-                  <p id="deadzone_outer_right_text">0</p>
-                </div>
-
-
-              </div>
-
-              <div class="line"></div>
-
-              <div class="full-width">
-                <p>Invert Axis</p>
-
-                <div class="row">
-                  <div class="invert_container">
-                    <input type="checkbox" id="lx_invert" name="lx_invert_"
-                      onchange="analog_set_invert(0, this.checked)">
-                    <label for="lx_invert">LX</label>
-
-                    <input type="checkbox" id="ly_invert" name="ly_invert_"
-                      onchange="analog_set_invert(1, this.checked)">
-                    <label for="ly_invert">LY</label>
-
-                    <input type="checkbox" id="rx_invert" name="rx_invert_"
-                      onchange="analog_set_invert(2, this.checked)">
-                    <label for="rx_invert">RX</label>
-
-                    <input type="checkbox" id="ry_invert" name="ry_invert_"
-                      onchange="analog_set_invert(3, this.checked)">
-                    <label for="ry_invert">RY</label>
-                  </div>
-
+                  <input type="checkbox" id="ry_invert" name="ry_invert_" onchange="analog_set_invert(3, this.checked)">
+                  <label for="ry_invert">RY</label>
                 </div>
 
               </div>
@@ -564,79 +564,81 @@
         <!-- --------------- -->
         <div class="collapsible" id="octagon-collapsible">
 
-          <input id="octagon_collapsible" class="toggle" type="checkbox" onchange="octagon_enable_spacebar(this.checked)">
+          <input id="octagon_collapsible" class="toggle" type="checkbox"
+            onchange="octagon_enable_spacebar(this.checked)">
 
           <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
 
           <div class="dropdown">
 
-            <div class="content-inner">
-              <div class="full-width">
-                <p>{octagonDesc}</p>
-
-                <div class="line"></div>
-              </div>
-
-              <div class="collapsible-row-double">
-
-                <div class="collapsible-column">
-                  <input id="octagon-angle-text-l" type="text" disabled />
-                  <div class="octagon" id="leftocto-stick-ui" hidden>
-                    <div class="inner-stick"></div>
-                    <div class="analog-center"></div>
-                    <div id="octo-analog-pointer-l" class="analog-position"></div>
-                  </div>
-                </div>
-
-                <div class="collapsible-column">
-                  <input id="octagon-angle-text-r" type="text" disabled />
-                  <div class="octagon" id="rightocto-stick-ui" hidden>
-                    <div class="inner-stick"></div>
-                    <div class="analog-center"></div>
-                    <div id="octo-analog-pointer-r" class="analog-position"></div>
-                  </div>
-                </div>
-              </div>
+            <div class="full-width">
+              <p>{octagonDesc}</p>
 
               <div class="line"></div>
+            </div>
+
+            <div class="collapsible-row-double">
+
+              <div class="collapsible-column">
+                <input id="octagon-angle-text-l" type="text" disabled />
+                <div class="octagon" id="leftocto-stick-ui" hidden>
+                  <div class="inner-stick"></div>
+                  <div class="analog-center"></div>
+                  <div id="octo-analog-pointer-l" class="analog-position"></div>
+                </div>
+              </div>
+
+              <div class="collapsible-column">
+                <input id="octagon-angle-text-r" type="text" disabled />
+                <div class="octagon" id="rightocto-stick-ui" hidden>
+                  <div class="inner-stick"></div>
+                  <div class="analog-center"></div>
+                  <div id="octo-analog-pointer-r" class="analog-position"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="full-width">
+              <div class="line"></div>
+
 
               <div class="row">
                 <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
                 <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
               </div>
+            </div>
 
+
+
+            <div class="full-width">
+              <h3>{octoAdjustTitle}</h3>
+              <p>{octoAdjustDesc}</p>
+              <input class="floatingAdjustment" type="number" id="floatingInputOcto" step="0.1" onchange=""
+                value="0.0000" disabled>
+            </div>
+            <div class="row">
+              <button type="button" id="get_octoangle_button" onclick="analog_get_octoangle_value()">{get}</button>
+              <button type="button" id="set_octoangle_button"
+                onclick='analog_update_octoangle(document.getElementById("floatingInputOcto").value)'
+                disabled>{update}</button>
+              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
+            </div>
+
+            <div class="full-width">
               <div class="line"></div>
 
-              <div class="full-width">
-                <h3>{octoAdjustTitle}</h3>
-                <p>{octoAdjustDesc}</p>
-                <input class="floatingAdjustment" type="number" id="floatingInputOcto" step="0.1" onchange=""
-                  value="0.0000" disabled>
-              </div>
-              <div class="row">
-                <button type="button" id="get_octoangle_button" onclick="analog_get_octoangle_value()">{get}</button>
-                <button type="button" id="set_octoangle_button"
-                  onclick='analog_update_octoangle(document.getElementById("floatingInputOcto").value)'
-                  disabled>{update}</button>
-                <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
-              </div>
-
-              <div class="line"></div>
-
-              <div class="full-width">
-                <h3>{subAdjustTitle}</h3>
-                <p>{subnotchDesc}</p>
-                <input class="floatingAdjustment" type="number" id="floatingInput" step="0.1" onchange="" min="-15"
-                  max="15" value="0.0000" disabled>
-              </div>
-              <div class="row">
-                <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>
-                <button type="button" id="set_subangle_button"
-                  onclick='analog_update_subangle(document.getElementById("floatingInput").value)'
-                  disabled>{update}</button>
-                <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
-              </div>
-
+            
+              <h3>{subAdjustTitle}</h3>
+              <p>{subnotchDesc}</p>
+              <input class="floatingAdjustment" type="number" id="floatingInput" step="0.1" onchange="" min="-15"
+                max="15" value="0.0000" disabled>
+            </div>
+            <div class="row">
+              <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>
+              <button type="button" id="set_subangle_button"
+                onclick='analog_update_subangle(document.getElementById("floatingInput").value)'
+                disabled>{update}</button>
+              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
             </div>
 
           </div>
@@ -651,8 +653,6 @@
           <label for="gyro_collapsible" id="gyro_collapsible_toggle" class="lbl-toggle">{gyroTitle}</label>
 
           <div class="dropdown">
-
-
             <div class="full-width">
               <p>{gyroDesc}</p>
 
@@ -664,8 +664,6 @@
                   onclick="imu_start_calibration()">{start}</button>
               </div>
             </div>
-
-
           </div>
         </div>
 
