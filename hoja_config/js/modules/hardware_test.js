@@ -5,6 +5,26 @@ function fwtest_reset_checkbox(id) {
     el.removeAttribute("failed");
 }
 
+function fwtest_hide_element(id, hide)
+{
+    let el = document.getElementById(id).parentNode;
+
+    if(hide)
+    {
+        el.style.display = "none";
+    }
+    else
+    {
+        try {
+            el.style.display = null;
+        } catch (error) {
+            // Don't worry about it
+        }
+        
+    }
+    
+}
+
 function fwtest_reset_all_checkboxes() {
     fwtest_reset_checkbox("fwc_data");
     fwtest_reset_checkbox("fwc_latch");
@@ -46,6 +66,18 @@ function fwtest_enable_menu(enable)
 {
     fwtest_reset_button();
     enable_dropdown_element("hwtest-collapsible", enable);
+
+    var c = capabilities_value_get();
+
+    fwtest_hide_element("fwc_analog", !(c.analog_stick_left | c.analog_stick_right));
+    fwtest_hide_element("fwc_imu", !c.gyroscope);
+    fwtest_hide_element("fwc_bluetooth", !c.bluetooth);
+    fwtest_hide_element("fwc_battery", !c.battery);
+    fwtest_hide_element("fwc_rumble", !(c.rumble_erm | c.rumble_lra));
+    fwtest_hide_element("fwc_rgb", !c.rgb);
+    fwtest_hide_element("fwc_data", !(c.nintendo_serial | c.nintendo_joybus));
+    fwtest_hide_element("fwc_latch", !c.nintendo_serial);
+    fwtest_hide_element("fwc_clock", !c.nintendo_serial);
 
     if(!enable)
     {
