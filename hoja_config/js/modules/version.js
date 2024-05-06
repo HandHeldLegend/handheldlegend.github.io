@@ -223,11 +223,15 @@ function version_interpret_values_data(data)
     _device_id          = (data.getUint8(3) << 8)   | (data.getUint8(4));
     _backend_version    = (data.getUint8(5) << 8)   | (data.getUint8(6));
     _baseband_version   = (data.getUint8(7)<<8)     | (data.getUint8(8));
+    _settings_version   = (data.getUint8(9)<<8)     | (data.getUint8(10));
+    _settings_bank = (data.getUint8(11));
 
-    console.log("Device ID: " + _device_id.toString());
-    console.log("FW Verson: " + _fw_version.toString());
-    console.log("HOJA Version: " + _backend_version.toString());
-    console.log("BT Baseband Version: " + _baseband_version);
+    console.log("Device ID: 0x" + _device_id.toString(16));
+    console.log("FW Verson: 0x" + _fw_version.toString(16));
+    console.log("HOJA Version: 0x" + _backend_version.toString(16));
+    console.log("BT Baseband Version: 0x" + _baseband_version.toString(16));
+    console.log("HOJA Settings Version: 0x" + _settings_version.toString(16));
+    console.log("Settings Bank: " + ((!_settings_bank) ? "A" : "B"));
 
     _version_fw_is_up_to_date();
 }
