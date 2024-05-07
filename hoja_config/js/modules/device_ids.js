@@ -38,28 +38,30 @@ const DEVICE_FW_MANIFEST_URLS =
     0xA001  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/manifest.json",
     0xA002  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/manifest.json", // ProGCC 3+
     0xA003  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/manifest.json", // ProGCC 3+ (Haptic)
+    0xA004  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/manifest.json", // ProGCC 3.1
 
-    0xB001  : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/manifest.json", // SuperGamepad+
-    0xB002  : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/manifest.json", // UniSNES
+    0xB001  : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/manifest.json",  // SuperGamepad+
+    0xB002  : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/manifest.json",           // UniSNES
 
-    0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json", // GC Ultimate
+    0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json",       // GC Ultimate
     0xA00A  : 0x0A00, // ThingamaPro (Esca)
 
-    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/manifest.json" // Phob 2.1
+    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/manifest.json"           // Phob 2.1
 }
 
 const FW_UPDATE_URLS = 
 {
-    0xA001 : "https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2", // ProGCC 3
-    0xA002 : "https://github.com/HandHeldLegend/ProGCC-V3-Plus/raw/master/FW/build/PROGCCPLUS_ERM_RP2040.uf2",  // ProGCC 3+
-    0xA003 : "https://github.com/HandHeldLegend/ProGCC-V3-Plus/raw/master/FW/build/PROGCCPLUS_HAPTIC_RP2040.uf2",  // ProGCC 3+
+    0xA001 : "https://github.com/HandHeldLegend/ProGCC-V3-RP2040/raw/main/build/PROGCC_RP2040.uf2",                 // ProGCC 3
+    0xA002 : "https://github.com/HandHeldLegend/ProGCC-V3-Plus/raw/master/FW/build/PROGCCPLUS_ERM_RP2040.uf2",      // ProGCC 3+
+    0xA003 : "https://github.com/HandHeldLegend/ProGCC-V3-Plus/raw/master/FW/build/PROGCCPLUS_HAPTIC_RP2040.uf2",   // ProGCC 3+ (haptic)
+    0xA004 : "https://github.com/HandHeldLegend/ProGCC-V3-Plus/raw/master/FW/build/PROGCC3.1_RP2040.uf2",           // ProGCC 3.1
 
-    0xB001 : "https://github.com/mitchellcairns/SuperGamepadPlus/raw/master/FW/build/SUPERGAMEPAD_RP2040.uf2",  // SuperGamepad+
-    0xB002 : "https://github.com/HandHeldLegend/UniSNES/raw/master/FW/build/UNISNES_RP2040.uf2",  // UniSNES
+    0xB001 : "https://github.com/mitchellcairns/SuperGamepadPlus/raw/master/FW/build/SUPERGAMEPAD_RP2040.uf2",      // SuperGamepad+
+    0xB002 : "https://github.com/HandHeldLegend/UniSNES/raw/master/FW/build/UNISNES_RP2040.uf2",                    // UniSNES
     0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_RP2040.uf2", // GC Ultimate
-    0xA00A : "https://github.com/mitchellcairns/HOJA-ThingamaPro/raw/master/build/THINGAMAPRO_RP2040.uf2",   // ThingamaPro
+    0xA00A : "https://github.com/mitchellcairns/HOJA-ThingamaPro/raw/master/build/THINGAMAPRO_RP2040.uf2",          // ThingamaPro
 
-    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2" // Phob 2.1
+    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2"             // Phob 2.1
 };
 
 

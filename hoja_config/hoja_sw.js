@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hoja-pwa-cache-v29r3';
+const CACHE_NAME = 'hoja-pwa-cache-v30';
 
 const root_css_url = 'https://handheldlegend.github.io/css/'
 
