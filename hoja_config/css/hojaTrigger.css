@@ -1,0 +1,28 @@
+@import url('/css/root.css');
+
+.trigger-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.bar-container {
+    width: 40%;
+    min-width: 30%;
+    height: 200px;
+    background-color: var(--transparent-bg);
+    border: 0px solid black;
+    border-radius: 1rem;
+    position: relative;
+    margin-top: 0;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+  }
+  
+  .bar {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(136, 0, 226, 0.548);
+  }

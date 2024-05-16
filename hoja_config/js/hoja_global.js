@@ -29,6 +29,7 @@ function enable_all_menus(enable) {
     remapping_sp_enable_menu(enable);
     fwtest_enable_menu(enable);
     system_enable_menu(enable);
+    triggers_enable_menu(enable);
 
     analog_stop_calibration_confirm();
 

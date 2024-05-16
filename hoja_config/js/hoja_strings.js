@@ -52,7 +52,9 @@ var eng_strings = {
     systemTitle: 'System',
     defaultMode: 'Boot Mode',
     deadzoneInner: 'Center Deadzone',
-    deadzoneOuter: 'Edge Deadzone'
+    deadzoneOuter: 'Edge Deadzone',
+    triggerTitle: 'Triggers',
+    triggerDesc: 'Test and calibrate the analog triggers.'
 };
 
 var jp_strings = {
@@ -105,7 +107,9 @@ var jp_strings = {
     systemTitle: 'System',
     defaultMode: 'Boot Mode',
     deadzoneInner: 'Center Deadzone',
-    deadzoneOuter: 'Edge Deadzone'
+    deadzoneOuter: 'Edge Deadzone',
+    triggerTitle: 'Triggers',
+    triggerDesc: 'Test and calibrate the analog triggers.'
 };
 
 let en_radio = document.getElementById("lang_en");

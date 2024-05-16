@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/hojaConfig.css" type="text/css">
   <link rel="stylesheet" href="css/hojaColor.css" type="text/css">
   <link rel="stylesheet" href="css/hojaAnalog.css" type="text/css">
+  <link rel="stylesheet" href="css/hojaTrigger.css" type="text/css">
   <link rel="stylesheet" href="css/hojaRemap.css" type="text/css">
   <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
   <link rel="stylesheet" href="/css/radioPicker.css" type="text/css">
@@ -644,6 +645,51 @@
           </div>
         </div>
 
+        <!-- TRIGGER SETTINGS -->
+        <!-- --------------- -->
+        <div class="collapsible" id="trigger-collapsible">
+
+          <input id="trigger_collapsible" class="toggle" type="checkbox">
+
+          <label for="trigger_collapsible" id="trigger_collapsible_toggle" class="lbl-toggle">{triggerTitle}</label>
+
+          <div class="dropdown">
+
+            <div class="full-width">
+              <p>{triggerDesc}</p>
+              <div class="line"></div>
+            </div>
+
+            <div class="collapsible-row-double">
+              <div class="collapsible-column">
+                <div class="trigger-container">
+                  <label for="left-trigger">Left</label>
+                  <div class="bar-container">
+                    <div class="bar" id="left-bar"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="collapsible-column">
+                <div class="trigger-container">
+                  <label for="right-trigger">Right</label>
+                  <div class="bar-container">
+                    <div class="bar" id="right-bar"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="line"></div>
+            </div>
+            <div class="row">
+              <button type="button" id="start_triggercalibration_button" onclick="triggers_start_calibration()">{start}</button>
+              <button type="button" id="stop_triggercalibration_button" onclick="triggers_stop_calibration()"
+                disabled="true">{stop}</button>
+              <button type="button" id="save_triggers_button" onclick="saveButton()">{save}</button>
+            </div>
+
+          </div>
+        </div>
+
         <!-- GYRO SETTINGS -->
         <!-- --------------- -->
         <div class="collapsible" id="gyro-collapsible">
@@ -959,6 +1005,7 @@
   <script src="js/modules/capabilities.js"></script>
   <script src="js/modules/system.js"></script>
   <script src="js/modules/analog_stick.js"></script>
+  <script src="js/modules/analog_triggers.js"></script>
   <script src="js/modules/color_settings.js"></script>
   <script src="js/modules/gyroscope.js"></script>
   <script src="js/modules/hardware_test.js"></script>

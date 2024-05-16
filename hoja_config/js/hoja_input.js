@@ -88,7 +88,6 @@ function input_process_data(data) {
     var ly = (data.getUint8(2)-128) * -octo_scaler;
     var rx = (data.getUint8(3)-128) * octo_scaler;
     var ry = (data.getUint8(4)-128) * -octo_scaler;
-
     
     var la = calculateAngle(lx, ly, 0, 0);
     var ra = calculateAngle(rx, ry, 0, 0);
@@ -106,4 +105,9 @@ function input_process_data(data) {
 
     octo_stick_center_r.transform = rnp;
     octo_angle_r.value = ra.toString();
+
+    var lta = (data.getUint8(8));
+    updateLeftBar(lta);
+    var rta = (data.getUint8(9));
+    updateRightBar(rta);
 }
