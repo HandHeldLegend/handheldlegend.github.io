@@ -44,7 +44,7 @@ const DEVICE_FW_MANIFEST_URLS =
     0xB002  : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/manifest.json",           // UniSNES
 
     0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json",       // GC Ultimate
-    0xA00A  : 0x0A00, // ThingamaPro (Esca)
+    0xA00A  : "https://raw.githubusercontent.com/mitchellcairns/HOJA-ThingamaPro/master/manifest.json", // ThingamaPro (Esca)
 
     0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/manifest.json"           // Phob 2.1
 }
@@ -63,8 +63,6 @@ const FW_UPDATE_URLS =
 
     0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2"             // Phob 2.1
 };
-
-
 
 function devices_firmware_initialization_check()
 {
