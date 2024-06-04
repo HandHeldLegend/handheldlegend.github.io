@@ -49,6 +49,14 @@ body {
     }
 }
 
+* {
+    -webkit-tap-highlight-color: rgba(235, 235, 235, 0.158); /* Red with 50% opacity */
+  }
+
+.no-pointer-events {
+    pointer-events: none;
+  }
+
 .context {
     margin: 0 auto;
     width: 100%;

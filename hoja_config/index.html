@@ -326,7 +326,7 @@
         </div>
 
         <!-- PROCON COLOR SETTINGS -->
-        <div class="collapsible" id="color-collapsible">
+        <div class="collapsible" id="color-collapsible" enabled='true'>
 
           <input id="color-settings" class="toggle" type="checkbox">
 
@@ -405,6 +405,19 @@
               <div id="hojaColorSvg">
                 <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled"
                   data-unique-ids="disabled" data-css-scoping="disabled"></svg>
+                
+                
+                <!--  <svg id="colorSvgLoaderTriggers" class="controller-led-triggers" data-src="svg/procontriggers.svg" data-cache="true"
+                data-unique-ids="disabled" data-css-scoping="disabled"></svg> -->
+
+                <div id="triggerLedPicker" class="triggerColor">
+                  <div id="lButton" class="triggerColorBtn">L</div>
+                  <div id="rButton" class="triggerColorBtn">R</div>
+                  <div id="zlButton" class="triggerColorBtn">ZL</div>
+                  <div id="zrButton" class="triggerColorBtn">ZR</div>
+                  <div id="playerButton" class="triggerColorBtn">Player</div>
+                </div>
+
               </div>
 
               <div id="hojaColorPicker">
@@ -414,6 +427,7 @@
                 <div class="row">
                   <button id="copyButton" class="small" onclick="color_copy()">{copy}</button>
                   <button id="pasteButton" class="small" onclick="color_paste()">{paste}</button>
+                  <button id="pasteAllButton" class="small" onclick="color_paste_all()">{pasteAll}</button>
                 </div>
               </div>
             </div>

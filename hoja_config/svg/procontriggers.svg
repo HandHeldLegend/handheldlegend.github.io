@@ -1,0 +1,22 @@
+<svg viewBox="-1.5 0 30 15" width="100mm" xmlns="http://www.w3.org/2000/svg">
+  <!-- First row, first column -->
+  <g transform="translate(0, 1)">
+    <rect id="lButton" class="svgButtonClickable" width="12" height="6" rx="1" x="0.1" y="0.1" fill="#666565" stroke="#231916" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.3"/>
+    <text class="no-pointer-events" x="6" y="3.25" font-family="'Exo', sans-serif" font-size="0.4rem" text-anchor="middle" dominant-baseline="central" fill="#231916" stroke-width="0.08" font-weight="550" stroke="rgba(255, 255, 255, 0.521)">L</text>
+  </g>
+  <!-- First row, second column -->
+  <g transform="translate(14, 1)">
+    <rect id="rButton" class="svgButtonClickable" width="12" height="6" rx="1" x="0.1" y="0.1" fill="#666565" stroke="#231916" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.3"/>
+    <text class="no-pointer-events" x="6" y="3.25" font-family="'Exo', sans-serif" font-size="0.4rem" text-anchor="middle" dominant-baseline="central" fill="#231916" stroke-width="0.08" font-weight="550" stroke="rgba(255, 255, 255, 0.521)">R</text>
+  </g>
+  <!-- Second row, first column -->
+  <g transform="translate(0, 8)">
+    <rect id="zlButton" class="svgButtonClickable" width="12" height="6" rx="1" x="0.1" y="0.1" fill="#666565" stroke="#231916" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.3"/>
+    <text class="no-pointer-events" x="6" y="3.25" font-family="'Exo', sans-serif" font-size="0.4rem" text-anchor="middle" dominant-baseline="central" fill="#231916" stroke-width="0.08" font-weight="550" stroke="rgba(255, 255, 255, 0.521)">ZL</text>
+  </g>
+  <!-- Second row, second column -->
+  <g transform="translate(14, 8)">
+    <rect id="zrButton" class="svgButtonClickable" width="12" height="6" rx="1" x="0.1" y="0.1" fill="#666565" stroke="#231916" stroke-linecap="round" stroke-linejoin="round" stroke-width="0.3"/>
+    <text class="no-pointer-events" x="6" y="3.25" font-family="'Exo', sans-serif" font-size="0.35rem" text-anchor="middle" dominant-baseline="central" fill="#231916" stroke-width="0.08" font-weight="550" stroke="rgba(255, 255, 255, 0.521)">ZR</text>
+  </g>
+</svg>

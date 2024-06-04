@@ -12,6 +12,12 @@ const RGB_GROUP_Y = 7;
 const RGB_GROUP_X = 8;
 const RGB_GROUP_A = 9;
 const RGB_GROUP_B = 10;
+const RGB_GROUP_L = 11;
+const RGB_GROUP_ZL = 12;
+const RGB_GROUP_R = 13;
+const RGB_GROUP_ZR = 14;
+const RGB_GROUP_PLAYER = 15;
+const RGB_GROUP_MAX = 16;
 
 var currentColor = "#FFFFFF";
 let activeButtonId = null;
@@ -26,12 +32,20 @@ function color_set_device(device_id)
     let device="procontroller";
     let sig_id = (device_id & 0xF000) >> 12;
 
+    // Hide trigger picker
+    let trigEl = document.getElementById("triggerLedPicker");
+    trigEl.classList.add("disabled");
+
     if( (sig_id == 0xB))
     {
         console.log("Loaded SNES svg");
         device="snescontroller";
     }
-    else console.log("Loaded ProCon svg");
+    else 
+    {
+        console.log("Loaded ProCon svg");
+        trigEl.classList.remove("disabled");
+    }
 
     let loader = document.getElementById("colorSvgLoader");
 
@@ -46,8 +60,10 @@ function color_set_device(device_id)
 
     loader.setAttribute('oniconload', 'color_page_init()');
 
-    //loader.reload();
 }
+
+// Debug
+color_set_device(0xF000);
 
 function hexToRgb(hex) {
     // Ensure the hex color starts with '#'
@@ -84,6 +100,18 @@ function color_page_init() {
     var els = document.querySelectorAll('.svgButtonClickable');
 
     els.forEach(function (element) {
+        console.log(element.id);
+        
+        element.addEventListener('click', function () {
+            color_button_clicked(element.id);
+        });
+    });
+
+    var els = document.querySelectorAll('.triggerColorBtn');
+
+    els.forEach(function (element) {
+        console.log(element.id);
+        
         element.addEventListener('click', function () {
             color_button_clicked(element.id);
         });
@@ -130,10 +158,11 @@ function svg_set_rgb(id, r, g, b) {
     {
         var el = document.getElementById(id);
         el.style.fill = hexString;
+        el.style.background = hexString;
     }
     catch(err)
     {
-
+        
     }
     
 }
@@ -141,64 +170,122 @@ function svg_set_rgb(id, r, g, b) {
 function svg_set_hex(id, hex) {
     var el = document.getElementById(id);
     el.style.fill = hex;
+    el.style.background = hex;
+}
+
+function isNumber(value) {
+    return typeof value === 'number';
 }
 
 async function color_set_value(id, hexColor) {
     var group = 0;
-
+    var textId = "";
+    
     switch (id) {
         default:
             group = -1;
             break;
-
+    
+        case 0:
         case "rightStick":
+            textId = "rightStick";
             group = RGB_GROUP_RS;
             break;
-
+    
+        case 1:
         case "leftStick":
+            textId = "leftStick";
             group = RGB_GROUP_LS;
             break;
-
+    
+        case 2:
         case "dpad":
+            textId = "dpad";
             group = RGB_GROUP_DPAD;
             break;
-
+    
+        case 3:
         case "minusButton":
+            textId = "minusButton";
             group = RGB_GROUP_MINUS;
             break;
-
+    
+        case 4:
         case "captureButton":
+            textId = "captureButton";
             group = RGB_GROUP_CAPTURE;
             break;
-
+    
+        case 5:
         case "homeButton":
+            textId = "homeButton";
             group = RGB_GROUP_HOME;
             break;
-
+    
+        case 6:
         case "plusButton":
+            textId = "plusButton";
             group = RGB_GROUP_PLUS;
             break;
-
+    
+        case 7:
         case "yButton":
+            textId = "yButton";
             group = RGB_GROUP_Y;
             break;
-
+    
+        case 8:
         case "xButton":
+            textId = "xButton";
             group = RGB_GROUP_X;
             break;
-
+    
+        case 9:
         case "aButton":
+            textId = "aButton";
             group = RGB_GROUP_A;
             break;
-
+    
+        case 10:
         case "bButton":
+            textId = "bButton";
             group = RGB_GROUP_B;
+            break;
+    
+        case 11:
+        case "lButton":
+            textId = "lButton";
+            group = RGB_GROUP_L;
+            break;
+    
+        case 12:
+        case "zlButton":
+            textId = "zlButton";
+            group = RGB_GROUP_ZL;
+            break;
+    
+        case 13:
+        case "rButton":
+            textId = "rButton";
+            group = RGB_GROUP_R;
+            break;
+    
+        case 14:
+        case "zrButton":
+            textId = "zrButton";
+            group = RGB_GROUP_ZR;
+            break;
+    
+        case 15:
+        case "playerButton":
+            textId = "playerButton";
+            group = RGB_GROUP_PLAYER;
             break;
     }
 
     if (group > -1) {
         // Set SVG Element Color
-        svg_set_hex(activeButtonId, hexColor);
+        svg_set_hex(textId, hexColor);
 
         var rgb = hexToRgb(hexColor);
 
@@ -225,6 +312,16 @@ function color_paste() {
     color_set_value(activeButtonId, currentColor).then(null);
 }
 
+function color_paste_all() {
+    colorPicker.color.hexString = currentColor;
+
+    for(var i = 0; i<RGB_GROUP_MAX; i++)
+    {
+        color_set_value(i, currentColor).then(null);
+    }
+
+}
+
 function color_button_clicked(id) {
     console.log("Button picked: " + id);
 
@@ -241,11 +338,13 @@ function color_button_clicked(id) {
 
     if (buttonEl.style.fill != "") {
         var c = buttonEl.style.fill;
+        c |= buttonEl.style.background;
         colorPicker.color.rgbaString = c;
     }
     else {
         colorPicker.color.hexString = "#ffffff";
         buttonEl.style.fill = colorPicker.color.rgbaString;
+        buttonEl.style.background = "#ffffff";
     }
 }
 
@@ -326,6 +425,17 @@ function color_place_values(data) {
     svg_set_rgb("aButton", d[i], d[i + 1], d[i + 2]);
     i = i + 3;
     svg_set_rgb("bButton", d[i], d[i + 1], d[i + 2]);
+
+    i = i + 3;
+    svg_set_rgb("lButton", d[i], d[i + 1], d[i + 2]);
+    i = i + 3;
+    svg_set_rgb("zlButton", d[i], d[i + 1], d[i + 2]);
+    i = i + 3;
+    svg_set_rgb("rButton", d[i], d[i + 1], d[i + 2]);
+    i = i + 3;
+    svg_set_rgb("zrButton", d[i], d[i + 1], d[i + 2]);
+    i = i + 3;
+    svg_set_rgb("playerButton", d[i], d[i + 1], d[i + 2]);
 }
 
 async function rgb_get_mode()
