@@ -290,6 +290,7 @@ async function color_set_value(id, hexColor) {
         var rgb = hexToRgb(hexColor);
 
         if (device != null) {
+            console.log(group);
             await sendReport(WEBUSB_CMD_RGB_SET, [group, rgb.r, rgb.g, rgb.b]);
         }
         else {
@@ -338,7 +339,7 @@ function color_button_clicked(id) {
 
     if (buttonEl.style.fill != "") {
         var c = buttonEl.style.fill;
-        c |= buttonEl.style.background;
+        //c |= buttonEl.style.background;
         colorPicker.color.rgbaString = c;
     }
     else {
