@@ -12,28 +12,45 @@
 /*END STUFF*/
 
 html {
-    position: relative;
-    min-height: 100%;
-    height: 100%;
+    background: linear-gradient(-45deg, var(--gradient-one), var(--gradient-two), var(--gradient-three), var(--gradient-four));
+    background-size: 120% 120%;
+    background-attachment: fixed;
     overflow-x: hidden;
     overflow-y: scroll;
+    margin: 0;
+    animation: gradient 15s ease infinite;
 }
 
 body {
     font-family: 'Exo', sans-serif;
-    background: linear-gradient(-45deg, var(--gradient-one), var(--gradient-two), var(--gradient-three), var(--gradient-four));
-    background-size: 120% 120%;
-    background-attachment: fixed;
-    animation: gradient 15s ease infinite;
-
-    overflow-x: hidden;
     margin: 0;
+    height: 100%;
     position: relative;
-    min-height: 100%;
-    height: auto;
     z-index: 0;
-
 }
+
+/* Scrollbar Track */
+::-webkit-scrollbar {
+    width: 0.4rem;  /* Width of the scrollbar */
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+    background-color: rgb(145, 114, 255);  /* Color of the scrollbar track */
+}
+
+::-webkit-scrollbar-corner {
+    background-color: transparent; /* Set the corner color to transparent */
+}
+
+/* Scrollbar Handle */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(-45deg, var(--gradient-one), var(--gradient-two), var(--gradient-three), var(--gradient-four));  /* Color of the scrollbar handle */
+    border-radius: 0.5rem;  /* Round corners of the scrollbar handle */
+    transition: all 0.25s ease-in-out;
+}
+
+
 
 @keyframes gradient {
     0% {
@@ -58,10 +75,7 @@ body {
   }
 
 .context {
-    margin: 0 auto;
     width: 100%;
-    padding-top: 2rem;
-    padding-bottom: 6rem;
     text-align: center;
     height: fit-content;
     z-index: 0;
@@ -72,10 +86,12 @@ body {
     color: rgb(0, 0, 0);
     border-radius: 2rem;
     padding: 1rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
     margin-left: auto;
     margin-right: auto;
     margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 4rem;
     font-size: 1.25rem;
     text-align: center;
     z-index: 5;
@@ -86,6 +102,7 @@ body {
     transition: all 0.25s ease-out;
     display: flex;
     flex-direction: column;
+    
 }
 
 .row {
@@ -100,6 +117,7 @@ body {
 @media (max-width: 850px) {
     .box {
         width: 90vw;
+        margin-bottom: 5rem;
     }
 }
 
@@ -148,11 +166,6 @@ body {
     transition: all 0.5s ease-in-out;
   }
 
-.box-inner {
-    position: relative;
-    transition: all 0.25s ease-out;
-}
-
 canvas {
     margin-top: 0.25rem;
     border: #23d57c;
@@ -162,18 +175,19 @@ canvas {
 }
 
 .footer {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     right: 0;
     left: 0;
     text-align: center;
-
+    backdrop-filter: blur(var(--blur-amt));
+    -webkit-backdrop-filter: blur(var(--blur-amt));
     background-color: var(--transparent-bg);
     color: rgb(0, 0, 0);
     padding: 1rem;
     font-size: 1rem;
 
-    z-index: 0;
+    z-index: 100;
 }
 
 .message-box {

@@ -40,11 +40,13 @@ const DEVICE_FW_MANIFEST_URLS =
     0xA003  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/manifest.json", // ProGCC 3+ (Haptic)
     0xA004  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/manifest.json", // ProGCC 3.1
 
-    0xB001  : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/manifest.json",  // SuperGamepad+
+    0xB001  : "https://raw.githubusercontent.com/HandHeldLegend/SuperGamepadPlus/master/FW/manifest.json",  // SuperGamepad+
     0xB002  : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/manifest.json",           // UniSNES
 
     0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json",       // GC Ultimate
     0xA00A  : "https://raw.githubusercontent.com/mitchellcairns/HOJA-ThingamaPro/master/manifest.json", // ThingamaPro (Esca)
+
+    0xD001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-Fightingbox-Mini/main/manifest.json", // Fightingbox mini (https://github.com/Fightingbox/Fightingbox-mini)
 
     0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/manifest.json"           // Phob 2.1
 }
