@@ -5,14 +5,15 @@ if (!navigator.serial && navigator.usb) navigator.serial = serial;
 const terminal = document.getElementById('terminal');
 
 function logToTerminal(message) {
-  if(terminal.textContent == '')
-  {
+  if (terminal.textContent == '') {
     terminal.textContent = message + '\n';
     return;
   }
   terminal.textContent += message + '\n';
   terminal.scrollTop = terminal.scrollHeight;
 }
+
+const filters = [{ usbVendorId: 0x1A86, usbProductId: 0x7522 }];
 
 const bootloaderUrl = "https:\/\/raw.githubusercontent.com\/HandHeldLegend\/HOJA-ESP32-Baseband\/master\/build\/bootloader\/bootloader.bin";
 const partitionTableURL = "https:\/\/raw.githubusercontent.com\/HandHeldLegend\/HOJA-ESP32-Baseband\/master\/build\/partition_table\/partition-table.bin";
@@ -50,158 +51,165 @@ const disconnectBtn = document.getElementById('disconnectBtn');
 const eraseBtn = document.getElementById('eraseBtn');
 const flashBtn = document.getElementById('flashBtn');
 
-function disableBtn(element)
-{
+function disableBtn(element) {
   element.setAttribute('disabled', 'true');
   element.delete
 }
 
-function enableBtn(element)
-{
+function enableBtn(element) {
   try {
     element.removeAttribute('disabled');
   } catch (error) {
-    
+
   }
 }
 
-// Add event listeners for buttons
-connectBtn.addEventListener('click', async () => {
-  logToTerminal('Connecting...');
-  // Add connect logic here
+document.addEventListener('DOMContentLoaded', (event) => {
+  let hasRun = false;
 
-  try {
-    if (device === null) {
-      device = await navigator.serial.requestPort({});
-      transport = new Transport(device, true);
-    }
+  if (!hasRun) {
+    // Add event listeners for buttons
+    connectBtn.addEventListener('click', async () => {
+      logToTerminal('Connecting...');
+      // Add connect logic here
 
-    const flashOptions = {
-      transport,
-      baudrate: globalBaudInt,
-      terminal: espLoaderTerminal,
-    };
+      try {
+        if (device === null) {
 
-    esploader = new ESPLoader(flashOptions);
-    chip = await esploader.main();
+          device = await navigator.serial.requestPort({ filters });
+          transport = new Transport(device, true);
+        }
 
-    // Temporarily broken
-    // await esploader.flashId();
-    
-    console.log("Settings done for :" + chip);
+        const flashOptions = {
+          transport,
+          baudrate: globalBaudInt,
+          terminal: espLoaderTerminal,
+        };
 
-    disableBtn(connectBtn);
-    enableBtn(flashBtn);
-    enableBtn(eraseBtn);
-    enableBtn(disconnectBtn);
+        esploader = new ESPLoader(flashOptions);
+        chip = await esploader.main();
 
-  } catch (e) {
-    console.error(e);
-    logToTerminal(`Error: ${e.message}`);
-  }
+        // Temporarily broken
+        // await esploader.flashId();
+
+        console.log("Settings done for :" + chip);
+
+        disableBtn(connectBtn);
+        enableBtn(flashBtn);
+        enableBtn(eraseBtn);
+        enableBtn(disconnectBtn);
+
+      } catch (e) {
+        console.error(e);
+        logToTerminal(`Error: ${e.message}`);
+      }
 
 
-});
+    });
 
-disconnectBtn.addEventListener('click', () => {
-  logToTerminal('Disconnecting does nothing. Reload the page.');
-  // Add disconnect logic here
-});
+    disconnectBtn.addEventListener('click', () => {
+      logToTerminal('Disconnecting does nothing. Reload the page.');
+      // Add disconnect logic here
+    });
 
-eraseBtn.addEventListener('click', async () => {
-  logToTerminal('Erasing...');
+    eraseBtn.addEventListener('click', async () => {
+      logToTerminal('Erasing...');
 
-  disableBtn(connectBtn);
-  disableBtn(flashBtn);
-  disableBtn(eraseBtn);
-  disableBtn(disconnectBtn);
-  // Add erase logic here
+      disableBtn(connectBtn);
+      disableBtn(flashBtn);
+      disableBtn(eraseBtn);
+      disableBtn(disconnectBtn);
+      // Add erase logic here
 
-  try {
-    await esploader.eraseFlash();
-  } catch (e) {
-    console.error(e);
-    logToTerminal(`Error: ${e.message}`);
-  } finally {
-    disableBtn(connectBtn);
-    enableBtn(flashBtn);
-    enableBtn(eraseBtn);
-    enableBtn(disconnectBtn);
-  }
-});
+      try {
+        await esploader.eraseFlash();
+      } catch (e) {
+        console.error(e);
+        logToTerminal(`Error: ${e.message}`);
+      } finally {
+        disableBtn(connectBtn);
+        enableBtn(flashBtn);
+        enableBtn(eraseBtn);
+        enableBtn(disconnectBtn);
+      }
+    });
 
-flashBtn.addEventListener('click', async () => {
-  logToTerminal('Flashing...');
-  // Add flash logic here
+    flashBtn.addEventListener('click', async () => {
+      logToTerminal('Flashing...');
+      // Add flash logic here
 
-  disableBtn(connectBtn);
-  disableBtn(flashBtn);
-  disableBtn(eraseBtn);
-  disableBtn(disconnectBtn);
-  
-  await fetchBinFileAsString(bootloaderUrl).then(data => {
-    if (data) {
-      logToTerminal('Got bootloader OK');
-      bootloader = data;
-    } else {
-      logToTerminal('Failed to fetch bootloader.');
-      return;
-    }
-  });
+      disableBtn(connectBtn);
+      disableBtn(flashBtn);
+      disableBtn(eraseBtn);
+      disableBtn(disconnectBtn);
 
-  await fetchBinFileAsString(partitionTableURL).then(data => {
-    if (data) {
-      logToTerminal('Got partition table OK');
-      partitionTable = data;
-    } else {
-      logToTerminal('Failed to fetch partition table.');
-      return;
-    }
-  });
+      await fetchBinFileAsString(bootloaderUrl).then(data => {
+        if (data) {
+          logToTerminal('Got bootloader OK');
+          bootloader = data;
+        } else {
+          logToTerminal('Failed to fetch bootloader.');
+          return;
+        }
+      });
 
-  await fetchBinFileAsString(firmwareURL).then(data => {
-    if (data) {
-      logToTerminal('Got firmware OK');
-      firmware = data;
-    } else {
-      logToTerminal('Failed to fetch firmware.');
-      return;
-    }
-  });
+      await fetchBinFileAsString(partitionTableURL).then(data => {
+        if (data) {
+          logToTerminal('Got partition table OK');
+          partitionTable = data;
+        } else {
+          logToTerminal('Failed to fetch partition table.');
+          return;
+        }
+      });
 
-  var fileArray = [];
-  
-  fileArray.push({ data: bootloader, address: bootloaderOffset });
-  fileArray.push({ data: partitionTable, address: partitionTableOffset });
-  fileArray.push({ data: firmware, address: firmwareOffset });
+      await fetchBinFileAsString(firmwareURL).then(data => {
+        if (data) {
+          logToTerminal('Got firmware OK');
+          firmware = data;
+        } else {
+          logToTerminal('Failed to fetch firmware.');
+          return;
+        }
+      });
 
-  try {
-    const flashOptions = {
-      fileArray: fileArray,
-      flashSize: "keep",
-      eraseAll: false,
-      compress: true,
-      reportProgress: (fileIndex, written, total) => {
-       logToTerminal(String((written / total) * 100));
-        //progressBars[fileIndex].value = 
-      },
-    };
-    await esploader.writeFlash(flashOptions);
-  } catch (e) {
-    console.error(e);
-    logToTerminal(`Error: ${e.message}`);
-  } finally {
-    // Hide progress bars and show erase buttons
-    //for (let index = 1; index < table.rows.length; index++) {
-    //  table.rows[index].cells[2].style.display = "none";
-    //  table.rows[index].cells[3].style.display = "initial";
-    //}
-    logToTerminal(`Flashing is complete.\nPlease unplug your controller to finish the update.`);
+      var fileArray = [];
 
-    disableBtn(connectBtn);
-    enableBtn(flashBtn);
-    enableBtn(eraseBtn);
-    enableBtn(disconnectBtn);
+      fileArray.push({ data: bootloader, address: bootloaderOffset });
+      fileArray.push({ data: partitionTable, address: partitionTableOffset });
+      fileArray.push({ data: firmware, address: firmwareOffset });
+
+      try {
+        const flashOptions = {
+          fileArray: fileArray,
+          flashSize: "keep",
+          eraseAll: false,
+          compress: true,
+          reportProgress: (fileIndex, written, total) => {
+            logToTerminal(String((written / total) * 100));
+            //progressBars[fileIndex].value = 
+          },
+        };
+        await esploader.writeFlash(flashOptions);
+      } catch (e) {
+        console.error(e);
+        logToTerminal(`Error: ${e.message}`);
+      } finally {
+        // Hide progress bars and show erase buttons
+        //for (let index = 1; index < table.rows.length; index++) {
+        //  table.rows[index].cells[2].style.display = "none";
+        //  table.rows[index].cells[3].style.display = "initial";
+        //}
+        logToTerminal(`Flashing is complete.\nPlease unplug your controller to finish the update.`);
+
+        disableBtn(connectBtn);
+        enableBtn(flashBtn);
+        enableBtn(eraseBtn);
+        enableBtn(disconnectBtn);
+      }
+    });
+
+    hasRun = true;
   }
 });
 
@@ -229,6 +237,5 @@ async function fetchBinFileAsString(url) {
     throw error; // Re-throw the error for the caller to handle
   }
 }
-  
-  
-  
+
+

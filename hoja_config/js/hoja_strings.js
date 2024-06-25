@@ -38,8 +38,9 @@ var eng_strings = {
     twitter: 'Twitter',
     discord: 'Discord',
     basebandMsg1: 'Bluetooth Baseband Updater',
-    basebandMsg2: 'Connect your device, then click the button below to enter Baseband update mode. Next, hit the Install button and select the USB COM port.',
+    basebandMsg2: 'Connect your device, then click the button below to enter Baseband update mode. Next, click the button and open the baseband page. Follow the instructions to update your device.',
     baseband: 'Baseband',
+    basebandOpen: 'Open Update Page',
     fwMsgInitTitle: 'FW Initializer',
     get: 'Get',
     octoAdjustTitle: "Cardinal Adjustment",
@@ -61,6 +62,10 @@ var eng_strings = {
 var jp_strings = {
     title: '「HOJA」ファームウェア設定',
     install: 'アプリをインストール',
+    basebandMsg1: 'Bluetoothベースバンドアップデーター',
+    basebandMsg2: 'デバイスを接続してから、以下のボタンをクリックしてベースバンドアップデートモードに入ります。次に、ボタンをクリックしてベースバンドページを開きます。指示に従ってデバイスを更新してください。',
+    baseband: 'ベースバンド',
+    basebandOpen: 'アップデートページを開く',
     connect: '接続',
     disconnect: '切断',
     save: '保存',
@@ -105,13 +110,13 @@ var jp_strings = {
     hwtestTitle: "ハードウェアテスト",
     hwtestDesc: "サポートされているデバイスでハードウェアテストを開始するには、開始ボタンを押してください。結果が完了すると、合格したテストが以下に表示されます。",
     epilepsyWarning: "<b>発作注意：</b><br>アニメーションカラーモードは、光過敏性発作を持つ人に発作を引き起こす可能性があります。",
-    test: 'Test',
-    systemTitle: 'System',
-    defaultMode: 'Boot Mode',
-    deadzoneInner: 'Center Deadzone',
-    deadzoneOuter: 'Edge Deadzone',
-    triggerTitle: 'Triggers',
-    triggerDesc: 'Test and calibrate the analog triggers.'
+    test: 'テスト',
+    systemTitle: 'システム',
+    defaultMode: 'ブートモード',
+    deadzoneInner: '中央デッドゾーン',
+    deadzoneOuter: 'エッジデッドゾーン',
+    triggerTitle: 'トリガー',
+    triggerDesc: 'アナログトリガーをテストしてキャリブレーションします。',
 };
 
 let en_radio = document.getElementById("lang_en");

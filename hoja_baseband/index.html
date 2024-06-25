@@ -1,35 +1,13 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Device Control Interface</title><style>body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    #container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    button {
-      margin: 10px 5px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #ddd;
-    }
-    #terminal {
-      background: black;
-      color: lime;
+<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/x-icon" href="images/favicon.ico"><meta http-equiv="X-UA-Compatible" content="ie=edge"><link rel="stylesheet" href="/css/style.css"><title>HOJA Baseband Updater</title><style>#terminal {
+      background: rgba(46, 7, 0, 0.514);
+      color: rgb(147, 250, 147);
+      margin-top: 1rem;
       padding: 10px;
       border-radius: 5px;
-      height: 300px;
+      height: 30rem;
       overflow-y: auto;
       white-space: pre-wrap;
-    }</style><script defer="defer" src="bundle.js"></script></head><body><div id="container"><button id="connectBtn">Connect</button> <button id="disconnectBtn">Disconnect</button> <button id="eraseBtn">Erase</button> <button id="flashBtn">Flash</button><div id="terminal"></div></div></body></html>
+      font-size: small;
+      text-align: left;
+      font-family: system-ui;
+    }</style><script defer="defer" src="bundle.js"></script><script defer="defer" src="bundle.js"></script></head><body><div class="context"><ul class="circles"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><h1>HOJA Baseband Updater</h1></div><div class="box"><h2>Steps to update:</h2><p>1. Click connect and select the USB Serial device.</p><p>2. Click `Erase` and wait for the confirmation.</p><p>3. Click `Flash` and the installation will proceed.</p><div class="row"><button id="connectBtn">Connect</button> <button id="disconnectBtn">Disconnect</button> <button id="eraseBtn">Erase</button> <button id="flashBtn">Flash</button></div><div id="terminal"></div></div></body></html>

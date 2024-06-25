@@ -1,0 +1,7 @@
+This is the folder which you can use to build the hoja baseband flasher tool page with NPM.
+Run
+npm install
+then
+npm run build
+
+cheers
