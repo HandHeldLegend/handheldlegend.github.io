@@ -48,3 +48,9 @@ async function system_mode_set_value(mode)
     var dataOut = new Uint8Array([WEBUSB_CMD_BOOTMODE_SET, mode]);
     await device.transferOut(2, dataOut);
 }
+
+async function system_battery_status_get_value()
+{
+    var dataOut = new Uint8Array([WEBUSB_CMD_BATTERY_STATUS_GET]);
+    await device.transferOut(2, dataOut);
+}

@@ -35,6 +35,9 @@ async function config_get_chain(cmd) {
     else if (cmd== WEBUSB_CMD_DEADZONE_GET) {
         await system_mode_get_value();
     }
+    else if (cmd== WEBUSB_CMD_BOOTMODE_GET) {
+        await system_battery_status_get_value();
+    }
 }
 
 /** This code works only on properly formatted PWAs **/
@@ -181,6 +184,11 @@ async function handle_input_report(result) {
         case WEBUSB_CMD_BOOTMODE_GET:
             console.log("Got user boot mode.");
             system_mode_place(result.data);
+            break;
+
+        case WEBUSB_CMD_BATTERY_STATUS_GET:
+            console.log("Got battery status.");
+            console.log(result.data.getUint8(1), "% Battery");
             break;
     }
 
