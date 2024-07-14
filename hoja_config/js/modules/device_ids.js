@@ -1,6 +1,6 @@
 const HOJA_BACKEND_VERSION = 0x0001; // Current backend firmware (Old called settings version)
 
-const HOJA_BASEBAND_VERSION = 0xA00D; // Current BT Modem firmware
+const HOJA_BASEBAND_VERSION = 0xA00E; // Current BT Modem firmware
 
 const INIT_INSTRUCTIONS = 
 {
@@ -43,7 +43,8 @@ const DEVICE_FW_MANIFEST_URLS =
     0xB001  : "https://raw.githubusercontent.com/HandHeldLegend/SuperGamepadPlus/master/FW/manifest.json",  // SuperGamepad+
     0xB002  : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/manifest.json",           // UniSNES
 
-    0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json",       // GC Ultimate
+    0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json",       // GC Ultimate PROTOTYPE
+    0xC002  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/manifest.json",       // GC Ultimate R4
     0xA00A  : "https://raw.githubusercontent.com/mitchellcairns/HOJA-ThingamaPro/master/manifest.json", // ThingamaPro (Esca)
 
     0xD001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-Fightingbox-Mini/main/manifest.json", // Fightingbox mini (https://github.com/Fightingbox/Fightingbox-mini)
@@ -61,6 +62,7 @@ const FW_UPDATE_URLS =
     0xB001 : "https://github.com/mitchellcairns/SuperGamepadPlus/raw/master/FW/build/SUPERGAMEPAD_RP2040.uf2",      // SuperGamepad+
     0xB002 : "https://github.com/HandHeldLegend/UniSNES/raw/master/FW/build/UNISNES_RP2040.uf2",                    // UniSNES
     0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_RP2040.uf2", // GC Ultimate
+    0xC002  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_RP2040.uf2", // GC Ultimate R4,
     0xA00A : "https://github.com/mitchellcairns/HOJA-ThingamaPro/raw/master/build/THINGAMAPRO_RP2040.uf2",          // ThingamaPro
 
     0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.uf2"             // Phob 2.1
