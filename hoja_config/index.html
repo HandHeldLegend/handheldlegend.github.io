@@ -692,6 +692,20 @@
               </div>
               <div class="line"></div>
             </div>
+            <br>
+            <div class="full-width">
+              <p>Disable Triggers</p>
+              <div class="row">
+                <div class="invert_container">
+                  <input type="checkbox" id="lt_disable" name="lt_disable_" onchange="triggers_set_disabled(0, this.checked)">
+                  <label for="lt_disable">Left</label>
+
+                  <input type="checkbox" id="rt_disable" name="rt_disable_" onchange="triggers_set_disabled(1, this.checked)">
+                  <label for="rt_disable">Right</label>
+                </div>
+              </div>
+            </div>
+
             <div class="row">
               <button type="button" id="start_triggercalibration_button" onclick="triggers_start_calibration()">{start}</button>
               <button type="button" id="stop_triggercalibration_button" onclick="triggers_stop_calibration()"

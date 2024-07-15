@@ -38,6 +38,9 @@ async function config_get_chain(cmd) {
     else if (cmd== WEBUSB_CMD_BOOTMODE_GET) {
         await system_battery_status_get_value();
     }
+    else if (cmd== WEBUSB_CMD_BATTERY_STATUS_GET) {
+        await triggers_get_disabled();
+    }
 }
 
 /** This code works only on properly formatted PWAs **/
@@ -87,6 +90,11 @@ function showToast(message, duration = 2000) {
 
 async function handle_input_report(result) {
     switch (result.data.getUint8(0)) {
+
+        case WEBUSB_CMD_TRIGGER_CALIBRATION_GET:
+            console.log("Got trigger disabled values.");
+            triggers_place_disabled(result.data);
+            break;
 
         case WEBUSB_CMD_DEBUG_REPORT:
             for(i = 0; i < result.data.getUint8(1); i++)
