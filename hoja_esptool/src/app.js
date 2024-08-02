@@ -22,7 +22,7 @@ const bootloaderOffset = 4096;
 const partitionTableOffset = 32768;
 const firmwareOffset = 65536;
 
-const globalBaudInt = 115200;
+var globalBaudInt = 460800;
 
 var bootloader = null;
 var partitionTable = null;
@@ -68,13 +68,31 @@ document.addEventListener('DOMContentLoaded', (event) => {
   let hasRun = false;
 
   if (!hasRun) {
+    hasRun = true;
+    // Get baud if we want to change it
+    // Check if 'baud' parameter is set to 'true'
+    // Create a new URL object from the current page's URL
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Get the value of the 'debug' parameter
+    var debug = urlParams.has('baud');
+    if (debug) {
+        console.log("Has custom baud: ");
+        globalBaudInt = urlParams.get('baud');
+        console.log(globalBaudInt);
+    }
+    else
+    {
+        console.log("No custom baud setting.");
+    }
+
     // Add event listeners for buttons
     connectBtn.addEventListener('click', async () => {
       logToTerminal('Connecting...');
       // Add connect logic here
 
       try {
-        if (device === null) {
+        if (device == null) {
 
           device = await navigator.serial.requestPort({ filters });
           transport = new Transport(device, true);
