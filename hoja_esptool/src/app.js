@@ -64,9 +64,9 @@ function enableBtn(element) {
   }
 }
 
+let hasRun = false;
 document.addEventListener('DOMContentLoaded', (event) => {
-  let hasRun = false;
-
+  
   if (!hasRun) {
     hasRun = true;
     // Get baud if we want to change it
