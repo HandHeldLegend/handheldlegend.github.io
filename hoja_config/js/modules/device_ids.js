@@ -33,6 +33,8 @@ const INIT_INSTRUCTIONS =
     `
 }
 
+const DEVICE_BT_FW_MANIFEST_URL = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
+
 const DEVICE_FW_MANIFEST_URLS = 
 {
     0xA001  : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/manifest.json",

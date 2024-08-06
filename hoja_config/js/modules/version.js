@@ -90,6 +90,25 @@ function _version_get_manifest_data(id)
       });
 }
 
+function _version_get_baseband_manifest_data()
+{
+    var jsonUrl = DEVICE_BT_FW_MANIFEST_URL;
+
+    return fetch(jsonUrl)
+      .then((response) => {
+        if (!response.ok) {
+          offline_indicator_enable(true, "Github Network Error");
+          throw new Error(`Network response was not ok: ${response.status}`);
+        }
+        offline_indicator_enable(false);
+        return response.json();
+      })
+      .catch((error) => {
+        offline_indicator_enable(true, "JSON Parse Error");
+        console.error('Error fetching and parsing JSON:', error);
+      });
+}
+
 function version_read_id()
 {
     return _device_id;
@@ -186,21 +205,25 @@ function _version_baseband_is_up_to_date()
     {
         if(network_is_available())
         {
-            if(_baseband_version > HOJA_BASEBAND_VERSION)
-            {
-                console.log("Device baseband is newer than release.");
-                return true;
-            }
-            else if(_baseband_version == HOJA_BASEBAND_VERSION)
-            {
-                console.log("Device baseband is up to date.");
-                _version_baseband_enable_notification(false);
-            }
-            else
-            {
-                console.log("Device baseband is out of date.");
-                _version_baseband_enable_notification(true);
-            }
+            _version_get_baseband_manifest_data()
+            .then((manifest) => {
+                if (manifest.fw_version < _baseband_version)
+                {
+                    console.log("Device baseband is newer than release.");
+                    _version_baseband_enable_notification(false);
+                }
+                else if (manifest.fw_version == _baseband_version)
+                {
+                    console.log("Device baseband is up to date.");
+                    _version_baseband_enable_notification(false);
+                }
+                else 
+                {
+                    console.log("Device baseband is out of date.");
+                    _version_baseband_enable_notification(true);
+                }
+
+            });
         }
         else
         {
