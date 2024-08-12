@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hoja-pwa-cache-v46';
+const CACHE_NAME = 'hoja-pwa-cache-v47';
 
 const root_css_url = 'https://handheldlegend.github.io/css/'
 
@@ -16,6 +16,7 @@ const urlsToCache = [
     'js/svg-loader.min.js',
     'js/iro.min.js',
 
+    'js/modules/pico_update.js',
     'js/modules/analog_stick.js',
     'js/modules/capabilities.js',
     'js/modules/color_settings.js',

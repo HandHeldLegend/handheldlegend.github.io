@@ -25,7 +25,7 @@ var eng_strings = {
     fwMsg1: 'Your device is out of date!',
     fwMsg2: 'Click the button below to reset your controller to FW update mode.',
     fwInstall: 'Next, click the button below to download the latest firmware. Copy the .uf2 file to the RPI-RP2 device shown in your file manager.',
-    download: 'Download',
+    download: 'Install',
     bootloader: 'Bootloader',
     gamecubeTitle: 'GameCube SP Function',
     gamecubeDesc: 'Select the function for SP mapping.',

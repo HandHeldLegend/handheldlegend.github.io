@@ -100,7 +100,7 @@ function color_page_init() {
     var els = document.querySelectorAll('.svgButtonClickable');
 
     els.forEach(function (element) {
-        console.log(element.id);
+        //console.log(element.id);
         
         element.addEventListener('click', function () {
             color_button_clicked(element.id);
@@ -110,7 +110,7 @@ function color_page_init() {
     var els = document.querySelectorAll('.triggerColorBtn');
 
     els.forEach(function (element) {
-        console.log(element.id);
+        //console.log(element.id);
         
         element.addEventListener('click', function () {
             color_button_clicked(element.id);
