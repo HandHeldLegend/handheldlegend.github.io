@@ -69,9 +69,6 @@ function _version_replace_strings(id, changelog) {
     console.log("Get changelog for " + id);
     var e = document.getElementById("fwChangeLog");
     e.innerHTML = changelog;
-
-    var f = document.getElementById("downloadLink");
-    f.setAttribute('href', FW_UPDATE_URLS[id]);
 }
 
 function _version_get_manifest_data(id) {
