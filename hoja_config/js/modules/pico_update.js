@@ -124,6 +124,7 @@ async function pico_update_attempt_flash(url, checksum)
 {
     let binData = null;
     // First, try to download the appropriate file
+    let gotBinOK = false;
     try {
         // Fetch the binary file
         const response = await fetch(url);
@@ -142,15 +143,16 @@ async function pico_update_attempt_flash(url, checksum)
         if(calculatedChecksum.toLowerCase() === checksum.toLowerCase())
         {
             console.log("Bin retrieved and file verified...");
+            gotBinOK = true;
         }
         else
         {
             console.error("BIN checksum failure");
-            return false;
+            gotBinOK = false;
         }
     } catch (error) {
         console.error('Error verifying checksum:', error);
-        return false;
+        gotBinOK = false;
     }
 
 
@@ -166,10 +168,19 @@ async function pico_update_attempt_flash(url, checksum)
             return false;
         }
 
-        await markExclusive(true);
+        if(gotBinOK)
+        {
+            await markExclusive(true);
 
-        // Flash the firmware
-        await writeFlash(binData, binData.byteLength);
+            showToast("Updating...");
+
+            // Flash the firmware
+            await writeFlash(binData, binData.byteLength);
+        }
+        else
+        {
+            showToast("Failed to get FW file. Continue to reboot.");
+        }
 
         // Reboot the device
         await rebootDevice();
