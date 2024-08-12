@@ -131,8 +131,13 @@
             </div>
           </div>
           <div class="full-width">
-            <h2>USB Firmware</h2>
+            <h2>Reset to Bootloader</h2>
             <button type="button" id="fwButton" onclick="version_reset_to_bootloader()">{bootloader}</button>
+          </div>
+
+          <div class="full-width">
+            <h2>Exit Bootloader</h2>
+            <button type="button" id="fwButton" onclick="pico_exit_bootloader_attempt()">Exit</button>
           </div>
 
           <div class="full-width">
@@ -141,6 +146,12 @@
           <div class="full-width">
             <h2>Bluetooth Firmware</h2>
             <button type="button" id="basebandButton" onclick="version_reset_to_baseband()">{baseband}</button>
+          </div>
+
+          <div class="full-width">
+            <h2>Baseband Page</h2>
+              <button type="button"
+                onclick="window.open('https:/\/\/handheldlegend.github.io/hoja_baseband', '_blank')">{basebandOpen}</button>
           </div>
 
         </div>

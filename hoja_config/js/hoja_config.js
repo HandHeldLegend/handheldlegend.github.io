@@ -290,23 +290,6 @@ async function connectButton() {
         enableDisconnect(true);
         listen();
 
-
-        // Optionally enable debug menu
-        // Check if 'debug' parameter is set to 'true'
-        // Create a new URL object from the current page's URL
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // Get the value of the 'debug' parameter
-        var debug = urlParams.has('debug');
-        if (debug) {
-            console.log("Has debug");
-            enable_dropdown_element("debug_collapsible", true);
-        }
-        else
-        {
-            console.log("No debug setting.");
-        }
-
     }
     catch (error) {
         window.alert("Please connect a valid HOJA gamepad device.");
@@ -351,6 +334,22 @@ function enableDisconnect(enable) {
 
 color_page_picker_init();
 //enable_all_menus(false);
+
+// Optionally enable debug menu
+// Check if 'debug' parameter is set to 'true'
+// Create a new URL object from the current page's URL
+const urlParams = new URLSearchParams(window.location.search);
+
+// Get the value of the 'debug' parameter
+var debug = urlParams.has('debug');
+if (debug) {
+    console.log("Has debug");
+    enable_dropdown_element("debug_collapsible", true);
+}
+else
+{
+    console.log("No debug setting.");
+}
 
 function notifyUserToUpdate() {
     console.log("Update notif sent.");

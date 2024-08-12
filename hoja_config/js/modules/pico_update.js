@@ -118,6 +118,29 @@ class PicobootCmd {
     }
 }
 
+async function pico_exit_bootloader_attempt()
+{
+    console.log("Attempting pico bootloader exit.");
+
+    try {
+        picoDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: VID, productId: PID }] });
+        await picoDevice.open();
+
+        // Find and claim the specific interface
+        await findAndClaimInterface(picoDevice);
+
+        // Reboot the device
+        await rebootDevice();
+
+        document.getElementById('status').innerText = 'Flashing complete. Device rebooted.';
+
+        return true;
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('status').innerText = `Error: ${error.message}`;
+    }
+}
+
 // Pass through our file data
 // BIN format only!
 async function pico_update_attempt_flash(url, checksum)
