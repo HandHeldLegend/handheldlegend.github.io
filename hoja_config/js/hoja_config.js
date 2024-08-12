@@ -372,6 +372,18 @@ if ('serviceWorker' in navigator) {
         .then(registration => {
             console.log('Service Worker registered with scope:', registration.scope);
 
+            // Function to check caches
+            function checkCaches() {
+                if (registration.active) {
+                    registration.active.postMessage({type: 'CHECK_CACHES'});
+                    console.log('Sent cache check message to Service Worker');
+                }
+                else console.err("registration not active");
+            }
+
+            // Check caches immediately after registration
+            checkCaches();
+
             // Listen for a message from the service worker
             registration.addEventListener('updatefound', function () {
                 // If there's an updated service worker waiting
@@ -385,6 +397,12 @@ if ('serviceWorker' in navigator) {
                 }
             });
 
+            // Check caches when the page becomes visible
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    checkCaches();
+                }
+            });
         })
         .catch(err => {
             console.log('Service Worker registration failed:', err);

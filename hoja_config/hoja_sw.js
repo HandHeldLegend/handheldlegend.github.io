@@ -1,4 +1,5 @@
-const CACHE_NAME = 'hoja-pwa-cache-v51';
+const CACHE_VERSION = 'v1';
+const CACHE_NAME = `hoja-site-cache-${CACHE_VERSION}`;
 
 const root_css_url = 'https://handheldlegend.github.io/css/'
 
@@ -18,6 +19,7 @@ const urlsToCache = [
 
     'js/modules/pico_update.js',
     'js/modules/analog_stick.js',
+    'js/modules/analog_triggers.js',
     'js/modules/capabilities.js',
     'js/modules/color_settings.js',
     'js/modules/device_ids.js',
@@ -30,6 +32,8 @@ const urlsToCache = [
     'js/modules/system.js',
     'js/modules/version.js',
     'js/modules/vibration.js',
+    'js/esp/install-button.js',
+
 
     'svg/procontroller.svg',
     'svg/snescontroller.svg',
@@ -40,88 +44,137 @@ const urlsToCache = [
     //'/css/spooky/jak3.svg',
   
     // Favicon
-    //'/images/favicon.ico',
+    'images/favicon.ico',
+    'images/icon_transparent.png',
   
     // CSS Files
     '/css/style.css',
+    '/css/root.css',
+    '/css/spooky/spooky.css',
+    '/css/sliderPicker.css',
+    '/css/radioPicker.css',
+    '/css/containers.css',
+
     'css/hojaConfig.css',
     'css/hojaColor.css',
     'css/hojaAnalog.css',
     'css/hojaRemap.css',
-    '/css/sliderPicker.css',
-    '/css/radioPicker.css',
-    '/css/containers.css',
+    'css/hojaTrigger.css',
+    
   ];
   
+  // Function to check and manage caches
+  async function checkAndManageCaches() {
+    console.log('Checking caches...');
+    const cacheNames = await caches.keys();
+    const outdatedCaches = cacheNames.filter(name => name !== CACHE_NAME);
+    
+    await Promise.all(outdatedCaches.map(async (cacheName) => {
+      console.log(`Deleting outdated cache: ${cacheName}`);
+      await caches.delete(cacheName);
+    }));
+  
+    console.log('Cache check complete');
+  }
 
-self.addEventListener('install', event => {
-  // Perform the install steps
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
 
-        caches.keys().then(cacheNames => {
+  self.addEventListener('install', event => {
+    event.waitUntil(
+      checkAndManageCaches()
+        .then(() => caches.open(CACHE_NAME))
+        .then(cache => {
+          console.log(`Opened cache: ${CACHE_NAME}`);
           return Promise.all(
-              cacheNames.map(cache => {
-                  if (cache !== CACHE_NAME) {
-                      console.log("Deleting stale cache (Install).");
-                      var s = caches.delete(cache);
-                      return s;
-                  }
-              })
+            urlsToCache.map(url => {
+              return cache.add(url)
+                .then(() => console.log(`Successfully cached: ${url}`))
+                .catch(error => {
+                  console.error(`Failed to cache: ${url}`);
+                  console.error(`Error: ${error.message}`);
+                  // Don't reject the promise, just log the error
+                  return Promise.resolve();
+                });
+            })
           );
-      })
+        })
+        .then(() => console.log('All available items have been cached successfully'))
+        .catch(error => {
+          console.error('Cache installation encountered an error');
+          console.error(`Error: ${error.message}`);
+          // Don't throw the error, allow installation to continue
+        })
+        .then(() => self.skipWaiting()) // Force the waiting service worker to become active
+    );
+  });
 
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
-  );
-});
+  self.addEventListener('activate', event => {
+    event.waitUntil(
+      checkAndManageCaches()
+        .then(() => {
+          console.log('Caches have been checked and managed');
+          // Ensure that the new service worker becomes active immediately
+          return self.clients.claim();
+        })
+        .then(() => {
+          // Optionally, you can send a message to all clients about the update
+          return self.clients.matchAll().then(clients => {
+            return Promise.all(clients.map(client => {
+              return client.postMessage({ type: 'CACHE_UPDATED' });
+            }));
+          });
+        })
+    );
+  });
 
-self.addEventListener('activate', event => {
-  // Clean up old caches
-  event.waitUntil(
-      caches.keys().then(cacheNames => {
-          return Promise.all(
-              cacheNames.map(cache => {
-                  if (cache !== CACHE_NAME) {
-                      console.log("Deleting stale cache (Activate).");
-                      return caches.delete(cache);
-                  }
-              })
-          );
-      })
-  );
-});
-
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return the response from the cached version
-        if (response) {
-          return response;
-        }
-
-        // If not found in cache, fetch from network
-        return fetch(event.request).then(
-          response => {
-            // Check if we received a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
+  self.addEventListener('fetch', event => {
+    // Check if the request URL is supported for caching
+    if (event.request.url.startsWith('http') || event.request.url.startsWith('https')) {
+      event.respondWith(
+        checkAndManageCaches().then(() => {
+          return caches.match(event.request)
+            .then(response => {
+              // Cache hit - return response
+              if (response) {
+                return response;
+              }
+  
+              // Clone the request. A request is a stream and can only be consumed once.
+              const fetchRequest = event.request.clone();
+  
+              return fetch(fetchRequest).then(response => {
+                // Check if we received a valid response
+                if (!response || response.status !== 200 || response.type !== 'basic') {
+                  return response;
+                }
+  
+                // Clone the response. A response is a stream and can only be consumed once.
+                const responseToCache = response.clone();
+  
+                caches.open(CACHE_NAME)
+                  .then(cache => {
+                    cache.put(event.request, responseToCache);
+                    console.log(`Cached resource: ${event.request.url}`);
+                  })
+                  .catch(error => {
+                    console.error(`Failed to cache resource: ${event.request.url}`);
+                    console.error(`Error: ${error.message}`);
+                  });
+  
+                return response;
               });
+            });
+        })
+      );
+    } else {
+      // For non-HTTP(S) requests, just fetch without trying to cache
+      console.log(`Skipping cache for non-HTTP(S) request: ${event.request.url}`);
+      event.respondWith(fetch(event.request));
+    }
+  });
 
-            return response;
-          }
-        );
-      })
-  );
+  // Listen for messages from the client
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'CHECK_CACHES') {
+    event.waitUntil(checkAndManageCaches());
+  }
 });
