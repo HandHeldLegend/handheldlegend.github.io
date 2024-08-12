@@ -174,10 +174,31 @@ canvas {
     box-shadow: var(--box-shadow);
 }
 
+
+#footer-wrench-svg {
+    position: fixed;
+    left: 1rem;
+    margin-top: auto;
+    top: 15%;
+    margin-left: 0;
+    height: 2rem;
+    background-color: rgba(221, 127, 127, 0.562);
+    border-radius: 0.2rem;
+    padding: 0.1rem;
+    transition: all 0.25s ease-in-out;
+}
+
+#footer-wrench-svg:hover {
+    cursor: pointer;
+    background-color: rgba(102, 56, 56, 0.514);
+    transition: all 0.25s ease-in-out;
+}
+
 .footer {
     position: fixed;
     bottom: 0;
     right: 0;
+    
     left: 0;
     text-align: center;
     backdrop-filter: blur(var(--blur-amt));
@@ -185,6 +206,7 @@ canvas {
     background-color: var(--transparent-bg);
     color: rgb(0, 0, 0);
     padding: 1rem;
+    padding-left: 4rem;
     font-size: 1rem;
 
     z-index: 100;

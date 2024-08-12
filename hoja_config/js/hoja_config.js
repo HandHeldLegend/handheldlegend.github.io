@@ -5,6 +5,25 @@ let disconnectButtonElement = document.getElementById("disconnectButton");
 let menuToggles = document.getElementsByClassName("toggle");
 let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
+let debugWrench = document.getElementById("footer-wrench-svg");
+
+function debugWrenchClick()
+{
+    // Get the current URL
+    var currentUrl = window.location.href;
+
+    // Check if the URL already has query parameters
+    if (currentUrl.indexOf('?') === -1) {
+        // No query parameters, add ?debug
+        window.location.href = currentUrl + '?debug';
+    } else if (currentUrl.indexOf('?debug') === -1) {
+        // Query parameters exist, but ?debug is not present
+        window.location.href = currentUrl + '&debug';
+    } else {
+        // ?debug is already present, just refresh the page
+        window.location.reload();
+    }
+}
 
 // Gets the config items in a set order
 async function config_get_chain(cmd) {

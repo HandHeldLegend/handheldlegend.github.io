@@ -1,5 +1,5 @@
 var eng_strings = {
-    title: 'HOJA Firmware Config',
+    title: 'Hoja Firmware Config',
     install: 'Install App',
     connect: 'Connect',
     disconnect: 'Disconnect',
@@ -60,7 +60,7 @@ var eng_strings = {
 };
 
 var jp_strings = {
-    title: '「HOJA」ファームウェア設定',
+    title: '「Hoja」ファームウェア設定',
     install: 'アプリをインストール',
     basebandMsg1: 'Bluetoothベースバンドアップデーター',
     basebandMsg2: 'デバイスを接続してから、以下のボタンをクリックしてベースバンドアップデートモードに入ります。次に、ボタンをクリックしてベースバンドページを開きます。指示に従ってデバイスを更新してください。',

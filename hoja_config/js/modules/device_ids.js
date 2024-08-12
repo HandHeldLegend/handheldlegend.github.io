@@ -55,17 +55,17 @@ const DEVICE_FW_MANIFEST_URLS =
 
 const FW_UPDATE_URLS = 
 {
-    0xA001 : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/build/PROGCC_RP2040.bin",                 // ProGCC 3
-    0xA002 : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/build/PROGCCPLUS_ERM_RP2040.bin",      // ProGCC 3+
-    0xA004 : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/build/PROGCC3.1_RP2040.bin",           // ProGCC 3.1
+    0xA001 : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-RP2040/main/build/PROGCC_RP2040",                 // ProGCC 3
+    0xA002 : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/build/PROGCCPLUS_ERM_RP2040",      // ProGCC 3+
+    0xA004 : "https://raw.githubusercontent.com/HandHeldLegend/ProGCC-V3-Plus/master/FW/build/PROGCC3.1_RP2040",           // ProGCC 3.1
 
-    0xB001 : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/build/SUPERGAMEPAD_RP2040.bin",      // SuperGamepad+
-    0xB002 : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/build/UNISNES_RP2040.bin",                    // UniSNES
-    0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_RP2040.bin", // GC Ultimate
-    0xC002  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_R4_RP2040.bin", // GC Ultimate R4,
-    0xA00A : "https://raw.githubusercontent.com/mitchellcairns/HOJA-ThingamaPro/master/build/THINGAMAPRO_RP2040.bin",          // ThingamaPro
+    0xB001 : "https://raw.githubusercontent.com/mitchellcairns/SuperGamepadPlus/master/FW/build/SUPERGAMEPAD_RP2040",      // SuperGamepad+
+    0xB002 : "https://raw.githubusercontent.com/HandHeldLegend/UniSNES/master/FW/build/UNISNES_RP2040",                    // UniSNES
+    0xC001  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_RP2040", // GC Ultimate
+    0xC002  : "https://raw.githubusercontent.com/HandHeldLegend/GC-Ultimate/master/FW/build/GCULTIMATE_R4_RP2040", // GC Ultimate R4,
+    0xA00A : "https://raw.githubusercontent.com/mitchellcairns/HOJA-ThingamaPro/master/build/THINGAMAPRO_RP2040",          // ThingamaPro
 
-    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB.bin"             // Phob 2.1
+    0xF001  : "https://raw.githubusercontent.com/HandHeldLegend/HOJA-PHOB-2.1/main/build/HOJA-PHOB"             // Phob 2.1
 };
 
 function devices_firmware_initialization_check()

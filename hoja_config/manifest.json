@@ -1,12 +1,12 @@
 {
-  "name": "HOJA Config Tool",
+  "name": "Hoja Config Tool",
   "short_name": "HOJA",
   "start_url": "/hoja_config/index.html",
   "display": "standalone",
   "background_color": "#22172b",
   "theme_color": "black",
   "scope": ".",
-  "description": "This is a tool to configure your HOJA enabled gamepad.",
+  "description": "This is a tool to configure Hoja gamepads.",
   "icons": [
     {
       "src": "images/icon_transparent.png",

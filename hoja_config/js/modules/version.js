@@ -7,6 +7,8 @@ let _firmwareButtonElement = document.getElementById("fwButtonInstall");
 let _firmwareBoxElement = document.getElementById("ood");
 let _basebandBoxElement = document.getElementById("baseband-box");
 let _basebandButtonElement = document.getElementById("basebandButton");
+let _firmwareDownloadElement = document.getElementById("downloadLink");
+let _fwUpdateTextElement = document.getElementById("fwInstallText");
 
 // Resets HOJA device into baseband update mode
 async function version_reset_to_baseband() {
@@ -37,6 +39,10 @@ function _version_baseband_enable_notification(enable) {
     }
 }
 
+function _isAndroid() {
+    return navigator.userAgent.indexOf('Android') !== -1;
+}
+
 function _version_firmware_enable_notification(enable, device_id, checksum) {
     // Remove all existing click event listeners
     const oldElement = _firmwareButtonElement.cloneNode(true);
@@ -51,11 +57,39 @@ function _version_firmware_enable_notification(enable, device_id, checksum) {
 
         let firmwareURL = FW_UPDATE_URLS[device_id];
 
+        let androidText = "Click the button below to install the newest firmare. The controller will reboot when the update is completed.";
+        let otherText = "Click the button below to download the latest .uf2 firmware file. Save this file to the RPI-RP2 USB drive.";
         console.log("Enable FW Update box.");
 
-        _firmwareButtonElement.addEventListener('click', async () => {
-            pico_update_attempt_flash(firmwareURL, checksum);
-        });
+        if(_isAndroid())
+        {
+            console.log("Running on Android OS.");
+            _fwUpdateTextElement.innerText = androidText;
+            _firmwareButtonElement.addEventListener('click', async () => {
+                pico_update_attempt_flash(firmwareURL, checksum);
+            });
+
+            try
+            {
+                _firmwareDownloadElement.removeAttribute("href");
+                //_firmwareDownloadElement.removeAttribute("target");
+            }
+            catch
+            {
+                console.log("Already removed firmware download element tags.");
+            }
+        }
+        else
+        {
+            console.log("Running on Other OS.");
+            _fwUpdateTextElement.innerText = otherText;
+            // On other OS, download the file
+            firmwareURL = firmwareURL + ".uf2";
+            _firmwareDownloadElement.href = firmwareURL;
+            //_firmwareDownloadElement.target = "_blank";
+        }
+
+        
 
         _firmwareBoxElement.setAttribute("disabled", "false");
     }

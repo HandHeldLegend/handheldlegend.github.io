@@ -73,7 +73,8 @@
         <div class="full-width">
           <div class="line"></div>
         </div>
-        {fwInstall}
+        <div id="fwInstallText">{fwInstall}</div>
+        
         <a id="downloadLink" download>
           <button type="button" id="fwButtonInstall">{download}</button>
         </a>
@@ -1052,6 +1053,7 @@
   </div>
   </div>
   <div class="footer">
+    <img id="footer-wrench-svg" src="svg/wrench-svgrepo-com.svg" onclick="debugWrenchClick()">
     <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
     Cairns | ©
     2024, Hand Held Legend, LLC

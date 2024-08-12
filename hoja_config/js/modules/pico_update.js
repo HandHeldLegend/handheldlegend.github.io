@@ -148,9 +148,12 @@ async function pico_update_attempt_flash(url, checksum)
     let binData = null;
     // First, try to download the appropriate file
     let gotBinOK = false;
+
+    let furl = url + ".bin";
+
     try {
         // Fetch the binary file
-        const response = await fetch(url);
+        const response = await fetch(furl);
         if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
         }
