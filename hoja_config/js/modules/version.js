@@ -148,7 +148,7 @@ async function version_reset_to_bootloader() {
 }
 
 function _version_fw_is_up_to_date() {
-    var to_return = false;
+    var bb_skip = false;
 
     if (_device_id != 0xFFFF) {
 
@@ -169,6 +169,7 @@ function _version_fw_is_up_to_date() {
                         console.log("Device firmware is out of date.");
 
                         _version_firmware_enable_notification(true, _device_id, manifest.checksum);
+                        bb_skip=true;
                     }
 
                     _version_baseband_is_up_to_date();
@@ -180,7 +181,10 @@ function _version_fw_is_up_to_date() {
         }
         else {
             _version_firmware_enable_notification(false);
-            _version_baseband_is_up_to_date();
+
+            if(!bb_skip)
+                _version_baseband_is_up_to_date();
+
             config_get_chain(WEBUSB_CMD_FW_GET);
         }
     }
@@ -191,11 +195,16 @@ function _version_baseband_is_up_to_date() {
         console.log("Baseband not initialized.");
         _version_baseband_enable_notification(true);
     }
-    else if (_baseband_version != 0xFFFF || !_baseband_version) {
+    else if (_baseband_version != 0x0001 || !_baseband_version) {
         if (network_is_available()) {
             _version_get_baseband_manifest_data()
                 .then((manifest) => {
-                    if (manifest.fw_version < _baseband_version) {
+                    if(_baseband_version == 0xFFFF)
+                    {
+                        console.log("ESP32 error, needs flashing.");
+                        _version_baseband_enable_notification(true);
+                    }
+                    else if (manifest.fw_version < _baseband_version) {
                         console.log("Device baseband is newer than release.");
                         _version_baseband_enable_notification(false);
                     }
