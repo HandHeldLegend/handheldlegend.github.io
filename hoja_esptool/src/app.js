@@ -1,6 +1,8 @@
 const { ESPLoader, FlashOptions, LoaderOptions, Transport } = require('esptool-js');
 const { serial } = require('web-serial-polyfill');
-if (!navigator.serial && navigator.usb) navigator.serial = serial;
+
+// Always set our navigator serial to equal our polyfill serial
+navigator.serial = serial;
 
 const terminal = document.getElementById('terminal');
 
