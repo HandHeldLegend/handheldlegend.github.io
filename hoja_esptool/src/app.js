@@ -71,9 +71,8 @@ function enableBtn(element) {
 
 // Function to check if the user is on an Android device
 function isAndroid() {
-  return /Android/i.test(navigator.userAgent);
+  return navigator.userAgent.indexOf('Android') !== -1;
 }
-
 // Function to check if the user is using Google Chrome
 function isChrome() {
   return /Chrome/i.test(navigator.userAgent) || /Edge/i.test(navigator.userAgent);
