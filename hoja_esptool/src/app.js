@@ -76,7 +76,35 @@ function isAndroid() {
 
 // Function to check if the user is using Google Chrome
 function isChrome() {
-  return /Chrome/i.test(navigator.userAgent) && !/Edge/i.test(navigator.userAgent);
+  return /Chrome/i.test(navigator.userAgent) || /Edge/i.test(navigator.userAgent);
+}
+
+// Function to disable the switch and force it to a specific state
+function disableSwitch(forceChecked) {
+  toggleCheckbox.disabled = true;
+  toggleSwitch.classList.add('disabled');
+
+  if(forceChecked == -1)
+  {
+    // Just disable
+  }
+  else if (forceChecked) {
+    console.log("Switch disabled and forced to WebUSB mode.");
+    toggleCheckbox.checked = forceChecked;
+    selectedSerial = nice.serial;
+    // Add your code to handle the WebUSB mode here
+  } else {
+    console.log("Switch disabled and forced to Serial mode.");
+    toggleCheckbox.checked = forceChecked;
+    selectedSerial = navigator.serial;
+    // Add your code to handle the Serial mode here
+  }
+}
+
+// Function to enable the switch
+function enableSwitch() {
+  toggleCheckbox.disabled = false;
+  toggleSwitch.classList.remove('disabled');
 }
 
 let hasRun = false;
@@ -102,34 +130,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
   });
 
-  // Function to disable the switch and force it to a specific state
-  function disableSwitch(forceChecked) {
-    toggleCheckbox.disabled = true;
-    toggleSwitch.classList.add('disabled');
-
-    if(forceChecked == -1)
-    {
-      // Just disable
-    }
-    else if (forceChecked) {
-      console.log("Switch disabled and forced to WebUSB mode.");
-      toggleCheckbox.checked = forceChecked;
-      selectedSerial = nice.serial;
-      // Add your code to handle the WebUSB mode here
-    } else {
-      console.log("Switch disabled and forced to Serial mode.");
-      toggleCheckbox.checked = forceChecked;
-      selectedSerial = navigator.serial;
-      // Add your code to handle the Serial mode here
-    }
-  }
-
-  // Function to enable the switch
-  function enableSwitch() {
-    toggleCheckbox.disabled = false;
-    toggleSwitch.classList.remove('disabled');
-  }
-
   // Example usage
   // disableSwitch(true);  // Disables the switch and forces it to WebUSB mode
   // disableSwitch(false); // Disables the switch and forces it to Serial mode
@@ -137,6 +137,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
   if(isAndroid())
   {
+    let msg = document.getElementById("chromemsg");
+    msg.innerHTML = "Android Detected.";
+    msg.setAttribute("enabled", "true");
     disableSwitch(true);
   }
 
