@@ -10,4 +10,93 @@
       font-size: small;
       text-align: left;
       font-family: system-ui;
-    }</style><script defer="defer" src="bundle.js"></script></head><body><div class="context"><ul class="circles"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul><h1>HOJA Baseband Updater</h1></div><div class="box"><p>Updated 8.13.2024</p><h2>Steps to update:</h2><p>1. Click connect and select the USB Serial device.</p><p>2. Click `Erase` and wait for the confirmation.</p><p>3. Click `Flash` and the installation will proceed.</p><p>If you run into issues while updating the Bluetooth firmware, be sure to download and install the correct drivers.</p><a href="https://github.com/electronicsf/driver-ch341/raw/main/CH341SER.ZIP" target="_blank">Windows Driver</a> <a href="https://github.com/electronicsf/driver-ch341/raw/main/CH341SER_LINUX.ZIP" target="_blank">Linux Driver</a> <a href="https://github.com/electronicsf/driver-ch341/raw/main/CH341SER_MAC.ZIP" target="_blank">Mac Link (Non-M1)</a><div class="row"><button id="connectBtn">Connect</button> <button id="disconnectBtn">Disconnect</button> <button id="eraseBtn">Erase</button> <button id="flashBtn">Flash</button></div><div id="terminal"></div></div></body></html>
+    }
+
+    .toggle-switch {
+      position: absolute;
+      display: flex;
+      left: 1rem;
+      top: 0.5rem;
+      align-items: center;
+
+    }
+
+    .switch-label {
+      font-size: 16px;
+      margin-right: 0.25rem;
+      margin-left: 0.25rem;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 25px;
+    }
+
+    .toggle-checkbox {
+      display: none;
+    }
+
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      height: 21px;
+      width: 21px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle-checkbox:checked+.switch .slider {
+      background-color: #2196F3;
+    }
+
+    .toggle-checkbox:checked+.switch .slider::before {
+      transform: translateX(25px);
+    }
+
+    .toggle-switch.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      /* Prevent interaction with the switch */
+    }
+
+    .toggle-checkbox:disabled+.switch .slider {
+      background-color: #bbb;
+      /* Grey out the switch */
+    }
+
+    .toggle-checkbox:disabled+.switch .slider::before {
+      background-color: #e0e0e0;
+      /* Grey out the slider */
+    }
+
+    #chromemsg[enabled="true"] {
+      border-radius: 0.5rem;
+      background-color: rgba(252, 90, 90, 0.651);
+      margin-top: 2rem;
+      margin-left: auto;
+      margin-right: auto;
+      width: 20rem;
+    }
+
+    #updatedtime {
+      position: absolute;
+      right: 1rem;
+      top: 0.5rem;
+    }</style><script defer="defer" src="bundle.js"></script></head><body><div class="context"><h1>HOJA Baseband Updater</h1></div><div class="box"><div class="toggle-switch"><label class="switch-label" for="toggle-checkbox">Serial</label> <input type="checkbox" id="toggle-checkbox" class="toggle-checkbox"> <label class="switch" for="toggle-checkbox"><span class="slider"></span></label> <label class="switch-label" for="toggle-checkbox">WebUSB</label></div><p id="updatedtime">Updated 8.20.2024</p><p id="chromemsg"></p><h2>Steps to update:</h2><p>1. Click connect and select the USB Serial device.</p><p>2. Click `Erase` and wait for the confirmation.</p><p>3. Click `Flash` and the installation will proceed.</p><div class="row"><button id="connectBtn">Connect</button> <button id="disconnectBtn">Disconnect</button> <button id="eraseBtn">Erase</button> <button id="flashBtn">Flash</button></div><div id="terminal"></div></div></body></html>

@@ -1,0 +1,12 @@
+Connecting in WebSerial does the following list
+
+// Baud rate in OS 115200
+/**
+ * C1   - 0x0000 - 0x0000
+ * W    - 0x1312 - 0xD982
+ * R    - 0x2C2C -> 0x0B0B
+ * W    - 0x0F2C - 0x0007
+ * R    - 0x2518 -> 0xC300
+ * R    - 0x0706 -> 0xFFEE
+ * W    - 0x2727 -> 0x0000
+ */

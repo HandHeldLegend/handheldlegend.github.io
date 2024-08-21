@@ -1,8 +1,11 @@
 const { ESPLoader, FlashOptions, LoaderOptions, Transport } = require('esptool-js');
-const { serial } = require('web-serial-polyfill');
+
+const nice = require('./plugin/niceSerial');
+
+//const { serial } = require('web-serial-polyfill');
 
 // Always set our navigator serial to equal our polyfill serial
-navigator.serial = serial;
+//navigator.serial = serial;
 
 const terminal = document.getElementById('terminal');
 
@@ -24,7 +27,7 @@ const bootloaderOffset = 4096;
 const partitionTableOffset = 32768;
 const firmwareOffset = 65536;
 
-var globalBaudInt = 460800;
+var globalBaudInt = 115200;
 
 var bootloader = null;
 var partitionTable = null;
@@ -66,9 +69,90 @@ function enableBtn(element) {
   }
 }
 
+// Function to check if the user is on an Android device
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+// Function to check if the user is using Google Chrome
+function isChrome() {
+  return /Chrome/i.test(navigator.userAgent) && !/Edge/i.test(navigator.userAgent);
+}
+
 let hasRun = false;
+let selectedSerial = navigator.serial;
+
 document.addEventListener('DOMContentLoaded', (event) => {
-  
+
+  // Add switch stuff
+
+  const toggleCheckbox = document.getElementById('toggle-checkbox');
+  const toggleSwitch = document.querySelector('.toggle-switch');
+
+  // Function to handle changes when the switch is toggled
+  toggleCheckbox.addEventListener('change', function () {
+    if (toggleCheckbox.checked) {
+      console.log("Switched to WebUSB mode.");
+      // Add your code to handle the WebUSB mode here
+      selectedSerial = nice.serial;
+    } else {
+      console.log("Switched to Serial mode.");
+      // Add your code to handle the Serial mode here
+      selectedSerial = navigator.serial;
+    }
+  });
+
+  // Function to disable the switch and force it to a specific state
+  function disableSwitch(forceChecked) {
+    toggleCheckbox.disabled = true;
+    toggleSwitch.classList.add('disabled');
+
+    if(forceChecked == -1)
+    {
+      // Just disable
+    }
+    else if (forceChecked) {
+      console.log("Switch disabled and forced to WebUSB mode.");
+      toggleCheckbox.checked = forceChecked;
+      selectedSerial = nice.serial;
+      // Add your code to handle the WebUSB mode here
+    } else {
+      console.log("Switch disabled and forced to Serial mode.");
+      toggleCheckbox.checked = forceChecked;
+      selectedSerial = navigator.serial;
+      // Add your code to handle the Serial mode here
+    }
+  }
+
+  // Function to enable the switch
+  function enableSwitch() {
+    toggleCheckbox.disabled = false;
+    toggleSwitch.classList.remove('disabled');
+  }
+
+  // Example usage
+  // disableSwitch(true);  // Disables the switch and forces it to WebUSB mode
+  // disableSwitch(false); // Disables the switch and forces it to Serial mode
+  // enableSwitch();       // Enables the switch
+
+  if(isAndroid())
+  {
+    disableSwitch(true);
+  }
+
+  if(!isChrome())
+  {
+    let msg = document.getElementById("chromemsg");
+    msg.innerHTML = "Chrome is required to run this.";
+    msg.setAttribute("enabled", "true");
+    disableSwitch(false);
+    disableBtn(connectBtn);
+    disableBtn(disconnectBtn);
+    disableBtn(eraseBtn);
+    disableBtn(flashBtn);
+    return;
+  }
+
   if (!hasRun) {
     hasRun = true;
     // Get baud if we want to change it
@@ -79,13 +163,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Get the value of the 'debug' parameter
     var debug = urlParams.has('baud');
     if (debug) {
-        console.log("Has custom baud: ");
-        globalBaudInt = urlParams.get('baud');
-        console.log(globalBaudInt);
+      console.log("Has custom baud: ");
+      globalBaudInt = urlParams.get('baud');
+      console.log(globalBaudInt);
     }
-    else
-    {
-        console.log("No custom baud setting.");
+    else {
+      console.log("No custom baud setting.");
     }
 
     // Add event listeners for buttons
@@ -93,18 +176,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
       logToTerminal('Connecting...');
       // Add connect logic here
 
+      disableSwitch(-1);
+
       try {
         if (device == null) {
-
-          device = await navigator.serial.requestPort({ filters });
-          transport = new Transport(device, true);
+          device = await selectedSerial.requestPort({ filters });
+          transport = new Transport(device, true, false);
         }
 
         const flashOptions = {
-          transport,
+          transport: transport,
+          //debugLogging: true,
+          enableTracing: false,
           baudrate: globalBaudInt,
           terminal: espLoaderTerminal,
         };
+
+        //ESPLoader.prototype.FLASH_READ_TIMEOUT = 1000000;
+        //ESPLoader.prototype.CHIP_ERASE_TIMEOUT  = 1000000;
+        //ESPLoader.prototype.ERASE_REGION_TIMEOUT_PER_MB   = 1000000;
+        //ESPLoader.prototype.ERASE_WRITE_TIMEOUT_PER_MB   = 1000000;
+        //ESPLoader.prototype.MD5_TIMEOUT_PER_MB   = 1000000;
 
         esploader = new ESPLoader(flashOptions);
         chip = await esploader.main();

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CH341SER Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        button { margin: 5px; padding: 10px; }
+        #output { border: 1px solid #ccc; padding: 10px; margin-top: 20px; min-height: 200px; }
+    </style>
+</head>
+<body>
+    <h1>CH341SER Test Page</h1>
+    <button id="initDevice">Initialize Device</button>
+    <button id="configure">Configure Device</button>
+    <button id="setDtrRts">Set DTR/RTS</button>
+    <button id="getStatus">Get Status</button>
+    <button id="readData">Read Data</button>
+    <button id="writeData">Write Data</button>
+    <div id="output"></div>
+
+    <script src="plugin/ch341ser.js"></script>
+    <script src="test.js"></script>
+</body>
+</html>

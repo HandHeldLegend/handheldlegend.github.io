@@ -1,0 +1,7 @@
+This is sort of a documentation of the WebSerial API as well as the CH341SER Driver
+
+- Get Ports does not do anything over the USB line
+- Request port does not do anything
+
+- Get Info just returns the prod ID and vendor ID 
+
