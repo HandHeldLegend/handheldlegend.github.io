@@ -52,7 +52,7 @@ const espLoaderTerminal = {
 };
 
 const connectBtn = document.getElementById('connectBtn');
-const disconnectBtn = document.getElementById('disconnectBtn');
+//const disconnectBtn = document.getElementById('disconnectBtn');
 const eraseBtn = document.getElementById('eraseBtn');
 const flashBtn = document.getElementById('flashBtn');
 const toggleCheckbox = document.getElementById('toggle-checkbox');
@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     msg.innerHTML = "Android Detected.";
     msg.setAttribute("enabled", "true");
     disableSwitch(true);
+    selectedSerial = false;
   }
 
   if(!isChrome())
@@ -146,7 +147,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     msg.setAttribute("enabled", "true");
     disableSwitch(false);
     disableBtn(connectBtn);
-    disableBtn(disconnectBtn);
+    //disableBtn(disconnectBtn);
     disableBtn(eraseBtn);
     disableBtn(flashBtn);
     return;
@@ -217,7 +218,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         disableBtn(connectBtn);
         enableBtn(flashBtn);
         enableBtn(eraseBtn);
-        enableBtn(disconnectBtn);
+        //enableBtn(disconnectBtn);
 
       } catch (e) {
         console.error(e);
@@ -227,10 +228,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
     });
 
-    disconnectBtn.addEventListener('click', () => {
-      logToTerminal('Disconnecting does nothing. Reload the page.');
-      // Add disconnect logic here
-    });
+    //disconnectBtn.addEventListener('click', () => {
+    //  logToTerminal('Disconnecting does nothing. Reload the page.');
+    //  // Add disconnect logic here
+    //});
 
     eraseBtn.addEventListener('click', async () => {
       logToTerminal('Erasing...');
@@ -238,7 +239,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       disableBtn(connectBtn);
       disableBtn(flashBtn);
       disableBtn(eraseBtn);
-      disableBtn(disconnectBtn);
+      //disableBtn(disconnectBtn);
       // Add erase logic here
 
       try {
@@ -250,7 +251,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         disableBtn(connectBtn);
         enableBtn(flashBtn);
         enableBtn(eraseBtn);
-        enableBtn(disconnectBtn);
+        //enableBtn(disconnectBtn);
       }
     });
 
@@ -261,7 +262,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
       disableBtn(connectBtn);
       disableBtn(flashBtn);
       disableBtn(eraseBtn);
-      disableBtn(disconnectBtn);
+      //disableBtn(disconnectBtn);
 
       await fetchBinFileAsString(bootloaderUrl).then(data => {
         if (data) {
@@ -325,7 +326,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         disableBtn(connectBtn);
         enableBtn(flashBtn);
         enableBtn(eraseBtn);
-        enableBtn(disconnectBtn);
+        //enableBtn(disconnectBtn);
       }
     });
 
