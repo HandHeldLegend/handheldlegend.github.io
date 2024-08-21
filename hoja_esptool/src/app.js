@@ -55,6 +55,8 @@ const connectBtn = document.getElementById('connectBtn');
 const disconnectBtn = document.getElementById('disconnectBtn');
 const eraseBtn = document.getElementById('eraseBtn');
 const flashBtn = document.getElementById('flashBtn');
+const toggleCheckbox = document.getElementById('toggle-checkbox');
+const toggleSwitch = document.querySelector('.toggle-switch');
 
 function disableBtn(element) {
   element.setAttribute('disabled', 'true');
@@ -90,12 +92,12 @@ function disableSwitch(forceChecked) {
   else if (forceChecked) {
     console.log("Switch disabled and forced to WebUSB mode.");
     toggleCheckbox.checked = forceChecked;
-    selectedSerial = nice.serial;
+    selectedSerial = false;
     // Add your code to handle the WebUSB mode here
   } else {
     console.log("Switch disabled and forced to Serial mode.");
     toggleCheckbox.checked = forceChecked;
-    selectedSerial = navigator.serial;
+    selectedSerial = true;
     // Add your code to handle the Serial mode here
   }
 }
@@ -107,25 +109,20 @@ function enableSwitch() {
 }
 
 let hasRun = false;
-let selectedSerial = navigator.serial;
+let selectedSerial = true;
 
 document.addEventListener('DOMContentLoaded', (event) => {
-
-  // Add switch stuff
-
-  const toggleCheckbox = document.getElementById('toggle-checkbox');
-  const toggleSwitch = document.querySelector('.toggle-switch');
 
   // Function to handle changes when the switch is toggled
   toggleCheckbox.addEventListener('change', function () {
     if (toggleCheckbox.checked) {
       console.log("Switched to WebUSB mode.");
       // Add your code to handle the WebUSB mode here
-      selectedSerial = nice.serial;
+      selectedSerial = false;
     } else {
       console.log("Switched to Serial mode.");
       // Add your code to handle the Serial mode here
-      selectedSerial = navigator.serial;
+      selectedSerial = true;
     }
   });
 
@@ -182,7 +179,16 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
       try {
         if (device == null) {
-          device = await selectedSerial.requestPort({ filters });
+
+          if(selectedSerial)
+          {
+            device = await navigator.serial.requestPort({ filters });
+          }
+          else
+          {
+            device = await nice.serial.requestPort({ filters });
+          }
+
           transport = new Transport(device, true, false);
         }
 
