@@ -27,6 +27,8 @@ let colorPicker = null;
 
 let hexBoxElement = document.getElementById('colorHexBox');
 
+var colorValueStore = null;
+
 function color_set_device(device_id)
 {
     let device="procontroller";
@@ -41,6 +43,11 @@ function color_set_device(device_id)
         console.log("Loaded SNES svg");
         device="snescontroller";
     }
+    else if(sig_id == 0xC)
+    {
+        console.log("Loaded GC svg");
+        device="gccontroller";
+    }
     else 
     {
         console.log("Loaded ProCon svg");
@@ -53,17 +60,20 @@ function color_set_device(device_id)
     {
         loader.setAttribute('data-src', 'svg/snescontroller.svg');
     }
+    else if(device=="gccontroller")
+    {
+        loader.setAttribute('data-src', 'svg/gctypecontroller.svg');
+    }
     else if(device=="procontroller")
     {
         loader.setAttribute('data-src', 'svg/procontroller.svg');
     }
 
-    loader.setAttribute('oniconload', 'color_page_init()');
-
+    loader.setAttribute('oniconload', 'color_reload_values()');
 }
 
 // Debug
-color_set_device(0xF000);
+//color_set_device(0xF000);
 
 function hexToRgb(hex) {
     // Ensure the hex color starts with '#'
@@ -395,14 +405,25 @@ function color_hexbox_changed(value) {
 }
 
 async function color_get_values() {
+
     var did = version_read_id();
     color_set_device(did);
+    
 
     var dataOut = new Uint8Array([WEBUSB_CMD_RGB_GET]);
     await device.transferOut(2, dataOut);
 }
 
+function color_reload_values()
+{
+    if(colorValueStore != null)
+    {
+        color_place_values(colorValueStore);
+    }
+}
+
 function color_place_values(data) {
+    colorValueStore = data;
     var d = new Uint8Array(data.buffer);
     var i = 1;
     svg_set_rgb("rightStick", d[i], d[i + 1], d[i + 2]);

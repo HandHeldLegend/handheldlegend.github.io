@@ -40,18 +40,6 @@
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1" />
-  <metadata
-     id="metadata5">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
   <g
      inkscape:label="Ebene 1"
      inkscape:groupmode="layer"
@@ -90,12 +78,10 @@
     <path id="aButton" class="svgButtonClickable"
        style="opacity:0.88999999;fill:#bc0519;fill-opacity:1;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="m 179.94105,46.62085 a 7.0826425,7.0826425 0 0 0 -7.08277,7.082255 7.0826425,7.0826425 0 0 0 7.08277,7.082771 7.0826425,7.0826425 0 0 0 7.08277,-7.082771 7.0826425,7.0826425 0 0 0 -7.08277,-7.082255 z"
-       id="path943"
        inkscape:connector-curvature="0" />
     <path id="bButton" class="svgButtonClickable"
        style="opacity:0.88999999;fill:#d6ab20;fill-opacity:1;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="m 161.79849,60.700093 a 7.0826425,7.0826425 0 0 0 -7.08277,7.082772 7.0826425,7.0826425 0 0 0 7.08277,7.082771 7.0826425,7.0826425 0 0 0 7.08225,-7.082771 7.0826425,7.0826425 0 0 0 -7.08225,-7.082772 z"
-       id="path837"
        inkscape:connector-curvature="0" />
     <rect
        style="opacity:1;fill:#babbc0;fill-opacity:1;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
@@ -110,22 +96,18 @@
     <path id="xButton" class="svgButtonClickable"
        style="opacity:0.88999999;fill:#0047b3;fill-opacity:1;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="m 161.89051,32.791233 a 7.0826425,7.0826425 0 0 0 -7.08226,7.08225 7.0826425,7.0826425 0 0 0 7.08226,7.08278 7.0826425,7.0826425 0 0 0 7.08277,-7.08278 7.0826425,7.0826425 0 0 0 -7.08277,-7.08225 z"
-       id="path939"
        inkscape:connector-curvature="0" />
     <path id="yButton" class="svgButtonClickable"
        style="opacity:0.88999999;fill:#00804d;fill-opacity:1;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="m 143.74794,46.870473 a 7.0826425,7.0826425 0 0 0 -7.08277,7.08277 7.0826425,7.0826425 0 0 0 7.08277,7.08278 7.0826425,7.0826425 0 0 0 7.08278,-7.08278 7.0826425,7.0826425 0 0 0 -7.08278,-7.08277 z"
-       id="circle841"
        inkscape:connector-curvature="0" />
     <path id="minusButton" class="svgButtonClickable"
    style="opacity:1;fill:#4f5055;fill-opacity:1;stroke-width:0.99999982;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
    d="m 94.521974,53.793537 c -0.62869,-0.02033 -1.26851,0.17049 -1.807641,0.586528 l -7.884274,6.084385 c -1.2323,0.950944 -1.458923,2.708545 -0.507979,3.940844 0.950944,1.2323 2.708545,1.458923 3.940844,0.507979 l 7.884791,-6.084384 c 1.232299,-0.950945 1.458407,-2.708545 0.507462,-3.940845 -0.534906,-0.693168 -1.324886,-1.068366 -2.133203,-1.094507 z"
-   id="shape1"
    inkscape:connector-curvature="0" />
    <path id="plusButton" class="svgButtonClickable"
    style="opacity:1;fill:#4f5055;fill-opacity:1;stroke-width:0.99999982;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
    d="m 115,53.793537 c -0.62869,-0.02033 -1.26851,0.17049 -1.80764,0.586528 l -7.88479,6.084385 c -1.2323,0.950944 -1.45841,2.708545 -0.50746,3.940844 0.95094,1.2323 2.70854,1.458923 3.94084,0.507979 l 7.88427,-6.084384 c 1.2323,-0.950945 1.45893,-2.708545 0.50798,-3.940845 -0.5349,-0.693168 -1.32488,-1.068366 -2.1332,-1.094507 z"
-   id="shape2"
    inkscape:connector-curvature="0" />
 
     <circle
@@ -138,7 +120,6 @@
     <path id="dpad" class="svgButtonClickable"
        style="opacity:1;fill:#5a5b60;fill-opacity:1;stroke-width:0.69999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        d="m 50.158274,37.68341 c -1.230808,0 -2.221569,0.990761 -2.221569,2.221571 v 8.319389 h -8.319389 c -1.23081,0 -2.221569,0.990759 -2.221569,2.221569 v 6.947897 c 0,1.23081 0.990759,2.222085 2.221569,2.222085 h 8.319389 v 8.318873 c 0,1.23081 0.990761,2.222087 2.221569,2.222087 h 6.947897 c 1.23081,0 2.222087,-0.991277 2.222087,-2.222087 v -8.318873 h 8.31887 c 1.23081,0 2.222088,-0.991275 2.222088,-2.222085 v -6.947897 c 0,-1.23081 -0.991278,-2.221569 -2.222088,-2.221569 h -8.31887 v -8.319389 c 0,-1.23081 -0.991277,-2.221571 -2.222087,-2.221571 z"
-       id="rect913"
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"

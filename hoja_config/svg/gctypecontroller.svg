@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: CorelDRAW X8 -->
+
+<svg
+   xml:space="preserve"
+   width="200mm"
+   version="1.1"
+   style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+   viewBox="0 0 198619 222618"
+   sodipodi:docname="gctypecontroller.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   inkscape:showpageshadow="0"
+   inkscape:pageopacity="0"
+   inkscape:pagecheckerboard="1"
+   showgrid="false"
+   inkscape:zoom="0.51776199"
+   inkscape:cx="998.5283"
+   inkscape:cy="1435.0223"
+   inkscape:window-width="3440"
+   inkscape:window-height="1369"
+   inkscape:window-x="1016"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="图层_x0020_1" />
+ <defs
+   id="defs1154"><inkscape:path-effect
+   effect="mirror_symmetry"
+   start_point="167156.2,103988.02"
+   end_point="167156.2,118200.59"
+   center_point="167156.2,111094.3"
+   id="path-effect2524"
+   is_visible="true"
+   lpeversion="1.2"
+   lpesatellites=""
+   mode="vertical"
+   discard_orig_path="false"
+   fuse_paths="false"
+   oposite_fuse="false"
+   split_items="false"
+   split_open="false"
+   link_styles="false" />
+ </defs>
+  
+  <path
+   fill="#c8c8c8"
+   stroke-width="750"
+   stroke="#0A0A0A"
+   d="m 140883,106253 c -149,-483 248,-1880 420,-1943 0,0 2364,-1261 10819,1208 8456,2468 13485,7802 14903,9955 394,237 -95,1586 -1527,2664 -1432,1077 -24615,-11884 -24615,-11884 z m -86310.667,0 c 149,-483 -248,-1880 -420,-1943 0,0 -2364,-1261 -10819,1208 -8456,2468 -13485,7802 -14903,9955 -394,237 95,1586 1527,2664 1432,1077 24615,-11884 24615,-11884 z"
+   id="_zButtons"
+   inkscape:path-effect="#path-effect2524"
+   inkscape:original-d="m 140883,106253 c -149,-483 248,-1880 420,-1943 0,0 2364,-1261 10819,1208 8456,2468 13485,7802 14903,9955 394,237 -95,1586 -1527,2664 -1432,1077 -24615,-11884 -24615,-11884 z"
+   transform="translate(1581.8337,-95898.657)" />
+  
+  <path
+   d="m 149920,80672.88 c 7457,14810.014 6958,32911.02 13024,41490.02 12395,10819 17752,-2311 18907,-11134 1156,-8823 1261,-38340.03 -735,-56392.046 -1996,-18053.02 -6722,-25644.028 -6722,-25644.028 0,0 -2942,-9978.008 -32983,-19746.9592 -303,-98.999 -605,-195.999 -906,-292.998 C 110955,-507.10619 90528,272.89401 65573,6199.8826 40364,12186.853 30668,20053.818 25659,26261.824 c -7547,8790.01 -8928,27205.028 -8928,27205.028 0,0 -4937,56406.048 1995,67435.048 6933,11029 16176,1365 16176,1365 0,0 4832,-8088 6093,-17646 1260,-9559.006 7037,-24054.02 7037,-24054.02 C 51244.232,69632.812 72675.753,54730.251 97573.667,54227.668 115011.55,53875.671 134149.79,60587.233 149920,80672.88 Z"
+   id="bodyPart1"
+   stroke-width="750"
+   stroke="#0A0A0A"
+   style="fill-opacity:1"
+   sodipodi:nodetypes="ccccccccccccccsc" 
+   fill="#646464"/>
+
+  <path
+   fill="#606060"
+   stroke-width="750"
+   stroke="#0A0A0A"
+   stroke-linecap="round" stroke-linejoin="round"
+   d="m 152021,77968.876 c 7423,-9611.01 24473,-10959.01 24841,-33350.034 -263,-15983.016 -12744,-28465.009 -28465,-28465.009 -15721,0 -28465,12744.993 -28465,28465.009 -2090,14790.016 -7306,20011.022 -11875,27049.028 -7668,13996.014 7778,37866.03 28996,25157.026 9454,-7878.008 7195,-12554.012 14968,-18856.02 z"
+   id="rightHandle" />
+
+  <path
+   fill="#606060"
+   stroke-width="750"
+   stroke="#0A0A0A"
+   d="M 45611,77968.876 C 38188,68357.866 21138,67009.866 20770,44618.842 21033,28635.826 33514,16153.833 49235,16153.833 c 15721,0 28465,12744.993 28465,28465.009 2090,14790.016 7307,20011.022 11876,27049.028 7667,13996.014 -7779,37866.03 -28997,25157.026 -9453,-7878.008 -7195,-12554.012 -14968,-18856.02 z"
+   id="leftHandle" />
+   
+  <polygon
+   points="60235,136627 62096,141121 60235,145614 58374,150108 53880,151969 49387,153830 44893,151969 40400,150108 38538,145614 36677,141121 38538,136627 40400,132133 44893,130272 49387,128411 53880,130272 58374,132133 "
+   id="leftStickBackground"
+   style="fill-opacity:1"
+   transform="translate(0,-96294.115)" 
+   fill="#323232"/>
+   
+  <circle
+  class="svgButtonClickable"
+  stroke-width="800"
+   id="leftStick"
+   cy="44826.707"
+   cx="49387"
+   r="9278"
+   style="fill-opacity:1" 
+   />
+  
+  <polygon
+   points="137553,172499 139545,177306 137553,182113 135562,186920 130755,188911 125948,190902 121141,188911 116334,186920 114343,182113 112352,177306 114343,172499 116334,167692 121141,165701 125948,163710 130755,165701 135562,167692 "
+   id="rightStickBackground"
+   style="fill-opacity:1"
+   transform="translate(0,-96294.115)" 
+   fill='#323232'
+   />
+
+  <circle
+   cx="125948"
+   cy="81011.5"
+   r="9278"
+   id="_rightStick"
+   style="fill-opacity:1" 
+   fill="#c8c8c8"
+   />
+   
+  <circle
+   class="svgButtonClickable"
+   cx="148473"
+   cy="44762.707"
+   r="9874"
+   id="aButton"
+   stroke-width="800"
+   />
+
+  <circle
+    class="svgButtonClickable"
+    stroke-width="800"
+   cx="130328"
+   cy="54211.555"
+   r="6092"
+   id="bButton"  />
+
+  <path
+  class="svgButtonClickable"
+  stroke-width="800"
+   d="m 149063,21981.82 c -6775,-1248.002 -10849,1775.002 -12475,3597.004 -767,859 -1323,2030.002 -1323,3298.002 0,2272.004 1838,4105.006 4105,4105.006 765,0 1482,-210.002 2095,-574.002 1762,-1098 4176,-2065.004 6758,-2039.004 2267,23 4278,-1853 4278,-4120.002 0,-2067.002 -1595,-3857.004 -3438,-4267.004 z"
+   id="yButton" />
+
+  <path
+  class="svgButtonClickable"
+  stroke-width="800"
+   d="m 171063,46100.844 c 1797,-6650.006 -884,-10957.01 -2567,-12726.012 -794,-835.002 -1915,-1485.002 -3179,-1588.002 -2264,-186 -4241,1496.002 -4426,3756.004 -63,763 88,1494.002 401,2135.002 951,1845.002 1717,4331.004 1481,6902.006 -208,2258.004 1497,4414.006 3757,4600.006 2060,168 3974,-1275.002 4533,-3079.004 z"
+   id="xButton" />
+   
+  <path
+   fill="#c8c8c8"
+   d="m 69476,91830.89 h 5420 c 546,0 992,-447 992,-993 v -6229.006 h 6229 c 546,0 993,-446.002 993,-992.002 v -5421.006 c 0,-545 -447,-992 -993,-992 H 75888 V 70974.87 c 0,-546 -446,-992.002 -992,-992.002 h -5420 c -546,0 -993,446.002 -993,992.002 v 6229.006 h -6229 c -546,0 -992,447 -992,992 v 5421.006 c 0,546 446,992.002 992,992.002 h 6229 v 6229.006 c 0,546 447,993 993,993 z"
+   id="_dPad" />
+  
+ </g>
+</svg>
