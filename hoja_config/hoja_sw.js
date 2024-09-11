@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `hoja-site-cache-${CACHE_VERSION}`;
 
 const root_css_url = 'https://handheldlegend.github.io/css/'

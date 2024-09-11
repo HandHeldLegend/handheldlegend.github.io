@@ -420,6 +420,8 @@ function color_reload_values()
     {
         color_place_values(colorValueStore);
     }
+
+    color_page_init();
 }
 
 function color_place_values(data) {
