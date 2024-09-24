@@ -110,4 +110,6 @@ function input_process_data(data) {
     updateLeftBar(lta);
     var rta = (data.getUint8(9));
     updateRightBar(rta);
+
+    imu_set_input_data(data);
 }

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/hojaAnalog.css" type="text/css">
   <link rel="stylesheet" href="css/hojaTrigger.css" type="text/css">
   <link rel="stylesheet" href="css/hojaRemap.css" type="text/css">
+  <link rel="stylesheet" href="css/hojaGyro.css" type="text/css">
   <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
   <link rel="stylesheet" href="/css/radioPicker.css" type="text/css">
   <link rel="stylesheet" href="/css/containers.css" type="text/css">
@@ -776,6 +777,51 @@
             <div class="row">
               <button type="button" id="start_imu_calibration_button" onclick="imu_start_calibration()">{start}</button>
             </div>
+
+            <div class="line"></div>
+
+            <div class="gyro-container">
+              <label for="gyro-ax">AX</label>
+              <div class="gbar-container">
+                <div class="gbar" id="gax-bar"></div>
+              </div>
+            </div>
+
+            <div class="gyro-container">
+              <label for="gyro-ay">AY</label>
+              <div class="gbar-container">
+                <div class="gbar" id="gay-bar"></div>
+              </div>
+            </div>
+
+            <div class="gyro-container">
+              <label for="gyro-az">AZ</label>
+              <div class="gbar-container">
+                <div class="gbar" id="gaz-bar"></div>
+              </div>
+            </div>
+
+            <div class="gyro-container">
+              <label for="gyro-gx">GX</label>
+              <div class="gbar-container">
+                <div class="gbar" id="ggx-bar"></div>
+              </div>
+            </div>
+
+            <div class="gyro-container">
+              <label for="gyro-gy">GY</label>
+              <div class="gbar-container">
+                <div class="gbar" id="ggy-bar"></div>
+              </div>
+            </div>
+
+            <div class="gyro-container">
+              <label for="gyro-gz">GZ</label>
+              <div class="gbar-container">
+                <div class="gbar" id="ggz-bar"></div>
+              </div>
+            </div>
+            
           </div>
         </div>
       </div>

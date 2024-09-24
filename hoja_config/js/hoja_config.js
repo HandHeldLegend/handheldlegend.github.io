@@ -216,6 +216,8 @@ async function handle_input_report(result) {
         case WEBUSB_CMD_BATTERY_STATUS_GET:
             console.log("Got battery status.");
             console.log(result.data.getUint8(1), "% Battery");
+            console.log(result.data.getUint8(2), "Plug Status");
+            console.log(result.data.getUint8(3), "Charge Status");
             break;
     }
 

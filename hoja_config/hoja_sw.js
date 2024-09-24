@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v6.2';
 const CACHE_NAME = `hoja-site-cache-${CACHE_VERSION}`;
 
 const root_css_url = 'https://handheldlegend.github.io/css/'
@@ -59,6 +59,7 @@ const urlsToCache = [
     'css/hojaConfig.css',
     'css/hojaColor.css',
     'css/hojaAnalog.css',
+    'css/hojaGyro.css',
     'css/hojaRemap.css',
     'css/hojaTrigger.css',
     
