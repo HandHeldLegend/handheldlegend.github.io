@@ -1,0 +1,220 @@
+:root {
+
+    --app_background_color: #7264ec;
+
+    /* Color Palette */
+    --color-primary: #4CAF50;
+    --color-secondary: #2196F3;
+    --color-background-light: #b9edff;
+    --color-background-light-hover: rgb(145, 206, 226);
+    --color-background-dark: #5f5f5faf;
+    --color-text-primary: #131313;
+    --color-text-secondary: #000000;
+
+    --color-button-disabled: rgb(77, 77, 77);
+    --color-button-neutral: rgb(120, 133, 255);
+    --color-button-neutral-hover: rgb(67, 81, 206);
+    --color-button-off: rgb(255, 99, 99);
+    --color-button-off-hover: rgb(216, 72, 72);
+    --color-button-on: rgb(73, 255, 128);
+    --color-button-on-hover: rgb(34, 201, 84);
+
+    /* Config Box Elements */
+    --config-box-height: 2.5rem;
+    --config-box-divider-color: #919191;
+    --config-box-max-width-small: 25rem;
+    --config-box-max-width-medium: 35rem;
+
+
+    --box-shadow-inset: inset 0.15rem 0.155rem 0.25rem rgba(0, 0, 0, 0.192), inset -0.15rem -0.15rem 0.25rem rgba(0, 0, 0, 0.192);
+
+    /* Spacing */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 30px;
+
+    /* Border Radius */
+    --border-radius-sm: 0.5rem;
+    --border-radius-md: 0.75rem;
+    --border-radius-lg: 1rem;
+    --border-radius-round: 50%;
+
+    /* Typography */
+    --font-family-primary: Arial, sans-serif;
+    --font-size-sm: 1rem;
+    --font-size-md: 1.5rem;
+    --font-size-lg: 2rem;
+
+    /* Transitions */
+    --transition-quick: 0.2s ease;
+    --transition-standard: 0.3s ease;
+}
+
+/* Shared Component Styles */
+.btn {
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: background-color var(--transition-quick);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.input {
+    border: 1px solid var(--color-background-dark);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-md);
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.shadow-sm {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.shadow-md {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+}
+
+body {
+    font-family: var(--font-family-primary);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--app_background_color);
+}
+
+#app {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.settings-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.settings-icon:hover {
+    transform: scale(1.05);
+}
+
+.settings-icon .icon {
+    width: 150px;
+    height: 150px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.settings-overlay.hidden {
+    display: none;
+}
+
+.settings-view {
+    background-color: white;
+    width: 80%;
+    max-width: 800px;
+    height: 80%;
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.settings-view.slide-in {
+    transform: translateY(0);
+}
+
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.display-settings {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.label {
+    width: 100%;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+}
+
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.tooltip.show {
+    opacity: 1;
+}
+

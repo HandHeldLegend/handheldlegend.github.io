@@ -1,0 +1,109 @@
+.angle-selector {
+    background-color: var(--color-background-light);
+    height: var(--config-box-height);
+    border-radius: var(--border-radius-md);
+    max-width: var(--config-box-max-width-medium);
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    overflow: hidden;
+}
+
+.button-x,
+.button-down {
+    margin-left: 0;
+    min-width: var(--config-box-height);
+    align-items: center;
+    justify-content: center;
+    height: inherit;
+    line-height: var(--config-box-height);
+    display: flex;
+    border: none;
+    cursor: pointer;
+    font-size: var(--font-size-md);
+    color: rgb(66, 66, 66);
+    transition: background-color var(--transition-quick);
+}
+
+.button-down 
+{
+    background: var(--color-button-on);
+}
+
+.button-x
+{
+    background: var(--color-button-off);
+}
+
+.button-x:hover
+{
+    background-color: var(--color-button-off-hover);
+}
+
+.button-down:hover {
+    background-color: var(--color-button-on-hover);
+}
+
+.even-container {
+    display: flex;
+    height: inherit;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+}
+
+.label {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.angle-in,
+.angle-out,
+.distance {
+    padding-left: 0.5rem;
+    background: var(--color-background-light);
+    max-width: 4rem;
+    height: inherit;
+    text-align: center;
+    font-size: 1.2rem;
+    transition: all var(--transition-quick);
+    border: none;
+}
+
+.distance {
+    max-width: 5rem;
+}
+
+.angle-in:focus,
+.angle-out:focus,
+.distance:focus {
+    box-shadow: var(--box-shadow-inset);
+    outline: none;
+}
+
+.angle-in:hover,
+.angle-out:hover,
+.distance:hover {
+    box-shadow: var(--box-shadow-inset);
+    background: var(--color-background-light-hover);
+}
+
+/* Hide the number input arrows in WebKit-based browsers (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide the number input arrows in Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Optional: Remove default padding for a cleaner look */
+input[type="number"] {
+    padding: 0;
+}
