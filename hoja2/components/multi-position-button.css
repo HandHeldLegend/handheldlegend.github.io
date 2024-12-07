@@ -1,0 +1,20 @@
+.button-item {
+    user-select: none;
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background: var(--color-button-off);
+    transition: all 0.3s;
+}
+
+.button-item:hover {
+    background: var(--color-button-off-hover);
+}
+
+.button-item.active {
+    box-shadow: var(--box-shadow-inset);
+    background: var(--color-button-neutral);
+    color: var(--color-text-secondary);
+    font-weight: bold;
+}

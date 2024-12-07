@@ -33,7 +33,6 @@ class GroupRgbPicker extends HTMLElement {
         const initialColor = this.getAttribute('color') || '000000';
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-            <div class="group-rgb-picker">
                 <div class="group-name">${this.getAttribute('group-name') || 'Group'}</div>
                 <div class="pound">#</div>
                 <input 
@@ -52,7 +51,6 @@ class GroupRgbPicker extends HTMLElement {
                         value="#${initialColor}" 
                     />
                 </div>
-            </div>
         `;
     }
 

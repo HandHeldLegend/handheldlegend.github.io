@@ -13,7 +13,7 @@
 
     --color-button-disabled: rgb(77, 77, 77);
     --color-button-neutral: rgb(120, 133, 255);
-    --color-button-neutral-hover: rgb(67, 81, 206);
+    --color-button-neutral-hover: rgb(73, 88, 221);
     --color-button-off: rgb(255, 99, 99);
     --color-button-off-hover: rgb(216, 72, 72);
     --color-button-on: rgb(73, 255, 128);
@@ -22,8 +22,8 @@
     /* Config Box Elements */
     --config-box-height: 2.5rem;
     --config-box-divider-color: #919191;
-    --config-box-max-width-small: 25rem;
-    --config-box-max-width-medium: 35rem;
+    --config-box-max-width-small: 85%;
+    --config-box-max-width-medium: 95%;
 
 
     --box-shadow-inset: inset 0.15rem 0.155rem 0.25rem rgba(0, 0, 0, 0.192), inset -0.15rem -0.15rem 0.25rem rgba(0, 0, 0, 0.192);
@@ -165,11 +165,10 @@ body {
 
 .settings-view {
     background-color: white;
-    width: 80%;
+    width: 100%;
     max-width: 800px;
     height: 80%;
     border-radius: 10px;
-    padding: 20px;
     position: relative;
     transform: translateY(100%);
     transition: transform 0.3s ease;
@@ -190,6 +189,7 @@ body {
 }
 
 .display-settings {
+    align-items: center;
     display: flex;
     width: 100%;
     flex-direction: column;
@@ -218,3 +218,17 @@ body {
     opacity: 1;
 }
 
+number-selector,
+angle-selector,
+multi-position-button, 
+group-rgb-picker, 
+remap-selector {
+    background-color: var(--color-background-light);
+    height: var(--config-box-height);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    width: 80%;
+    max-width: 800px;
+    overflow: hidden;
+}

@@ -10,6 +10,7 @@
 }
 
 .group-name {
+    user-select: none;
     text-align: left;
     margin-left: 1rem;
     flex: 1;
@@ -18,6 +19,7 @@
 }
 
 .pound {
+    user-select: none;
     font-size: 1.2rem;
     color: rgb(66, 66, 66);
     display: flex;

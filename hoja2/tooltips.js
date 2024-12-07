@@ -28,58 +28,65 @@ export function enableTooltips(rootElement) {
     styleTag.textContent = tooltipStyles.match(/<style>(.*)<\/style>/s)[1];
     document.head.appendChild(styleTag);
 
-    const tooltipElements = rootElement.querySelectorAll('[tooltip]');
-    
-    tooltipElements.forEach(element => {
-        // Create tooltip container
-        const tooltipContainer = document.createElement('div');
-        tooltipContainer.className = 'tooltip-container';
+    try
+    {
+        const tooltipElements = rootElement.querySelectorAll('[tooltip]');
         
-        // Create tooltip text element
-        const tooltipText = document.createElement('span');
-        tooltipText.className = 'tooltip-text';
-        tooltipText.textContent = element.getAttribute('tooltip');
-        
-        // Append tooltip to container
-        tooltipContainer.appendChild(tooltipText);
-        
-        // Positioning and visibility logic
-        let tooltipTimeout;
-        
-        const showTooltip = () => {
-            tooltipTimeout = setTimeout(() => {
-                // Position the tooltip
-                const rect = element.getBoundingClientRect();
-                tooltipContainer.style.position = 'fixed';
-                tooltipContainer.style.left = `${rect.left + rect.width / 2}px`;
-                tooltipContainer.style.top = `${rect.bottom + 5}px`;
-                tooltipContainer.style.transform = 'translateX(-50%)';
-                
-                // Add to document and show
-                document.body.appendChild(tooltipContainer);
-                
-                // Trigger reflow to enable transition
-                tooltipContainer.offsetWidth;
-                tooltipContainer.classList.add('tooltip-visible');
-            }, 500); // 0.5 seconds delay
-        };
-        
-        const hideTooltip = () => {
-            // Clear the timeout to prevent showing if mouse leaves quickly
-            clearTimeout(tooltipTimeout);
+        tooltipElements.forEach(element => {
+            // Create tooltip container
+            const tooltipContainer = document.createElement('div');
+            tooltipContainer.className = 'tooltip-container';
             
-            // Remove tooltip if it exists
-            if (tooltipContainer.parentNode) {
-                tooltipContainer.classList.remove('tooltip-visible');
-                setTimeout(() => {
-                    document.body.removeChild(tooltipContainer);
-                }, 200); // Match transition time
-            }
-        };
+            // Create tooltip text element
+            const tooltipText = document.createElement('span');
+            tooltipText.className = 'tooltip-text';
+            tooltipText.textContent = element.getAttribute('tooltip');
+            
+            // Append tooltip to container
+            tooltipContainer.appendChild(tooltipText);
+            
+            // Positioning and visibility logic
+            let tooltipTimeout;
+            
+            const showTooltip = () => {
+                tooltipTimeout = setTimeout(() => {
+                    // Position the tooltip
+                    const rect = element.getBoundingClientRect();
+                    tooltipContainer.style.position = 'fixed';
+                    tooltipContainer.style.left = `${rect.left + rect.width / 2}px`;
+                    tooltipContainer.style.top = `${rect.bottom + 5}px`;
+                    tooltipContainer.style.transform = 'translateX(-50%)';
+                    
+                    // Add to document and show
+                    document.body.appendChild(tooltipContainer);
+                    
+                    // Trigger reflow to enable transition
+                    tooltipContainer.offsetWidth;
+                    tooltipContainer.classList.add('tooltip-visible');
+                }, 500); // 0.5 seconds delay
+            };
+            
+            const hideTooltip = () => {
+                // Clear the timeout to prevent showing if mouse leaves quickly
+                clearTimeout(tooltipTimeout);
+                
+                // Remove tooltip if it exists
+                if (tooltipContainer.parentNode) {
+                    tooltipContainer.classList.remove('tooltip-visible');
+                    setTimeout(() => {
+                        document.body.removeChild(tooltipContainer);
+                    }, 200); // Match transition time
+                }
+            };
+            
+            // Add event listeners
+            element.addEventListener('mouseenter', showTooltip);
+            element.addEventListener('mouseleave', hideTooltip);
+        });
+
+    }
+    catch(error) {
         
-        // Add event listeners
-        element.addEventListener('mouseenter', showTooltip);
-        element.addEventListener('mouseleave', hideTooltip);
-    });
+    }
 }
 

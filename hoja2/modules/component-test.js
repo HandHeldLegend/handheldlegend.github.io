@@ -1,8 +1,9 @@
 // Import the number selector (optional, as it's now globally defined)
 import NumberSelector from '../components/number-selector.js';
-import MultiPositionButton from '../components/multiposition-button.js';
+import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
+import RemapSelector from '../components/remap-selector.js';
 
 import { globalState } from '../app.js';
 
@@ -53,10 +54,15 @@ export function render(container) {
             ></group-rgb-picker>
 
             <angle-selector 
-                in-angle:"45"
-                out-angle:"45"
-                distance:"2048"
+                in-angle="45"
+                out-angle="45"
+                distance="2048"
             ></angle-selector>
+
+            <remap-selector
+                in-value="A",
+                out-value="B",
+            ></remap-selector>
 
         </div>
     `;

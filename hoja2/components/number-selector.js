@@ -55,8 +55,6 @@ class NumberSelector extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-            ${config.label ? `<div class="label">${config.label}</div>` : ''}
-            <div class="number-selector">
                 <button orientation="left" class="btn-control btn-decrease"><</button>
                 <div class="slider-container">
                     <input 
@@ -70,7 +68,7 @@ class NumberSelector extends HTMLElement {
                 </div>
                 <div class="value-display">${config.defaultValue}</div>
                 <button orientation="right" class="btn-control btn-increase">></button>
-            </div>
+
         `;
     }
 

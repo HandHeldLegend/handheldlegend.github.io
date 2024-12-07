@@ -30,33 +30,52 @@ class AngleSelector extends HTMLElement {
         }
     }
 
+    #validateAngle(angle)
+    {
+        if(angle>360)
+        {
+            return angle % 360;
+        }
+        if(angle < 0)
+        {
+            return 360 - (-angle % 360);
+        }
+    }
+
+    #validateDistance(distance)
+    {
+        if(distance>4096)
+        {
+            return 4096;
+        }
+        if(distance < 1000)
+        {
+            return 1000;
+        }
+    }
+
     // Render the component
     render(css) {
-        const inAngle = this.getAttribute('in-angle') || '0';
-        const outAngle = this.getAttribute('out-angle') || '0';
-        const distance = this.getAttribute('distance') || '0';
+        const inAngle = parseFloat(this.getAttribute('in-angle') || "0");
+        const outAngle = parseFloat(this.getAttribute('out-angle') || "0");
+        const distance = parseInt(this.getAttribute('distance') || "1000");
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-            <div class="angle-selector">
-                <button class="button-x" tooltip="Reset angle">↺</button>
                 <button class="button-down" tooltip="Capture angle">⤓</button>
 
                 <div class="even-container">
                 <span class="label">in:</span>
                 <input tooltip="Input angle" type="number" class="angle-in" value="${inAngle}" min="0" max="360" step="any"/>
-                </div>
 
-                <div class="even-container">
                 <span class="label">out:</span>
                 <input tooltip="Output angle" type="number" class="angle-out" value="${outAngle}" min="0" max="360" step="any"/>
+
+                <span class="label">dist:</span>
+                <input tooltip="Output distance" type="number" class="distance" value="${distance}" min="1000" max="4096" step="1"/>
                 </div>
 
-                <div class="even-container">
-                <span class="label">dist:</span>
-                <input tooltip="Output distance" type="number" class="distance" value="${distance}" min="0" max="4096" step="1"/>
-                </div>
-            </div>
+                <button class="button-x" tooltip="Reset angle">↺</button>
         `;
     }
 
@@ -69,8 +88,9 @@ class AngleSelector extends HTMLElement {
         const buttonDown = this.shadowRoot.querySelector('.button-down');
 
         // Update 'in' angle when input changes
-        inAngleInput.addEventListener('input', (event) => {
-            const value = parseFloat(event.target.value);
+        inAngleInput.addEventListener('change', (event) => {
+            console.log("Test");
+            const value = this.#validateAngle(parseFloat(event.target.value));
             if (value >= 0 && value <= 360) {
                 this.setAttribute('in-angle', value);
                 this.emitChangeEvent();
@@ -78,8 +98,8 @@ class AngleSelector extends HTMLElement {
         });
 
         // Update 'out' angle when input changes
-        outAngleInput.addEventListener('input', (event) => {
-            const value = parseFloat(event.target.value);
+        outAngleInput.addEventListener('change', (event) => {
+            const value = this.#validateAngle(parseFloat(event.target.value));
             if (value >= 0 && value <= 360) {
                 this.setAttribute('out-angle', value);
                 this.emitChangeEvent();
@@ -87,8 +107,8 @@ class AngleSelector extends HTMLElement {
         });
 
         // Update distance when input changes
-        distanceInput.addEventListener('input', (event) => {
-            const value = parseInt(event.target.value, 10);
+        distanceInput.addEventListener('change', (event) => {
+            const value = this.#validateDistance(parseInt(event.target.value, 10));
             if (value >= 0 && value <= 4096) {
                 this.setAttribute('distance', value);
                 this.emitChangeEvent();
@@ -97,11 +117,11 @@ class AngleSelector extends HTMLElement {
 
         // Handle button clicks (you can add further logic for these buttons)
         buttonX.addEventListener('click', () => {
-            console.log("X button clicked");
+            console.log("Reset angle clicked");
         });
 
         buttonDown.addEventListener('click', () => {
-            console.log("Down button clicked");
+            console.log("Capture angle clicked");
         });
     }
 

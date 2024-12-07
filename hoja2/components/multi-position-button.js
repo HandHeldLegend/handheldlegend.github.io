@@ -12,7 +12,7 @@ class MultiPositionButton extends HTMLElement {
     async connectedCallback() {
 
         // Load the component-specific CSS
-        const csstext = await fetch('./components/multiposition-button.css');
+        const csstext = await fetch('./components/multi-position-button.css');
         const css = await csstext.text();
 
         this.render(css);
@@ -49,8 +49,7 @@ class MultiPositionButton extends HTMLElement {
         const olabel = this.getLabel();
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-            ${olabel ? `<div class="label">${olabel}</div>` : ''}
-            <div class="multi-position-button">
+
                 ${labels
                   .map(
                     (label, index) => `
@@ -58,7 +57,7 @@ class MultiPositionButton extends HTMLElement {
                 `
                   )
                   .join('')}
-            </div>
+
         `;
     }
 
