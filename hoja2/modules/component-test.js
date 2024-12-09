@@ -6,6 +6,8 @@ import AngleSelector from '../components/angle-selector.js';
 import RemapSelector from '../components/remap-selector.js';
 import TristateButton from '../components/tristate-button.js';
 
+import { enableTooltips } from '../tooltips.js';
+
 import { globalState } from '../app.js';
 
 export function render(container) {
@@ -67,10 +69,10 @@ export function render(container) {
 
             <tristate-button 
                 id="start-button"
-                off-text="Start" 
-                on-text="Stop" 
-                off-to-on-transitioning-text="Starting..." 
-                on-to-off-transitioning-text="Stopping..."
+                off-text="Connect" 
+                on-text="Disconnect" 
+                off-to-on-transitioning-text="Connecting..." 
+                on-to-off-transitioning-text="Disconnecting..."
             ></tristate-button>
 
         </div>

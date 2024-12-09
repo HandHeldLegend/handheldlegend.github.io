@@ -82,7 +82,6 @@ class TristateButton extends HTMLElement {
             <style>${css}</style>
             <button 
                 class="tristate-button ${currentStateConfig.class}" 
-                tooltip="Change connection state"
             >
                 ${currentStateConfig.text}
             </button>
@@ -137,7 +136,11 @@ class TristateButton extends HTMLElement {
     updateButtonText() {
         const button = this.shadowRoot.querySelector('.tristate-button');
         const currentState = this.getAttribute('state') || 'off';
-        button.textContent = this._states[currentState].text;
+        try
+        {
+            button.textContent = this._states[currentState].text;
+        }
+        catch(err) {}
     }
 
     // Set custom click handlers
