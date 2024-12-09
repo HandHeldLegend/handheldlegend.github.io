@@ -4,7 +4,9 @@ import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
 import RemapSelector from '../components/remap-selector.js';
+
 import TristateButton from '../components/tristate-button.js';
+import SingleShotButton from '../components/single-shot-button.js';
 
 import { enableTooltips } from '../tooltips.js';
 
@@ -75,6 +77,13 @@ export function render(container) {
                 on-to-off-transitioning-text="Disconnecting..."
             ></tristate-button>
 
+            <single-shot-button 
+                id="action-button" 
+                state="ready"
+                ready-text="Save" 
+                pending-text="Saving..."
+            ></single-shot-button>
+
         </div>
     `;
 
@@ -101,5 +110,15 @@ export function render(container) {
         // Simulate an async disconnection process
         await new Promise(resolve => setTimeout(resolve, 1500));
         console.log('Disconnected!');
+    });
+
+    const actionButton = document.getElementById('action-button');
+
+    // Set an async handler for the button
+    actionButton.setOnClick(async () => {
+        console.log("action started");
+        // Simulate an async operation
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.log('Action completed!');
     });
 }
