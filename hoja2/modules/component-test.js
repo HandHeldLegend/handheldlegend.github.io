@@ -4,6 +4,7 @@ import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
 import RemapSelector from '../components/remap-selector.js';
+import TristateButton from '../components/tristate-button.js';
 
 import { globalState } from '../app.js';
 
@@ -64,6 +65,14 @@ export function render(container) {
                 out-value="B",
             ></remap-selector>
 
+            <tristate-button 
+                id="start-button"
+                off-text="Start" 
+                on-text="Stop" 
+                off-to-on-transitioning-text="Starting..." 
+                on-to-off-transitioning-text="Stopping..."
+            ></tristate-button>
+
         </div>
     `;
 
@@ -76,4 +85,19 @@ export function render(container) {
     const gamepadModeSelector = container.querySelector('multi-position-button[label="Gamepad Mode"]');
 
     gamepadModeSelector.setState(globalState.gamepadMode);
+
+    const startButton = document.getElementById("start-button");
+
+    // Optional async handlers for connection/disconnection
+    startButton.setOnClickOff(async () => {
+        // Simulate an async connection process
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('Connected!');
+    });
+
+    startButton.setOnClickOn(async () => {
+        // Simulate an async disconnection process
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('Disconnected!');
+    });
 }

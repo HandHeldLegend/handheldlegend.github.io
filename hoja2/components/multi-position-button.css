@@ -1,8 +1,9 @@
 .button-item {
     user-select: none;
     flex: 1;
+    height: var(--config-box-height);
     text-align: center;
-    padding: 10px;
+    align-content: center;
     cursor: pointer;
     background: var(--color-button-off);
     transition: all 0.3s;

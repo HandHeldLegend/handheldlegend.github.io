@@ -1,6 +1,8 @@
 :root {
 
-    --app_background_color: #7264ec;
+    --app-background-color: #988dfff5;
+    --ether-background-color: #594ebbf5;
+    --blur-amt: 5px;
 
     /* Color Palette */
     --color-primary: #4CAF50;
@@ -20,13 +22,12 @@
     --color-button-on-hover: rgb(34, 201, 84);
 
     /* Config Box Elements */
-    --config-box-height: 2.5rem;
+    --config-box-height: 45px;
     --config-box-divider-color: #919191;
     --config-box-max-width-small: 85%;
     --config-box-max-width-medium: 95%;
 
-
-    --box-shadow-inset: inset 0.15rem 0.155rem 0.25rem rgba(0, 0, 0, 0.192), inset -0.15rem -0.15rem 0.25rem rgba(0, 0, 0, 0.192);
+    --box-shadow-inset: inset 4px 4px 6px rgba(0, 0, 0, 0.192), inset -4px -4px 6px rgba(0, 0, 0, 0.192);
 
     /* Spacing */
     --spacing-xs: 5px;
@@ -36,20 +37,46 @@
     --spacing-xl: 30px;
 
     /* Border Radius */
-    --border-radius-sm: 0.5rem;
-    --border-radius-md: 0.75rem;
-    --border-radius-lg: 1rem;
+    --border-radius-sm: 10px;
+    --border-radius-md: 18px;
+    --border-radius-lg: 24px;
     --border-radius-round: 50%;
 
     /* Typography */
     --font-family-primary: Arial, sans-serif;
-    --font-size-sm: 1rem;
-    --font-size-md: 1.5rem;
-    --font-size-lg: 2rem;
+    --font-size-sm: 12px;
+    --font-size-md: 20px;
+    --font-size-lg: 28px;
 
     /* Transitions */
     --transition-quick: 0.2s ease;
     --transition-standard: 0.3s ease;
+}
+
+body {
+    font-family: var(--font-family-primary);
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    background-color: var(--ether-background-color);
+}
+
+.app-container {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--app-background-color);
+    display: block;
+    max-width: 800px;
+    height: 100%;
+}
+
+.app-header {
+    width: 100%;
+    height: 85px;
+    display: block;
+    background-color: red;
 }
 
 /* Shared Component Styles */
@@ -97,15 +124,7 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.15);
 }
 
-body {
-    font-family: var(--font-family-primary);
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--app_background_color);
-}
+
 
 #app {
     flex-grow: 1;
@@ -164,11 +183,13 @@ body {
 }
 
 .settings-view {
-    background-color: white;
+    background-color: rgba(216, 216, 216, 0.555);
+    backdrop-filter: blur(var(--blur-amt));
+    -webkit-backdrop-filter: blur(var(--blur-amt));
     width: 100%;
     max-width: 800px;
     height: 80%;
-    border-radius: 10px;
+    border-radius: var(--border-radius-lg);
     position: relative;
     transform: translateY(100%);
     transition: transform 0.3s ease;
@@ -229,6 +250,6 @@ remap-selector {
     display: flex;
     align-items: center;
     width: 80%;
-    max-width: 800px;
+    max-width: 500px;
     overflow: hidden;
 }
