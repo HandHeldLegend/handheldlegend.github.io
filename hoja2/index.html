@@ -9,11 +9,27 @@
     
 
     <div class="app-container">
-        <div class="app-header"></div>
+        <div class="app-header-container">
+            <div class="app-header">
+                <tristate-button 
+                    id="start-button"
+                    off-text="Connect" 
+                    on-text="Disconnect" 
+                    off-to-on-transitioning-text="Connecting..." 
+                    on-to-off-transitioning-text="Disconnecting..."
+                ></tristate-button>
+                <single-shot-button 
+                    id="action-button" 
+                    state="ready"
+                    ready-text="Save" 
+                    pending-text="Saving..."
+                ></single-shot-button>
+            </div>
+            <div visible="true" class="header-msg-box visible">This is a test message</div>
+        </div>
         <div class="swap-space">
             <div id="settings-grid" class="settings-grid"></div>
         </div>
-        
     </div>
 
     <div id="settings-overlay" class="settings-overlay hidden">

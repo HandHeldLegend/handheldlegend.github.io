@@ -1,5 +1,4 @@
 :root {
-
     --app-background-color: #988dfff5;
     --ether-background-color: #594ebbf5;
     --blur-amt: 5px;
@@ -9,11 +8,11 @@
     --color-secondary: #2196F3;
     --color-background-light: #b9edff;
     --color-background-light-hover: rgb(145, 206, 226);
-    --color-background-dark: #5f5f5faf;
+    --color-background-dark: #b4b4b4af;
     --color-text-primary: #131313;
     --color-text-secondary: #000000;
 
-    --color-button-disabled: rgb(77, 77, 77);
+    --color-button-disabled: rgb(136, 136, 136);
     --color-button-neutral: rgb(120, 133, 255);
     --color-button-neutral-hover: rgb(73, 88, 221);
     --color-button-off: rgb(255, 99, 99);
@@ -22,12 +21,13 @@
     --color-button-on-hover: rgb(34, 201, 84);
 
     /* Config Box Elements */
-    --config-box-height: 45px;
+    --config-box-height: 40px;
     --config-box-divider-color: #919191;
     --config-box-max-width-small: 85%;
     --config-box-max-width-medium: 95%;
 
     --box-shadow-inset: inset 4px 4px 6px rgba(0, 0, 0, 0.192), inset -4px -4px 6px rgba(0, 0, 0, 0.192);
+    --box-shadow-open: inset 0px 4px 6px rgba(0, 0, 0, 0.192), inset 0px -4px 6px rgba(0, 0, 0, 0.192);
 
     /* Spacing */
     --spacing-xs: 5px;
@@ -67,16 +67,55 @@ body {
     margin-left: auto;
     margin-right: auto;
     background-color: var(--app-background-color);
-    display: block;
+    display: flex;
+    flex-direction: column;
+
     max-width: 800px;
-    height: 100%;
+    height: 100vh; /* Full viewport height */
+}
+
+.app-header-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: inherit;
+    position: sticky;
+    top: 0;
+    z-index: 10; /* Ensure it stays on top */
 }
 
 .app-header {
+    max-width: inherit;
     width: 100%;
-    height: 85px;
-    display: block;
-    background-color: red;
+    height: 65px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 0, 0, 0.692);
+}
+
+.header-msg-box {
+    padding: 0rem;
+    display: flex;
+    background-color: rgb(255, 108, 108);
+    max-width: inherit; 
+    max-height: 0; /* Start with 0 height */
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    box-shadow: var(--box-shadow-open);
+}
+
+.header-msg-box.visible {
+    align-items: center;
+    text-align: center;
+    max-height: fit-content; /* Adjust as needed */
+    padding: 0.5rem;
+}
+
+.swap-space {
+    flex-grow: 1;
+    overflow-y: auto; /* Allow scrolling of main content */
 }
 
 /* Shared Component Styles */

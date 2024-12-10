@@ -55,7 +55,7 @@ export function render(container) {
 
             <group-rgb-picker 
                 group-name="Test" 
-                color="ff5733"
+                color="22AA22"
             ></group-rgb-picker>
 
             <angle-selector 

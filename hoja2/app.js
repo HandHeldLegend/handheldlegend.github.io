@@ -1,6 +1,9 @@
 // Dynamic module loader and settings management
 import { registerSettingsModules } from './moduleRegistry.js';
 import { enableTooltips } from './tooltips.js';
+import TristateButton from './components/tristate-button.js';
+import SingleShotButton from './components/single-shot-button.js';
+
 
 export var globalState = {
     gamepadMode: 2,
@@ -86,7 +89,7 @@ class ConfigApp {
     }
 }
 
-var debug = true;
+var debug = false;
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.configApp = new ConfigApp();
