@@ -59,7 +59,7 @@ class HojaGamepad {
 
       this.#isConnected = true;
       this.#triggerEvent('connect');
-
+      this.#pollDevice();
     } catch (error) {
       console.error('Connection failed:', error);
       this.#triggerEvent('disconnect');
@@ -92,12 +92,8 @@ class HojaGamepad {
 
       this.#device.transferIn(2, 64)
         .then(result => {
-          if(result && result.data)
-          {
-            console.log(result.data);
-            //this.#parseReport(result.data);
-          }
-          else { console.log("No data received."); }
+          console.log("Received...");
+          console.log(result.data);
           this.#pollDevice();
         })
         .catch(error => {
@@ -142,16 +138,12 @@ class HojaGamepad {
       {
         throw new Error("Can't send command, device not connected!");
       }
-      // Create a Uint8Array with one extra byte for the command
-      var payload = new Uint8Array([0x1, 0x1]);
+      
+      // Create a Uint8Array with the first byte as the command and the rest as data
+      const payload = new Uint8Array([1, ...data]);
+      console.log("Sending...");
+      console.log(payload);
       this.#device.transferOut(2, payload);
-
-      if(!this.#polling || this.#polling==null)
-      {
-        console.log("Start polling");
-        this.#polling = true;
-        this.#pollDevice();
-      }
 
     } catch (error) {
       console.error('Failed to send command.', error);
