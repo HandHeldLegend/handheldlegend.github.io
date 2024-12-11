@@ -6,14 +6,14 @@ class HojaGamepad {
   // Private fields for device and connection state
   #device = null;
   #isConnected = false;
-  #pollingInterval = null;
+  #polling = null;
+
+  #deviceItf = 1;
+  #deviceEp = 2;
 
   // Internal memory for parameters
   #parameters = {
-    rgbColor: { r: 0, g: 0, b: 0 },
-    rumbleIntensity: 0,
-    deadzone: 0.1,
-    buttonMappings: {}
+    name: "gamepad",
   };
 
   // Event handlers
@@ -25,16 +25,16 @@ class HojaGamepad {
 
   // Private constructor to enforce singleton
   constructor() {
-    if (GamepadController.#instance) {
-      return GamepadController.#instance;
+    if (HojaGamepad.#instance) {
+      return HojaGamepad.#instance;
     }
-    GamepadController.#instance = this;
+    HojaGamepad.#instance = this;
   }
 
   // Singleton access method
   static getInstance() {
     if (!this.#instance) {
-      this.#instance = new GamepadController();
+      this.#instance = new HojaGamepad();
     }
     return this.#instance;
   }
@@ -46,7 +46,7 @@ class HojaGamepad {
       this.#device = await navigator.usb.requestDevice({
         filters: [
           // Replace with your specific USB device vendor and product IDs
-          { vendorId: 0x1234, productId: 0x5678 }
+          { vendorId: 0x057E, productId: 0x2009 }
         ]
       });
 
@@ -59,7 +59,7 @@ class HojaGamepad {
 
       this.#isConnected = true;
       this.#triggerEvent('connect');
-      this.#startPolling();
+
     } catch (error) {
       console.error('Connection failed:', error);
       this.#triggerEvent('disconnect');
@@ -70,8 +70,6 @@ class HojaGamepad {
   async disconnect() {
     if (this.#device) {
       try {
-        // Stop polling
-        this.#stopPolling();
 
         // Close the device
         await this.#device.close();
@@ -86,74 +84,38 @@ class HojaGamepad {
   }
 
   // Internal polling method
-  #startPolling() {
-    this.#pollingInterval = setInterval(async () => {
-      if (!this.#isConnected) return;
-
-      try {
-        // Example of reading input report
-        const report = await this.#device.transferIn(1, 64);
-        
-        if (report.data) {
-          // Parse the report and update internal state
-          this.#parseReport(report.data);
-          
-          // Trigger report listeners
-          this.#triggerEvent('report', report.data);
-        }
-      } catch (error) {
-        console.error('Polling error:', error);
+  #pollDevice() {
+      if (!this.#isConnected)
+      {
+        console.log("Device not connected to poll.");
       }
-    }, 16); // Approximately 60 FPS
-  }
 
-  // Stop polling
-  #stopPolling() {
-    if (this.#pollingInterval) {
-      clearInterval(this.#pollingInterval);
-      this.#pollingInterval = null;
-    }
+      this.#device.transferIn(2, 64)
+        .then(result => {
+          if(result && result.data)
+          {
+            console.log(result.data);
+            //this.#parseReport(result.data);
+          }
+          else { console.log("No data received."); }
+          this.#pollDevice();
+        })
+        .catch(error => {
+          console.error('Polling error:', error);
+          setTimeout(() => this.#pollDevice(), 100); // Retry after a delay
+        });
   }
 
   // Parse incoming USB report
   #parseReport(data) {
-    // Implement specific parsing logic for your gamepad
-    // This is a placeholder implementation
-    const parsedData = {
-      buttons: [],
-      axes: []
-    };
-
+    console.log(data);
     // Trigger any necessary internal state updates
-    this.#updateInternalState(parsedData);
+    //this.#updateInternalState(parsedData);
   }
 
   // Update internal state based on parsed report
   #updateInternalState(parsedData) {
-    // Example: Update RGB based on some condition
-    if (parsedData.buttons.length > 0) {
-      this.#parameters.rgbColor = this.#calculateRGBFromInput(parsedData);
-    }
-  }
 
-  // Method to set RGB color
-  setRGBColor(r, g, b) {
-    if (!this.#isConnected) {
-      throw new Error('Device not connected');
-    }
-
-    this.#parameters.rgbColor = { r, g, b };
-    this.#sendRGBToDevice(r, g, b);
-  }
-
-  // Send RGB color to device (placeholder)
-  async #sendRGBToDevice(r, g, b) {
-    try {
-      // Implement USB transfer to set RGB
-      await this.#device.transferOut(1, new Uint8Array([r, g, b]));
-    } catch (error) {
-      console.error('Failed to set RGB:', error);
-    }
   }
 
   // Event listener management
@@ -174,14 +136,26 @@ class HojaGamepad {
     return { ...this.#parameters };
   }
 
-  // Utility method for RGB calculation (example)
-  #calculateRGBFromInput(parsedData) {
-    // Implement your own logic to derive RGB from input
-    return { 
-      r: Math.min(255, parsedData.buttons[0] * 255),
-      g: Math.min(255, parsedData.buttons[1] * 255),
-      b: Math.min(255, parsedData.buttons[2] * 255)
-    };
+  async sendCommand(command, data) {
+    try {
+      if(!this.#isConnected)
+      {
+        throw new Error("Can't send command, device not connected!");
+      }
+      // Create a Uint8Array with one extra byte for the command
+      var payload = new Uint8Array([0x1, 0x1]);
+      this.#device.transferOut(2, payload);
+
+      if(!this.#polling || this.#polling==null)
+      {
+        console.log("Start polling");
+        this.#polling = true;
+        this.#pollDevice();
+      }
+
+    } catch (error) {
+      console.error('Failed to send command.', error);
+    }
   }
 }
 
