@@ -87,6 +87,17 @@ export class AnalogConfig {
         this.view = new DataView(this.buffer);
     }
 
+    debugPrint() {
+        console.log("Analog Values: ");
+        let output = {
+            configVersion : this.analogConfigVersion,
+            lxInvert: this.lxInvert,
+            lxCenter: this.lxCenter,
+            lDistances: this.getLeftPackedDistances(),
+        };
+        console.log(output);
+    }
+
     // Analog Config Version
     get analogConfigVersion() {
         return this.view.getUint8(0);
@@ -188,7 +199,7 @@ export class AnalogConfig {
     // Method to set the entire configuration block
     setConfigurationBlock(configBlock) {
         if (configBlock.length !== ANALOG_CFB_SIZE) {
-            throw new Error(`Configuration block must be ${ANALOG_CFB_SIZE} bytes`);
+            throw new Error(`Configuration block must be ${ANALOG_CFB_SIZE} bytes. Actual is ${configBlock.length}`);
         }
         new Uint8Array(this.buffer).set(configBlock);
     }
@@ -196,4 +207,4 @@ export class AnalogConfig {
 
 // You would need to define ANALOG_CFB_SIZE before creating this class
 // For example:
-// const ANALOG_CFB_SIZE = 512; // or whatever the actual size is
+const ANALOG_CFB_SIZE = 1024; // or whatever the actual size is

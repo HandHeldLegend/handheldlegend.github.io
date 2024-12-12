@@ -1,3 +1,5 @@
+import { AnalogConfig } from "./config/analog_cfg.js";
+
 class HojaGamepad {
 
 // Static instance for singleton pattern
@@ -10,6 +12,8 @@ class HojaGamepad {
 
   #deviceItf = 1;
   #deviceEp = 2;
+
+  analog_cfg = new AnalogConfig();
 
   // Internal memory for parameters
   #parameters = {
@@ -92,8 +96,7 @@ class HojaGamepad {
 
       this.#device.transferIn(2, 64)
         .then(result => {
-          console.log("Received...");
-          console.log(result.data);
+          this.#parseReport(result.data);
           this.#pollDevice();
         })
         .catch(error => {
@@ -102,11 +105,88 @@ class HojaGamepad {
         });
   }
 
+  #blockType = -1;
+  #tmpData = new Uint8Array(1024);
+
+  #blockParser(data) {
+    const blockThisTime = data.getUint8(1);
+    const chunkSize = data.getUint8(2);
+    const writeIdx = data.getUint8(3);
+    const chunkData = new Uint8Array(data.buffer, data.byteOffset+4, chunkSize);
+
+    // Check the block type
+    if(this.#blockType != blockThisTime)
+    {
+      this.#tmpData = new Uint8Array(1024);
+      this.#blockType = blockThisTime;
+    }
+
+    if(writeIdx == 0xFF)
+    {
+      // Received full block chunk
+      console.log("Full chunk completed: " + this.#blockType);
+      
+      switch(this.#blockType)
+      {
+        // CFG_BLOCK_GAMEPAD
+        case 0:
+          
+          break;
+
+        // CFG_BLOCK_REMAP
+        case 1:
+          break;
+
+        // CFG_BLOCK_ANALOG
+        case 2:
+          console.log("GOT analog config chunk");
+          this.analog_cfg.setConfigurationBlock(this.#tmpData);
+          this.analog_cfg.debugPrint();
+          break;
+        
+        // CFG_BLOCK_RGB
+        case 3:
+          break;
+
+        // CFG_BLOCK_TRIGGER
+        case 4:
+          break;
+
+        // CFG_BLOCK_IMU
+        case 5:
+          break;
+
+        // CFG_BLOCK_HAPTIC
+        case 6: 
+          break;
+
+        // CFG_BLOCK_USER
+        case 7:
+          break;
+
+      }
+      this.#blockType = -1;
+    }
+    else 
+    {
+      this.#tmpData.set(chunkData, writeIdx*32);
+    }
+
+  }
+
   // Parse incoming USB report
   #parseReport(data) {
-    console.log(data);
-    // Trigger any necessary internal state updates
-    //this.#updateInternalState(parsedData);
+    switch(data.getUint8(0))
+    {
+      // WEBUSB_ID_READ_CONFIG_BLOCK
+      case 1:
+        this.#blockParser(data);
+        break;
+
+      // WEBUSB_ID_WRITE_CONFIG_BLOCK
+      case 2:
+        break;
+    }
   }
 
   // Update internal state based on parsed report
@@ -140,9 +220,8 @@ class HojaGamepad {
       }
       
       // Create a Uint8Array with the first byte as the command and the rest as data
-      const payload = new Uint8Array([1, ...data]);
+      const payload = new Uint8Array([command, ...data]);
       console.log("Sending...");
-      console.log(payload);
       this.#device.transferOut(2, payload);
 
     } catch (error) {
