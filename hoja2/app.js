@@ -89,7 +89,7 @@ class ConfigApp {
     }
 }
 
-var debug = false;
+var debug = true;
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.configApp = new ConfigApp();

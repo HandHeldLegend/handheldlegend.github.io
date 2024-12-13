@@ -70,7 +70,7 @@ export function render(container) {
             ></remap-selector>
 
             <tristate-button 
-                id="start-button"
+                id="component-test-tristate"
                 off-text="Connect" 
                 on-text="Disconnect" 
                 off-to-on-transitioning-text="Connecting..." 
@@ -78,7 +78,7 @@ export function render(container) {
             ></tristate-button>
 
             <single-shot-button 
-                id="action-button" 
+                id="component-test-singleshot" 
                 state="ready"
                 ready-text="Save" 
                 pending-text="Saving..."
@@ -97,7 +97,7 @@ export function render(container) {
 
     gamepadModeSelector.setState(globalState.gamepadMode);
 
-    const startButton = document.getElementById("start-button");
+    const startButton = document.getElementById("component-test-tristate");
 
     // Optional async handlers for connection/disconnection
     startButton.setOnClickOff(async () => {
@@ -112,7 +112,7 @@ export function render(container) {
         console.log('Disconnected!');
     });
 
-    const actionButton = document.getElementById('action-button');
+    const actionButton = document.getElementById('component-test-singleshot');
 
     // Set an async handler for the button
     actionButton.setOnClick(async () => {

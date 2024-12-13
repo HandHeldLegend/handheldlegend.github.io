@@ -1,5 +1,3 @@
-import { enableTooltips } from "../tooltips.js";
-
 class TristateButton extends HTMLElement {
     constructor() {
         super();
@@ -46,8 +44,6 @@ class TristateButton extends HTMLElement {
         const css = await csstext.text();
         this.render(css);
         this.setupEventListeners();
-
-        enableTooltips(this.shadowRoot);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

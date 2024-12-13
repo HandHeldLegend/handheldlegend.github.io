@@ -1,5 +1,3 @@
-import { enableTooltips } from "../tooltips.js";
-
 class SingleShotButton extends HTMLElement {
     constructor() {
         super();
@@ -35,8 +33,6 @@ class SingleShotButton extends HTMLElement {
         const css = await csstext.text();
         this.render(css);
         this.setupEventListeners();
-
-        enableTooltips(this.shadowRoot);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -79,8 +75,6 @@ class SingleShotButton extends HTMLElement {
                 return;
             }
 
-            
-
             try {
                 // Set to pending state
                 this.setAttribute('state', 'pending');
@@ -93,13 +87,13 @@ class SingleShotButton extends HTMLElement {
                     await this._onClick();
                 }
 
-                // Return to ready state
-                this.setAttribute('state', 'ready');
             } catch (error) {
                 // Handle error and return to ready state
                 console.error('Button action failed:', error);
                 this.setAttribute('state', 'ready');
             } finally {
+                // Return to ready state
+                this.setAttribute('state', 'ready');
                 // Ensure button is re-enabled
                 button.disabled = false;
             }
@@ -110,12 +104,17 @@ class SingleShotButton extends HTMLElement {
         const button = this.shadowRoot.querySelector('.single-shot-button');
         
         // Remove previous state classes
-        Object.values(this._states).forEach(stateConfig => {
-            button.classList.remove(stateConfig.class);
-        });
+        //Object.values(this._states).forEach(stateConfig => {
+        //    button.classList.remove(stateConfig.class);
+        //});
+
+        try {
+            button.removeAttribute('state');
+        }
+        catch(err) {}
         
         // Add current state class
-        button.classList.add(this._states[state].class);
+        //button.classList.add(this._states[state].class);
         this.updateButtonText();
     }
 
