@@ -1,17 +1,77 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Imuconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(32);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get imu_config_version() {
+		return this.#_getUint8(0);
+	}
 
-  $getFunctions
+	/** @type {Uint8Array} */
+	get imu_a_gyro_config() {
+		return this.#_getUint8Array(1, 3);
+	}
+
+	/** @type {Uint8Array} */
+	get imu_a_accel_config() {
+		return this.#_getUint8Array(4, 3);
+	}
+
+	/** @type {Uint8Array} */
+	get imu_b_gyro_config() {
+		return this.#_getUint8Array(7, 3);
+	}
+
+	/** @type {Uint8Array} */
+	get imu_b_accel_config() {
+		return this.#_getUint8Array(10, 3);
+	}
+
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(13, 19);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set imu_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set imu_a_gyro_config(value) {
+		this.#_setUint8Array(1, 3, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set imu_a_accel_config(value) {
+		this.#_setUint8Array(4, 3, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set imu_b_gyro_config(value) {
+		this.#_setUint8Array(7, 3, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set imu_b_accel_config(value) {
+		this.#_setUint8Array(10, 3, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(13, 19, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

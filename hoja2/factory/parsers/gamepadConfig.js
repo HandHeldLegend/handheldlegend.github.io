@@ -1,17 +1,77 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Gamepadconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(32);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get gamepad_config_version() {
+		return this.#_getUint8(0);
+	}
 
-  $getFunctions
+	/** @type {Uint8Array} */
+	get switch_mac_address() {
+		return this.#_getUint8Array(1, 6);
+	}
+
+	/** @type {Uint8} */
+	get gamepad_default_mode() {
+		return this.#_getUint8(7);
+	}
+
+	/** @type {Uint8} */
+	get sp_function_mode() {
+		return this.#_getUint8(8);
+	}
+
+	/** @type {Uint8} */
+	get dpad_socd_mode() {
+		return this.#_getUint8(9);
+	}
+
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(10, 22);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set gamepad_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set switch_mac_address(value) {
+		this.#_setUint8Array(1, 6, value);
+	}
+
+	/** @param {Uint8} value */
+	set gamepad_default_mode(value) {
+		this.#_setUint8(7, value);
+	}
+
+	/** @param {Uint8} value */
+	set sp_function_mode(value) {
+		this.#_setUint8(8, value);
+	}
+
+	/** @param {Uint8} value */
+	set dpad_socd_mode(value) {
+		this.#_setUint8(9, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(10, 22, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

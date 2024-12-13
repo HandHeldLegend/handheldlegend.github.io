@@ -1,0 +1,9 @@
+typedef struct 
+{
+    uint8_t gamepad_config_version;
+    uint8_t switch_mac_address[6];
+    uint8_t gamepad_default_mode;
+    uint8_t sp_function_mode;
+    uint8_t dpad_socd_mode;
+    uint8_t reserved[22];
+} gamepadConfig_s;

@@ -1,0 +1,8 @@
+typedef struct 
+{
+    uint8_t rgb_config_version;
+    uint8_t  rgb_mode;
+    uint8_t  rgb_speed_factor;
+    uint32_t rgb_colors[32]; // Store 32 RGB colors
+    uint8_t  reserved[125];
+} rgbConfig_s;

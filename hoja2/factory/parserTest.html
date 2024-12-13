@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Console Log Mirror</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white shadow-lg rounded-lg p-6 w-3/4 max-w-2xl">
+        <h1 class="text-2xl font-bold mb-4 text-center">Console Log Mirror</h1>
+        <div id="terminal" class="bg-black text-green-500 font-mono p-4 rounded-md h-64 overflow-y-auto">
+            <p class="terminal-output">Waiting for logs...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Capture and mirror console logs
+        const terminalOutput = document.querySelector('#terminal .terminal-output');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function mirrorLog(type, ...args) {
+            const logEntry = document.createElement('p');
+            logEntry.classList.add(
+                type === 'error' ? 'text-red-500' : 
+                type === 'warn' ? 'text-yellow-500' : 
+                'text-green-500'
+            );
+            logEntry.textContent = args.map(arg => 
+                typeof arg === 'object' ? JSON.stringify(arg) : arg
+            ).join(' ');
+            
+            terminalOutput.appendChild(logEntry);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+
+            // Call original log methods
+            if (type === 'log') originalLog(...args);
+            if (type === 'error') originalError(...args);
+            if (type === 'warn') originalWarn(...args);
+        }
+
+        // Override console methods
+        console.log = (...args) => mirrorLog('log', ...args);
+        console.error = (...args) => mirrorLog('error', ...args);
+        console.warn = (...args) => mirrorLog('warn', ...args);
+
+    </script>
+    <script type="module" src="./test.js"></script>
+</body>
+</html>

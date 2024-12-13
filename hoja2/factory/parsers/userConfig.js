@@ -1,17 +1,37 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Userconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(64);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8Array} */
+	get user_name() {
+		return this.#_getUint8Array(0, 24);
+	}
 
-  $getFunctions
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(24, 40);
+	}
+
+
+
+  	/** @param {Uint8Array} value */
+	set user_name(value) {
+		this.#_setUint8Array(0, 24, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(24, 40, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

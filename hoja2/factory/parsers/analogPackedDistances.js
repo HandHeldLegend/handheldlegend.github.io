@@ -1,17 +1,37 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Analogpackeddistances {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(130);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Int32} */
+	get first_distance() {
+		return this.#_getInt32(0);
+	}
 
-  $getFunctions
+	/** @type {Int16Array} */
+	get offsets() {
+		return this.#_getInt16Array(4, 63);
+	}
+
+
+
+  	/** @param {Int32} value */
+	set first_distance(value) {
+		this.#_setInt32(0, value);
+	}
+
+	/** @param {Int16Array} value */
+	set offsets(value) {
+		this.#_setInt16Array(4, 63, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

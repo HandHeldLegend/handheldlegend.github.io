@@ -1,17 +1,37 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Batteryconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(8);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Float32} */
+	get charge_level_percent() {
+		return this.#_getFloat32(0);
+	}
 
-  $getFunctions
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(4, 4);
+	}
+
+
+
+  	/** @param {Float32} value */
+	set charge_level_percent(value) {
+		this.#_setFloat32(0, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(4, 4, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

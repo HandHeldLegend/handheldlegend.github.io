@@ -1,17 +1,179 @@
-$imports
+import Analogpackeddistances from './analogPackedDistances.js';
+import Anglemap from './angleMap.js';
 
-export default class $className {
-  $declares
+
+export default class Analogconfig {
+  	#l_packed_distancesVal;
+	#r_packed_distancesVal;
+	#l_angle_mapsVal = [];
+	#r_angle_mapsVal = [];
+
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(1024);
 
-    $setups
+    	let l_packed_distancesBuf = this.#_getUint8Array(5, 130);
+	this.#l_packed_distancesVal = new Analogpackeddistances(l_packed_distancesBuf);
+
+	let r_packed_distancesBuf = this.#_getUint8Array(135, 130);
+	this.#r_packed_distancesVal = new Analogpackeddistances(r_packed_distancesBuf);
+
+	for(let i = 0; i < 16; i++) {
+		let buf = this.#_getUint8Array(265*i, 12);
+		this.#l_angle_mapsVal.push(new Anglemap(buf));
+	}
+
+	for(let i = 0; i < 16; i++) {
+		let buf = this.#_getUint8Array(457*i, 12);
+		this.#r_angle_mapsVal.push(new Anglemap(buf));
+	}
+
+
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get analog_config_version() {
+		return this.#_getUint8(0);
+	}
 
-  $getFunctions
+	/** @type {Uint16} */
+	get lx_invert() {
+		return this.#_getBitfield(1, 2, 1, 0);
+	}
+
+	/** @type {Uint16} */
+	get lx_center() {
+		return this.#_getBitfield(1, 2, 15, 1);
+	}
+
+	/** @type {Uint16} */
+	get ly_invert() {
+		return this.#_getBitfield(2, 2, 1, 0);
+	}
+
+	/** @type {Uint16} */
+	get ly_center() {
+		return this.#_getBitfield(2, 2, 15, 1);
+	}
+
+	/** @type {Uint16} */
+	get rx_invert() {
+		return this.#_getBitfield(3, 2, 1, 0);
+	}
+
+	/** @type {Uint16} */
+	get rx_center() {
+		return this.#_getBitfield(3, 2, 15, 1);
+	}
+
+	/** @type {Uint16} */
+	get ry_invert() {
+		return this.#_getBitfield(4, 2, 1, 0);
+	}
+
+	/** @type {Uint16} */
+	get ry_center() {
+		return this.#_getBitfield(4, 2, 15, 1);
+	}
+
+	/** @type {Analogpackeddistances} */
+	get l_packed_distances() {
+		return this.#l_packed_distancesVal;
+	}
+
+	/** @type {Analogpackeddistances} */
+	get r_packed_distances() {
+		return this.#r_packed_distancesVal;
+	}
+
+	/** @type {Anglemap[]} */
+	get l_angle_maps() {
+		return this.#l_angle_mapsVal;
+	}
+
+	/** @type {Anglemap[]} */
+	get r_angle_maps() {
+		return this.#r_angle_mapsVal;
+	}
+
+	/** @type {Uint8} */
+	get l_scaler_type() {
+		return this.#_getUint8(649);
+	}
+
+	/** @type {Uint8} */
+	get r_scaler_type() {
+		return this.#_getUint8(650);
+	}
+
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(651, 369);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set analog_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint16} value */
+	set lx_invert(value) {
+		this.#_setBitfield(1, 2, 1, 0, value);
+	}
+
+	/** @param {Uint16} value */
+	set lx_center(value) {
+		this.#_setBitfield(1, 2, 15, 1, value);
+	}
+
+	/** @param {Uint16} value */
+	set ly_invert(value) {
+		this.#_setBitfield(2, 2, 1, 0, value);
+	}
+
+	/** @param {Uint16} value */
+	set ly_center(value) {
+		this.#_setBitfield(2, 2, 15, 1, value);
+	}
+
+	/** @param {Uint16} value */
+	set rx_invert(value) {
+		this.#_setBitfield(3, 2, 1, 0, value);
+	}
+
+	/** @param {Uint16} value */
+	set rx_center(value) {
+		this.#_setBitfield(3, 2, 15, 1, value);
+	}
+
+	/** @param {Uint16} value */
+	set ry_invert(value) {
+		this.#_setBitfield(4, 2, 1, 0, value);
+	}
+
+	/** @param {Uint16} value */
+	set ry_center(value) {
+		this.#_setBitfield(4, 2, 15, 1, value);
+	}
+
+	/** @param {Uint8} value */
+	set l_scaler_type(value) {
+		this.#_setUint8(649, value);
+	}
+
+	/** @param {Uint8} value */
+	set r_scaler_type(value) {
+		this.#_setUint8(650, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(651, 369, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

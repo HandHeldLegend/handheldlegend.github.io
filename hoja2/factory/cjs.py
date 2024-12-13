@@ -1,9 +1,9 @@
 from cfields import Field
 
 class CJS:
-
     type_table = {
         "uint8_t"   : "Uint8",
+        "int16_t"   : "Int16",
         "uint16_t"  : "Uint16",
         "uint32_t"  : "Uint32",
         "int"       : "Int32",
@@ -32,9 +32,9 @@ class CJS:
         for field in self.fields:
             if field.bitfield_size:
                 total_bits += field.bitfield_size
-                while total_bits >= 8:
-                    total_bytes += 1
-                    total_bits -= 8
+                while total_bits >= (8*field.byte_size):
+                    total_bytes += field.byte_size
+                    total_bits = 0
                 continue
 
             if field.array_size:
@@ -117,7 +117,6 @@ class CJS:
             if field.array_size > 1:
                 array_present = "Array"
 
-
             fn += "\t/** @param {{{}}} value */\n".format(get_type+array_present)
 
             # Generate header
@@ -159,27 +158,25 @@ class CJS:
             if field.struct_name:
                 if not field.struct_name in classes_imported:
                     # Set up class import (Only once for a class import)
-                    imports += "import {} from './{}.js';\n".format(field.struct_name.capitalize(), field.struct_name.lower())
+                    imports += "import {} from './{}.js';\n".format(field.struct_name.capitalize(), field.struct_name)
                     classes_imported.append(field.struct_name)
                 
                 array = ""
 
                 if field.array_size>1:
-                    array = "[]"
+                    array = " = []"
                     setups += "\tfor(let i = 0; i < {}; i++) {{\n".format(field.array_size)
                     setups += "\t\tlet buf = this.#_getUint8Array({}*i, {});\n".format(field.byte_offset, field.byte_size)
                     setups += "\t\tthis.#{}Val.push(new {}(buf));\n".format(field.name, field.struct_name.capitalize())
                     setups += "\t}\n\n"
                 else:
-                    setups += "\tlet {}Buf = this.#_getUint8Array({}*i, {});\n".format(field.name, field.byte_offset, field.byte_size)
+                    setups += "\tlet {}Buf = this.#_getUint8Array({}, {});\n".format(field.name, field.byte_offset, field.byte_size)
                     setups += "\tthis.#{}Val = new {}({}Buf);\n\n".format(field.name, field.struct_name.capitalize(), field.name)
 
                 # Set up our class with its appropriate buffer
                 declares += "\t#{}Val{};\n".format(field.name, array)
 
-
-
-        return setups
+        return imports, setups, declares
 
     def export_to_js(self, filename):
         """
@@ -187,4 +184,35 @@ class CJS:
 
         :param filename: The filename to save the JavaScript class (str).
         """
+        template_file = "./template.js"
+        # Read the template file content
+        try:
+            with open(template_file, 'r') as template:
+                js_body = template.read()
+        except FileNotFoundError:
+            print(f"Error: Template file '{template_file}' not found.")
+            return
+
+        imports, setups, declares = self.generate_class_header()
+        get_fns = self.generate_get_functions()
+        set_fns = self.generate_set_functions()
+
+        js_body = js_body.replace("$imports",   imports)
+        js_body = js_body.replace("$setups",    setups)
+        js_body = js_body.replace("$declares",  declares)
+
+        js_body = js_body.replace("$setFunctions",  get_fns)
+        js_body = js_body.replace("$getFunctions",  set_fns)
+
+        self.struct_name = self.struct_name.replace("_s", "").capitalize()
+        js_body = js_body.replace("$className", self.struct_name)
+
+        totalSize = self.calculate_total_size()
+        js_body = js_body.replace("$bufferByteSize", str(totalSize))
+
+        # Write the modified content to the output file
+        with open("./parsers/"+filename, 'w') as file:
+            file.write(js_body)
+
+        print(f"JavaScript class exported to {filename}")
         pass

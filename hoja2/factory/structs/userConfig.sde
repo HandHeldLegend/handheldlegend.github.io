@@ -1,0 +1,5 @@
+typedef struct 
+{
+    uint8_t user_name[24];
+    uint8_t reserved[40];
+} userConfig_s;

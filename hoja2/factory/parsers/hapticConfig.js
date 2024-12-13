@@ -1,17 +1,37 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Hapticconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(8);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get haptic_strength() {
+		return this.#_getUint8(0);
+	}
 
-  $getFunctions
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(1, 7);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set haptic_strength(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(1, 7, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

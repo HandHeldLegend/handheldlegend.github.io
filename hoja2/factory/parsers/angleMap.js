@@ -1,17 +1,47 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Anglemap {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(12);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Float32} */
+	get input() {
+		return this.#_getFloat32(0);
+	}
 
-  $getFunctions
+	/** @type {Float32} */
+	get output() {
+		return this.#_getFloat32(4);
+	}
+
+	/** @type {Int32} */
+	get distance() {
+		return this.#_getInt32(8);
+	}
+
+
+
+  	/** @param {Float32} value */
+	set input(value) {
+		this.#_setFloat32(0, value);
+	}
+
+	/** @param {Float32} value */
+	set output(value) {
+		this.#_setFloat32(4, value);
+	}
+
+	/** @param {Int32} value */
+	set distance(value) {
+		this.#_setInt32(8, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

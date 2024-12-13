@@ -1,0 +1,9 @@
+typedef struct 
+{
+    uint8_t     trigger_config_version;
+    uint32_t    left_config;
+    uint32_t    right_config;
+    uint8_t     left_static_output_value;
+    uint8_t     right_static_output_value;
+    uint8_t     reserved[21];
+} triggerConfig_s;

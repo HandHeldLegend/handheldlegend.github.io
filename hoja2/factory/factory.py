@@ -1,4 +1,5 @@
 import re
+import os
 
 from cfields import Field
 from cjs import CJS
@@ -52,7 +53,7 @@ def get_data_type(line):
     line = line.strip()
 
     # Check if the type contains '_s', indicating a struct type
-    if '_s' in line:
+    if '_s ' in line:
         return 'struct'
 
     # Define the recognized basic types
@@ -141,7 +142,7 @@ def extract_sub_struct_name(struct_definition):
         return match.group(1)
     
     # If no struct name is found, raise an error
-    raise ValueError("Struct name not found or invalid format.")
+    raise ValueError("Sub-struct name not found or invalid format.")
 
 # OK
 def extract_bitfield_size(line):
@@ -200,7 +201,6 @@ def parse_struct_fields(struct_definition):
         fieldName = None
 
         if(fieldType == 'struct'):
-            
             structName = extract_sub_struct_name(line)
             fieldSize = extract_struct_byte_size(line)
             
@@ -242,21 +242,23 @@ def parse_struct_fields(struct_definition):
     
     return fields
 
-# Sample struct definition for testing
-file_path = 'struct.txt'
-definition = read_file(file_path)
-contents = extract_struct_contents(definition)
-struct_name = extract_struct_name(definition)
+folder_path = "./structs"  # Replace with your folder path
 
-fields = parse_struct_fields(contents)
+for filename in os.listdir(folder_path):
+        # Check if the file has a .sde (Struct def export) extension
+        if filename.endswith(".sde"):
+            # Construct the full path of the file
+            file_path = os.path.join(folder_path, filename)
 
-cjs = CJS(struct_name, fields)
+            definition = read_file(file_path)
+            
+            contents = extract_struct_contents(definition)
+            struct_name = extract_struct_name(definition)
 
-total_size = cjs.calculate_total_size()
+            fields = parse_struct_fields(contents)
 
-get_fns = cjs.generate_get_functions()
-set_fns = cjs.generate_set_functions()
+            cjs = CJS(struct_name, fields)
 
-class_names = cjs.generate_class_header()
+            struct_clean_name = struct_name.replace("_s" , "")
 
-print(set_fns)
+            cjs.export_to_js("./"+struct_clean_name+".js")

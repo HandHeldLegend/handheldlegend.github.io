@@ -1,17 +1,77 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Triggerconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(32);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get trigger_config_version() {
+		return this.#_getUint8(0);
+	}
 
-  $getFunctions
+	/** @type {Uint32} */
+	get left_config() {
+		return this.#_getUint32(1);
+	}
+
+	/** @type {Uint32} */
+	get right_config() {
+		return this.#_getUint32(5);
+	}
+
+	/** @type {Uint8} */
+	get left_static_output_value() {
+		return this.#_getUint8(9);
+	}
+
+	/** @type {Uint8} */
+	get right_static_output_value() {
+		return this.#_getUint8(10);
+	}
+
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(11, 21);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set trigger_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint32} value */
+	set left_config(value) {
+		this.#_setUint32(1, value);
+	}
+
+	/** @param {Uint32} value */
+	set right_config(value) {
+		this.#_setUint32(5, value);
+	}
+
+	/** @param {Uint8} value */
+	set left_static_output_value(value) {
+		this.#_setUint8(9, value);
+	}
+
+	/** @param {Uint8} value */
+	set right_static_output_value(value) {
+		this.#_setUint8(10, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(11, 21, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

@@ -1,17 +1,67 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Rgbconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(256);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get rgb_config_version() {
+		return this.#_getUint8(0);
+	}
 
-  $getFunctions
+	/** @type {Uint8} */
+	get rgb_mode() {
+		return this.#_getUint8(1);
+	}
+
+	/** @type {Uint8} */
+	get rgb_speed_factor() {
+		return this.#_getUint8(2);
+	}
+
+	/** @type {Uint32Array} */
+	get rgb_colors() {
+		return this.#_getUint32Array(3, 32);
+	}
+
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(131, 125);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set rgb_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint8} value */
+	set rgb_mode(value) {
+		this.#_setUint8(1, value);
+	}
+
+	/** @param {Uint8} value */
+	set rgb_speed_factor(value) {
+		this.#_setUint8(2, value);
+	}
+
+	/** @param {Uint32Array} value */
+	set rgb_colors(value) {
+		this.#_setUint32Array(3, 32, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(131, 125, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

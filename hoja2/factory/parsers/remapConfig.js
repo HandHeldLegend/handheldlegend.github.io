@@ -1,17 +1,67 @@
-$imports
 
-export default class $className {
-  $declares
+
+export default class Remapconfig {
+  
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array($bufferByteSize);
+    this.buffer = buffer || new Uint8Array(64);
 
-    $setups
+    
   }
 
-  $setFunctions
+  	/** @type {Uint8} */
+	get remap_config_version() {
+		return this.#_getBitfield(0, 1, 4, 0);
+	}
 
-  $getFunctions
+	/** @type {Uint8} */
+	get remap_config_setting() {
+		return this.#_getBitfield(0, 1, 4, 4);
+	}
+
+	/** @type {Uint16Array} */
+	get profiles() {
+		return this.#_getUint16Array(1, 12);
+	}
+
+	/** @type {Uint16Array} */
+	get disabled() {
+		return this.#_getUint16Array(25, 12);
+	}
+
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(49, 15);
+	}
+
+
+
+  	/** @param {Uint8} value */
+	set remap_config_version(value) {
+		this.#_setBitfield(0, 1, 4, 0, value);
+	}
+
+	/** @param {Uint8} value */
+	set remap_config_setting(value) {
+		this.#_setBitfield(0, 1, 4, 4, value);
+	}
+
+	/** @param {Uint16Array} value */
+	set profiles(value) {
+		this.#_setUint16Array(1, 12, value);
+	}
+
+	/** @param {Uint16Array} value */
+	set disabled(value) {
+		this.#_setUint16Array(25, 12, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(49, 15, value);
+	}
+
+
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)
