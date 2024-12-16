@@ -8,6 +8,15 @@ import Hapticconfig from "../factory/parsers/hapticConfig.js";
 import Userconfig from "../factory/parsers/userConfig.js";
 import Batteryconfig from "../factory/parsers/batteryConfig.js";
 
+import Analoginfostatic from "../factory/parsers/analogInfoStatic.js";
+import Batteryinfostatic from "../factory/parsers/batteryInfoStatic.js";
+import Bluetoothinfostatic from "../factory/parsers/bluetoothInfoStatic.js";
+import Deviceinfostatic from "../factory/parsers/deviceInfoStatic.js";
+import Rgbinfostatic from "../factory/parsers/rgbInfoStatic.js";
+import Imuinfostatic from "../factory/parsers/imuInfoStatic.js";
+import Buttoninfostatic from "../factory/parsers/buttonInfoStatic.js";
+import Hapticinfostatic from "../factory/parsers/hapticInfoStatic.js";
+
 class HojaGamepad {
 
   // Static instance for singleton pattern
@@ -22,18 +31,6 @@ class HojaGamepad {
   #deviceEp = 2;
   #chunkSizeMax = 32;
 
-  // State for managing block reading
-  #blockMemoryState = {
-    reading: false,
-    writing: false,
-    currentBlock: 0,
-    totalBlocks: 9, // Total number of blocks to read
-    isDoneReading: false,
-    isDoneWriting: false,
-    currentWriteBlock: 0,
-    currentWriteIdx: 0,
-  };
-
   gamepad_cfg = new Gamepadconfig();
   remap_cfg   = new Remapconfig();
   analog_cfg  = new Analogconfig();
@@ -44,12 +41,37 @@ class HojaGamepad {
   user_cfg    = new Userconfig();
   battery_cfg = new Batteryconfig();
 
-  #configBlocks = [this.gamepad_cfg, this.remap_cfg, this.analog_cfg, this.rgb_cfg, this.trigger_cfg, this.imu_cfg, this.haptic_cfg, this.user_cfg, this.battery_cfg];
+  #configBlocks = [this.gamepad_cfg, this.remap_cfg, 
+    this.analog_cfg, this.rgb_cfg, this.trigger_cfg, 
+    this.imu_cfg, this.haptic_cfg, this.user_cfg, 
+    this.battery_cfg];
   #configBlockNames = ["gamepad", "remap", "analog", "rgb", "trigger", "imu", "haptic", "user", "battery"];
 
-  // Internal memory for parameters
-  #parameters = {
-    name: "gamepad",
+  device_static = new Deviceinfostatic();
+  button_static = new Buttoninfostatic();
+  analog_static = new Analoginfostatic();
+  imu_static    = new Imuinfostatic();
+  battery_static= new Batteryinfostatic();
+  haptic_static = new Hapticinfostatic();
+  bluetooth_static = new Bluetoothinfostatic();
+  rgb_static  = new Rgbinfostatic();
+
+  #staticBlocks = [this.device_static, this.button_static, 
+    this.analog_static, this.haptic_static, this.imu_static, 
+    this.battery_static, this.bluetooth_static, this.rgb_static];
+  #staticBlockNames = ["device", "button", "analog", "haptic", "imu", "battery", "bluetooth", "rgb"];
+
+  // State for managing block reading
+  #blockMemoryState = {
+    reading: false,
+    writing: false,
+    currentBlock: 0,
+    totalBlocks: this.#configBlocks.length, // Total number of blocks to read
+    totalStatics: this.#staticBlocks.length,
+    isDoneReading: false,
+    isDoneWriting: false,
+    currentWriteBlock: 0,
+    currentWriteIdx: 0,
   };
 
   // Event handlers
@@ -98,6 +120,7 @@ class HojaGamepad {
       this.#pollDevice();
 
       await this.getAllBlocks();
+      await this.getAllStatics();
 
     } catch (error) {
       console.error('Connection failed:', error);
@@ -141,6 +164,26 @@ class HojaGamepad {
       });
   }
 
+  #staticParser(data) {
+    let blockThisTime = data.getUint8(1);
+    let chunkSize = data.getUint8(2);
+    let writeIdx = data.getUint8(3);
+    let done = writeIdx === 0xFF;
+    let write = (chunkSize > 0) ? true : false;
+
+    let chunkData = null;
+    if (write) chunkData = new Uint8Array(data.buffer, data.byteOffset + 4, chunkSize);
+
+    const idxOffset = 32; // Adjust based on your specific use case
+    if (write) this.#staticBlocks[blockThisTime].buffer.set(chunkData, writeIdx * idxOffset);
+
+    if (done) console.log("Received " + this.#staticBlockNames[blockThisTime] + " static mem chunk");
+    if (done) {
+      this.#staticBlocks[blockThisTime].updateBuffer(this.#staticBlocks[blockThisTime].buffer);
+      this.#blockMemoryState.isDoneReading = true; // Mark block reading as done
+    }
+  }
+
   #blockParser(data) {
     let blockThisTime = data.getUint8(1);
     let chunkSize = data.getUint8(2);
@@ -157,6 +200,7 @@ class HojaGamepad {
     if (done) console.log("Received " + this.#configBlockNames[blockThisTime] + " config chunk");
 
     if (done) {
+      this.#configBlocks[blockThisTime].updateBuffer(this.#configBlocks[blockThisTime].buffer);
       this.#blockMemoryState.isDoneReading = true; // Mark block reading as done
     }
   }
@@ -183,6 +227,11 @@ class HojaGamepad {
         }
         break;
 
+      // WEBUSB_ID_READ_STATIC_BLOCK
+      case 3: 
+        this.#staticParser(data);
+        break;
+
       default:
         console.warn(`Unhandled report ID: ${data.getUint8(0)}`);
     }
@@ -206,11 +255,6 @@ class HojaGamepad {
     listeners.forEach(callback => callback(data));
   }
 
-  // Getter for current parameters
-  getParameters() {
-    return { ...this.#parameters };
-  }
-
   async getAllBlocks() {
     console.log("Starting block read...");
     for (let blockIndex = 0; blockIndex < this.#blockMemoryState.totalBlocks; blockIndex++) {
@@ -221,10 +265,7 @@ class HojaGamepad {
         break;
       }
     }
-    console.log("Completed reading all blocks.");
-
-    await this.sendAllBlocks();
-    console.log("Completed sending all blocks.");
+    console.log("Completed reading all cfg blocks.");
   }
 
   async requestBlock(blockIndex) {
@@ -241,6 +282,29 @@ class HojaGamepad {
     for (let i = 0; i < this.#blockMemoryState.totalBlocks; i++) {
       await this.sendBlock(i);
     }
+  }
+
+  async getAllStatics() {
+    console.log("Starting static mem read...");
+    for (let blockIndex = 0; blockIndex < this.#blockMemoryState.totalStatics; blockIndex++) {
+      try {
+        await this.requestStatic(blockIndex);
+      } catch (error) {
+        console.error(`Error reading static ${blockIndex}:`, error);
+        break;
+      }
+    }
+    console.log("Completed reading all statics.");
+  }
+
+  async requestStatic(blockIndex) {
+    this.#blockMemoryState.isDoneReading = false; // Reset done state for this block
+
+    // Send request for the block
+    await this.sendCommand(0x03, new Uint8Array([blockIndex]));
+
+    // Wait for block parsing to finish (using a confirmation signal)
+    await this.waitForReadConfirmation();
   }
 
   async sendBlock(blockIndex) {
@@ -312,7 +376,7 @@ class HojaGamepad {
     // Poll until confirmation or timeout
     while (!this.#blockMemoryState.isDoneReading) {
       if (elapsedTime >= timeout) {
-        throw new Error("Timeout waiting for block confirmation.");
+        throw new Error("Timeout waiting for confirmation.");
       }
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       elapsedTime += pollInterval;
@@ -341,7 +405,6 @@ class HojaGamepad {
 
       // Create a Uint8Array with the first byte as the command and the rest as data
       const payload = new Uint8Array([command, ...data]);
-      console.log("Sending command...");
       this.#device.transferOut(this.#deviceEp, payload);
 
     } catch (error) {

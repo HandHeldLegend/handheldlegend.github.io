@@ -9,7 +9,7 @@ export default class Rgbinfostatic {
     this.buffer = buffer || new Uint8Array(258);
 
     	for(let i = 0; i < 32; i++) {
-		let buf = this.#_getUint8Array(1+(8*i, 8));
+		let buf = this.#_getUint8Array(1+(8*i), 8);
 		this.#rgb_group_namesVal.push(new Rgbgroupname(buf));
 	}
 
@@ -44,6 +44,20 @@ export default class Rgbinfostatic {
 	}
 
 
+
+  updateBuffer(buffer) {
+    	this.#rgb_group_namesVal.length = 0;
+ 
+
+    this.buffer = buffer;
+
+    	for(let i = 0; i < 32; i++) {
+		let buf = this.#_getUint8Array(1+(8*i), 8);
+		this.#rgb_group_namesVal.push(new Rgbgroupname(buf));
+	}
+
+
+  }
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

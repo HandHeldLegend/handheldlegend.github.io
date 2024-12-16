@@ -151,6 +151,7 @@ class CJS:
         """
         imports = ""
         setups = ""
+        wipes = ""
         declares = ""
         classes_imported = []
         offset = 0
@@ -167,9 +168,11 @@ class CJS:
                 if field.array_size>1:
                     array = " = []"
                     setups += "\tfor(let i = 0; i < {}; i++) {{\n".format(field.array_size)
-                    setups += "\t\tlet buf = this.#_getUint8Array({}+({}*i, {}));\n".format(field.byte_offset, field.byte_size, field.byte_size)
+                    setups += "\t\tlet buf = this.#_getUint8Array({}+({}*i), {});\n".format(field.byte_offset, field.byte_size, field.byte_size)
                     setups += "\t\tthis.#{}Val.push(new {}(buf));\n".format(field.name, field.struct_name.capitalize())
                     setups += "\t}\n\n"
+
+                    wipes += "\tthis.#{}Val.length = 0;\n".format(field.name)
                 else:
                     setups += "\tlet {}Buf = this.#_getUint8Array({}, {});\n".format(field.name, field.byte_offset, field.byte_size)
                     setups += "\tthis.#{}Val = new {}({}Buf);\n\n".format(field.name, field.struct_name.capitalize(), field.name)
@@ -177,7 +180,7 @@ class CJS:
                 # Set up our class with its appropriate buffer
                 declares += "\t#{}Val{};\n".format(field.name, array)
 
-        return imports, setups, declares
+        return imports, setups, declares, wipes
 
     def export_to_js(self, filename):
         """
@@ -194,12 +197,14 @@ class CJS:
             print(f"Error: Template file '{template_file}' not found.")
             return
 
-        imports, setups, declares = self.generate_class_header()
+        imports, setups, declares, wipes = self.generate_class_header()
         get_fns = self.generate_get_functions()
         set_fns = self.generate_set_functions()
 
         js_body = js_body.replace("$imports",   imports)
         js_body = js_body.replace("$setups",    setups)
+
+        js_body = js_body.replace("$wipes",    wipes)
         js_body = js_body.replace("$declares",  declares)
 
         js_body = js_body.replace("$setFunctions",  get_fns)

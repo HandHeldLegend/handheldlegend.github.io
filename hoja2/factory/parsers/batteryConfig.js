@@ -33,6 +33,14 @@ export default class Batteryconfig {
 
 
 
+  updateBuffer(buffer) {
+     
+
+    this.buffer = buffer;
+
+    
+  }
+
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)
   #_getBitfield(byteOffset, byteSize, bitfieldSize, bitOffset) {

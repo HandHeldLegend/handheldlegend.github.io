@@ -13,6 +13,14 @@ export default class $className {
 
   $getFunctions
 
+  updateBuffer(buffer) {
+    $wipes 
+
+    this.buffer = buffer;
+
+    $setups
+  }
+
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)
   #_getBitfield(byteOffset, byteSize, bitfieldSize, bitOffset) {

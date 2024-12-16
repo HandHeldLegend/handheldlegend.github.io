@@ -3,12 +3,10 @@ import { registerSettingsModules } from './moduleRegistry.js';
 import { enableTooltips } from './tooltips.js';
 import TristateButton from './components/tristate-button.js';
 import SingleShotButton from './components/single-shot-button.js';
+import HojaGamepad from './gamepad/gamepad.js';
 
-
-export var globalState = {
-    gamepadMode: 2,
-
-};
+/** @type {HojaGamepad} */
+const gamepad = HojaGamepad.getInstance();
 
 class ConfigApp {
     constructor() {
@@ -32,7 +30,7 @@ class ConfigApp {
 
     registerKeyboardEvents() {
         this.backButton.addEventListener('click', () => this.closemoduleView());
-        
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.closemoduleView();
@@ -48,20 +46,20 @@ class ConfigApp {
     createSettingsIcon(module) {
         const iconContainer = document.createElement('div');
         iconContainer.className = 'module-icon';
-        
+
         const icon = document.createElement('div');
         icon.className = 'icon';
         icon.style.backgroundColor = module.color || this.getRandomColor();
         icon.textContent = module.icon || module.name.charAt(0).toUpperCase();
-        
+
         const label = document.createElement('span');
         label.textContent = module.name;
-        
+
         iconContainer.appendChild(icon);
         iconContainer.appendChild(label);
-        
+
         iconContainer.addEventListener('click', () => this.openmoduleView(module));
-        
+
         this.appGrid.appendChild(iconContainer);
     }
 
@@ -75,13 +73,11 @@ class ConfigApp {
     }
 
     setView(view) {
-        if(view)
-        {
+        if (view) {
             this.appGridContainer.setAttribute("visible", "true");
             this.moduleContainer.setAttribute("visible", "false");
         }
-        else 
-        {
+        else {
             this.moduleContainer.setAttribute("visible", "true");
             this.appGridContainer.setAttribute("visible", "false");
         }
@@ -90,15 +86,15 @@ class ConfigApp {
     async openmoduleView(module) {
         // Dynamically import the module
         const settingsModule = await import(module.path);
-        
+
         // Clear previous content
         this.moduleContent.innerHTML = '';
-        
+
         // Render module content
         if (settingsModule.render) {
             settingsModule.render(this.moduleContent);
         }
-        
+
         this.setView(true);
     }
 
@@ -107,15 +103,14 @@ class ConfigApp {
     }
 }
 
-var debug = true;
+var debug = false;
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.configApp = new ConfigApp();
 
-        if(debug)
-        {
-            // Debug module
-            const debugModule = [
+    if (debug) {
+        // Debug module
+        const debugModule = [
             {
                 name: 'Debug',
                 path: './modules/rgb-cp.js',
@@ -123,10 +118,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 color: '#3498db'
             }];
 
-            globalState.gamepadMode = 1;
+        globalState.gamepadMode = 1;
 
-            window.configApp.openmoduleView(debugModule[0]);
-        }
+        window.configApp.openmoduleView(debugModule[0]);
+    }
 
-        enableTooltips();
+    enableTooltips();
+
+    const connectButton = document.getElementById('connect-button');
+
+    // Optional async handlers for connection/disconnection
+    connectButton.setOnClickOff(async () => {
+        await gamepad.connect();
+    });
+
+    connectButton.setOnClickOn(async () => {
+        await gamepad.disconnect();
+    });
 });

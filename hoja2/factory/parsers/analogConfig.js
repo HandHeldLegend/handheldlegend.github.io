@@ -19,12 +19,12 @@ export default class Analogconfig {
 	this.#r_packed_distancesVal = new Analogpackeddistances(r_packed_distancesBuf);
 
 	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(265+(12*i, 12));
+		let buf = this.#_getUint8Array(265+(12*i), 12);
 		this.#l_angle_mapsVal.push(new Anglemap(buf));
 	}
 
 	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(457+(12*i, 12));
+		let buf = this.#_getUint8Array(457+(12*i), 12);
 		this.#r_angle_mapsVal.push(new Anglemap(buf));
 	}
 
@@ -174,6 +174,32 @@ export default class Analogconfig {
 	}
 
 
+
+  updateBuffer(buffer) {
+    	this.#l_angle_mapsVal.length = 0;
+	this.#r_angle_mapsVal.length = 0;
+ 
+
+    this.buffer = buffer;
+
+    	let l_packed_distancesBuf = this.#_getUint8Array(5, 130);
+	this.#l_packed_distancesVal = new Analogpackeddistances(l_packed_distancesBuf);
+
+	let r_packed_distancesBuf = this.#_getUint8Array(135, 130);
+	this.#r_packed_distancesVal = new Analogpackeddistances(r_packed_distancesBuf);
+
+	for(let i = 0; i < 16; i++) {
+		let buf = this.#_getUint8Array(265+(12*i), 12);
+		this.#l_angle_mapsVal.push(new Anglemap(buf));
+	}
+
+	for(let i = 0; i < 16; i++) {
+		let buf = this.#_getUint8Array(457+(12*i), 12);
+		this.#r_angle_mapsVal.push(new Anglemap(buf));
+	}
+
+
+  }
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)

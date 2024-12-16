@@ -1,4 +1,5 @@
-// Import the number selector (optional, as it's now globally defined)
+import HojaGamepad from '../gamepad/gamepad.js';
+
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
@@ -9,8 +10,32 @@ import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
 import { enableTooltips } from '../tooltips.js';
+import Rgbgroupname from '../factory/parsers/rgbGroupName.js';
+
+function decodeText(buffer) {
+    const decoder = new TextDecoder('utf-8');
+    const str = decoder.decode(buffer);
+    return str;
+}
 
 export function render(container) {
+
+    /** @type {HojaGamepad} */
+    let gamepad = HojaGamepad.getInstance();
+
+    let nameCount = gamepad.rgb_static.rgb_groups;
+
+    /** @type {Rgbgroupname[]} */
+    let names = gamepad.rgb_static.rgb_group_names;
+
+    for(let i = 0; i < nameCount; i++)
+    {
+        console.log(decodeText(names[i].rgb_group_name));
+    }
+
+    /** @type {Rgbgroupname} */
+    let rgbName = gamepad.rgb_static.rgb_group_names[0];
+
     container.innerHTML = `
             <h1>RGB Settings</h1>
             <number-selector 
@@ -53,76 +78,6 @@ export function render(container) {
 
             <group-rgb-picker 
                 group-name="X" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="Y" 
                 color="22AA22"
             ></group-rgb-picker>
 

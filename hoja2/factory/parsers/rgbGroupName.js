@@ -4,14 +4,32 @@ export default class Rgbgroupname {
   
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(0);
+    this.buffer = buffer || new Uint8Array(8);
 
     
   }
 
-  
+  	/** @type {Uint8Array} */
+	get rgb_group_name() {
+		return this.#_getUint8Array(0, 8);
+	}
 
-  
+
+
+  	/** @param {Uint8Array} value */
+	set rgb_group_name(value) {
+		this.#_setUint8Array(0, 8, value);
+	}
+
+
+
+  updateBuffer(buffer) {
+     
+
+    this.buffer = buffer;
+
+    
+  }
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
   // Helper to get a value from a bitfield (given an offset, bitfield size, and byte size)
