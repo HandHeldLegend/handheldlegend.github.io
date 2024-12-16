@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Configuration App</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <div class="app-container">
         <div class="app-header-container">
             <div class="app-header">
-                <tristate-button 
-                    id="start-button"
-                    off-text="Connect" 
-                    on-text="Disconnect" 
-                    off-to-on-transitioning-text="Connecting..." 
-                    on-to-off-transitioning-text="Disconnecting..."
-                ></tristate-button>
-                <single-shot-button 
-                    id="action-button" 
-                    state="ready"
-                    ready-text="Save" 
-                    pending-text="Saving..."
-                ></single-shot-button>
+                <tristate-button id="start-button" off-text="Connect" on-text="Disconnect"
+                    off-to-on-transitioning-text="Connecting..."
+                    on-to-off-transitioning-text="Disconnecting..."></tristate-button>
+                <single-shot-button id="action-button" state="ready" ready-text="Save"
+                    pending-text="Saving..."></single-shot-button>
             </div>
             <div visible="false" class="header-msg-box visible">This is a test message</div>
         </div>
         <div class="swap-space">
 
             <div id="module-container">
-                <div id="module-view">
-                    <div id="module-header">
-                        <button id="back-button">← Back</button>
-                    </div>
+                <div id="module-header">
+                    <button id="back-button">← Back</button>
+                </div>
+                <div id="module-content-container">
                     <div id="module-content"></div>
                 </div>
             </div>
@@ -40,9 +34,23 @@
                 <div id="app-grid"></div>
             </div>
 
-        </div> 
+        </div>
     </div>
+
+    <script>
+        const moduleContent = document.getElementById('module-content-container');
+        const moduleHeader = document.getElementById('module-header');
+
+        moduleContent.addEventListener('scroll', () => {
+            if (moduleContent.scrollTop > 0) {
+                moduleHeader.setAttribute("shadow", "true");
+            } else {
+                moduleHeader.setAttribute("shadow", "false");
+            }
+        });
+    </script>
 
     <script type="module" src="app.js"></script>
 </body>
+
 </html>

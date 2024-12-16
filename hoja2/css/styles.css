@@ -149,44 +149,63 @@ body {
 /* Module container styles */
 #module-container {
     display: flex;
+    flex-direction: column; /* Stack header and content vertically */
     position: absolute;
     top: 0;
     left: 0; /* Start off-screen */
     width: 100%;
-    height: 100%;
+    height: 100%; /* Fill the viewport */
     background-color: #ffffff; /* Example background */
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(100%);
     opacity: 0;
+    overflow: hidden; /* Prevent scrollbars on the container itself */
 }
 
+/* Module header stays fixed at the top */
 #module-header {
+    box-shadow: 0;
+    background-color: grey;
     display: flex;
+    flex-shrink: 0; /* Prevent shrinking */
+    align-items: center;
+    justify-content: space-between; /* Distribute header elements */
+    height: 50px;
     width: 100%;
     margin: 0;
+    padding: 0 10px; /* Optional: add padding inside the header */
+    z-index: 1; /* Ensure it stays above the scrolling content */
+    transition: box-shadow 0.25s ease;
+}
+
+#module-header[shadow="true"] {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.575);
+}
+
+/* Module content becomes scrollable */
+#module-content-container {
+    box-sizing: border-box; /* Ensure padding doesn't affect scrollable area */
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding: 10px; /* Optional: spacing inside the scrollable area */
+    width: 100%;
+    height: 100%;
 }
 
 #module-content {
+    min-height: 0;
+    width: inherit;
     display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 0;
     gap: 10px;
-    height: 100%;
-    width: 100%;
-}
-
-#module-view {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 /* Back button styling */
 #back-button {
+    display: flex;
+    align-items: center;
+    height: 25px;
     margin: 20px;
     padding: 10px 20px;
     font-size: 16px;
@@ -197,6 +216,10 @@ body {
 #module-container[visible="false"] {
     transform: translateX(0); /* Bring into view */
     opacity: 1;
+}
+
+h1, h2 {
+    margin: 0;
 }
 
 /* Hidden state for app grid */

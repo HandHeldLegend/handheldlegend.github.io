@@ -61,6 +61,71 @@ export function render(container) {
                 color="22AA22"
             ></group-rgb-picker>
 
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
+            <group-rgb-picker 
+                group-name="Y" 
+                color="22AA22"
+            ></group-rgb-picker>
+
             <angle-selector 
                 in-angle="45"
                 out-angle="45"
