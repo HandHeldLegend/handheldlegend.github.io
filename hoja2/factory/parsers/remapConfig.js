@@ -48,17 +48,17 @@ export default class Remapconfig {
 
 	/** @param {Uint16Array} value */
 	set profiles(value) {
-		this.#_setUint16Array(1, 12, value);
+		this.#_setUint16Array(1, value);
 	}
 
 	/** @param {Uint16Array} value */
 	set disabled(value) {
-		this.#_setUint16Array(25, 12, value);
+		this.#_setUint16Array(25, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(49, 15, value);
+		this.#_setUint8Array(49, value);
 	}
 
 
@@ -298,11 +298,11 @@ export default class Remapconfig {
     // Ensure the value fits into a uint32_t (0 to 4294967295)
     value >>>= 0;  // Unsigned 32-bit value (ensures no negative numbers)
 
-    // Set the four bytes for the 32-bit value
-    this.buffer[offset] = (value >> 24) & 0xFF;       // Most significant byte (MSB)
-    this.buffer[offset + 1] = (value >> 16) & 0xFF;    // 2nd byte
-    this.buffer[offset + 2] = (value >> 8) & 0xFF;     // 3rd byte
-    this.buffer[offset + 3] = value & 0xFF;            // Least significant byte (LSB)
+    // Set the four bytes for the 32-bit value in little-endian order
+    this.buffer[offset] = value & 0xFF;           // Least significant byte (LSB)
+    this.buffer[offset + 1] = (value >> 8) & 0xFF;  // 2nd byte
+    this.buffer[offset + 2] = (value >> 16) & 0xFF; // 3rd byte
+    this.buffer[offset + 3] = (value >> 24) & 0xFF; // Most significant byte (MSB)
   }
 
   // OK

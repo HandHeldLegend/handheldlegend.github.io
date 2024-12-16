@@ -62,10 +62,10 @@ export function render(container) {
     for(let i = 0; i < decodedNames.length; i++) {
 
         let colorText = uint32ToRgbHex(colors[i]);
-        console.log(colorText);
 
         rgbPickersHTML += `
         <group-rgb-picker 
+            idx="${i}"
             id="rgb-picker-${i}"
             group-name="${decodedNames[i]}" 
             color="${colorText}"
@@ -100,5 +100,34 @@ export function render(container) {
     const brightnessSelector = container.querySelector('number-selector[id="brightness-slider"]');
     brightnessSelector.addEventListener('change', (e) => {
         console.log(`Brightness changed to: ${e.detail.value}`);
+    });
+
+    const rgbModuleVersion = 0x1;
+
+    // Check values
+    if(!gamepad.rgb_cfg.rgb_config_version)
+    {
+        gamepad.rgb_cfg.rgb_config_version = rgbModuleVersion;
+        gamepad.rgb_cfg.rgb_brightness = 500;
+        gamepad.sendBlock(3);
+    }
+
+    const rgbPickers = container.querySelectorAll('group-rgb-picker');
+    rgbPickers.forEach(picker => {
+        picker.addEventListener('color-change', (e) => {
+
+            let idx = parseInt(e.target.getAttribute('idx'));
+            console.log(`Color at idx ${idx} set to: ${e.detail.color}`);
+            
+            let u32color = hexToUint32Rgb(e.detail.color);
+
+            let tmpArr = gamepad.rgb_cfg.rgb_colors;
+            tmpArr[idx] = u32color;
+            gamepad.rgb_cfg.rgb_colors = tmpArr;
+
+            console.log(gamepad.rgb_cfg.rgb_colors);
+
+            gamepad.sendBlock(3);
+        });
     });
 }

@@ -131,7 +131,7 @@ class CJS:
                 continue
 
             if field.array_size>1:
-                fn += "\t\tthis.#_set{}Array({}, {}, value);\n".format(get_type, field.byte_offset, field.array_size)
+                fn += "\t\tthis.#_set{}Array({}, value);\n".format(get_type, field.byte_offset)
 
                 # Complete this function
                 fn += "\t}\n\n"
