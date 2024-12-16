@@ -6,8 +6,6 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    
-
     <div class="app-container">
         <div class="app-header-container">
             <div class="app-header">
@@ -25,18 +23,24 @@
                     pending-text="Saving..."
                 ></single-shot-button>
             </div>
-            <div visible="true" class="header-msg-box visible">This is a test message</div>
+            <div visible="false" class="header-msg-box visible">This is a test message</div>
         </div>
         <div class="swap-space">
-            <div id="settings-grid" class="settings-grid"></div>
-        </div>
-    </div>
 
-    <div id="settings-overlay" class="settings-overlay hidden">
-        <div id="settings-view" class="settings-view">
-            <button id="back-button" class="back-button">← Back</button>
-            <div id="settings-content"></div>
-        </div>
+            <div id="module-container">
+                <div id="module-view">
+                    <div id="module-header">
+                        <button id="back-button">← Back</button>
+                    </div>
+                    <div id="module-content"></div>
+                </div>
+            </div>
+
+            <div id="app-grid-container">
+                <div id="app-grid"></div>
+            </div>
+
+        </div> 
     </div>
 
     <script type="module" src="app.js"></script>

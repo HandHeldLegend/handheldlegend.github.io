@@ -38,8 +38,8 @@
 
     /* Border Radius */
     --border-radius-sm: 10px;
-    --border-radius-md: 18px;
-    --border-radius-lg: 24px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 15px;
     --border-radius-round: 50%;
 
     /* Typography */
@@ -106,7 +106,7 @@ body {
     box-shadow: var(--box-shadow-open);
 }
 
-.header-msg-box.visible {
+.header-msg-box[visible=true] {
     align-items: center;
     text-align: center;
     max-height: fit-content; /* Adjust as needed */
@@ -116,32 +116,6 @@ body {
 .swap-space {
     flex-grow: 1;
     overflow-y: auto; /* Allow scrolling of main content */
-}
-
-/* Shared Component Styles */
-.btn {
-    border: none;
-    border-radius: var(--border-radius-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
-    cursor: pointer;
-    transition: background-color var(--transition-quick);
-}
-
-.btn-primary {
-    background-color: var(--color-primary);
-    color: white;
-}
-
-.btn-secondary {
-    background-color: var(--color-secondary);
-    color: white;
-}
-
-.input {
-    border: 1px solid var(--color-background-dark);
-    border-radius: var(--border-radius-sm);
-    padding: var(--spacing-sm);
-    font-size: var(--font-size-md);
 }
 
 /* Utility Classes */
@@ -155,24 +129,83 @@ body {
     align-items: center;
 }
 
-.shadow-sm {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.shadow-md {
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-}
-
-
-
-#app {
-    flex-grow: 1;
+/* General styling for the containers */
+.swap-space {
     display: flex;
-    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 100vh;
     overflow: hidden;
 }
 
-.settings-grid {
+/* App grid styles */
+#app-grid-container {
+    flex: 1;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Module container styles */
+#module-container {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 0; /* Start off-screen */
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff; /* Example background */
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+#module-header {
+    display: flex;
+    width: 100%;
+    margin: 0;
+}
+
+#module-content {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 0;
+    gap: 10px;
+    height: 100%;
+    width: 100%;
+}
+
+#module-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Back button styling */
+#back-button {
+    margin: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Visible state for module container */
+#module-container[visible="false"] {
+    transform: translateX(0); /* Bring into view */
+    opacity: 1;
+}
+
+/* Hidden state for app grid */
+#app-grid-container[visible="true"] {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+#app-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
@@ -180,7 +213,7 @@ body {
     background-color: rgba(255, 255, 255, 0);
 }
 
-.settings-icon {
+.module-icon {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -188,11 +221,11 @@ body {
     transition: transform 0.2s;
 }
 
-.settings-icon:hover {
+.module-icon:hover {
     transform: scale(1.05);
 }
 
-.settings-icon .icon {
+.module-icon .icon {
     width: 150px;
     height: 150px;
     border-radius: 15px;
@@ -202,58 +235,6 @@ body {
     font-size: 3rem;
     color: white;
     margin-bottom: 10px;
-}
-
-.settings-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.settings-overlay.hidden {
-    display: none;
-}
-
-.settings-view {
-    background-color: rgba(216, 216, 216, 0.555);
-    backdrop-filter: blur(var(--blur-amt));
-    -webkit-backdrop-filter: blur(var(--blur-amt));
-    width: 100%;
-    max-width: 800px;
-    height: 80%;
-    border-radius: var(--border-radius-lg);
-    position: relative;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-}
-
-.settings-view.slide-in {
-    transform: translateY(0);
-}
-
-.back-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.display-settings {
-    align-items: center;
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    gap: 1rem;
 }
 
 .label {

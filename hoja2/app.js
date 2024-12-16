@@ -12,10 +12,18 @@ export var globalState = {
 
 class ConfigApp {
     constructor() {
-        this.settingsGrid = document.getElementById('settings-grid');
-        this.settingsOverlay = document.getElementById('settings-overlay');
-        this.settingsView = document.getElementById('settings-view');
-        this.settingsContent = document.getElementById('settings-content');
+
+        this.appGridContainer = document.getElementById('app-grid-container');
+        this.appGrid = document.getElementById('app-grid');
+
+        // Contains our module view
+        this.moduleContainer = document.getElementById('module-container');
+        // Contains header and content
+        this.moduleView = document.getElementById('module-view');
+        // We render to this part
+        this.moduleContent = document.getElementById('module-content');
+
+        // Back button in our module view
         this.backButton = document.getElementById('back-button');
 
         this.registerKeyboardEvents();
@@ -23,11 +31,11 @@ class ConfigApp {
     }
 
     registerKeyboardEvents() {
-        this.backButton.addEventListener('click', () => this.closeSettingsView());
+        this.backButton.addEventListener('click', () => this.closemoduleView());
         
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                this.closeSettingsView();
+                this.closemoduleView();
             }
         });
     }
@@ -39,7 +47,7 @@ class ConfigApp {
 
     createSettingsIcon(module) {
         const iconContainer = document.createElement('div');
-        iconContainer.className = 'settings-icon';
+        iconContainer.className = 'module-icon';
         
         const icon = document.createElement('div');
         icon.className = 'icon';
@@ -52,9 +60,9 @@ class ConfigApp {
         iconContainer.appendChild(icon);
         iconContainer.appendChild(label);
         
-        iconContainer.addEventListener('click', () => this.openSettingsView(module));
+        iconContainer.addEventListener('click', () => this.openmoduleView(module));
         
-        this.settingsGrid.appendChild(iconContainer);
+        this.appGrid.appendChild(iconContainer);
     }
 
     getRandomColor() {
@@ -66,26 +74,36 @@ class ConfigApp {
         return color;
     }
 
-    async openSettingsView(module) {
+    setView(view) {
+        if(view)
+        {
+            this.appGridContainer.setAttribute("visible", "true");
+            this.moduleContainer.setAttribute("visible", "false");
+        }
+        else 
+        {
+            this.moduleContainer.setAttribute("visible", "true");
+            this.appGridContainer.setAttribute("visible", "false");
+        }
+    }
+
+    async openmoduleView(module) {
         // Dynamically import the module
         const settingsModule = await import(module.path);
         
         // Clear previous content
-        this.settingsContent.innerHTML = '';
+        this.moduleContent.innerHTML = '';
         
         // Render module content
         if (settingsModule.render) {
-            settingsModule.render(this.settingsContent);
+            settingsModule.render(this.moduleContent);
         }
         
-        // Animate overlay
-        this.settingsOverlay.classList.remove('hidden');
-        this.settingsView.classList.add('slide-in');
+        this.setView(true);
     }
 
-    closeSettingsView() {
-        this.settingsOverlay.classList.add('hidden');
-        this.settingsView.classList.remove('slide-in');
+    closemoduleView() {
+        this.setView(false);
     }
 }
 
@@ -100,14 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/component-test.js',
+                path: './modules/rgb-cp.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
 
             globalState.gamepadMode = 1;
 
-            window.configApp.openSettingsView(debugModule[0]);
+            window.configApp.openmoduleView(debugModule[0]);
         }
 
         enableTooltips();

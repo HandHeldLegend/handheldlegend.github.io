@@ -24,24 +24,24 @@ class HojaGamepad {
 
   // State for managing block reading
   #blockMemoryState = {
-    reading: false, 
-    writing: false, 
-    currentBlock: 0, 
+    reading: false,
+    writing: false,
+    currentBlock: 0,
     totalBlocks: 9, // Total number of blocks to read
-    isDoneReading: false, 
-    isDoneWriting: false, 
-    currentWriteBlock: 0, 
+    isDoneReading: false,
+    isDoneWriting: false,
+    currentWriteBlock: 0,
     currentWriteIdx: 0,
   };
 
   gamepad_cfg = new Gamepadconfig();
-  remap_cfg = new Remapconfig();
-  analog_cfg = new Analogconfig();
-  rgb_cfg = new Rgbconfig();
+  remap_cfg   = new Remapconfig();
+  analog_cfg  = new Analogconfig();
+  rgb_cfg     = new Rgbconfig();
   trigger_cfg = new Triggerconfig();
-  imu_cfg = new Imuconfig();
-  haptic_cfg = new Hapticconfig();
-  user_cfg = new Userconfig();
+  imu_cfg     = new Imuconfig();
+  haptic_cfg  = new Hapticconfig();
+  user_cfg    = new Userconfig();
   battery_cfg = new Batteryconfig();
 
   #configBlocks = [this.gamepad_cfg, this.remap_cfg, this.analog_cfg, this.rgb_cfg, this.trigger_cfg, this.imu_cfg, this.haptic_cfg, this.user_cfg, this.battery_cfg];
@@ -176,9 +176,8 @@ class HojaGamepad {
         let wr_block = data.getUint8(1);
         let wr_idx = data.getUint8(2);
 
-        if( (this.#blockMemoryState.currentWriteBlock == wr_block) && 
-            (this.#blockMemoryState.currentWriteIdx == wr_idx) )
-        {
+        if ((this.#blockMemoryState.currentWriteBlock == wr_block) &&
+          (this.#blockMemoryState.currentWriteIdx == wr_idx)) {
           console.log("Done writing " + wr_block + " " + wr_idx);
           this.#blockMemoryState.isDoneWriting = true;
         }
@@ -245,7 +244,7 @@ class HojaGamepad {
   }
 
   async sendBlock(blockIndex) {
-    
+
     this.#blockMemoryState.currentWriteBlock = blockIndex;
 
     const chunkMax = this.#chunkSizeMax;
@@ -262,7 +261,7 @@ class HojaGamepad {
 
         // ReportID, BlockID, WriteSize, WriteIndex, Data
         let outBuffer = new Uint8Array([0x02, blockIndex, bufferSize, 0, ...targetBuffer]);
-        
+
         await this.#device.transferOut(this.#deviceEp, outBuffer);
         //await this.waitForWriteConfirmation();
 
@@ -277,7 +276,7 @@ class HojaGamepad {
           this.#blockMemoryState.currentWriteIdx = idx;
 
           let writeSize = remaining <= chunkMax ? remaining : chunkMax;
-          
+
           let outChunk = targetBuffer.slice((chunkMax * idx), (chunkMax * idx) + writeSize);
           // ReportID, BlockID, WriteSize, WriteIndex, Data
           let outBuffer = new Uint8Array([0x02, blockIndex, writeSize, idx, ...outChunk]);
@@ -296,7 +295,7 @@ class HojaGamepad {
 
       // ReportID, BlockID, WriteSize, WriteIndex, Data
       let completeBuffer = new Uint8Array([0x02, blockIndex, 0, 0xFF]);
-      
+
       await this.#device.transferOut(this.#deviceEp, completeBuffer);
       //await this.waitForWriteConfirmation();
       console.log("Sent " + this.#configBlockNames[blockIndex] + " block");

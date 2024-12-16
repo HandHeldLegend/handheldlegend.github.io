@@ -2,9 +2,9 @@ export async function registerSettingsModules() {
     // List of available settings modules
     const moduleConfigs = [
         {
-            name: 'Network',
+            name: 'Gamepad',
             path: './modules/network-settings.js',
-            icon: '🌐',
+            icon: 'G',
             color: '#3498db'
         },
         {
