@@ -1,0 +1,6 @@
+typedef struct 
+{
+    uint8_t haptic_hd : 1;
+    uint8_t haptic_sd : 1;
+    uint8_t reserved  : 6;
+} hapticInfoStatic_s;

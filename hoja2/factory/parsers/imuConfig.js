@@ -175,6 +175,50 @@ export default class Imuconfig {
   // ------
   // ------
 
+  // Int8 functions
+  #_getInt8(offset) {
+    if (offset < 0 || offset >= this.buffer.length) {
+      throw new Error("Offset exceeds the bounds of the Uint8Array.");
+    }
+
+    return this.buffer[offset];
+  }
+
+  #_setInt8(offset, value) {
+    if (offset < 0 || offset >= this.buffer.length) {
+      throw new Error("Offset exceeds the bounds of the Uint8Array.");
+    }
+
+    this.buffer[offset] = value;
+  }
+
+  #_getInt8Array(offset, size) {
+    if (offset < 0 || offset + size > this.buffer.length) {
+      throw new Error("Offset and size exceed the bounds of the Uint8Array.");
+    }
+
+    const int8Array = new Int8Array(size);
+
+    for (let i = 0; i < size; i++) {
+      // Directly copy each byte from the buffer to the Uint8Array
+      int8Array[i] = this.buffer[offset + i];
+    }
+
+    return int8Array;
+  }
+
+  #_setInt8Array(offset, int8Array) {
+    if (offset < 0 || offset + int8Array.length > this.buffer.length) {
+      throw new Error("Offset and array length exceed the bounds of the int8Array.");
+    }
+
+    for (let i = 0; i < int8Array.length; i++) {
+      this.buffer[offset + i] = int8Array[i];
+    }
+  }
+  // ------
+  // ------
+
   // Uint16 functions
   // OK
   #_getUint16(offset) {

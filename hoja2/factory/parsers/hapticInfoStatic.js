@@ -1,34 +1,44 @@
 
 
-export default class Batteryconfig {
+export default class Hapticinfostatic {
   
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(1);
 
     
   }
 
-  	/** @type {Float32} */
-	get charge_level_percent() {
-		return this.#_getFloat32(0);
+  	/** @type {Uint8} */
+	get haptic_hd() {
+		return this.#_getBitfield(0, 1, 1, 0);
 	}
 
-	/** @type {Uint8Array} */
+	/** @type {Uint8} */
+	get haptic_sd() {
+		return this.#_getBitfield(0, 1, 1, 1);
+	}
+
+	/** @type {Uint8} */
 	get reserved() {
-		return this.#_getUint8Array(4, 4);
+		return this.#_getBitfield(0, 1, 6, 2);
 	}
 
 
 
-  	/** @param {Float32} value */
-	set charge_level_percent(value) {
-		this.#_setFloat32(0, value);
+  	/** @param {Uint8} value */
+	set haptic_hd(value) {
+		this.#_setBitfield(0, 1, 1, 0, value);
 	}
 
-	/** @param {Uint8Array} value */
+	/** @param {Uint8} value */
+	set haptic_sd(value) {
+		this.#_setBitfield(0, 1, 1, 1, value);
+	}
+
+	/** @param {Uint8} value */
 	set reserved(value) {
-		this.#_setUint8Array(4, 4, value);
+		this.#_setBitfield(0, 1, 6, 2, value);
 	}
 
 

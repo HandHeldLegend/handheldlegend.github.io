@@ -1,34 +1,84 @@
 
 
-export default class Batteryconfig {
+export default class Analoginfostatic {
   
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(1);
 
     
   }
 
-  	/** @type {Float32} */
-	get charge_level_percent() {
-		return this.#_getFloat32(0);
+  	/** @type {Uint8} */
+	get axis_lx() {
+		return this.#_getBitfield(0, 1, 1, 0);
 	}
 
-	/** @type {Uint8Array} */
+	/** @type {Uint8} */
+	get axis_ly() {
+		return this.#_getBitfield(0, 1, 1, 1);
+	}
+
+	/** @type {Uint8} */
+	get axis_rx() {
+		return this.#_getBitfield(0, 1, 1, 2);
+	}
+
+	/** @type {Uint8} */
+	get axis_ry() {
+		return this.#_getBitfield(0, 1, 1, 3);
+	}
+
+	/** @type {Uint8} */
+	get axis_lt() {
+		return this.#_getBitfield(0, 1, 1, 4);
+	}
+
+	/** @type {Uint8} */
+	get axis_rt() {
+		return this.#_getBitfield(0, 1, 1, 5);
+	}
+
+	/** @type {Uint8} */
 	get reserved() {
-		return this.#_getUint8Array(4, 4);
+		return this.#_getBitfield(0, 1, 2, 6);
 	}
 
 
 
-  	/** @param {Float32} value */
-	set charge_level_percent(value) {
-		this.#_setFloat32(0, value);
+  	/** @param {Uint8} value */
+	set axis_lx(value) {
+		this.#_setBitfield(0, 1, 1, 0, value);
 	}
 
-	/** @param {Uint8Array} value */
+	/** @param {Uint8} value */
+	set axis_ly(value) {
+		this.#_setBitfield(0, 1, 1, 1, value);
+	}
+
+	/** @param {Uint8} value */
+	set axis_rx(value) {
+		this.#_setBitfield(0, 1, 1, 2, value);
+	}
+
+	/** @param {Uint8} value */
+	set axis_ry(value) {
+		this.#_setBitfield(0, 1, 1, 3, value);
+	}
+
+	/** @param {Uint8} value */
+	set axis_lt(value) {
+		this.#_setBitfield(0, 1, 1, 4, value);
+	}
+
+	/** @param {Uint8} value */
+	set axis_rt(value) {
+		this.#_setBitfield(0, 1, 1, 5, value);
+	}
+
+	/** @param {Uint8} value */
 	set reserved(value) {
-		this.#_setUint8Array(4, 4, value);
+		this.#_setBitfield(0, 1, 2, 6, value);
 	}
 
 

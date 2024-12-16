@@ -1,34 +1,34 @@
 
 
-export default class Batteryconfig {
+export default class Buttoninfostatic {
   
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(3);
 
     
   }
 
-  	/** @type {Float32} */
-	get charge_level_percent() {
-		return this.#_getFloat32(0);
+  	/** @type {Uint16} */
+	get main_buttons() {
+		return this.#_getUint16(0);
 	}
 
-	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(4, 4);
+	/** @type {Uint8} */
+	get system_buttons() {
+		return this.#_getUint8(2);
 	}
 
 
 
-  	/** @param {Float32} value */
-	set charge_level_percent(value) {
-		this.#_setFloat32(0, value);
+  	/** @param {Uint16} value */
+	set main_buttons(value) {
+		this.#_setUint16(0, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(4, 4, value);
+	/** @param {Uint8} value */
+	set system_buttons(value) {
+		this.#_setUint8(2, value);
 	}
 
 

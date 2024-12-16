@@ -1,0 +1,8 @@
+typedef struct 
+{
+    uint8_t axis_gyro_a : 1;
+    uint8_t axis_gyro_b : 1;
+    uint8_t axis_accel_a : 1;
+    uint8_t axis_accel_b : 1;
+    uint8_t reserved : 4;
+} imuInfoStatic_s;

@@ -1,0 +1,10 @@
+typedef struct 
+{
+    uint8_t axis_lx : 1;
+    uint8_t axis_ly : 1;
+    uint8_t axis_rx : 1;
+    uint8_t axis_ry : 1;
+    uint8_t axis_lt : 1;
+    uint8_t axis_rt : 1;
+    uint8_t reserved : 2;
+} analogInfoStatic_s;

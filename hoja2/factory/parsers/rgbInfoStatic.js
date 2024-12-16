@@ -1,34 +1,46 @@
+import Rgbgroupname from './rgbGroupName.js';
 
 
-export default class Batteryconfig {
-  
+export default class Rgbinfostatic {
+  	#rgb_group_namesVal = [];
+
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(258);
 
-    
+    	for(let i = 0; i < 32; i++) {
+		let buf = this.#_getUint8Array(1+(8*i, 8));
+		this.#rgb_group_namesVal.push(new Rgbgroupname(buf));
+	}
+
+
   }
 
-  	/** @type {Float32} */
-	get charge_level_percent() {
-		return this.#_getFloat32(0);
+  	/** @type {Uint8} */
+	get rgb_groups() {
+		return this.#_getUint8(0);
 	}
 
-	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(4, 4);
+	/** @type {Rgbgroupname[]} */
+	get rgb_group_names() {
+		return this.#rgb_group_namesVal;
+	}
+
+	/** @type {Int8} */
+	get rgb_player_group() {
+		return this.#_getInt8(257);
 	}
 
 
 
-  	/** @param {Float32} value */
-	set charge_level_percent(value) {
-		this.#_setFloat32(0, value);
+  	/** @param {Uint8} value */
+	set rgb_groups(value) {
+		this.#_setUint8(0, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(4, 4, value);
+	/** @param {Int8} value */
+	set rgb_player_group(value) {
+		this.#_setInt8(257, value);
 	}
 
 

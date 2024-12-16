@@ -1,0 +1,7 @@
+typedef struct 
+{
+    uint8_t     name[16]; 
+    uint8_t     maker[16];
+    uint8_t     fcc_id[32];
+    uint16_t    fw_version; 
+} deviceInfoStatic_s;

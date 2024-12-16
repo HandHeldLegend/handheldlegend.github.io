@@ -1,0 +1,6 @@
+typedef struct 
+{
+    uint8_t     rgb_groups; 
+    rgbGroupName_s rgb_group_names[32]; // SIZE=8 
+    int8_t      rgb_player_group;
+} rgbInfoStatic_s;

@@ -1,34 +1,54 @@
 
 
-export default class Batteryconfig {
+export default class Deviceinfostatic {
   
 
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(66);
 
     
   }
 
-  	/** @type {Float32} */
-	get charge_level_percent() {
-		return this.#_getFloat32(0);
+  	/** @type {Uint8Array} */
+	get name() {
+		return this.#_getUint8Array(0, 16);
 	}
 
 	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(4, 4);
+	get maker() {
+		return this.#_getUint8Array(16, 16);
+	}
+
+	/** @type {Uint8Array} */
+	get fcc_id() {
+		return this.#_getUint8Array(32, 32);
+	}
+
+	/** @type {Uint16} */
+	get fw_version() {
+		return this.#_getUint16(64);
 	}
 
 
 
-  	/** @param {Float32} value */
-	set charge_level_percent(value) {
-		this.#_setFloat32(0, value);
+  	/** @param {Uint8Array} value */
+	set name(value) {
+		this.#_setUint8Array(0, 16, value);
 	}
 
 	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(4, 4, value);
+	set maker(value) {
+		this.#_setUint8Array(16, 16, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set fcc_id(value) {
+		this.#_setUint8Array(32, 32, value);
+	}
+
+	/** @param {Uint16} value */
+	set fw_version(value) {
+		this.#_setUint16(64, value);
 	}
 
 

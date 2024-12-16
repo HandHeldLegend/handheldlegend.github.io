@@ -1,0 +1,6 @@
+typedef struct 
+{
+    uint8_t bluetooth_bdr : 1;
+    uint8_t bluetooth_ble : 1;
+    uint8_t reserved      : 6;
+} bluetoothInfoStatic_s;

@@ -1,0 +1,4 @@
+typedef struct 
+{
+    rgb_group_name[8];
+} rgbGroupName_s;

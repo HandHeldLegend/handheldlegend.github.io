@@ -3,11 +3,12 @@ from cfields import Field
 class CJS:
     type_table = {
         "uint8_t"   : "Uint8",
-        "int16_t"   : "Int16",
-        "uint16_t"  : "Uint16",
-        "uint32_t"  : "Uint32",
-        "int"       : "Int32",
-        "float"     : "Float32",
+        "int8_t"    : "Int8", 
+        "int16_t"   : "Int16", 
+        "uint16_t"  : "Uint16", 
+        "uint32_t"  : "Uint32", 
+        "int"       : "Int32", 
+        "float"     : "Float32", 
     }
 
     def __init__(self, struct_name, fields):
