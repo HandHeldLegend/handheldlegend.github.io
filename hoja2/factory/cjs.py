@@ -166,7 +166,7 @@ class CJS:
                 if field.array_size>1:
                     array = " = []"
                     setups += "\tfor(let i = 0; i < {}; i++) {{\n".format(field.array_size)
-                    setups += "\t\tlet buf = this.#_getUint8Array({}*i, {});\n".format(field.byte_offset, field.byte_size)
+                    setups += "\t\tlet buf = this.#_getUint8Array({}+({}*i, {}));\n".format(field.byte_offset, field.byte_size, field.byte_size)
                     setups += "\t\tthis.#{}Val.push(new {}(buf));\n".format(field.name, field.struct_name.capitalize())
                     setups += "\t}\n\n"
                 else:

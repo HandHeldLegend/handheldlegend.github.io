@@ -20,7 +20,7 @@ export default class Rgbconfig {
 	}
 
 	/** @type {Uint8} */
-	get rgb_speed_factor() {
+	get rgb_speed() {
 		return this.#_getUint8(2);
 	}
 
@@ -29,9 +29,14 @@ export default class Rgbconfig {
 		return this.#_getUint32Array(3, 32);
 	}
 
+	/** @type {Uint16} */
+	get rgb_brightness() {
+		return this.#_getUint16(131);
+	}
+
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(131, 125);
+		return this.#_getUint8Array(133, 123);
 	}
 
 
@@ -47,7 +52,7 @@ export default class Rgbconfig {
 	}
 
 	/** @param {Uint8} value */
-	set rgb_speed_factor(value) {
+	set rgb_speed(value) {
 		this.#_setUint8(2, value);
 	}
 
@@ -56,9 +61,14 @@ export default class Rgbconfig {
 		this.#_setUint32Array(3, 32, value);
 	}
 
+	/** @param {Uint16} value */
+	set rgb_brightness(value) {
+		this.#_setUint16(131, value);
+	}
+
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(131, 125, value);
+		this.#_setUint8Array(133, 123, value);
 	}
 
 

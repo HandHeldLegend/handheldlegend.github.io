@@ -19,12 +19,12 @@ export default class Analogconfig {
 	this.#r_packed_distancesVal = new Analogpackeddistances(r_packed_distancesBuf);
 
 	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(265*i, 12);
+		let buf = this.#_getUint8Array(265+(12*i, 12));
 		this.#l_angle_mapsVal.push(new Anglemap(buf));
 	}
 
 	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(457*i, 12);
+		let buf = this.#_getUint8Array(457+(12*i, 12));
 		this.#r_angle_mapsVal.push(new Anglemap(buf));
 	}
 
