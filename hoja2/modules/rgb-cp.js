@@ -15,7 +15,28 @@ import Rgbgroupname from '../factory/parsers/rgbGroupName.js';
 function decodeText(buffer) {
     const decoder = new TextDecoder('utf-8');
     const str = decoder.decode(buffer);
-    return str;
+    
+    // Remove any null characters (0x00) from the string
+    return str.replace(/\x00/g, '');
+}
+
+function uint32ToRgbHex(uint32) {
+    console.log(uint32);
+    // Mask out everything except the RGB components (last 3 bytes)
+    uint32 &= 0x00FFFFFF;  // Mask the last byte (keeping the RGB part)
+    //uint32 >>>= 8;         // Unsigned right shift to get only the RGB components
+    
+    // Convert to hex string and pad with leading zeros if necessary
+    let hexString = uint32.toString(16).padStart(6, '0');
+    
+    // Ensure it's exactly 6 characters long
+    return hexString;
+}
+
+// Convert a hex string (RRGGBB) back to a Uint32 RGB value
+function hexToUint32Rgb(hexString) {
+    // Ensure the hex string is 6 characters long, and convert it to a Uint32
+    return parseInt(hexString, 16) >>> 0; // >>> 0 ensures it's treated as unsigned
 }
 
 export function render(container) {
@@ -23,39 +44,45 @@ export function render(container) {
     /** @type {HojaGamepad} */
     let gamepad = HojaGamepad.getInstance();
 
+    let colors = gamepad.rgb_cfg.rgb_colors;
+
     let nameCount = gamepad.rgb_static.rgb_groups;
 
     /** @type {Rgbgroupname[]} */
     let names = gamepad.rgb_static.rgb_group_names;
+    
+    let decodedNames = []
 
     for(let i = 0; i < nameCount; i++)
     {
-        console.log(decodeText(names[i].rgb_group_name));
+        decodedNames.push(decodeText(names[i].rgb_group_name));
     }
 
-    /** @type {Rgbgroupname} */
-    let rgbName = gamepad.rgb_static.rgb_group_names[0];
+    let rgbPickersHTML = '';
+    for(let i = 0; i < decodedNames.length; i++) {
+
+        let colorText = uint32ToRgbHex(colors[i]);
+        console.log(colorText);
+
+        rgbPickersHTML += `
+        <group-rgb-picker 
+            id="rgb-picker-${i}"
+            group-name="${decodedNames[i]}" 
+            color="${colorText}"
+        ></group-rgb-picker>
+        `
+    }
 
     container.innerHTML = `
             <h1>RGB Settings</h1>
-            <number-selector 
-                label="Brightness" 
-                type="integer" 
-                min="0" 
-                max="100" 
-                step="5" 
-                default-value="50"
-            ></number-selector>
-
             <h2>Brightness</h2>
-    
             <number-selector 
-                label="Brightness" 
-                type="integer" 
+                id="brightness-slider" 
+                type="float" 
                 min="0" 
                 max="100" 
-                step="5" 
-                default-value="50"
+                step="0.5" 
+                default-value="85"
             ></number-selector>
 
             <h2>Mode</h2>
@@ -66,78 +93,12 @@ export function render(container) {
             ></multi-position-button>
 
             <h2>Colors</h2>
-            <group-rgb-picker 
-                group-name="A" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="B" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <group-rgb-picker 
-                group-name="X" 
-                color="22AA22"
-            ></group-rgb-picker>
-
-            <angle-selector 
-                in-angle="45"
-                out-angle="45"
-                distance="2048"
-            ></angle-selector>
-
-            <remap-selector
-                in-value="A",
-                out-value="B",
-            ></remap-selector>
-
-            <tristate-button 
-                id="component-test-tristate"
-                off-text="Connect" 
-                on-text="Disconnect" 
-                off-to-on-transitioning-text="Connecting..." 
-                on-to-off-transitioning-text="Disconnecting..."
-            ></tristate-button>
-
-            <single-shot-button 
-                id="component-test-singleshot" 
-                state="ready"
-                ready-text="Save" 
-                pending-text="Saving..."
-            ></single-shot-button>
+            ${rgbPickersHTML}
     `;
 
     // Optional: Add event listeners to specific number selectors
-    const brightnessSelector = container.querySelector('number-selector[label="Brightness"]');
+    const brightnessSelector = container.querySelector('number-selector[id="brightness-slider"]');
     brightnessSelector.addEventListener('change', (e) => {
         console.log(`Brightness changed to: ${e.detail.value}`);
-    });
-
-
-
-    const startButton = document.getElementById("component-test-tristate");
-
-    // Optional async handlers for connection/disconnection
-    startButton.setOnClickOff(async () => {
-        // Simulate an async connection process
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Connected!');
-    });
-
-    startButton.setOnClickOn(async () => {
-        // Simulate an async disconnection process
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Disconnected!');
-    });
-
-    const actionButton = document.getElementById('component-test-singleshot');
-
-    // Set an async handler for the button
-    actionButton.setOnClick(async () => {
-        console.log("action started");
-        // Simulate an async operation
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log('Action completed!');
     });
 }
