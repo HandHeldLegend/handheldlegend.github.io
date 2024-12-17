@@ -230,7 +230,7 @@ h1, h2 {
 
 #app-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
     padding: 20px;
     background-color: rgba(255, 255, 255, 0);
@@ -239,18 +239,16 @@ h1, h2 {
 .module-icon {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.module-icon:hover {
-    transform: scale(1.05);
+    align-items: center; 
 }
 
 .module-icon .icon {
-    width: 150px;
-    height: 150px;
+    transition: all 0.2s;
+    -webkit-filter: saturate(0);
+    transform: scale(0.85);
+    cursor: not-allowed;
+    width: 120px;
+    height: 120px;
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -258,6 +256,16 @@ h1, h2 {
     font-size: 3rem;
     color: white;
     margin-bottom: 10px;
+}
+
+.module-icon .icon[enabled="true"]:hover {
+    transform: scale(1.05);
+}
+
+.module-icon .icon[enabled="true"]{
+    transform: scale(1);
+    -webkit-filter: saturate(1);
+    cursor: pointer;
 }
 
 .label {

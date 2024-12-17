@@ -63,6 +63,7 @@ export function render(container) {
 
         let colorText = uint32ToRgbHex(colors[i]);
 
+        // Generate RGB Pickers
         rgbPickersHTML += `
         <group-rgb-picker 
             idx="${i}"
@@ -115,17 +116,13 @@ export function render(container) {
     const rgbPickers = container.querySelectorAll('group-rgb-picker');
     rgbPickers.forEach(picker => {
         picker.addEventListener('color-change', (e) => {
-
             let idx = parseInt(e.target.getAttribute('idx'));
-            console.log(`Color at idx ${idx} set to: ${e.detail.color}`);
             
             let u32color = hexToUint32Rgb(e.detail.color);
 
             let tmpArr = gamepad.rgb_cfg.rgb_colors;
             tmpArr[idx] = u32color;
             gamepad.rgb_cfg.rgb_colors = tmpArr;
-
-            console.log(gamepad.rgb_cfg.rgb_colors);
 
             gamepad.sendBlock(3);
         });

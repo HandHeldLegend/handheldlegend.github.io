@@ -9,6 +9,9 @@ import HojaGamepad from './gamepad/gamepad.js';
 const gamepad = HojaGamepad.getInstance();
 
 class ConfigApp {
+
+    #appIcons = [];
+
     constructor() {
 
         this.appGridContainer = document.getElementById('app-grid-container');
@@ -58,9 +61,30 @@ class ConfigApp {
         iconContainer.appendChild(icon);
         iconContainer.appendChild(label);
 
-        iconContainer.addEventListener('click', () => this.openmoduleView(module));
+        icon.addEventListener('click', () => this.openmoduleView(module));
 
         this.appGrid.appendChild(iconContainer);
+
+        this.#appIcons.push(icon);
+    }
+
+    enableIcon(idx, enable)
+    {
+        try 
+        {
+            if(enable)
+            {
+                this.#appIcons[idx].setAttribute("enabled", "true");
+
+            }
+            else {
+                this.#appIcons[idx].setAttribute("enabled", "false");
+            }
+                
+        }
+        catch(err) {
+
+        }
     }
 
     getRandomColor() {
@@ -104,9 +128,14 @@ class ConfigApp {
 }
 
 var debug = false;
+
+
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.configApp = new ConfigApp();
+
+    const connectButton = document.getElementById('connect-button');
+    const saveButton = document.getElementById('save-button');
 
     if (debug) {
         // Debug module
@@ -118,21 +147,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 color: '#3498db'
             }];
 
-        globalState.gamepadMode = 1;
-
         window.configApp.openmoduleView(debugModule[0]);
     }
 
     enableTooltips();
 
-    const connectButton = document.getElementById('connect-button');
+    function connectHandle() {
+        // Enable Icons
+        window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0);
+
+        // Enable Save
+        saveButton.enableButton(true);
+    }
+
+    function disconnectHandle() {
+        // Disable Save
+        saveButton.enableButton(false);
+
+        window.configApp.closemoduleView();
+        for(let i = 0; i < 9; i++)
+        {
+            window.configApp.enableIcon(i, false);
+        }
+    }
+
+    gamepad.setConnectHook(connectHandle);
+    gamepad.setDisconnectHook(disconnectHandle);
+
+    
 
     // Optional async handlers for connection/disconnection
-    connectButton.setOnClickOff(async () => {
-        await gamepad.connect();
+    connectButton.setOnHandler(async () => {
+        return await gamepad.connect();
     });
 
-    connectButton.setOnClickOn(async () => {
-        await gamepad.disconnect();
+    connectButton.setOffHandler(async () => {
+        return await gamepad.disconnect();
     });
 });

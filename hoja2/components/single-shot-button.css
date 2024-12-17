@@ -21,7 +21,7 @@
     cursor: wait;
 }
 
-.single-shot-button:disabled, .single-shot-button:disabled:hover {
+.single-shot-button.state-disabled {
     background-color: var(--color-button-disabled);
     cursor: not-allowed;
 }

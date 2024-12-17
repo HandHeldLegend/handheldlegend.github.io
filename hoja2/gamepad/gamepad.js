@@ -32,33 +32,33 @@ class HojaGamepad {
   #chunkSizeMax = 32;
 
   gamepad_cfg = new Gamepadconfig();
-  remap_cfg   = new Remapconfig();
-  analog_cfg  = new Analogconfig();
-  rgb_cfg     = new Rgbconfig();
+  remap_cfg = new Remapconfig();
+  analog_cfg = new Analogconfig();
+  rgb_cfg = new Rgbconfig();
   trigger_cfg = new Triggerconfig();
-  imu_cfg     = new Imuconfig();
-  haptic_cfg  = new Hapticconfig();
-  user_cfg    = new Userconfig();
+  imu_cfg = new Imuconfig();
+  haptic_cfg = new Hapticconfig();
+  user_cfg = new Userconfig();
   battery_cfg = new Batteryconfig();
 
-  #configBlocks = [this.gamepad_cfg, this.remap_cfg, 
-    this.analog_cfg, this.rgb_cfg, this.trigger_cfg, 
-    this.imu_cfg, this.haptic_cfg, this.user_cfg, 
-    this.battery_cfg];
+  #configBlocks = [this.gamepad_cfg, this.remap_cfg,
+  this.analog_cfg, this.rgb_cfg, this.trigger_cfg,
+  this.imu_cfg, this.haptic_cfg, this.user_cfg,
+  this.battery_cfg];
   #configBlockNames = ["gamepad", "remap", "analog", "rgb", "trigger", "imu", "haptic", "user", "battery"];
 
   device_static = new Deviceinfostatic();
   button_static = new Buttoninfostatic();
   analog_static = new Analoginfostatic();
-  imu_static    = new Imuinfostatic();
-  battery_static= new Batteryinfostatic();
+  imu_static = new Imuinfostatic();
+  battery_static = new Batteryinfostatic();
   haptic_static = new Hapticinfostatic();
   bluetooth_static = new Bluetoothinfostatic();
-  rgb_static  = new Rgbinfostatic();
+  rgb_static = new Rgbinfostatic();
 
-  #staticBlocks = [this.device_static, this.button_static, 
-    this.analog_static, this.haptic_static, this.imu_static, 
-    this.battery_static, this.bluetooth_static, this.rgb_static];
+  #staticBlocks = [this.device_static, this.button_static,
+  this.analog_static, this.haptic_static, this.imu_static,
+  this.battery_static, this.bluetooth_static, this.rgb_static];
   #staticBlockNames = ["device", "button", "analog", "haptic", "imu", "battery", "bluetooth", "rgb"];
 
   // State for managing block reading
@@ -74,12 +74,10 @@ class HojaGamepad {
     currentWriteIdx: 0,
   };
 
-  // Event handlers
-  #eventListeners = {
-    connect: [],
-    disconnect: [],
-    report: []
-  };
+  // Event hooks
+  #_connectHook = null;
+  #_disconnectHook = null;
+  #_inputReportHook = null;
 
   // Private constructor to enforce singleton
   constructor() {
@@ -115,16 +113,26 @@ class HojaGamepad {
       await this.#device.selectConfiguration(1);
       await this.#device.claimInterface(1);
 
-      this.#isConnected = true;
-      this.#triggerEvent('connect');
-      this.#pollDevice();
+      // Set disconnect handle
+      this.#device.onclose = () => {
+        this.#isConnected = false;
+        this.#device = null;
+        if (this.#_disconnectHook) this.#_disconnectHook();
+      };
 
+      this.#isConnected = true;
+
+      this.#pollDevice();
       await this.getAllBlocks();
       await this.getAllStatics();
 
+      if (this.#_connectHook) this.#_connectHook();
+
+      return true;
     } catch (error) {
       console.error('Connection failed:', error);
-      this.#triggerEvent('disconnect');
+
+      return false;
     }
   }
 
@@ -132,15 +140,18 @@ class HojaGamepad {
   async disconnect() {
     if (this.#device) {
       try {
+        this.#isConnected = false;
 
         // Close the device
         await this.#device.close();
-
-        this.#isConnected = false;
         this.#device = null;
-        this.#triggerEvent('disconnect');
+        if (this.#_disconnectHook) this.#_disconnectHook();
+
+        return true;
+
       } catch (error) {
         console.error('Disconnection failed:', error);
+        return false;
       }
     }
   }
@@ -228,7 +239,7 @@ class HojaGamepad {
         break;
 
       // WEBUSB_ID_READ_STATIC_BLOCK
-      case 3: 
+      case 3:
         this.#staticParser(data);
         break;
 
@@ -242,17 +253,16 @@ class HojaGamepad {
 
   }
 
-  // Event listener management
-  on(event, callback) {
-    if (this.#eventListeners[event]) {
-      this.#eventListeners[event].push(callback);
-    }
+  setConnectHook(callback) {
+    this.#_connectHook = callback;
   }
 
-  // Trigger events
-  #triggerEvent(eventName, data) {
-    const listeners = this.#eventListeners[eventName] || [];
-    listeners.forEach(callback => callback(data));
+  setDisconnectHook(callback) {
+    this.#_disconnectHook = callback;
+  }
+
+  setReportHook(callback) {
+    this.#_inputReportHook = callback;
   }
 
   async getAllBlocks() {

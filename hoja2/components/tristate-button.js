@@ -9,23 +9,23 @@ class TristateButton extends HTMLElement {
                 text: 'Connect', 
                 class: 'state-off' 
             },
-            offToOnTransitioning: { 
+            offToOn: { 
                 text: 'Connecting...', 
-                class: 'state-off-to-on-transitioning' 
+                class: 'state-off-to-on' 
             },
             on: { 
                 text: 'Disconnect', 
                 class: 'state-on' 
             },
-            onToOffTransitioning: { 
+            onToOff: { 
                 text: 'Disconnecting...', 
-                class: 'state-on-to-off-transitioning' 
+                class: 'state-on-to-off' 
             }
         };
 
         // Callbacks for state changes
-        this._onClickOff = null;
-        this._onClickOn = null;
+        this._offToOnHandler = null;
+        this._onToOffHandler = null;
     }
 
     static get observedAttributes() {
@@ -33,8 +33,8 @@ class TristateButton extends HTMLElement {
             'state', 
             'off-text', 
             'on-text', 
-            'off-to-on-transitioning-text', 
-            'on-to-off-transitioning-text'
+            'off-to-on-text', 
+            'on-to-off-text'
         ];
     }
 
@@ -59,12 +59,12 @@ class TristateButton extends HTMLElement {
                 this._states.on.text = newValue;
                 this.updateButtonText();
                 break;
-            case 'off-to-on-transitioning-text':
-                this._states.offToOnTransitioning.text = newValue;
+            case 'off-to-on-text':
+                this._states.offToOn.text = newValue;
                 this.updateButtonText();
                 break;
-            case 'on-to-off-transitioning-text':
-                this._states.onToOffTransitioning.text = newValue;
+            case 'on-to-off-text':
+                this._states.onToOff.text = newValue;
                 this.updateButtonText();
                 break;
         }
@@ -91,23 +91,48 @@ class TristateButton extends HTMLElement {
             const currentState = this.getAttribute('state') || 'off';
             
             try {
-                if (currentState === 'off') {
-                    this.setAttribute('state', 'offToOnTransitioning');
-                    
-                    if (this._onClickOff) {
-                        await this._onClickOff();
-                    }
-                    
-                    this.setAttribute('state', 'on');
-                } else if (currentState === 'on') {
-                    this.setAttribute('state', 'onToOffTransitioning');
-                    
-                    if (this._onClickOn) {
-                        await this._onClickOn();
-                    }
-                    
-                    this.setAttribute('state', 'off');
+                switch(currentState)
+                {
+                    default:
+                        break;
+
+                    case 'off':
+                        // Change to transition
+                        this.setAttribute('state', 'offToOn');
+
+                        if (this._offToOnHandler) {
+                            if (await this._offToOnHandler())
+                            {
+                                // Change to 'on' state
+                                this.setAttribute('state', 'on');
+                            }
+                            else 
+                            {
+                                // Revert back to 'off' state
+                                this.setAttribute('state', 'off');
+                            }
+                        }
+                        break;
+
+                    case 'on':
+                        // Change to transition
+                        this.setAttribute('state', 'onToOff');
+
+                        if (this._onToOffHandler) {
+                            if (await this._onToOffHandler())
+                            {
+                                // Change to 'off' state
+                                this.setAttribute('state', 'off');
+                            }
+                            else 
+                            {
+                                // Revert back to 'on' state
+                                this.setAttribute('state', 'on');
+                            }
+                        }
+                        break;
                 }
+                    
             } catch (error) {
                 // Revert to previous state if an error occurs
                 this.setAttribute('state', currentState);
@@ -140,12 +165,12 @@ class TristateButton extends HTMLElement {
     }
 
     // Set custom click handlers
-    setOnClickOff(handler) {
-        this._onClickOff = handler;
+    setOnHandler(handler) {
+        this._offToOnHandler = handler;
     }
 
-    setOnClickOn(handler) {
-        this._onClickOn = handler;
+    setOffHandler(handler) {
+        this._onToOffHandler = handler;
     }
 
     // Allow programmatic state changes
