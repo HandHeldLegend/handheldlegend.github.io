@@ -72,10 +72,15 @@ export function enableTooltips(rootElement) {
                 
                 // Remove tooltip if it exists
                 if (tooltipContainer.parentNode) {
-                    tooltipContainer.classList.remove('tooltip-visible');
-                    setTimeout(() => {
-                        document.body.removeChild(tooltipContainer);
-                    }, 200); // Match transition time
+
+                    try {
+                        tooltipContainer.classList.remove('tooltip-visible');
+                        setTimeout(() => {
+                            document.body.removeChild(tooltipContainer);
+                        }, 200); // Match transition time
+                    }
+                    catch(err) {}
+                    
                 }
             };
             

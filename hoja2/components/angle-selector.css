@@ -11,8 +11,9 @@
     overflow: hidden;
 }
 
-.button-x,
-.button-down {
+.button-disable, 
+.button-reset, 
+.button-capture {
     border: none;
     margin-left: 0;
     min-width: var(--config-box-height);
@@ -28,23 +29,33 @@
     transition: background-color var(--transition-quick);
 }
 
-.button-down 
+.button-capture 
 {
     background: var(--color-button-on);
 }
 
-.button-x
+.button-reset
 {
     background: var(--color-button-neutral);
 }
 
-.button-x:hover
+.button-reset:hover
 {
     background-color: var(--color-button-neutral-hover);
 }
 
-.button-down:hover {
+.button-capture:hover {
     background-color: var(--color-button-on-hover);
+}
+
+.button-disable
+{
+    background: var(--color-button-off);
+}
+
+.button-disable:hover
+{
+    background-color: var(--color-button-off-hover);
 }
 
 .even-container {

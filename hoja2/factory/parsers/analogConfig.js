@@ -3,32 +3,8 @@ import Anglemap from './angleMap.js';
 
 
 export default class Analogconfig {
-  	#l_packed_distancesVal;
-	#r_packed_distancesVal;
-	#l_angle_mapsVal = [];
-	#r_angle_mapsVal = [];
-
-
   constructor(buffer) {
     this.buffer = buffer || new Uint8Array(1024);
-
-    	let l_packed_distancesBuf = this.#_getUint8Array(5, 130);
-	this.#l_packed_distancesVal = new Analogpackeddistances(l_packed_distancesBuf);
-
-	let r_packed_distancesBuf = this.#_getUint8Array(135, 130);
-	this.#r_packed_distancesVal = new Analogpackeddistances(r_packed_distancesBuf);
-
-	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(265+(12*i), 12);
-		this.#l_angle_mapsVal.push(new Anglemap(buf));
-	}
-
-	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(457+(12*i), 12);
-		this.#r_angle_mapsVal.push(new Anglemap(buf));
-	}
-
-
   }
 
   	/** @type {Uint8} */
@@ -48,67 +24,79 @@ export default class Analogconfig {
 
 	/** @type {Uint16} */
 	get ly_invert() {
-		return this.#_getBitfield(2, 2, 1, 0);
-	}
-
-	/** @type {Uint16} */
-	get ly_center() {
-		return this.#_getBitfield(2, 2, 15, 1);
-	}
-
-	/** @type {Uint16} */
-	get rx_invert() {
 		return this.#_getBitfield(3, 2, 1, 0);
 	}
 
 	/** @type {Uint16} */
-	get rx_center() {
+	get ly_center() {
 		return this.#_getBitfield(3, 2, 15, 1);
 	}
 
 	/** @type {Uint16} */
+	get rx_invert() {
+		return this.#_getBitfield(5, 2, 1, 0);
+	}
+
+	/** @type {Uint16} */
+	get rx_center() {
+		return this.#_getBitfield(5, 2, 15, 1);
+	}
+
+	/** @type {Uint16} */
 	get ry_invert() {
-		return this.#_getBitfield(4, 2, 1, 0);
+		return this.#_getBitfield(7, 2, 1, 0);
 	}
 
 	/** @type {Uint16} */
 	get ry_center() {
-		return this.#_getBitfield(4, 2, 15, 1);
+		return this.#_getBitfield(7, 2, 15, 1);
 	}
 
 	/** @type {Analogpackeddistances} */
 	get l_packed_distances() {
-		return this.#l_packed_distancesVal;
+		const tmp = this.#_getUint8Array(9, 130);
+		return new Analogpackeddistances(tmp);
 	}
 
 	/** @type {Analogpackeddistances} */
 	get r_packed_distances() {
-		return this.#r_packed_distancesVal;
+		const tmp = this.#_getUint8Array(139, 130);
+		return new Analogpackeddistances(tmp);
 	}
 
 	/** @type {Anglemap[]} */
 	get l_angle_maps() {
-		return this.#l_angle_mapsVal;
+		let tmpArr = [];
+		for(let i = 0; i < 16; i++) {
+			const tmp = this.#_getUint8Array(269+(12*i), 12);
+			tmpArr.push(new Anglemap(tmp));
+		}
+		return tmpArr;
 	}
 
 	/** @type {Anglemap[]} */
 	get r_angle_maps() {
-		return this.#r_angle_mapsVal;
+		let tmpArr = [];
+		for(let i = 0; i < 16; i++) {
+			const tmp = this.#_getUint8Array(461+(12*i), 12);
+			tmpArr.push(new Anglemap(tmp));
+		}
+		return tmpArr;
 	}
 
 	/** @type {Uint8} */
 	get l_scaler_type() {
-		return this.#_getUint8(649);
+		return this.#_getUint8(653);
 	}
 
 	/** @type {Uint8} */
 	get r_scaler_type() {
-		return this.#_getUint8(650);
+		return this.#_getUint8(654);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(651, 369);
+		return this.#_getUint8Array(655, 369);
 	}
 
 
@@ -130,75 +118,87 @@ export default class Analogconfig {
 
 	/** @param {Uint16} value */
 	set ly_invert(value) {
-		this.#_setBitfield(2, 2, 1, 0, value);
-	}
-
-	/** @param {Uint16} value */
-	set ly_center(value) {
-		this.#_setBitfield(2, 2, 15, 1, value);
-	}
-
-	/** @param {Uint16} value */
-	set rx_invert(value) {
 		this.#_setBitfield(3, 2, 1, 0, value);
 	}
 
 	/** @param {Uint16} value */
-	set rx_center(value) {
+	set ly_center(value) {
 		this.#_setBitfield(3, 2, 15, 1, value);
 	}
 
 	/** @param {Uint16} value */
+	set rx_invert(value) {
+		this.#_setBitfield(5, 2, 1, 0, value);
+	}
+
+	/** @param {Uint16} value */
+	set rx_center(value) {
+		this.#_setBitfield(5, 2, 15, 1, value);
+	}
+
+	/** @param {Uint16} value */
 	set ry_invert(value) {
-		this.#_setBitfield(4, 2, 1, 0, value);
+		this.#_setBitfield(7, 2, 1, 0, value);
 	}
 
 	/** @param {Uint16} value */
 	set ry_center(value) {
-		this.#_setBitfield(4, 2, 15, 1, value);
+		this.#_setBitfield(7, 2, 15, 1, value);
+	}
+
+	/** @param {Analogpackeddistances} value */
+	set l_packed_distances(value) {
+		if (value instanceof Analogpackeddistances) {
+			this.#_setUint8Array(9, value.buffer);
+		}
+		else {
+			console.error('Must be type of Analogpackeddistances');
+		}
+	}
+
+	/** @param {Analogpackeddistances} value */
+	set r_packed_distances(value) {
+		if (value instanceof Analogpackeddistances) {
+			this.#_setUint8Array(139, value.buffer);
+		}
+		else {
+			console.error('Must be type of Analogpackeddistances');
+		}
+	}
+
+	/** @param {Anglemap[]} value */
+	set l_angle_maps(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(269+(12*index), obj.buffer)
+		}
+	}
+
+	/** @param {Anglemap[]} value */
+	set r_angle_maps(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(461+(12*index), obj.buffer)
+		}
 	}
 
 	/** @param {Uint8} value */
 	set l_scaler_type(value) {
-		this.#_setUint8(649, value);
+		this.#_setUint8(653, value);
 	}
 
 	/** @param {Uint8} value */
 	set r_scaler_type(value) {
-		this.#_setUint8(650, value);
+		this.#_setUint8(654, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(651, value);
+		this.#_setUint8Array(655, value);
 	}
 
 
 
   updateBuffer(buffer) {
-    	this.#l_angle_mapsVal.length = 0;
-	this.#r_angle_mapsVal.length = 0;
- 
-
     this.buffer = buffer;
-
-    	let l_packed_distancesBuf = this.#_getUint8Array(5, 130);
-	this.#l_packed_distancesVal = new Analogpackeddistances(l_packed_distancesBuf);
-
-	let r_packed_distancesBuf = this.#_getUint8Array(135, 130);
-	this.#r_packed_distancesVal = new Analogpackeddistances(r_packed_distancesBuf);
-
-	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(265+(12*i), 12);
-		this.#l_angle_mapsVal.push(new Anglemap(buf));
-	}
-
-	for(let i = 0; i < 16; i++) {
-		let buf = this.#_getUint8Array(457+(12*i), 12);
-		this.#r_angle_mapsVal.push(new Anglemap(buf));
-	}
-
-
   }
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
@@ -480,8 +480,15 @@ export default class Analogconfig {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
 
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
-    return dataView.getFloat32(offset, true);  // true for little-endian
+    // Direct byte extraction with little-endian interpretation
+    const b0 = this.buffer[offset];
+    const b1 = this.buffer[offset + 1];
+    const b2 = this.buffer[offset + 2];
+    const b3 = this.buffer[offset + 3];
+
+    // Reconstruct float32 using bitwise operations
+    const bits = (b3 << 24) | (b2 << 16) | (b1 << 8) | b0;
+    return new Float32Array(new Uint32Array([bits]).buffer)[0];
   }
 
   // OK
@@ -490,11 +497,15 @@ export default class Analogconfig {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
 
-    // Create a DataView to access and set the float32 value
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
+    // Convert float to its bit representation
+    const floatArray = new Float32Array([value]);
+    const bits = new Uint32Array(floatArray.buffer)[0];
 
-    // Set the float32 value at the given offset, using little-endian byte order
-    dataView.setFloat32(offset, value, true);  // true for little-endian
+    // Direct byte setting with little-endian order
+    this.buffer[offset] = bits & 0xFF;
+    this.buffer[offset + 1] = (bits >> 8) & 0xFF;
+    this.buffer[offset + 2] = (bits >> 16) & 0xFF;
+    this.buffer[offset + 3] = (bits >> 24) & 0xFF;
   }
 
   // OK
@@ -502,15 +513,21 @@ export default class Analogconfig {
     if (offset < 0 || offset + size * 4 > this.buffer.length) {
       throw new Error("Offset and size exceed the bounds of the Uint8Array.");
     }
-
+  
     const float32Array = new Float32Array(size);
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
-
+  
     for (let i = 0; i < size; i++) {
-      // Read 4 bytes starting from the offset and convert them to a Float32
-      float32Array[i] = dataView.getFloat32(offset + i * 4, true); // true for little-endian
+      // Extract 4 bytes for each float
+      const byte0 = this.buffer[offset + i * 4];
+      const byte1 = this.buffer[offset + i * 4 + 1];
+      const byte2 = this.buffer[offset + i * 4 + 2];
+      const byte3 = this.buffer[offset + i * 4 + 3];
+  
+      // Create a Float32 from the bytes (little-endian)
+      const uint8Array = new Uint8Array([byte0, byte1, byte2, byte3]);
+      float32Array[i] = new Float32Array(uint8Array.buffer)[0];
     }
-
+  
     return float32Array;
   }
 
@@ -519,12 +536,16 @@ export default class Analogconfig {
     if (offset < 0 || offset + float32Array.length * 4 > this.buffer.length) {
       throw new Error("Offset and array length exceed the bounds of the Uint8Array.");
     }
-
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
-
+  
     for (let i = 0; i < float32Array.length; i++) {
-      // Convert each Float32 value to 4 bytes and write to the buffer
-      dataView.setFloat32(offset + i * 4, float32Array[i], true); // true for little-endian
+      // Convert the float to 4 bytes
+      const uint8Array = new Uint8Array(new Float32Array([float32Array[i]]).buffer);
+  
+      // Set the bytes in the buffer
+      this.buffer[offset + i * 4] = uint8Array[0];
+      this.buffer[offset + i * 4 + 1] = uint8Array[1];
+      this.buffer[offset + i * 4 + 2] = uint8Array[2];
+      this.buffer[offset + i * 4 + 3] = uint8Array[3];
     }
   }
   // ------

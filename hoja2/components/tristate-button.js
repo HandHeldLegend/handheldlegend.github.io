@@ -97,10 +97,11 @@ class TristateButton extends HTMLElement {
                         break;
 
                     case 'off':
-                        // Change to transition
-                        this.setAttribute('state', 'offToOn');
 
                         if (this._offToOnHandler) {
+                            // Change to transition
+                            this.setAttribute('state', 'offToOn');
+
                             if (await this._offToOnHandler())
                             {
                                 // Change to 'on' state
@@ -112,13 +113,16 @@ class TristateButton extends HTMLElement {
                                 this.setAttribute('state', 'off');
                             }
                         }
+                        else {
+                            // Change to on
+                            this.setAttribute('state', 'on');
+                        }
                         break;
 
                     case 'on':
-                        // Change to transition
-                        this.setAttribute('state', 'onToOff');
-
                         if (this._onToOffHandler) {
+                            // Change to transition
+                            this.setAttribute('state', 'onToOff');
                             if (await this._onToOffHandler())
                             {
                                 // Change to 'off' state
@@ -129,6 +133,10 @@ class TristateButton extends HTMLElement {
                                 // Revert back to 'on' state
                                 this.setAttribute('state', 'on');
                             }
+                        }
+                        else {
+                            // Change to off
+                            this.setAttribute('state', 'off');
                         }
                         break;
                 }

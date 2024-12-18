@@ -2,18 +2,8 @@ import Rgbgroupname from './rgbGroupName.js';
 
 
 export default class Rgbinfostatic {
-  	#rgb_group_namesVal = [];
-
-
   constructor(buffer) {
     this.buffer = buffer || new Uint8Array(258);
-
-    	for(let i = 0; i < 32; i++) {
-		let buf = this.#_getUint8Array(1+(8*i), 8);
-		this.#rgb_group_namesVal.push(new Rgbgroupname(buf));
-	}
-
-
   }
 
   	/** @type {Uint8} */
@@ -23,7 +13,12 @@ export default class Rgbinfostatic {
 
 	/** @type {Rgbgroupname[]} */
 	get rgb_group_names() {
-		return this.#rgb_group_namesVal;
+		let tmpArr = [];
+		for(let i = 0; i < 32; i++) {
+			const tmp = this.#_getUint8Array(1+(8*i), 8);
+			tmpArr.push(new Rgbgroupname(tmp));
+		}
+		return tmpArr;
 	}
 
 	/** @type {Int8} */
@@ -38,6 +33,13 @@ export default class Rgbinfostatic {
 		this.#_setUint8(0, value);
 	}
 
+	/** @param {Rgbgroupname[]} value */
+	set rgb_group_names(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(1+(8*index), obj.buffer)
+		}
+	}
+
 	/** @param {Int8} value */
 	set rgb_player_group(value) {
 		this.#_setInt8(257, value);
@@ -46,17 +48,7 @@ export default class Rgbinfostatic {
 
 
   updateBuffer(buffer) {
-    	this.#rgb_group_namesVal.length = 0;
- 
-
     this.buffer = buffer;
-
-    	for(let i = 0; i < 32; i++) {
-		let buf = this.#_getUint8Array(1+(8*i), 8);
-		this.#rgb_group_namesVal.push(new Rgbgroupname(buf));
-	}
-
-
   }
 
   // Helper to get a value from a bitfield (given an offset and bitfield size)
@@ -338,8 +330,15 @@ export default class Rgbinfostatic {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
 
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
-    return dataView.getFloat32(offset, true);  // true for little-endian
+    // Direct byte extraction with little-endian interpretation
+    const b0 = this.buffer[offset];
+    const b1 = this.buffer[offset + 1];
+    const b2 = this.buffer[offset + 2];
+    const b3 = this.buffer[offset + 3];
+
+    // Reconstruct float32 using bitwise operations
+    const bits = (b3 << 24) | (b2 << 16) | (b1 << 8) | b0;
+    return new Float32Array(new Uint32Array([bits]).buffer)[0];
   }
 
   // OK
@@ -348,11 +347,15 @@ export default class Rgbinfostatic {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
 
-    // Create a DataView to access and set the float32 value
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
+    // Convert float to its bit representation
+    const floatArray = new Float32Array([value]);
+    const bits = new Uint32Array(floatArray.buffer)[0];
 
-    // Set the float32 value at the given offset, using little-endian byte order
-    dataView.setFloat32(offset, value, true);  // true for little-endian
+    // Direct byte setting with little-endian order
+    this.buffer[offset] = bits & 0xFF;
+    this.buffer[offset + 1] = (bits >> 8) & 0xFF;
+    this.buffer[offset + 2] = (bits >> 16) & 0xFF;
+    this.buffer[offset + 3] = (bits >> 24) & 0xFF;
   }
 
   // OK
@@ -360,15 +363,21 @@ export default class Rgbinfostatic {
     if (offset < 0 || offset + size * 4 > this.buffer.length) {
       throw new Error("Offset and size exceed the bounds of the Uint8Array.");
     }
-
+  
     const float32Array = new Float32Array(size);
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
-
+  
     for (let i = 0; i < size; i++) {
-      // Read 4 bytes starting from the offset and convert them to a Float32
-      float32Array[i] = dataView.getFloat32(offset + i * 4, true); // true for little-endian
+      // Extract 4 bytes for each float
+      const byte0 = this.buffer[offset + i * 4];
+      const byte1 = this.buffer[offset + i * 4 + 1];
+      const byte2 = this.buffer[offset + i * 4 + 2];
+      const byte3 = this.buffer[offset + i * 4 + 3];
+  
+      // Create a Float32 from the bytes (little-endian)
+      const uint8Array = new Uint8Array([byte0, byte1, byte2, byte3]);
+      float32Array[i] = new Float32Array(uint8Array.buffer)[0];
     }
-
+  
     return float32Array;
   }
 
@@ -377,12 +386,16 @@ export default class Rgbinfostatic {
     if (offset < 0 || offset + float32Array.length * 4 > this.buffer.length) {
       throw new Error("Offset and array length exceed the bounds of the Uint8Array.");
     }
-
-    const dataView = new DataView(this.buffer.buffer, this.buffer.byteOffset);
-
+  
     for (let i = 0; i < float32Array.length; i++) {
-      // Convert each Float32 value to 4 bytes and write to the buffer
-      dataView.setFloat32(offset + i * 4, float32Array[i], true); // true for little-endian
+      // Convert the float to 4 bytes
+      const uint8Array = new Uint8Array(new Float32Array([float32Array[i]]).buffer);
+  
+      // Set the bytes in the buffer
+      this.buffer[offset + i * 4] = uint8Array[0];
+      this.buffer[offset + i * 4 + 1] = uint8Array[1];
+      this.buffer[offset + i * 4 + 2] = uint8Array[2];
+      this.buffer[offset + i * 4 + 3] = uint8Array[3];
     }
   }
   // ------

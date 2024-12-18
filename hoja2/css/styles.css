@@ -236,6 +236,11 @@ h1, h2 {
     background-color: rgba(255, 255, 255, 0);
 }
 
+.app-row {
+    display: flex;
+    gap: inherit;
+}
+
 .module-icon {
     display: flex;
     flex-direction: column;

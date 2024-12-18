@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/rgb-cp.js',
+                path: './modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
@@ -154,7 +154,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function connectHandle() {
         // Enable Icons
-        window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0);
+        window.configApp.enableIcon(0, true); // Gamepad
+        window.configApp.enableIcon(1, true); // Remap
+        
+        let analogEnable = (gamepad.analog_static.axis_rx | gamepad.analog_static.axis_lx) ? true : false;
+        window.configApp.enableIcon(2, analogEnable); // Analog
+        window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0); // RGB
+
+        let triggerEnable = (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt) ? true : false;
+        window.configApp.enableIcon(4, triggerEnable); // Triggers
+
+        let imuEnable = (gamepad.imu_static.axis_gyro_a) ? true : false;
+        window.configApp.enableIcon(5, imuEnable); // IMU
+
+        let hapticEnable = (gamepad.haptic_static.haptic_hd | gamepad.haptic_static.haptic_sd) ? true : false;
+        window.configApp.enableIcon(6, hapticEnable); // Haptic
+
+        window.configApp.enableIcon(7, true); // User
+
+        let batteryEnable = (gamepad.battery_static.capacity_mah > 0) ? true : false;
+        window.configApp.enableIcon(8, batteryEnable); // Battery
 
         // Enable Save
         saveButton.enableButton(true);

@@ -79,9 +79,23 @@ class CJS:
             # Check for custom struct, return the custom class item if so
             if field.struct_name:
                 if field.array_size > 1:
-                    fn += "\t\treturn this.#{};\n".format(field.name+"Val")
+                    # let tmpArr = [];
+                    # for(int i = 0; i < arrayLen; i ++) {
+                    #   const tmp = this.#_getUint8Array(offset+(size*i), size);
+                    #   tmpArr.push(new Class(tmp));
+                    # }
+                    # return tmpArr;
+                    fn += "\t\tlet tmpArr = [];\n"
+                    fn += "\t\tfor(let i = 0; i < {}; i++) {{\n".format(field.array_size)
+                    fn += "\t\t\tconst tmp = this.#_getUint8Array({}+({}*i), {});\n".format(field.byte_offset, field.byte_size, field.byte_size)
+                    fn += "\t\t\ttmpArr.push(new {}(tmp));\n".format(field.struct_name.capitalize())
+                    fn += "\t\t}\n"
+                    fn += "\t\treturn tmpArr;\n"
                 else:
-                    fn += "\t\treturn this.#{};\n".format(field.name+"Val")
+                    # const tmp = this.#_getUint8Array(offset, size); 
+                    # return new Class(tmp);
+                    fn += "\t\tconst tmp = this.#_getUint8Array({}, {});\n".format(field.byte_offset, field.byte_size)
+                    fn += "\t\treturn new {}(tmp);\n".format(field.struct_name.capitalize())
                 # Complete this function
                 fn += "\t}\n\n"
                 continue
@@ -107,19 +121,53 @@ class CJS:
 
         for field in self.fields:
 
-            # We do not create set functions for structs
-            # They should have their members accessed direct
-            if field.struct_name:
-                continue 
-
-            get_type = self.get_type_value(field.data_type)
             array_present = ""
+            get_type = ""
 
             if field.array_size > 1:
-                array_present = "Array"
+                if field.struct_name:
+                    array_present = "[]"
+                else :
+                    array_present = "Array"
 
+            # We DO generate set functions for structs
+            if field.struct_name:
+                
+                get_type = field.struct_name.capitalize()
+                fn += "\t/** @param {{{}}} value */\n".format(get_type+array_present)
+                # Generate header
+                fn += "\tset {}(value) {{\n".format(field.name)
+
+                if field.array_size>1:
+                    # We take the single value, verify its type, and put its buffer into the correct offset location
+                    # for (const [index, obj] of value.entries()) {
+                    #   this.#setUint8Array(offset+(size*index), obj.buffer); 
+                    # }
+                    fn += "\t\tfor (const [index, obj] of value.entries()) {\n"
+                    fn += "\t\t\tthis.#_setUint8Array({}+({}*index), obj.buffer)\n".format(field.byte_offset, field.byte_size)
+                    fn += "\t\t}\n"
+                    fn += "\t}\n\n"
+
+                else:
+                    # We take the single value, verify its type, and put its buffer into the correct offset location
+                    # if(value instanceof Type) {
+                    #   this.#setUint8Array(offset, value.buffer);
+                    # } 
+                    # else { 
+                    #   console.error("Must be type of Type");  
+                    # }
+                    fn += "\t\tif (value instanceof {}) {{\n".format(get_type)
+                    fn += "\t\t\tthis.#_setUint8Array({}, value.buffer);\n".format(field.byte_offset)
+                    fn += "\t\t}\n"
+                    fn += "\t\telse {\n"
+                    fn += "\t\t\tconsole.error('Must be type of {}');\n".format(get_type)
+                    fn += "\t\t}\n"
+                    fn += "\t}\n\n"
+
+                continue 
+            
+            get_type = self.get_type_value(field.data_type)
             fn += "\t/** @param {{{}}} value */\n".format(get_type+array_present)
-
             # Generate header
             fn += "\tset {}(value) {{\n".format(field.name)
 
@@ -150,9 +198,6 @@ class CJS:
         Generates the header of the JavaScript class, including imports and class name.
         """
         imports = ""
-        setups = ""
-        wipes = ""
-        declares = ""
         classes_imported = []
         offset = 0
 
@@ -165,22 +210,7 @@ class CJS:
                 
                 array = ""
 
-                if field.array_size>1:
-                    array = " = []"
-                    setups += "\tfor(let i = 0; i < {}; i++) {{\n".format(field.array_size)
-                    setups += "\t\tlet buf = this.#_getUint8Array({}+({}*i), {});\n".format(field.byte_offset, field.byte_size, field.byte_size)
-                    setups += "\t\tthis.#{}Val.push(new {}(buf));\n".format(field.name, field.struct_name.capitalize())
-                    setups += "\t}\n\n"
-
-                    wipes += "\tthis.#{}Val.length = 0;\n".format(field.name)
-                else:
-                    setups += "\tlet {}Buf = this.#_getUint8Array({}, {});\n".format(field.name, field.byte_offset, field.byte_size)
-                    setups += "\tthis.#{}Val = new {}({}Buf);\n\n".format(field.name, field.struct_name.capitalize(), field.name)
-
-                # Set up our class with its appropriate buffer
-                declares += "\t#{}Val{};\n".format(field.name, array)
-
-        return imports, setups, declares, wipes
+        return imports
 
     def export_to_js(self, filename):
         """
@@ -197,15 +227,11 @@ class CJS:
             print(f"Error: Template file '{template_file}' not found.")
             return
 
-        imports, setups, declares, wipes = self.generate_class_header()
+        imports = self.generate_class_header()
         get_fns = self.generate_get_functions()
         set_fns = self.generate_set_functions()
 
         js_body = js_body.replace("$imports",   imports)
-        js_body = js_body.replace("$setups",    setups)
-
-        js_body = js_body.replace("$wipes",    wipes)
-        js_body = js_body.replace("$declares",  declares)
 
         js_body = js_body.replace("$setFunctions",  get_fns)
         js_body = js_body.replace("$getFunctions",  set_fns)

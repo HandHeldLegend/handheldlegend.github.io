@@ -4,67 +4,216 @@ class AngleSelector extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+
+        // Internal state
+        this._angleCaptureHandler = null;
+
+        this._isInternalUpdate = false;
+
+        // Element references
+        this._inAngleInput = null;
+        this._outAngleInput = null;
+        this._distanceInput = null;
+        this._idx
     }
 
+    /**
+     * Observed attributes
+     */
     static get observedAttributes() {
-        return ['in-angle', 'out-angle', 'distance'];
+        return ['in-angle', 'out-angle', 'distance', 'idx'];
     }
 
+    /**
+     * Lifecycle: connectedCallback
+     */
     async connectedCallback() {
-        // Load the component-specific CSS
-        const csstext = await fetch('./components/angle-selector.css');
-        const css = await csstext.text();
-        this.render(css);
-        this.setupEventListeners();
-
-        enableTooltips(this.shadowRoot);
+        try {
+            const cssResponse = await fetch('./components/angle-selector.css');
+            const css = await cssResponse.text();
+            this.render(css);
+            this.#setupReferences();
+            this.#setupEventListeners();
+            this._isInitialized = true;
+            enableTooltips(this.shadowRoot);
+        } catch (error) {
+            console.error('Error initializing AngleSelector:', error);
+        }
     }
 
+    /**
+     * Lifecycle: attributeChangedCallback
+     */
     attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'in-angle' && oldValue !== newValue) {
-            this.updateInAngle(newValue);
-        } else if (name === 'out-angle' && oldValue !== newValue) {
-            this.updateOutAngle(newValue);
-        } else if (name === 'distance' && oldValue !== newValue) {
-            this.updateDistance(newValue);
+        if (!this._isInitialized || oldValue === newValue) return;
+        if (this._isInternalUpdate || oldValue === newValue) return; // Ignore internal updates
+
+        switch (name) {
+            case 'in-angle':
+                this.#setInAngle(parseFloat(newValue));
+                break;
+            case 'out-angle':
+                this.#setOutAngle(parseFloat(newValue));
+                break;
+            case 'distance':
+                this.#setDistance(parseInt(newValue, 10));
+                break;
+            case 'idx':
+                this._idx = parseInt(newValue, 10);
+                break;
         }
     }
 
-    #validateAngle(angle)
-    {
-        if(angle>360)
-        {
-            return angle % 360;
-        }
-        if(angle < 0)
-        {
-            return 360 - (-angle % 360);
+    /**
+     * Public methods for external use
+     */
+
+    /** Set an external angle capture handler */
+    setAngleCaptureHandler(handler) {
+        this._angleCaptureHandler = handler;
+    }
+
+    /** Get the current state of the component */
+    getCurrentState() {
+        return {
+            idx: this._idx || 0,
+            inAngle: parseFloat(this._inAngleInput?.value || 0),
+            outAngle: parseFloat(this._outAngleInput?.value || 0),
+            distance: parseInt(this._distanceInput?.value || 0)
+        };
+    }
+
+    /**
+     * Internal methods
+     */
+
+    #validateAngle(angle) {
+        angle = parseFloat(angle);
+        if (isNaN(angle)) return 0;
+        angle = angle % 360;
+        return angle < 0 ? angle + 360 : angle;
+    }
+
+    #validateDistance(distance) {
+        distance = parseInt(distance, 10);
+        if (isNaN(distance)) return 0;
+        return Math.min(Math.max(distance, 0), 4096);
+    }
+
+    #setupReferences() {
+        this._inAngleInput = this.shadowRoot.querySelector('.angle-in');
+        this._outAngleInput = this.shadowRoot.querySelector('.angle-out');
+        this._distanceInput = this.shadowRoot.querySelector('.distance');
+    }
+
+    #setupEventListeners() {
+        // Input change listeners
+        this._inAngleInput.addEventListener('change', (event) => {
+            this.#setInAngle(this.#validateAngle(event.target.value));
+        });
+
+        this._outAngleInput.addEventListener('change', (event) => {
+            this.#setOutAngle(this.#validateAngle(event.target.value));
+        });
+
+        this._distanceInput.addEventListener('change', (event) => {
+            this.#setDistance(this.#validateDistance(event.target.value));
+        });
+
+        // Button click listeners
+        this.shadowRoot.querySelector('.button-reset').addEventListener('click', () => this.#resetValues());
+
+        this.shadowRoot.querySelector('.button-capture').addEventListener('click', async () => {
+            await this.#captureAngle();
+        });
+
+        this.shadowRoot.querySelector('.button-disable').addEventListener('click', () => this.#disableValues());
+    }
+
+    #emitChangeEvent() {
+        const currentState = this.getCurrentState();
+        if (JSON.stringify(this._lastEmittedState) !== JSON.stringify(currentState)) {
+            this.dispatchEvent(new CustomEvent('angle-change', {
+                detail: currentState,
+                bubbles: true,
+                composed: true
+            }));
+            this._lastEmittedState = currentState;
         }
     }
 
-    #validateDistance(distance)
-    {
-        if(distance>4096)
-        {
-            return 4096;
-        }
-        if(distance < 1000)
-        {
-            return 1000;
+    #setInAngle(value) {
+        this._inAngleInput.value = value;
+        this.setAttribute('in-angle', value);
+        this.#emitChangeEvent();
+    }
+
+    #setOutAngle(value) {
+        this._outAngleInput.value = value;
+        this.setAttribute('out-angle', value);
+        this.#emitChangeEvent();
+    }
+
+    #setDistance(value) {
+        this._distanceInput.value = value;
+        this.setAttribute('distance', value);
+        this.#emitChangeEvent();
+    }
+
+    setAll(input, output, distance) {
+        this._isInternalUpdate = true;
+
+        this._distanceInput.value = distance;
+        this.setAttribute('distance', distance);
+
+        this._outAngleInput.value = output;
+        this.setAttribute('out-angle', output);
+
+        this._inAngleInput.value = input;
+        this.setAttribute('in-angle', input);
+
+        this._isInternalUpdate = false;
+        this.#emitChangeEvent();
+    }
+
+    #resetValues() {
+        const angleSlice = 360 / 16;
+        const defaultAngle = angleSlice * (this._idx || 0);
+        const defaultDistance = 2048;
+
+        this.setAll(defaultAngle, defaultAngle, defaultDistance);
+    }
+
+    async #captureAngle() {
+        if (this._angleCaptureHandler) {
+            try {
+                const captureResult = await this._angleCaptureHandler();
+                if (captureResult !== false) {
+                    this.#setInAngle(captureResult);
+                }
+            } catch (error) {
+                console.error('Angle capture failed:', error);
+            }
+        } else {
+            console.warn(`No angle capture handler set for index ${this.idx}`);
         }
     }
 
-    // Render the component
+    #disableValues() {
+        this.setAll(0,0,0);
+    }
+
     render(css) {
+        this._idx = parseInt(this.getAttribute('idx') || "0");
         const inAngle = parseFloat(this.getAttribute('in-angle') || "0");
         const outAngle = parseFloat(this.getAttribute('out-angle') || "0");
-        const distance = parseInt(this.getAttribute('distance') || "1000");
+        const distance = parseInt(this.getAttribute('distance') || "0");
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-                <button class="button-down" tooltip="Capture angle">⤓</button>
+            <button class="button-capture" tooltip="Capture angle">⤓</button>
 
-                <div class="even-container">
+            <div class="even-container">
                 <span class="label">in:</span>
                 <input tooltip="Input angle" type="number" class="angle-in" value="${inAngle}" min="0" max="360" step="any"/>
 
@@ -72,117 +221,14 @@ class AngleSelector extends HTMLElement {
                 <input tooltip="Output angle" type="number" class="angle-out" value="${outAngle}" min="0" max="360" step="any"/>
 
                 <span class="label">dist:</span>
-                <input tooltip="Output distance" type="number" class="distance" value="${distance}" min="1000" max="4096" step="1"/>
-                </div>
+                <input tooltip="Output distance" type="number" class="distance" value="${distance}" min="0" max="4096" step="1"/>
+            </div>
 
-                <button class="button-x" tooltip="Reset angle">↺</button>
+            <button class="button-reset" tooltip="Reset angle">↺</button>
+            <button class="button-disable" tooltip="Disable angle">✖</button>
         `;
-    }
-
-    // Synchronize input changes with attribute updates
-    setupEventListeners() {
-        const inAngleInput = this.shadowRoot.querySelector('.angle-in');
-        const outAngleInput = this.shadowRoot.querySelector('.angle-out');
-        const distanceInput = this.shadowRoot.querySelector('.distance');
-        const buttonX = this.shadowRoot.querySelector('.button-x');
-        const buttonDown = this.shadowRoot.querySelector('.button-down');
-
-        // Update 'in' angle when input changes
-        inAngleInput.addEventListener('change', (event) => {
-            console.log("Test");
-            const value = this.#validateAngle(parseFloat(event.target.value));
-            if (value >= 0 && value <= 360) {
-                this.setAttribute('in-angle', value);
-                this.emitChangeEvent();
-            }
-        });
-
-        // Update 'out' angle when input changes
-        outAngleInput.addEventListener('change', (event) => {
-            const value = this.#validateAngle(parseFloat(event.target.value));
-            if (value >= 0 && value <= 360) {
-                this.setAttribute('out-angle', value);
-                this.emitChangeEvent();
-            }
-        });
-
-        // Update distance when input changes
-        distanceInput.addEventListener('change', (event) => {
-            const value = this.#validateDistance(parseInt(event.target.value, 10));
-            if (value >= 0 && value <= 4096) {
-                this.setAttribute('distance', value);
-                this.emitChangeEvent();
-            }
-        });
-
-        // Handle button clicks (you can add further logic for these buttons)
-        buttonX.addEventListener('click', () => {
-            console.log("Reset angle clicked");
-        });
-
-        buttonDown.addEventListener('click', () => {
-            console.log("Capture angle clicked");
-        });
-    }
-
-    // Update the 'in' angle dynamically
-    updateInAngle(value) {
-        const inAngleInput = this.shadowRoot.querySelector('.angle-in');
-        if (inAngleInput) {
-            inAngleInput.value = value;
-        }
-    }
-
-    // Update the 'out' angle dynamically
-    updateOutAngle(value) {
-        const outAngleInput = this.shadowRoot.querySelector('.angle-out');
-        if (outAngleInput) {
-            outAngleInput.value = value;
-        }
-    }
-
-    // Update the distance dynamically
-    updateDistance(value) {
-        const distanceInput = this.shadowRoot.querySelector('.distance');
-        if (distanceInput) {
-            distanceInput.value = value;
-        }
-    }
-
-    // Emit a change event when any value changes
-    emitChangeEvent() {
-        this.dispatchEvent(new CustomEvent('angle-change', {
-            detail: {
-                inAngle: this.getAttribute('in-angle'),
-                outAngle: this.getAttribute('out-angle'),
-                distance: this.getAttribute('distance')
-            }
-        }));
-    }
-
-    // Set the 'in' angle programmatically
-    setInAngle(value) {
-        if (value >= 0 && value <= 360) {
-            this.setAttribute('in-angle', value);
-        }
-    }
-
-    // Set the 'out' angle programmatically
-    setOutAngle(value) {
-        if (value >= 0 && value <= 360) {
-            this.setAttribute('out-angle', value);
-        }
-    }
-
-    // Set the distance programmatically
-    setDistance(value) {
-        if (value >= 0 && value <= 4096) {
-            this.setAttribute('distance', value);
-        }
     }
 }
 
-// Define the custom element
 customElements.define('angle-selector', AngleSelector);
-
 export default AngleSelector;

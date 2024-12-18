@@ -375,7 +375,7 @@ class HojaGamepad {
       console.log("Sent " + this.#configBlockNames[blockIndex] + " block");
     }
     catch (error) {
-      console.log("Invalid block trying to send");
+      console.log("Error trying to send block.");
     }
   }
 

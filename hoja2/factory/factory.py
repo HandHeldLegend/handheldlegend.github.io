@@ -229,13 +229,14 @@ def parse_struct_fields(struct_definition):
 
                 bit_counter += bitfieldSize
 
-                if bit_counter >= 8:
-                    byte_counter += 1
+                #if bit_counter >= 8:
+                    #byte_counter += 1
 
                 if bit_counter >= (8*fieldSize):
                     bit_counter = 0
                     referencingBitOffset += 1
                     bitFieldProcessing = False
+                    byte_counter += fieldSize
                     
             else:
                 byte_counter += totalSize
