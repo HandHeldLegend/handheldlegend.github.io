@@ -270,10 +270,20 @@ export function render(container) {
 
     anglePickers.forEach(picker => {
         picker.addEventListener('angle-change', (e) => {
+
             updateAngleParam(selectedAxis, e.detail.idx, 
                 e.detail.inAngle, e.detail.outAngle, e.detail.distance);
+
+            let maps = (selectedAxis==0) ? gamepad.analog_cfg.l_angle_maps : gamepad.analog_cfg.r_angle_maps;
+            analogVisualizer.setPolygonVertices(maps);
         });
 
+    });
+
+    const axisSelector = container.querySelector('multi-position-button[id="stick-chooser"]');
+
+    axisSelector.addEventListener('change', (e) => {
+        selectedAxis = e.detail.selectedIndex;
     });
 
     const copyButton = container.querySelector('single-shot-button[id="copy-angles-button"]');
@@ -284,5 +294,26 @@ export function render(container) {
     copyButton.setOnClick(exportAngles);
     pasteButton.setOnClick(importAngles);
 
+    const analogVisualizer = container.querySelector('analog-stick');
+
+    analogVisualizer.setPolygonVertices(gamepad.analog_cfg.l_angle_maps);
+
     enableTooltips(container);
+
+    gamepad.setReportHook((data) => {
+        let offset = 0;
+
+        if(selectedAxis==1)
+        {
+            offset = 4;
+        }
+
+        let x = (data.getUint8(1 + offset) << 8) | (data.getUint8(2 + offset));
+        let y = 4096- ( (data.getUint8(3 + offset) << 8) | (data.getUint8(4 + offset)) );
+
+        x -= 2048;
+        y -= 2048;
+
+        analogVisualizer.setAnalogInput(x, y);
+    });
 }

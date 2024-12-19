@@ -242,6 +242,12 @@ class HojaGamepad {
       case 3:
         this.#staticParser(data);
         break;
+      
+      // WEBUSB_INPUT_RAW
+      case 255:
+        if(this.#_inputReportHook)
+          this.#_inputReportHook(data);
+        break;
 
       default:
         console.warn(`Unhandled report ID: ${data.getUint8(0)}`);

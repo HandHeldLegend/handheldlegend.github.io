@@ -97,7 +97,6 @@ class AnalogStickVisual extends HTMLElement {
 
     drawAnalogStick() {
         try {
-
             const canvas = this.shadowRoot.querySelector('.analog-stick-canvas');
             const ctx = canvas.getContext('2d');
             const width = canvas.width = canvas.clientWidth;
@@ -108,8 +107,6 @@ class AnalogStickVisual extends HTMLElement {
 
             // Clear canvas
             ctx.clearRect(0, 0, width, height);
-
-
 
             // Draw analog stick boundary
             if (this.state.mode === 'round') {
@@ -163,20 +160,24 @@ class AnalogStickVisual extends HTMLElement {
         ctx.closePath();
         ctx.strokeStyle = 'darkgray';
         ctx.stroke();
+
+        ctx.fillStyle = 'rgba(167, 206, 255, 0.5)';
+        ctx.fill();
     }
 
     drawCurrentPosition(ctx, centerX, centerY, maxStickRange) {
         const { x, y } = this.state;
         // Scale the position based on the full analog stick range
         const posX = centerX + (x / maxStickRange) * (Math.min(centerX, centerY) - 10);
+        // Invert the Y coordinate by subtracting instead of adding
         const posY = centerY + (y / maxStickRange) * (Math.min(centerX, centerY) - 10);
-
+    
         // Determine marker color based on deadzone
         ctx.beginPath();
         ctx.arc(posX, posY, 7, 0, 2 * Math.PI);
         ctx.fillStyle = Math.abs(x) > this.state.deadzone || Math.abs(y) > this.state.deadzone
-            ? 'rgba(74, 40, 255, 0.79)'
-            : 'rgba(255, 51, 40, 0.79)';
+            ? 'rgba(74, 40, 255, 0.79)'  // Blue when outside deadzone
+            : 'rgba(255, 51, 40, 0.79)'; // Red when inside deadzone
         ctx.fill();
     }
 
@@ -204,9 +205,27 @@ class AnalogStickVisual extends HTMLElement {
         this.drawAnalogStick();
     }
 
+    #sortAndFilterAnglemap(anglemapArray) {
+        // Filter out objects where the distance is less than 1000
+        const filteredArray = anglemapArray.filter(item => item.distance >= 1000);
+    
+        // Sort the filtered array by the output (angle)
+        const sortedArray = filteredArray.sort((a, b) => a.output - b.output);
+    
+        // Structure the result into a single array of objects
+        return sortedArray.map(item => ({
+            angle: item.output,    // Rename output to angle
+            distance: item.distance // Rename distance to vertex
+        }));
+    }
+
     // Public method to set polygon vertices
-    setPolygonVertices(vertices) {
-        this.setAttribute('polygon-vertices', vertices);
+    setPolygonVertices(anglemapArray) {
+        console.log("Settin vertices");
+        let vertices = this.#sortAndFilterAnglemap(anglemapArray);
+        this.state.polygonVertices = vertices;
+        console.log(this.polygonVertices);
+        this.drawAnalogStick();
     }
 
     // Public method to set mode
