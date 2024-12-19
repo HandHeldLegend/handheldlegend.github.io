@@ -74,7 +74,7 @@ class AngleSelector extends HTMLElement {
     }
 
     /** Get the current state of the component */
-    getCurrentState() {
+    getState() {
         return {
             idx: this._idx || 0,
             inAngle: parseFloat(this._inAngleInput?.value || 0),
@@ -131,7 +131,7 @@ class AngleSelector extends HTMLElement {
     }
 
     #emitChangeEvent() {
-        const currentState = this.getCurrentState();
+        const currentState = this.getState();
         if (JSON.stringify(this._lastEmittedState) !== JSON.stringify(currentState)) {
             this.dispatchEvent(new CustomEvent('angle-change', {
                 detail: currentState,
@@ -160,7 +160,8 @@ class AngleSelector extends HTMLElement {
         this.#emitChangeEvent();
     }
 
-    setAll(input, output, distance) {
+    // Set all the attributes. Set emit to true if it should do a callback
+    setAll(input, output, distance, emit=false) {
         this._isInternalUpdate = true;
 
         this._distanceInput.value = distance;
@@ -173,7 +174,9 @@ class AngleSelector extends HTMLElement {
         this.setAttribute('in-angle', input);
 
         this._isInternalUpdate = false;
-        this.#emitChangeEvent();
+
+        if(emit)
+            this.#emitChangeEvent();
     }
 
     #resetValues() {
@@ -181,7 +184,7 @@ class AngleSelector extends HTMLElement {
         const defaultAngle = angleSlice * (this._idx || 0);
         const defaultDistance = 2048;
 
-        this.setAll(defaultAngle, defaultAngle, defaultDistance);
+        this.setAll(defaultAngle, defaultAngle, defaultDistance, true);
     }
 
     async #captureAngle() {
@@ -200,7 +203,7 @@ class AngleSelector extends HTMLElement {
     }
 
     #disableValues() {
-        this.setAll(0,0,0);
+        this.setAll(0,0,0, true);
     }
 
     render(css) {

@@ -69,16 +69,6 @@ class MultiPositionButton extends HTMLElement {
         if (buttons.length > 0 && buttons[defaultIndex]) {
             this.clearActiveState();
             buttons[defaultIndex].classList.add('active');
-
-            // Emit the initial change event for the default selection
-            this.dispatchEvent(
-                new CustomEvent('change', {
-                    detail: {
-                        selectedIndex: defaultIndex,
-                        selectedLabel: buttons[defaultIndex].textContent,
-                    },
-                })
-            );
         }
     }
 
@@ -87,17 +77,27 @@ class MultiPositionButton extends HTMLElement {
         if (index < 0 || index >= buttons.length) return;
 
         this.clearActiveState();
-        const targetButton = buttons[index];
-        targetButton.classList.add('active');
 
-        this.dispatchEvent(
-            new CustomEvent('change', {
-                detail: {
-                    selectedIndex: index,
-                    selectedLabel: targetButton.textContent,
-                },
-            })
-        );
+        buttons[index].classList.add('active');
+    }
+
+    // Get the current state of the button
+    getState() {
+        const buttons = this.shadowRoot.querySelectorAll('.button-item');
+        let currentIndex = -1;
+        let currentLabel = null;
+
+        buttons.forEach((button, index) => {
+            if (button.classList.contains('active')) {
+                currentIndex = index;
+                currentLabel = button.textContent;
+            }
+        });
+
+        return {
+            selectedIndex: currentIndex,
+            selectedLabel: currentLabel,
+        };
     }
 
     // Setup event listeners for button clicks

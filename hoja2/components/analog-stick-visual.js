@@ -221,10 +221,8 @@ class AnalogStickVisual extends HTMLElement {
 
     // Public method to set polygon vertices
     setPolygonVertices(anglemapArray) {
-        console.log("Settin vertices");
         let vertices = this.#sortAndFilterAnglemap(anglemapArray);
         this.state.polygonVertices = vertices;
-        console.log(this.polygonVertices);
         this.drawAnalogStick();
     }
 
