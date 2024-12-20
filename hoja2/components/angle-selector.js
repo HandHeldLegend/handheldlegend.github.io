@@ -174,14 +174,21 @@ class AngleSelector extends HTMLElement {
     setAll(input, output, distance, emit=false) {
         this._isInternalUpdate = true;
 
-        this._distanceInput.value = distance;
-        this.setAttribute('distance', distance);
+        if(input != null) {
+            this._distanceInput.value = distance;
+            this.setAttribute('distance', distance);
+        }
+        
+        if(output != null) {
+            this._outAngleInput.value = output;
+            this.setAttribute('out-angle', output);
+        }
 
-        this._outAngleInput.value = output;
-        this.setAttribute('out-angle', output);
-
-        this._inAngleInput.value = input;
-        this.setAttribute('in-angle', input);
+        if(input != null) {
+            console.log(input);
+            this._inAngleInput.value = input;
+            this.setAttribute('in-angle', input);
+        }
 
         this._isInternalUpdate = false;
 
@@ -196,7 +203,7 @@ class AngleSelector extends HTMLElement {
     async #captureAngle() {
         if (this._angleCaptureHandler) {
             try {
-                const captureResult = await this._angleCaptureHandler();
+                const captureResult = await this._angleCaptureHandler(this._idx);
                 if (captureResult !== false) {
                     this.#setInAngle(captureResult);
                 }

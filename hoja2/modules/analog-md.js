@@ -18,6 +18,11 @@ import { enableTooltips } from '../tooltips.js';
 
 let selectedAxis = 0;
 let mdContainer = null;
+let watingForAngles = false;
+let capturedAngles = {
+    left: 0,
+    right: 0
+};
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
@@ -301,6 +306,39 @@ function getAnglemapsFromAngleSelectors() {
     return angleEntries;
 }
 
+async function waitForAngleData(timeout = 5000) {
+    const pollInterval = 50; // Poll every 50ms
+    let elapsedTime = 0;
+
+    // Poll until confirmation or timeout
+    while (watingForAngles) {
+      if (elapsedTime >= timeout) {
+        throw new Error("Timeout waiting for angles.");
+      }
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+      elapsedTime += pollInterval;
+    }
+  }
+
+async function captureAngleHandler() {
+    const anglePickers = mdContainer.querySelectorAll('angle-selector');
+    watingForAngles = true;
+
+    // WEBUSB_ID_CONFIG_COMMAND 4
+    // CFG_BLOCK_ANALOG 2
+    // ANALOG_CMD_CAPTURE_ANGLE 3
+    await gamepad.sendCommand(4, new Uint8Array([analogCfgBlockNumber, 3]));
+
+    await waitForAngleData();
+
+    if(selectedAxis==0) {
+        return capturedAngles.left;
+    }
+    else {
+        return capturedAngles.right;
+    }
+}
+
 // Grab all the current config option values
 // and write them to our controller memory
 async function writeAngleMemBlock() {
@@ -341,6 +379,34 @@ async function writeAngleMemBlock() {
     await gamepad.sendBlock(analogCfgBlockNumber);
 }
 
+// Command hook callback 
+function commandCallback(data) {
+    const commandBlock = data.getUint8(1);
+    const commandType = data.getUint8(2);
+    
+    if(commandBlock == analogCfgBlockNumber) {
+        // ANALOG_CMD_CALIBRATE_START
+        if(commandType == 1) {
+            console.log("Calibration Started");
+        }
+        // ANALOG_CMD_CALIBRATE_STOP
+        else if(commandType == 2) {
+            console.log("Calibration Stopped");
+        }
+        // ANALOG_CMD_CAPTURE_ANGLE 
+        else if(commandType == 3) {
+            console.log("Angle captured");
+
+            capturedAngles.left     = data.getFloat32(3, true);
+            capturedAngles.right    = data.getFloat32(7, true);
+
+            console.log(capturedAngles);
+            watingForAngles = false;
+        }
+    }
+}
+
+// Render the analog settings page
 export function render(container) {
 
     /** @type {Anglemap[]} */
@@ -445,6 +511,8 @@ export function render(container) {
         picker.addEventListener('angle-change', (e) => {
             writeAngleMemBlock();
         });
+
+        picker.setAngleCaptureHandler(captureAngleHandler);
     });
 
     // Set axis change handler
@@ -522,6 +590,8 @@ export function render(container) {
 
         analogVisualizer.setAnalogInput(x, y);
     });
+
+    gamepad.setCommandHook(commandCallback);
 
     mdContainer = container;
 }

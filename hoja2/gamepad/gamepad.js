@@ -83,6 +83,7 @@ class HojaGamepad {
   #_connectHook = null;
   #_disconnectHook = null;
   #_inputReportHook = null;
+  #_commandHook = null;
 
   // Private constructor to enforce singleton
   constructor() {
@@ -250,18 +251,28 @@ class HojaGamepad {
 
       // WEBUSB_ID_CONFIG_COMMAND
       case 4:
-        console.log(data.getUint8(1));
-        console.log(this.#commandMemoryState.currentCommand)
         if( data.getUint8(1) == this.#commandMemoryState.currentCommand) {
           console.log("Command confirmed.");
           this.#commandMemoryState.commandConfirmed = true;
+
+          try {
+            this.#_commandHook(data);
+          } catch (error) { 
+            console.error("Command report hook missing or unassigned:", error); 
+            this.#_commandHook = null;
+          }
         }
         break;
       
       // WEBUSB_INPUT_RAW
       case 255:
         if(this.#_inputReportHook)
-          this.#_inputReportHook(data);
+          try {
+            this.#_inputReportHook(data);
+          } catch (error) { 
+            console.error("Input report hook missing or unassigned:", error); 
+            this.#_inputReportHook = null;
+          }
         break;
 
       default:
@@ -284,6 +295,10 @@ class HojaGamepad {
 
   setReportHook(callback) {
     this.#_inputReportHook = callback;
+  }
+  
+  setCommandHook(callback) {
+    this.#_commandHook = callback;
   }
 
   async getAllBlocks() {
@@ -442,7 +457,7 @@ class HojaGamepad {
     }
   }
 
-  async sendCommand(command, data) {
+  async sendCommand(reportId, commandData) {
     try {
       if (!this.#isConnected) {
         throw new Error("Can't send command, device not connected!");
@@ -450,14 +465,14 @@ class HojaGamepad {
 
       let commandThisTime = false;
       // WEBUSB_ID_CONFIG_COMMAND
-      if(command == 4) {
-        this.#commandMemoryState.currentCommand = data[0];
+      if(reportId == 4) {
+        this.#commandMemoryState.currentCommand = commandData[0];
         this.#commandMemoryState.commandConfirmed = false;
         commandThisTime = true;
       }
 
       // Create a Uint8Array with the first byte as the command and the rest as data
-      const payload = new Uint8Array([command, ...data]);
+      const payload = new Uint8Array([reportId, ...commandData]);
       this.#device.transferOut(this.#deviceEp, payload);
 
       if(commandThisTime)
