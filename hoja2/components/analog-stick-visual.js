@@ -200,7 +200,14 @@ class AnalogStickVisual extends HTMLElement {
 
         // Calculate polar coordinates
         this.state.distance = Math.sqrt(x * x + y * y);
-        this.state.angle = Math.atan2(y, x) * 180 / Math.PI;
+
+        this.state.distance /= 2048; // Normalize distance to [0, 1]
+
+        this.state.angle = -Math.atan2(y, x) * 180 / Math.PI;
+        // Adjust angle to be in the range [0, 360]
+        if (this.state.angle < 0) {
+            this.state.angle += 360;
+        }
 
         this.drawAnalogStick();
     }

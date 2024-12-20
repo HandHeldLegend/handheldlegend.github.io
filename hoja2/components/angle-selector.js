@@ -15,6 +15,10 @@ class AngleSelector extends HTMLElement {
         this._outAngleInput = null;
         this._distanceInput = null;
         this._idx
+
+        this._inputDefault  = 0;
+        this._outputDefault = 0;
+        this._distanceDefault = 0;
     }
 
     /**
@@ -160,6 +164,12 @@ class AngleSelector extends HTMLElement {
         this.#emitChangeEvent();
     }
 
+    setDefaults(input, output, distance){
+        this._inputDefault = input;
+        this._outputDefault = output;
+        this._distanceDefault = distance;
+    }
+
     // Set all the attributes. Set emit to true if it should do a callback
     setAll(input, output, distance, emit=false) {
         this._isInternalUpdate = true;
@@ -180,11 +190,7 @@ class AngleSelector extends HTMLElement {
     }
 
     #resetValues() {
-        const angleSlice = 360 / 16;
-        const defaultAngle = angleSlice * (this._idx || 0);
-        const defaultDistance = 2048;
-
-        this.setAll(defaultAngle, defaultAngle, defaultDistance, true);
+        this.setAll(this._inputDefault, this._outputDefault, this._distanceDefault, true);
     }
 
     async #captureAngle() {

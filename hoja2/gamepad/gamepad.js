@@ -74,6 +74,11 @@ class HojaGamepad {
     currentWriteIdx: 0,
   };
 
+  #commandMemoryState = {
+    currentCommand: 0,
+    commandConfirmed: false,
+  };
+
   // Event hooks
   #_connectHook = null;
   #_disconnectHook = null;
@@ -205,10 +210,10 @@ class HojaGamepad {
     let chunkData = null;
     if (write) chunkData = new Uint8Array(data.buffer, data.byteOffset + 4, chunkSize);
 
-    const idxOffset = 32; // Adjust based on your specific use case
+    const idxOffset = 32; 
 
     if (write) this.#configBlocks[blockThisTime].buffer.set(chunkData, writeIdx * idxOffset);
-    if (done) console.log("Received " + this.#configBlockNames[blockThisTime] + " config chunk");
+    if (done) console.log("Received " + this.#configBlockNames[blockThisTime] + " config block");
 
     if (done) {
       this.#configBlocks[blockThisTime].updateBuffer(this.#configBlocks[blockThisTime].buffer);
@@ -241,6 +246,16 @@ class HojaGamepad {
       // WEBUSB_ID_READ_STATIC_BLOCK
       case 3:
         this.#staticParser(data);
+        break;
+
+      // WEBUSB_ID_CONFIG_COMMAND
+      case 4:
+        console.log(data.getUint8(1));
+        console.log(this.#commandMemoryState.currentCommand)
+        if( data.getUint8(1) == this.#commandMemoryState.currentCommand) {
+          console.log("Command confirmed.");
+          this.#commandMemoryState.commandConfirmed = true;
+        }
         break;
       
       // WEBUSB_INPUT_RAW
@@ -413,15 +428,43 @@ class HojaGamepad {
     }
   }
 
+  async waitForCommandConfirmation(timeout = 5000) {
+    const pollInterval = 50; // Poll every 50ms
+    let elapsedTime = 0;
+
+    // Poll until confirmation or timeout
+    while (!this.#commandMemoryState.commandConfirmed) {
+      if (elapsedTime >= timeout) {
+        throw new Error("Timeout waiting for block confirmation.");
+      }
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+      elapsedTime += pollInterval;
+    }
+  }
+
   async sendCommand(command, data) {
     try {
       if (!this.#isConnected) {
         throw new Error("Can't send command, device not connected!");
       }
 
+      let commandThisTime = false;
+      // WEBUSB_ID_CONFIG_COMMAND
+      if(command == 4) {
+        this.#commandMemoryState.currentCommand = data[0];
+        this.#commandMemoryState.commandConfirmed = false;
+        commandThisTime = true;
+      }
+
       // Create a Uint8Array with the first byte as the command and the rest as data
       const payload = new Uint8Array([command, ...data]);
       this.#device.transferOut(this.#deviceEp, payload);
+
+      if(commandThisTime)
+      {
+        commandThisTime = false;
+        await this.waitForCommandConfirmation();
+      }
 
     } catch (error) {
       console.error('Failed to send command.', error);

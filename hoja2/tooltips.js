@@ -7,13 +7,16 @@ const tooltipStyles = `
     z-index: 1000;
     background-color: #333;
     color: white;
-    padding: 5px 10px;
+    padding: 5px 5px;
     border-radius: 4px;
     font-size: 14px;
     opacity: 0;
     transition: opacity 0.2s ease-in-out;
     pointer-events: none;
-    white-space: nowrap;
+    white-space: normal;
+    word-wrap: break-word; /* Break long words if necessary */
+    max-width: 200px; /* Optional: Set a max-width to prevent tooltips from becoming too wide */
+    text-align: center;
 }
 
 .tooltip-container.tooltip-visible {

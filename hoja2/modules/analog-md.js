@@ -23,6 +23,31 @@ let mdContainer = null;
 const gamepad = HojaGamepad.getInstance();
 const analogCfgBlockNumber = 2;
 
+function resetAllAnglesDefault() {
+    /** @type {Anglemap[]} */
+    let outMaps = [];
+
+    for(let i = 0; i < 8; i++) {
+        let newMap = new Anglemap();
+        newMap.input    = i * 45;
+        newMap.output   = i * 45;
+        newMap.distance = 2048;
+        outMaps.push(newMap);
+    }
+
+    for(let i = 0; i < 8; i++) {
+        let newMap = new Anglemap();
+        newMap.input    = 0;
+        newMap.output   = 0;
+        newMap.distance = 0;
+        outMaps.push(newMap);
+    }
+
+    populateAngleSelectors(outMaps);
+    updateAnalogSelectorDefaults(outMaps);
+    writeAngleMemBlock();
+}
+
 function mapsToStyleString(maps) {
     let output = "";
     maps.forEach(value => {
@@ -53,6 +78,7 @@ function switchConfigAxis(axis) {
         deadzone = gamepad.analog_cfg.r_deadzone;
     }
     
+    updateAnalogSelectorDefaults(maps);
     updateAnalogVisualizerDeadzone(deadzone);
     updateAnalogVisualizerPolygon(maps);
     updateAnalogVisualizerScaler(modeNum);
@@ -91,6 +117,13 @@ function updateAnalogVisualizerDeadzone(value) {
     /** @type {AnalogStickVisual} */
     const analogVisualizer = mdContainer.querySelector('analog-stick');
     analogVisualizer.setDeadzone(value);
+}
+
+function updateAnalogSelectorDefaults(maps) {
+    let anglePickers = mdContainer.querySelectorAll('angle-selector');
+    anglePickers.forEach((item, index) => {
+        item.setDefaults(maps[index].input, maps[index].output, maps[index].distance); // Do not emit changes
+    });
 }
 
 // Populate all the angle selector HTML items, optionally updating our memory
@@ -382,7 +415,7 @@ export function render(container) {
                     ready-text="Copy" 
                     disabled-text="Copy"
                     pending-text="Copy"
-                    tooltip="Copy your Output/Distance data as JSON"
+                    tooltip="Copy your Output/Distance\ndata as JSON"
                 ></single-shot-button>
 
                 <single-shot-button 
@@ -392,6 +425,15 @@ export function render(container) {
                     disabled-text="Paste"
                     pending-text="Paste"
                     tooltip="Paste your Output/Distance data as JSON"
+                ></single-shot-button>
+
+                <single-shot-button 
+                    id="reset-angles-button" 
+                    state="ready" 
+                    ready-text="Reset All" 
+                    disabled-text="Reset All"
+                    pending-text="Reset All"
+                    tooltip="Reset all angles to an 8 angle setup"
                 ></single-shot-button>
             </div>
             ${anglePickersHTML}
@@ -415,8 +457,10 @@ export function render(container) {
     // Set copy/paste handlers
     const copyButton = container.querySelector('single-shot-button[id="copy-angles-button"]');
     const pasteButton = container.querySelector('single-shot-button[id="paste-angles-button"]');
+    const resetButton = container.querySelector('single-shot-button[id="reset-angles-button"]');
     copyButton.setOnClick(exportAngles);
     pasteButton.setOnClick(importAngles);
+    resetButton.setOnClick(resetAllAnglesDefault);
 
     const scaleModeButton = container.querySelector('multi-position-button[id="scale-mode-selector"]');
     scaleModeButton.addEventListener('change', (e) => {
@@ -428,6 +472,31 @@ export function render(container) {
     deadzoneSlider.addEventListener('change', (e) => {
         console.log("Deadzone Change");
         writeAngleMemBlock();
+    });
+
+    // Set calibration command handlers 
+    const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
+    calibrateButton.setOnHandler(async () => {
+        // WEBUSB_ID_CONFIG_COMMAND
+        let reportId = 4;
+        // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_START
+        let commandData = new Uint8Array([2, 1]);
+        await gamepad.sendCommand(reportId, commandData);
+        return true;
+    });
+
+    calibrateButton.setOffHandler(async () => {
+        // WEBUSB_ID_CONFIG_COMMAND
+        let reportId = 4;
+        // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_STOP
+        let commandData = new Uint8Array([2, 2]);
+        await gamepad.sendCommand(reportId, commandData);
+
+        // Reload our mem block
+        await gamepad.requestBlock(analogCfgBlockNumber);
+        console.log(gamepad.analog_cfg.l_angle_maps);
+        console.log(gamepad.analog_cfg.l_packed_distances);
+        return true;
     });
 
     enableTooltips(container);

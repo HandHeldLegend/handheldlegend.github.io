@@ -73,6 +73,14 @@ class NumberSelector extends HTMLElement {
         const btnDecrease = this.shadowRoot.querySelector('.btn-decrease');
         const btnIncrease = this.shadowRoot.querySelector('.btn-increase');
 
+        slider.addEventListener('keydown', (event) => {
+            // Check if the key pressed is an arrow key (up/down or left/right)
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                // Prevent the default action (changing the slider value)
+                event.preventDefault();
+            }
+        });
+
         // Slider change
         slider.addEventListener('change', (e) => {
             let value = parseFloat(e.target.value);
@@ -91,6 +99,19 @@ class NumberSelector extends HTMLElement {
                         detail: { value },
                     })
                 );
+        });
+
+        // Slider change (TEXT ONLY)
+        slider.addEventListener('input', (e) => {
+            let value = parseFloat(e.target.value);
+
+            // Handle float vs integer
+            if (config.type === 'integer') {
+                value = Math.round(value);
+                e.target.value = value;
+            }
+
+            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 2 : 0);
         });
 
         // Decrease button
