@@ -148,7 +148,7 @@ class AnalogStickVisual extends HTMLElement {
             // Scale the distance based on the full analog stick range
             const scaledDistance = (vertex.distance / maxStickRange) * maxRadius;
             const x = centerX + scaledDistance * Math.cos(vertex.angle * Math.PI / 180);
-            const y = centerY + scaledDistance * Math.sin(vertex.angle * Math.PI / 180);
+            const y = centerY - scaledDistance * Math.sin(vertex.angle * Math.PI / 180);
 
             if (index === 0) {
                 ctx.moveTo(x, y);
