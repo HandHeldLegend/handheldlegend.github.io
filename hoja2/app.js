@@ -183,11 +183,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Disable Save
         saveButton.enableButton(false);
 
+        connectButton.setState('off');
+
         window.configApp.closemoduleView();
         for(let i = 0; i < 9; i++)
         {
             window.configApp.enableIcon(i, false);
         }
+
+        return true;
     }
 
     gamepad.setConnectHook(connectHandle);

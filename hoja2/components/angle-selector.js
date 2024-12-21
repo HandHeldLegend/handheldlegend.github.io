@@ -203,7 +203,7 @@ class AngleSelector extends HTMLElement {
     async #captureAngle() {
         if (this._angleCaptureHandler) {
             try {
-                const captureResult = await this._angleCaptureHandler(this._idx);
+                const captureResult = await this._angleCaptureHandler();
                 if (captureResult !== false) {
                     this.#setInAngle(captureResult);
                 }

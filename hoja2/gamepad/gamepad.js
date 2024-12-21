@@ -120,11 +120,11 @@ class HojaGamepad {
       await this.#device.claimInterface(1);
 
       // Set disconnect handle
-      this.#device.onclose = () => {
+      navigator.usb.addEventListener("disconnect", (event) => {
         this.#isConnected = false;
         this.#device = null;
-        if (this.#_disconnectHook) this.#_disconnectHook();
-      };
+          if (this.#_disconnectHook) this.#_disconnectHook();
+      });
 
       this.#isConnected = true;
 

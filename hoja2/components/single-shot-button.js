@@ -142,7 +142,6 @@ class SingleShotButton extends HTMLElement {
 
     // Set custom click handler
     setOnClick(handler) {
-        console.log("Click handler setup");
         this._onClick = handler;
     }
 
