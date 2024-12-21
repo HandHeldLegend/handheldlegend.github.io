@@ -135,8 +135,11 @@ function updateAnalogSelectorDefaults(maps) {
 function populateAngleSelectors(maps) {
     let anglePickers = mdContainer.querySelectorAll('angle-selector');
     anglePickers.forEach((item, index) => {
-        item.setAll(maps[index].input, maps[index].output, maps[index].distance); // Do not emit changes
-    });
+        if(index < maps.length)
+            item.setAll(maps[index].input, maps[index].output, maps[index].distance); // Do not emit changes
+        else 
+            item.setAll(0, 0, 0); // Do not emit changes
+        });
 }
 
 // Sort and clean up an array of Anglemaps
@@ -150,17 +153,13 @@ function sortAndFilterAnglemaps(maps) {
     /** @type {Anglemap[]} */
     let outMaps = [];
 
-    outMaps.forEach(map => {
-        map.distance = 0;
-        map.input = 0;
-        map.output = 0;
-    });
-
     // Overwrite the elements in outMaps with the sorted array data
     sortedArray.forEach((item, index) => {
-        outMaps[index].distance = item.distance;
-        outMaps[index].input = item.input || 0; // Default to 0 if input is undefined
-        outMaps[index].output = item.output;
+        let newMap = new Anglemap();
+        newMap.distance = item.distance;
+        newMap.input = item.input || 0; // Default to 0 if input is undefined
+        newMap.output = item.output;
+        outMaps.push(newMap);
     });
 
     return outMaps;
@@ -267,17 +266,20 @@ async function importAngles(textLengthCap = 10000) {
         }
 
         /** @type {Anglemap[]} */
-        let angleEntries = [16];
+        let angleEntries = [];
 
         entries.forEach((item, index) => {
-            angleEntries[index].input   = item.inAngle;
-            angleEntries[idx].output    = item.outAngle;
-            angleEntries[idx].distance  = item.distance;
+            let entry = new Anglemap();
+            entry.input   = item.inAngle;
+            entry.output    = item.outAngle;
+            entry.distance  = item.distance;
+
+            angleEntries.push(entry);
         });
 
         // Sort our map
         angleEntries = sortAndFilterAnglemaps(angleEntries);
-        populateAngleSelectors(angleEntries, true);
+        populateAngleSelectors(angleEntries);
 
         writeAngleMemBlock();
 
