@@ -218,8 +218,35 @@ body {
     opacity: 1;
 }
 
-h1, h2 {
+h1, h2, h3 {
     margin: 0;
+    position: relative;
+    cursor: inherit;
+    pointer-events: none;
+}
+
+.header-tooltip {
+    pointer-events: all;
+    content: "?";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; /* Adjust size */
+    height: 18px; /* Adjust size */
+    background-color: #7afff8b7; /* Circle background */
+    color: rgb(0, 0, 0); /* Text color */
+    font-size: 12px; /* Adjust font size */
+    font-weight: bold;
+    border-radius: 50%; /* Makes it circular */
+    position: absolute;
+    top: -5px; /* Adjust for top-right corner */
+    right: -23px; /* Adjust for spacing */
+    cursor: pointer; /* Indicates interactivity */
+    transition: all 0.2s;
+}
+
+.header-tooltip:hover {
+    background-color: #2832358a; /* Circle background */
 }
 
 /* Hidden state for app grid */

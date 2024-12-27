@@ -4,4 +4,7 @@ typedef struct
     uint8_t     maker[16];
     uint8_t     fcc_id[32];
     uint16_t    fw_version; 
+    uint8_t     snes_supported : 1;
+    uint8_t     joybus_supported : 1;
+    uint8_t     reserved : 6;
 } deviceInfoStatic_s;

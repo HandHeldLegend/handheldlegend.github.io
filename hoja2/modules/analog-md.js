@@ -1,4 +1,3 @@
-// Import the number selector (optional, as it's now globally defined)
 import HojaGamepad from '../gamepad/gamepad.js';
 
 import NumberSelector from '../components/number-selector.js';

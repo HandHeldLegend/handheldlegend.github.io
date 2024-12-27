@@ -2,7 +2,7 @@
 
 export default class Deviceinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(66);
+    this.buffer = buffer || new Uint8Array(67);
   }
 
   	/** @type {Uint8Array} */
@@ -25,6 +25,21 @@ export default class Deviceinfostatic {
 		return this.#_getUint16(64);
 	}
 
+	/** @type {Uint8} */
+	get snes_supported() {
+		return this.#_getBitfield(66, 1, 1, 0);
+	}
+
+	/** @type {Uint8} */
+	get joybus_supported() {
+		return this.#_getBitfield(66, 1, 1, 1);
+	}
+
+	/** @type {Uint8} */
+	get reserved() {
+		return this.#_getBitfield(66, 1, 6, 2);
+	}
+
 
 
   	/** @param {Uint8Array} value */
@@ -45,6 +60,21 @@ export default class Deviceinfostatic {
 	/** @param {Uint16} value */
 	set fw_version(value) {
 		this.#_setUint16(64, value);
+	}
+
+	/** @param {Uint8} value */
+	set snes_supported(value) {
+		this.#_setBitfield(66, 1, 1, 0, value);
+	}
+
+	/** @param {Uint8} value */
+	set joybus_supported(value) {
+		this.#_setBitfield(66, 1, 1, 1, value);
+	}
+
+	/** @param {Uint8} value */
+	set reserved(value) {
+		this.#_setBitfield(66, 1, 6, 2, value);
 	}
 
 

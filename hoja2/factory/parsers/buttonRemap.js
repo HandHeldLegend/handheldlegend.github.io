@@ -1,160 +1,170 @@
 
 
-export default class Triggerconfig {
+export default class Buttonremap {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(64);
+    this.buffer = buffer || new Uint8Array(8);
   }
 
   	/** @type {Uint8} */
-	get trigger_config_version() {
-		return this.#_getUint8(0);
+	get dpad_up() {
+		return this.#_getBitfield(0, 1, 4, 0);
 	}
 
 	/** @type {Uint8} */
-	get trigger_mode_gamecube() {
-		return this.#_getUint8(1);
+	get dpad_down() {
+		return this.#_getBitfield(0, 1, 4, 4);
 	}
 
-	/** @type {Uint16} */
-	get left_min() {
-		return this.#_getUint16(2);
+	/** @type {Uint8} */
+	get dpad_left() {
+		return this.#_getBitfield(1, 1, 4, 0);
 	}
 
-	/** @type {Uint16} */
-	get left_max() {
-		return this.#_getUint16(4);
+	/** @type {Uint8} */
+	get dpad_right() {
+		return this.#_getBitfield(1, 1, 4, 4);
 	}
 
-	/** @type {Uint16} */
-	get left_deadzone() {
-		return this.#_getBitfield(6, 2, 15, 0);
+	/** @type {Uint8} */
+	get button_a() {
+		return this.#_getBitfield(2, 1, 4, 0);
 	}
 
-	/** @type {Uint16} */
-	get left_disabled() {
-		return this.#_getBitfield(6, 2, 1, 15);
+	/** @type {Uint8} */
+	get button_b() {
+		return this.#_getBitfield(2, 1, 4, 4);
 	}
 
-	/** @type {Uint16} */
-	get left_hairpin_value() {
-		return this.#_getUint16(8);
+	/** @type {Uint8} */
+	get button_x() {
+		return this.#_getBitfield(3, 1, 4, 0);
 	}
 
-	/** @type {Uint16} */
-	get left_static_output_value() {
-		return this.#_getUint16(10);
+	/** @type {Uint8} */
+	get button_y() {
+		return this.#_getBitfield(3, 1, 4, 4);
 	}
 
-	/** @type {Uint16} */
-	get right_min() {
-		return this.#_getUint16(12);
+	/** @type {Uint8} */
+	get trigger_l() {
+		return this.#_getBitfield(4, 1, 4, 0);
 	}
 
-	/** @type {Uint16} */
-	get right_max() {
-		return this.#_getUint16(14);
+	/** @type {Uint8} */
+	get trigger_zl() {
+		return this.#_getBitfield(4, 1, 4, 4);
 	}
 
-	/** @type {Uint16} */
-	get right_deadzone() {
-		return this.#_getBitfield(16, 2, 15, 0);
+	/** @type {Uint8} */
+	get trigger_r() {
+		return this.#_getBitfield(5, 1, 4, 0);
 	}
 
-	/** @type {Uint16} */
-	get right_disabled() {
-		return this.#_getBitfield(16, 2, 1, 15);
+	/** @type {Uint8} */
+	get trigger_zr() {
+		return this.#_getBitfield(5, 1, 4, 4);
 	}
 
-	/** @type {Uint16} */
-	get right_hairpin_value() {
-		return this.#_getUint16(18);
+	/** @type {Uint8} */
+	get button_plus() {
+		return this.#_getBitfield(6, 1, 4, 0);
 	}
 
-	/** @type {Uint16} */
-	get right_static_output_value() {
-		return this.#_getUint16(20);
+	/** @type {Uint8} */
+	get button_minus() {
+		return this.#_getBitfield(6, 1, 4, 4);
 	}
 
-	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(22, 42);
+	/** @type {Uint8} */
+	get button_stick_left() {
+		return this.#_getBitfield(7, 1, 4, 0);
+	}
+
+	/** @type {Uint8} */
+	get button_stick_right() {
+		return this.#_getBitfield(7, 1, 4, 4);
 	}
 
 
 
   	/** @param {Uint8} value */
-	set trigger_config_version(value) {
-		this.#_setUint8(0, value);
+	set dpad_up(value) {
+		this.#_setBitfield(0, 1, 4, 0, value);
 	}
 
 	/** @param {Uint8} value */
-	set trigger_mode_gamecube(value) {
-		this.#_setUint8(1, value);
+	set dpad_down(value) {
+		this.#_setBitfield(0, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16} value */
-	set left_min(value) {
-		this.#_setUint16(2, value);
+	/** @param {Uint8} value */
+	set dpad_left(value) {
+		this.#_setBitfield(1, 1, 4, 0, value);
 	}
 
-	/** @param {Uint16} value */
-	set left_max(value) {
-		this.#_setUint16(4, value);
+	/** @param {Uint8} value */
+	set dpad_right(value) {
+		this.#_setBitfield(1, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16} value */
-	set left_deadzone(value) {
-		this.#_setBitfield(6, 2, 15, 0, value);
+	/** @param {Uint8} value */
+	set button_a(value) {
+		this.#_setBitfield(2, 1, 4, 0, value);
 	}
 
-	/** @param {Uint16} value */
-	set left_disabled(value) {
-		this.#_setBitfield(6, 2, 1, 15, value);
+	/** @param {Uint8} value */
+	set button_b(value) {
+		this.#_setBitfield(2, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16} value */
-	set left_hairpin_value(value) {
-		this.#_setUint16(8, value);
+	/** @param {Uint8} value */
+	set button_x(value) {
+		this.#_setBitfield(3, 1, 4, 0, value);
 	}
 
-	/** @param {Uint16} value */
-	set left_static_output_value(value) {
-		this.#_setUint16(10, value);
+	/** @param {Uint8} value */
+	set button_y(value) {
+		this.#_setBitfield(3, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16} value */
-	set right_min(value) {
-		this.#_setUint16(12, value);
+	/** @param {Uint8} value */
+	set trigger_l(value) {
+		this.#_setBitfield(4, 1, 4, 0, value);
 	}
 
-	/** @param {Uint16} value */
-	set right_max(value) {
-		this.#_setUint16(14, value);
+	/** @param {Uint8} value */
+	set trigger_zl(value) {
+		this.#_setBitfield(4, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16} value */
-	set right_deadzone(value) {
-		this.#_setBitfield(16, 2, 15, 0, value);
+	/** @param {Uint8} value */
+	set trigger_r(value) {
+		this.#_setBitfield(5, 1, 4, 0, value);
 	}
 
-	/** @param {Uint16} value */
-	set right_disabled(value) {
-		this.#_setBitfield(16, 2, 1, 15, value);
+	/** @param {Uint8} value */
+	set trigger_zr(value) {
+		this.#_setBitfield(5, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16} value */
-	set right_hairpin_value(value) {
-		this.#_setUint16(18, value);
+	/** @param {Uint8} value */
+	set button_plus(value) {
+		this.#_setBitfield(6, 1, 4, 0, value);
 	}
 
-	/** @param {Uint16} value */
-	set right_static_output_value(value) {
-		this.#_setUint16(20, value);
+	/** @param {Uint8} value */
+	set button_minus(value) {
+		this.#_setBitfield(6, 1, 4, 4, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(22, value);
+	/** @param {Uint8} value */
+	set button_stick_left(value) {
+		this.#_setBitfield(7, 1, 4, 0, value);
+	}
+
+	/** @param {Uint8} value */
+	set button_stick_right(value) {
+		this.#_setBitfield(7, 1, 4, 4, value);
 	}
 
 

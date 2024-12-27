@@ -127,7 +127,7 @@ class ConfigApp {
     }
 }
 
-var debug = false;
+var debug = true;
 
 
 // Initialize the app when DOM is fully loaded
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/analog-md.js',
+                path: './modules/remap-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];

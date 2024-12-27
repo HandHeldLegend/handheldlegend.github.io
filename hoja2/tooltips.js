@@ -7,7 +7,7 @@ const tooltipStyles = `
     z-index: 1000;
     background-color: #333;
     color: white;
-    padding: 5px 5px;
+    padding: 5px 1px;
     border-radius: 4px;
     font-size: 14px;
     opacity: 0;
@@ -57,7 +57,7 @@ export function enableTooltips(rootElement) {
                     const rect = element.getBoundingClientRect();
                     tooltipContainer.style.position = 'fixed';
                     tooltipContainer.style.left = `${rect.left + rect.width / 2}px`;
-                    tooltipContainer.style.top = `${rect.bottom + 5}px`;
+                    tooltipContainer.style.top = `${rect.bottom + 6}px`;
                     tooltipContainer.style.transform = 'translateX(-50%)';
                     
                     // Add to document and show

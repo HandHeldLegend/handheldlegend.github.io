@@ -1,8 +1,9 @@
+import Buttonremap from './buttonRemap.js';
 
 
 export default class Remapconfig {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(64);
+    this.buffer = buffer || new Uint8Array(256);
   }
 
   	/** @type {Uint8} */
@@ -15,19 +16,24 @@ export default class Remapconfig {
 		return this.#_getBitfield(0, 1, 4, 4);
 	}
 
-	/** @type {Uint16Array} */
+	/** @type {Buttonremap[]} */
 	get profiles() {
-		return this.#_getUint16Array(1, 12);
+		let tmpArr = [];
+		for(let i = 0; i < 12; i++) {
+			const tmp = this.#_getUint8Array(1+(8*i), 8);
+			tmpArr.push(new Buttonremap(tmp));
+		}
+		return tmpArr;
 	}
 
 	/** @type {Uint16Array} */
 	get disabled() {
-		return this.#_getUint16Array(25, 12);
+		return this.#_getUint16Array(97, 12);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(49, 15);
+		return this.#_getUint8Array(121, 135);
 	}
 
 
@@ -42,19 +48,21 @@ export default class Remapconfig {
 		this.#_setBitfield(0, 1, 4, 4, value);
 	}
 
-	/** @param {Uint16Array} value */
+	/** @param {Buttonremap[]} value */
 	set profiles(value) {
-		this.#_setUint16Array(1, value);
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(1+(8*index), obj.buffer)
+		}
 	}
 
 	/** @param {Uint16Array} value */
 	set disabled(value) {
-		this.#_setUint16Array(25, value);
+		this.#_setUint16Array(97, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(49, value);
+		this.#_setUint8Array(121, value);
 	}
 
 
