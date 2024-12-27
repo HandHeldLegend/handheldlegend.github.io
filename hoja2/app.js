@@ -17,6 +17,8 @@ class ConfigApp {
         this.appGridContainer = document.getElementById('app-grid-container');
         this.appGrid = document.getElementById('app-grid');
 
+        // Contain our scrollable module content container
+        this.moduleScrollable = document.getElementById('module-content-container');
         // Contains our module view
         this.moduleContainer = document.getElementById('module-container');
         // Contains header and content
@@ -63,7 +65,11 @@ class ConfigApp {
 
         icon.addEventListener('click', () => {
             if(icon.getAttribute("enabled") == "true")
+            {
+                // Open module
                 this.openmoduleView(module)
+            }
+                
         });
 
         this.appGrid.appendChild(iconContainer);
@@ -103,6 +109,7 @@ class ConfigApp {
         if (view) {
             this.appGridContainer.setAttribute("visible", "true");
             this.moduleContainer.setAttribute("visible", "false");
+            this.moduleContainer.scrollTo(0,0);
         }
         else {
             this.moduleContainer.setAttribute("visible", "true");
@@ -111,6 +118,9 @@ class ConfigApp {
     }
 
     async openmoduleView(module) {
+        // Reset scrollable position
+        this.moduleScrollable.scrollTo(0,0);
+
         // Dynamically import the module
         const settingsModule = await import(module.path);
 

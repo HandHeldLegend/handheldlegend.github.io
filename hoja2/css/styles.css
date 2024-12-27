@@ -330,7 +330,7 @@ remap-selector {
     border-radius: var(--border-radius-md);
     display: flex;
     align-items: center;
-    width: 80%;
-    max-width: 500px;
+    width: 88%;
+    max-width: 550px;
     overflow: hidden;
 }
