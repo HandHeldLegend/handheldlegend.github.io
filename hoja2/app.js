@@ -61,7 +61,10 @@ class ConfigApp {
         iconContainer.appendChild(icon);
         iconContainer.appendChild(label);
 
-        icon.addEventListener('click', () => this.openmoduleView(module));
+        icon.addEventListener('click', () => {
+            if(icon.getAttribute("enabled") == "true")
+                this.openmoduleView(module)
+        });
 
         this.appGrid.appendChild(iconContainer);
 
@@ -127,7 +130,7 @@ class ConfigApp {
     }
 }
 
-var debug = true;
+var debug = false;
 
 
 // Initialize the app when DOM is fully loaded

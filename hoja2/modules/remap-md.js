@@ -169,10 +169,10 @@ function newRenderRemaps(inputMode) {
 
     let buttons = gamepad.button_static.main_buttons;
 
-    //Debug
-    buttons = 0xFFFF;
-
+    /** @type {Buttonremap} */
     let remapProfile = gamepad.remap_cfg.profiles[inputMode];
+    console.log(remapProfile);
+
     let unsetProfile = gamepad.remap_cfg.disabled[inputMode];
     let remapItemsHTML = "";
     let codes = null;
@@ -206,7 +206,7 @@ function newRenderRemaps(inputMode) {
         let enabled = (buttons & ( 1<<idx) ) >> idx; // If this controller supports this specific button
         let disabled = (unsetProfile & (1<<idx)) >> idx; // If the unset profile has this button disabled
 
-        if(enabled && (codes[idx]!="~")) {
+        if(enabled && (codes[i]!="~")) {
 
             let remapValue = returnMappingValue(remapProfile, i);
             let inValue = (disabled) ? "⊘" : inputMapCodes[remapValue]
@@ -215,7 +215,7 @@ function newRenderRemaps(inputMode) {
             <remap-selector
                 remap-idx="${i}",
                 in-value="${inValue}",
-                out-value="${codes[idx]}",
+                out-value="${codes[i]}",
             ></remap-selector>
             `
         }
@@ -231,5 +231,5 @@ function newRenderRemaps(inputMode) {
 
 export function render(container) {
     currentContainer = container;
-    newRenderRemaps(0);
+    newRenderRemaps(3);
 }

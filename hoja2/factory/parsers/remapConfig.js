@@ -8,12 +8,7 @@ export default class Remapconfig {
 
   	/** @type {Uint8} */
 	get remap_config_version() {
-		return this.#_getBitfield(0, 1, 4, 0);
-	}
-
-	/** @type {Uint8} */
-	get remap_config_setting() {
-		return this.#_getBitfield(0, 1, 4, 4);
+		return this.#_getUint8(0);
 	}
 
 	/** @type {Buttonremap[]} */
@@ -40,12 +35,7 @@ export default class Remapconfig {
 
   	/** @param {Uint8} value */
 	set remap_config_version(value) {
-		this.#_setBitfield(0, 1, 4, 0, value);
-	}
-
-	/** @param {Uint8} value */
-	set remap_config_setting(value) {
-		this.#_setBitfield(0, 1, 4, 4, value);
+		this.#_setUint8(0, value);
 	}
 
 	/** @param {Buttonremap[]} value */

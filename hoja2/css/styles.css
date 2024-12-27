@@ -143,7 +143,6 @@ body {
     flex: 1;
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
-    opacity: 1;
 }
 
 /* Module container styles */
@@ -156,9 +155,8 @@ body {
     width: 100%;
     height: 100%; /* Fill the viewport */
     background-color: #ffffff; /* Example background */
-    transition: transform 0.5s ease, opacity 0.5s ease;
+    transition: transform 0.5s ease;
     transform: translateX(100%);
-    opacity: 0;
     overflow: hidden; /* Prevent scrollbars on the container itself */
 }
 
@@ -252,7 +250,7 @@ h1, h2, h3 {
 /* Hidden state for app grid */
 #app-grid-container[visible="true"] {
     transform: translateX(-100%);
-    opacity: 0;
+    /* opacity: 0; */
 }
 
 #app-grid {

@@ -7,7 +7,7 @@ const tooltipStyles = `
     z-index: 1000;
     background-color: #333;
     color: white;
-    padding: 5px 1px;
+    padding: 5px 5px;
     border-radius: 4px;
     font-size: 14px;
     opacity: 0;
