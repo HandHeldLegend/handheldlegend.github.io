@@ -322,8 +322,10 @@ function reportHook(data) {
     if(remapPickers) {
         remapPickers.forEach((e) => {
             let idx = parseInt(e.getAttribute('idx'));
-            let masked = ((1<<idx) & buttonsAll) ? true : false;
+            let matchingInput = getInputForOutput(idx);
+            let masked = ((1<<matchingInput) & buttonsAll) ? true : false;
             if(masked) {
+                
                 e.setPressed(true);
             }
             else e.setPressed(false);
