@@ -4,6 +4,9 @@ class RemapSelector extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+
+        this._pressed = false;
+        this._inputContainer = null;
     }
 
     static get observedAttributes() {
@@ -49,6 +52,8 @@ class RemapSelector extends HTMLElement {
             <button class="button-clear" tooltip="Disable button">✖</button>
             <button class="button-reset" tooltip="Reset mapping">↺</button>
         `;
+
+        this._inputContainer = this.shadowRoot.querySelector('div[class="even-container"');
     }
 
     // Synchronize input changes with attribute updates
@@ -122,6 +127,18 @@ class RemapSelector extends HTMLElement {
     // Set the 'in' value programmatically
     setInValue(value) {
         this.setAttribute('in-value', value);
+    }
+
+    setPressed(pressed) {
+        if(pressed && !this._pressed) {
+            this._inputContainer.setAttribute('pressed', 'true');
+            this._pressed = true;
+        }
+        else if (!pressed && this._pressed) {
+            this._inputContainer.setAttribute('pressed', 'false');
+            this._pressed = false;
+        }
+        
     }
 
     // Set the 'out' value programmatically

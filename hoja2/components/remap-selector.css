@@ -70,6 +70,12 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    transition: background-color var(--transition-quick);
+    background-color: var(--color-background-light);
+}
+
+.even-container[pressed="true"] {
+    background: var(--color-button-neutral);
 }
 
 .label {
@@ -88,13 +94,14 @@
     box-sizing: border-box;
     width: 100%;
     flex-grow: 1;
-    background: var(--color-background-light);
+    background: rgba(255, 255, 255, 0);
     height: inherit;
     text-align: left;
     align-items: center;
     font-size: 16px;
     border: none;
     pointer-events: none; /* Prevents mouse interactions */
+    
 }
 
 .value-in:read-only,
