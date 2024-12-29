@@ -21,6 +21,19 @@
     background: var(--color-button-on);
 }
 
+.button-capture[disabled="true"]
+{
+    margin-left: 0;
+    background: var(--color-button-disabled);
+    cursor: not-allowed;
+}
+.button-capture:hover[disabled="true"]
+{
+    margin-left: 0;
+    background: var(--color-button-disabled);
+    cursor: not-allowed;
+}
+
 .button-clear
 {
     margin-left: auto;
@@ -64,7 +77,7 @@
     align-content: center;
     align-items: center;
     height: inherit;
-    font-size: 1rem;
+    font-size: 14px;
     font-weight: bold;
     user-select: none;
 }
@@ -79,7 +92,7 @@
     height: inherit;
     text-align: left;
     align-items: center;
-    font-size: 1.2rem;
+    font-size: 16px;
     border: none;
     pointer-events: none; /* Prevents mouse interactions */
 }

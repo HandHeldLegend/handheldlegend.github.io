@@ -330,7 +330,20 @@ remap-selector {
     border-radius: var(--border-radius-md);
     display: flex;
     align-items: center;
-    width: 88%;
+    width: 90%;
     max-width: 550px;
     overflow: hidden;
+}
+
+remap-selector-container {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: inherit;
+    transition: opacity 0.3s ease-in-out;
+}
+
+remap-selector-container[hidden="true"] {
+    opacity: 0;
 }

@@ -7,7 +7,7 @@ class RemapSelector extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['in-value', 'out-value'];
+        return ['in-value', 'out-value', 'idx'];
     }
 
     async connectedCallback() {
@@ -32,21 +32,22 @@ class RemapSelector extends HTMLElement {
     render(css) {
         const inValue = this.getAttribute('in-value') || "A";
         const outValue = this.getAttribute('out-value') || "A";
+        const idxValue = this.getAttribute('idx') || "-1";
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-                <button class="button-capture" tooltip="Listen for input">⤓</button>
+            <button idx="${idxValue}" class="button-capture" tooltip="Listen for input (Press button to assign).">⤓</button>
 
-                <div class="even-container">
-                    <span class="label">in:</span>
-                    <input tooltip="Input button" type="text" class="value-in" value="${inValue}" readonly />
+            <div class="even-container">
+                <span class="label">in:</span>
+                <input tooltip="Input button" type="text" class="value-in" value="${inValue}" readonly />
 
-                    <span class="label">out:</span>
-                    <input tooltip="Output button" type="text" class="value-out" value="${outValue}" readonly />
-                </div>
+                <span class="label">out:</span>
+                <input tooltip="Output button" type="text" class="value-out" value="${outValue}" readonly />
+            </div>
 
-                <button class="button-clear" tooltip="Disable button">✖</button>
-                <button class="button-reset" tooltip="Reset mapping">↺</button>
+            <button class="button-clear" tooltip="Disable button">✖</button>
+            <button class="button-reset" tooltip="Reset mapping">↺</button>
         `;
     }
 
@@ -126,6 +127,25 @@ class RemapSelector extends HTMLElement {
     // Set the 'out' value programmatically
     setOutValue(value) {
         this.setAttribute('out-value', value);
+    }
+
+    disableCaptureButton(listening) {
+        let btn = this.shadowRoot.querySelector('button[class="button-capture"]');
+        btn.setAttribute('disabled', 'true');
+
+        if(listening) btn.textContent = `⧗`;
+        else btn.textContent = `⊘`;
+    }
+
+    enableCaptureButton() {
+        let btn = this.shadowRoot.querySelector('button[class="button-capture"]');
+
+        try {
+            btn.removeAttribute('disabled');
+        }
+        catch(err) {}
+
+        btn.textContent = `⤓`;
     }
 }
 

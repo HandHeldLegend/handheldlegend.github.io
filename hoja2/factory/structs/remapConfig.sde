@@ -2,7 +2,6 @@ typedef struct
 {
     uint8_t remap_config_version;
     // Switch, XInput, SNES, N64, GameCube
-    buttonRemap_s profiles[12]; // SIZE=8
-    uint16_t disabled[12]; // 12 disabled options (tells remap which buttons to disable)
-    uint8_t  reserved[135];
+    buttonRemap_s profiles[12]; // SIZE=16
+    uint8_t  reserved[63];
 } remapConfig_s; 

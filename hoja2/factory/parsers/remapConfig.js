@@ -15,20 +15,15 @@ export default class Remapconfig {
 	get profiles() {
 		let tmpArr = [];
 		for(let i = 0; i < 12; i++) {
-			const tmp = this.#_getUint8Array(1+(8*i), 8);
+			const tmp = this.#_getUint8Array(1+(16*i), 16);
 			tmpArr.push(new Buttonremap(tmp));
 		}
 		return tmpArr;
 	}
 
-	/** @type {Uint16Array} */
-	get disabled() {
-		return this.#_getUint16Array(97, 12);
-	}
-
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(121, 135);
+		return this.#_getUint8Array(193, 63);
 	}
 
 
@@ -41,18 +36,13 @@ export default class Remapconfig {
 	/** @param {Buttonremap[]} value */
 	set profiles(value) {
 		for (const [index, obj] of value.entries()) {
-			this.#_setUint8Array(1+(8*index), obj.buffer)
+			this.#_setUint8Array(1+(16*index), obj.buffer)
 		}
-	}
-
-	/** @param {Uint16Array} value */
-	set disabled(value) {
-		this.#_setUint16Array(97, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(121, value);
+		this.#_setUint8Array(193, value);
 	}
 
 
@@ -169,15 +159,19 @@ export default class Remapconfig {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
 
-    return this.buffer[offset];
+    const unsignedValue = this.buffer[offset]; // Get the unsigned value (0-255)
+    return unsignedValue > 127 ? unsignedValue - 256 : unsignedValue; // Convert to signed int8
   }
 
   #_setInt8(offset, value) {
     if (offset < 0 || offset >= this.buffer.length) {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
+    if (value < -128 || value > 127) {
+      throw new Error("Value exceeds the bounds of int8.");
+    }
 
-    this.buffer[offset] = value;
+    this.buffer[offset] = value < 0 ? value + 256 : value; // Convert signed to unsigned
   }
 
   #_getInt8Array(offset, size) {
@@ -373,21 +367,21 @@ export default class Remapconfig {
     if (offset < 0 || offset + size * 4 > this.buffer.length) {
       throw new Error("Offset and size exceed the bounds of the Uint8Array.");
     }
-  
+
     const float32Array = new Float32Array(size);
-  
+
     for (let i = 0; i < size; i++) {
       // Extract 4 bytes for each float
       const byte0 = this.buffer[offset + i * 4];
       const byte1 = this.buffer[offset + i * 4 + 1];
       const byte2 = this.buffer[offset + i * 4 + 2];
       const byte3 = this.buffer[offset + i * 4 + 3];
-  
+
       // Create a Float32 from the bytes (little-endian)
       const uint8Array = new Uint8Array([byte0, byte1, byte2, byte3]);
       float32Array[i] = new Float32Array(uint8Array.buffer)[0];
     }
-  
+
     return float32Array;
   }
 
@@ -396,11 +390,11 @@ export default class Remapconfig {
     if (offset < 0 || offset + float32Array.length * 4 > this.buffer.length) {
       throw new Error("Offset and array length exceed the bounds of the Uint8Array.");
     }
-  
+
     for (let i = 0; i < float32Array.length; i++) {
       // Convert the float to 4 bytes
       const uint8Array = new Uint8Array(new Float32Array([float32Array[i]]).buffer);
-  
+
       // Set the bytes in the buffer
       this.buffer[offset + i * 4] = uint8Array[0];
       this.buffer[offset + i * 4 + 1] = uint8Array[1];

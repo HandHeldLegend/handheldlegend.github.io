@@ -2,169 +2,169 @@
 
 export default class Buttonremap {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(16);
   }
 
-  	/** @type {Uint8} */
+  	/** @type {Int8} */
 	get dpad_up() {
-		return this.#_getBitfield(0, 1, 4, 0);
+		return this.#_getInt8(0);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get dpad_down() {
-		return this.#_getBitfield(0, 1, 4, 4);
+		return this.#_getInt8(1);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get dpad_left() {
-		return this.#_getBitfield(1, 1, 4, 0);
+		return this.#_getInt8(2);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get dpad_right() {
-		return this.#_getBitfield(1, 1, 4, 4);
+		return this.#_getInt8(3);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_a() {
-		return this.#_getBitfield(2, 1, 4, 0);
+		return this.#_getInt8(4);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_b() {
-		return this.#_getBitfield(2, 1, 4, 4);
+		return this.#_getInt8(5);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_x() {
-		return this.#_getBitfield(3, 1, 4, 0);
+		return this.#_getInt8(6);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_y() {
-		return this.#_getBitfield(3, 1, 4, 4);
+		return this.#_getInt8(7);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get trigger_l() {
-		return this.#_getBitfield(4, 1, 4, 0);
+		return this.#_getInt8(8);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get trigger_zl() {
-		return this.#_getBitfield(4, 1, 4, 4);
+		return this.#_getInt8(9);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get trigger_r() {
-		return this.#_getBitfield(5, 1, 4, 0);
+		return this.#_getInt8(10);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get trigger_zr() {
-		return this.#_getBitfield(5, 1, 4, 4);
+		return this.#_getInt8(11);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_plus() {
-		return this.#_getBitfield(6, 1, 4, 0);
+		return this.#_getInt8(12);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_minus() {
-		return this.#_getBitfield(6, 1, 4, 4);
+		return this.#_getInt8(13);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_stick_left() {
-		return this.#_getBitfield(7, 1, 4, 0);
+		return this.#_getInt8(14);
 	}
 
-	/** @type {Uint8} */
+	/** @type {Int8} */
 	get button_stick_right() {
-		return this.#_getBitfield(7, 1, 4, 4);
+		return this.#_getInt8(15);
 	}
 
 
 
-  	/** @param {Uint8} value */
+  	/** @param {Int8} value */
 	set dpad_up(value) {
-		this.#_setBitfield(0, 1, 4, 0, value);
+		this.#_setInt8(0, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set dpad_down(value) {
-		this.#_setBitfield(0, 1, 4, 4, value);
+		this.#_setInt8(1, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set dpad_left(value) {
-		this.#_setBitfield(1, 1, 4, 0, value);
+		this.#_setInt8(2, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set dpad_right(value) {
-		this.#_setBitfield(1, 1, 4, 4, value);
+		this.#_setInt8(3, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_a(value) {
-		this.#_setBitfield(2, 1, 4, 0, value);
+		this.#_setInt8(4, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_b(value) {
-		this.#_setBitfield(2, 1, 4, 4, value);
+		this.#_setInt8(5, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_x(value) {
-		this.#_setBitfield(3, 1, 4, 0, value);
+		this.#_setInt8(6, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_y(value) {
-		this.#_setBitfield(3, 1, 4, 4, value);
+		this.#_setInt8(7, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set trigger_l(value) {
-		this.#_setBitfield(4, 1, 4, 0, value);
+		this.#_setInt8(8, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set trigger_zl(value) {
-		this.#_setBitfield(4, 1, 4, 4, value);
+		this.#_setInt8(9, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set trigger_r(value) {
-		this.#_setBitfield(5, 1, 4, 0, value);
+		this.#_setInt8(10, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set trigger_zr(value) {
-		this.#_setBitfield(5, 1, 4, 4, value);
+		this.#_setInt8(11, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_plus(value) {
-		this.#_setBitfield(6, 1, 4, 0, value);
+		this.#_setInt8(12, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_minus(value) {
-		this.#_setBitfield(6, 1, 4, 4, value);
+		this.#_setInt8(13, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_stick_left(value) {
-		this.#_setBitfield(7, 1, 4, 0, value);
+		this.#_setInt8(14, value);
 	}
 
-	/** @param {Uint8} value */
+	/** @param {Int8} value */
 	set button_stick_right(value) {
-		this.#_setBitfield(7, 1, 4, 4, value);
+		this.#_setInt8(15, value);
 	}
 
 
@@ -281,15 +281,19 @@ export default class Buttonremap {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
 
-    return this.buffer[offset];
+    const unsignedValue = this.buffer[offset]; // Get the unsigned value (0-255)
+    return unsignedValue > 127 ? unsignedValue - 256 : unsignedValue; // Convert to signed int8
   }
 
   #_setInt8(offset, value) {
     if (offset < 0 || offset >= this.buffer.length) {
       throw new Error("Offset exceeds the bounds of the Uint8Array.");
     }
+    if (value < -128 || value > 127) {
+      throw new Error("Value exceeds the bounds of int8.");
+    }
 
-    this.buffer[offset] = value;
+    this.buffer[offset] = value < 0 ? value + 256 : value; // Convert signed to unsigned
   }
 
   #_getInt8Array(offset, size) {
@@ -485,21 +489,21 @@ export default class Buttonremap {
     if (offset < 0 || offset + size * 4 > this.buffer.length) {
       throw new Error("Offset and size exceed the bounds of the Uint8Array.");
     }
-  
+
     const float32Array = new Float32Array(size);
-  
+
     for (let i = 0; i < size; i++) {
       // Extract 4 bytes for each float
       const byte0 = this.buffer[offset + i * 4];
       const byte1 = this.buffer[offset + i * 4 + 1];
       const byte2 = this.buffer[offset + i * 4 + 2];
       const byte3 = this.buffer[offset + i * 4 + 3];
-  
+
       // Create a Float32 from the bytes (little-endian)
       const uint8Array = new Uint8Array([byte0, byte1, byte2, byte3]);
       float32Array[i] = new Float32Array(uint8Array.buffer)[0];
     }
-  
+
     return float32Array;
   }
 
@@ -508,11 +512,11 @@ export default class Buttonremap {
     if (offset < 0 || offset + float32Array.length * 4 > this.buffer.length) {
       throw new Error("Offset and array length exceed the bounds of the Uint8Array.");
     }
-  
+
     for (let i = 0; i < float32Array.length; i++) {
       // Convert the float to 4 bytes
       const uint8Array = new Uint8Array(new Float32Array([float32Array[i]]).buffer);
-  
+
       // Set the bytes in the buffer
       this.buffer[offset + i * 4] = uint8Array[0];
       this.buffer[offset + i * 4 + 1] = uint8Array[1];
