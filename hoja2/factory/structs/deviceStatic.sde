@@ -2,9 +2,13 @@ typedef struct
 {
     uint8_t     name[16]; 
     uint8_t     maker[16];
-    uint8_t     fcc_id[32];
+    uint8_t     manifest_url[256];
+    uint8_t     firmware_url[256];
+    uint8_t     manual_url[128];
+    uint8_t     fcc_elabel[256];
     uint16_t    fw_version; 
     uint8_t     snes_supported : 1;
     uint8_t     joybus_supported : 1;
-    uint8_t     reserved : 6;
+    uint8_t     reserved_bits : 6;
+    uint8_t     reserved_bytes[93];
 } deviceInfoStatic_s;
