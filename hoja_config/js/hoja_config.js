@@ -7,6 +7,8 @@ let menuToggleLabels = document.getElementsByClassName("lbl-toggle");
 let selectedToggle = null;
 let debugWrench = document.getElementById("footer-wrench-svg");
 
+let manufacturerBypass = null;
+
 function debugWrenchClick()
 {
     // Get the current URL
@@ -156,7 +158,8 @@ async function handle_input_report(result) {
 
         case WEBUSB_CMD_FW_GET:
             console.log("Got FW Datas.");
-            version_interpret_values_data(result.data);
+            manufacturerBypass = urlParams.has('flashingskip');
+            version_interpret_values_data(result.data, manufacturerBypass);
             break;
 
         case WEBUSB_CMD_INPUT_REPORT:
@@ -371,6 +374,8 @@ else
 {
     console.log("No debug setting.");
 }
+
+
 
 function notifyUserToUpdate() {
     console.log("Update notif sent.");

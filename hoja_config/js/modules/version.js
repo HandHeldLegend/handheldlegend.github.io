@@ -181,8 +181,14 @@ async function version_reset_to_bootloader() {
     await device.transferOut(2, dataOut);
 }
 
-function _version_fw_is_up_to_date() {
+function _version_fw_is_up_to_date(skip = false) {
     var bb_skip = false;
+
+    if(skip) {
+        console.log("Manufacturer version check bypass.");
+        config_get_chain(WEBUSB_CMD_FW_GET);
+        return;
+    }
 
     if (_device_id != 0xFFFF) {
 
@@ -268,7 +274,7 @@ function _version_baseband_is_up_to_date() {
 
 }
 
-function version_interpret_values_data(data) {
+function version_interpret_values_data(data, skip=false) {
     _fw_version = (data.getUint8(1) << 8) | (data.getUint8(2));
     _device_id = (data.getUint8(3) << 8) | (data.getUint8(4));
     _backend_version = (data.getUint8(5) << 8) | (data.getUint8(6));
@@ -283,5 +289,5 @@ function version_interpret_values_data(data) {
     console.log("HOJA Settings Version: 0x" + _settings_version.toString(16));
     console.log("Settings Bank: " + ((!_settings_bank) ? "A" : "B"));
 
-    _version_fw_is_up_to_date();
+    _version_fw_is_up_to_date(skip);
 }

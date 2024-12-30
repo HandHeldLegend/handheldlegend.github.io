@@ -93,6 +93,8 @@ const gamecubeMapCodes = [
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
+const remapCfgBlockNumber = 1;
+
 let remapPickers = null;
 
 let remapSelectorContainer = null;
@@ -102,6 +104,10 @@ let resolveButtonPress;
 let waitingForButton = false;
 
 let currentProfileMode = 0;
+
+async function writeRemapMemBlock() {
+    await gamepad.sendBlock(remapCfgBlockNumber);
+}
 
 // Reload our remap values (not changing profiles only)
 function softReloadRemapValues() {
@@ -196,6 +202,7 @@ function setOutputForInput(inputNum, targetOutput) {
     gamepad.remap_cfg.profiles = remapProfiles;
 }
 
+// The function we call to assign
 function assignInputToOutput(buttonInput, targetOutput) {
     // First, we must unset any button that has the same output
     // as our targetOutput
@@ -406,8 +413,8 @@ async function startListening(remapButtonElement) {
 }
 
 // Call to render the appropriate render mode
-async function newRenderRemaps(inputMode, fade = true) {
-
+async function newRenderRemaps(inputMode) {
+    currentProfileMode = inputMode;
     let buttons = gamepad.button_static.main_buttons;
 
     /** @type {Buttonremap} */
@@ -461,47 +468,41 @@ async function newRenderRemaps(inputMode, fade = true) {
 
     //remapSelectorContainer.innerHTML = remapItemsHTML;
 
-    if(fade) {
-        remapSelectorContainer.setAttribute("hidden", "true"); // Fade out
-        setTimeout(() => {
-            remapSelectorContainer.innerHTML = remapItemsHTML;
-            remapSelectorContainer.setAttribute("hidden", "false"); // Fade in
-            // Get all remap Pickers
-            remapPickers = remapSelectorContainer.querySelectorAll('remap-selector');
-
-            remapPickers.forEach(element => {
-                element.addEventListener('remap-change', async (e) => {
-                    if(e.detail.action == 'capture') {
-                        startListening(element).then(() => {
-                            console.log("Done listening");
-                        });
-                    }
-                });
-            });
-
-            enableTooltips(currentContainer);
-        }, 300); // Match the transition duration
-    }
-    else {
+    remapSelectorContainer.setAttribute("hidden", "true"); // Fade out
+    setTimeout(() => {
         remapSelectorContainer.innerHTML = remapItemsHTML;
+        remapSelectorContainer.setAttribute("hidden", "false"); // Fade in
+        // Get all remap Pickers
         remapPickers = remapSelectorContainer.querySelectorAll('remap-selector');
 
-            remapPickers.forEach(element => {
-                element.addEventListener('remap-change', async (e) => {
-                    if(e.detail.action == 'capture') {
-                        startListening(element).then(() => {
-                            console.log("Done listening");
-                        });
-                    }
-                });
+        remapPickers.forEach(element => {
+            element.addEventListener('remap-change', async (e) => {
+                if(e.detail.action == 'capture') {
+                    startListening(element).then(() => {
+                        console.log("Done listening");
+                        writeRemapMemBlock();
+                    });
+                }
+                else if(e.detail.action == 'clear') {
+                    let idx = element.getAttribute('idx');
+                    let idxNum = parseInt(idx);
+                    // Just clear our output setting for this 
+                    assignInputToOutput(-1, idxNum)
+                    softReloadRemapValues();
+                }
             });
+        });
 
-            enableTooltips(currentContainer);
-        
-        return;
+        enableTooltips(currentContainer);
+    }, 300); // Match the transition duration
+}
+
+function resetProfileToDefault() {
+    for(let i = 0; i<16; i++) {
+        assignInputToOutput(i, i);
     }
-    
-
+    softReloadRemapValues();
+    writeRemapMemBlock();
 }
 
 export function render(container) {
@@ -509,6 +510,16 @@ export function render(container) {
 
     container.innerHTML = `
             <h1>Remap Settings</h1>
+            <div class="app-row">
+                <single-shot-button 
+                    id="reset-remap-button" 
+                    state="ready" 
+                    ready-text="Reset Profile" 
+                    disabled-text="Reset Profile"
+                    pending-text="Reset Profile"
+                    tooltip="Reset this input profile to defaults."
+                ></single-shot-button>
+            </div>
             <multi-position-button 
                 id="remap-mode-select" 
                 labels="Switch, XInput, SNES, N64, GC"
@@ -530,6 +541,9 @@ export function render(container) {
     gamepad.setReportHook((data) => {
         reportHook(data);
     });
+
+    const resetButton = container.querySelector('single-shot-button[id="reset-remap-button"]');
+    resetButton.setOnClick(resetProfileToDefault);
 
     
 }

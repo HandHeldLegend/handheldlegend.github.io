@@ -12,6 +12,14 @@ import SingleShotButton from '../components/single-shot-button.js';
 import { enableTooltips } from '../tooltips.js';
 import Rgbgroupname from '../factory/parsers/rgbGroupName.js';
 
+/** @type {HojaGamepad} */
+const gamepad = HojaGamepad.getInstance();
+const rgbCfgBlockNumber = 3;
+
+async function writeRgbMemBlock() {
+    await gamepad.sendBlock(rgbCfgBlockNumber);
+}
+
 function decodeText(buffer) {
     const decoder = new TextDecoder('utf-8');
     const str = decoder.decode(buffer);
@@ -21,7 +29,6 @@ function decodeText(buffer) {
 }
 
 function uint32ToRgbHex(uint32) {
-    console.log(uint32);
     // Mask out everything except the RGB components (last 3 bytes)
     uint32 &= 0x00FFFFFF;  // Mask the last byte (keeping the RGB part)
     //uint32 >>>= 8;         // Unsigned right shift to get only the RGB components
@@ -41,15 +48,14 @@ function hexToUint32Rgb(hexString) {
 
 export function render(container) {
 
-    /** @type {HojaGamepad} */
-    let gamepad = HojaGamepad.getInstance();
-
     let colors = gamepad.rgb_cfg.rgb_colors;
 
     let nameCount = gamepad.rgb_static.rgb_groups;
 
     /** @type {Rgbgroupname[]} */
     let names = gamepad.rgb_static.rgb_group_names;
+    let startBrightness = ((gamepad.rgb_cfg.rgb_brightness) / 4096) * 100;
+    startBrightness = Math.round(startBrightness);
     
     let decodedNames = []
 
@@ -79,11 +85,11 @@ export function render(container) {
             <h2>Brightness</h2>
             <number-selector 
                 id="brightness-slider" 
-                type="float" 
+                type="int" 
                 min="0" 
                 max="100" 
-                step="0.5" 
-                default-value="85"
+                step="1" 
+                default-value="${startBrightness}"
             ></number-selector>
 
             <h2>Mode</h2>
@@ -101,17 +107,16 @@ export function render(container) {
     const brightnessSelector = container.querySelector('number-selector[id="brightness-slider"]');
     brightnessSelector.addEventListener('change', (e) => {
         console.log(`Brightness changed to: ${e.detail.value}`);
+        let bright = e.detail.value;
+        bright = (bright > 100) ? 100 : bright;
+        bright = (bright < 0) ? 0 : bright;
+        let outbright = (bright/100) * 4096;
+        outbright = Math.round(outbright);
+        gamepad.rgb_cfg.rgb_brightness = outbright;
+        writeRgbMemBlock();
     });
 
     const rgbModuleVersion = 0x1;
-
-    // Check values
-    if(!gamepad.rgb_cfg.rgb_config_version)
-    {
-        gamepad.rgb_cfg.rgb_config_version = rgbModuleVersion;
-        gamepad.rgb_cfg.rgb_brightness = 500;
-        gamepad.sendBlock(3);
-    }
 
     const rgbPickers = container.querySelectorAll('group-rgb-picker');
     rgbPickers.forEach(picker => {
@@ -124,7 +129,7 @@ export function render(container) {
             tmpArr[idx] = u32color;
             gamepad.rgb_cfg.rgb_colors = tmpArr;
 
-            gamepad.sendBlock(3);
+            writeRgbMemBlock();
         });
     });
 }

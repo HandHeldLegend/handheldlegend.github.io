@@ -25,6 +25,30 @@ const tooltipStyles = `
 </style>
 `;
 
+const adjustTooltipPosition = (tooltipContainer, rect) => {
+    // Calculate initial position
+    const tooltipWidth = tooltipContainer.offsetWidth;
+    const viewportWidth = window.innerWidth;
+
+    // Horizontal adjustment
+    let left = rect.left + rect.width / 2 - tooltipWidth / 2; // Center horizontally
+    if (left < 0) {
+        left = 10; // Nudge away from the left edge
+    } else if (left + tooltipWidth > viewportWidth) {
+        left = viewportWidth - tooltipWidth - 10; // Nudge away from the right edge
+    }
+
+    // Vertical adjustment
+    let top = rect.bottom + 6; // Tooltip below the element
+    if (top + tooltipContainer.offsetHeight > window.innerHeight) {
+        top = rect.top - tooltipContainer.offsetHeight - 6; // Move above if it overflows
+    }
+
+    // Apply calculated positions
+    tooltipContainer.style.left = `${left}px`;
+    tooltipContainer.style.top = `${top}px`;
+};
+
 export function enableTooltips(rootElement) {
     // Inject tooltip styles into the document
     const styleTag = document.createElement('style');
@@ -56,12 +80,15 @@ export function enableTooltips(rootElement) {
                     // Position the tooltip
                     const rect = element.getBoundingClientRect();
                     tooltipContainer.style.position = 'fixed';
-                    tooltipContainer.style.left = `${rect.left + rect.width / 2}px`;
-                    tooltipContainer.style.top = `${rect.bottom + 6}px`;
-                    tooltipContainer.style.transform = 'translateX(-50%)';
+                    //tooltipContainer.style.left = `${rect.left + rect.width / 2}px`;
+                    //tooltipContainer.style.top = `${rect.bottom + 6}px`;
+                    //tooltipContainer.style.transform = 'translateX(-50%)';
                     
                     // Add to document and show
                     document.body.appendChild(tooltipContainer);
+
+                    // Adjust position to stay within the viewport
+                    adjustTooltipPosition(tooltipContainer, rect);
                     
                     // Trigger reflow to enable transition
                     tooltipContainer.offsetWidth;
@@ -90,6 +117,11 @@ export function enableTooltips(rootElement) {
             // Add event listeners
             element.addEventListener('mouseenter', showTooltip);
             element.addEventListener('mouseleave', hideTooltip);
+
+            // Event listeners (mobile)
+            element.addEventListener('touchstart', showTooltip);
+            element.addEventListener('touchend', hideTooltip);
+            element.addEventListener('touchcancel', hideTooltip); // Handle canceled touches
         });
 
     }

@@ -35,7 +35,7 @@ class RemapSelector extends HTMLElement {
     render(css) {
         const inValue = this.getAttribute('in-value') || "A";
         const outValue = this.getAttribute('out-value') || "A";
-        const idxValue = this.getAttribute('idx') || "-1";
+        const idxValue = this.getAttribute('idx') || "0";
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
@@ -48,10 +48,12 @@ class RemapSelector extends HTMLElement {
                 <span class="label">out:</span>
                 <input tooltip="Output button" type="text" class="value-out" value="${outValue}" readonly />
             </div>
-
             <button class="button-clear" tooltip="Disable button">✖</button>
-            <button class="button-reset" tooltip="Reset mapping">↺</button>
+
         `;
+
+        // Remove reset button for now
+        // <button class="button-reset" tooltip="Reset mapping">↺</button>
 
         this._inputContainer = this.shadowRoot.querySelector('div[class="even-container"');
     }
@@ -59,19 +61,18 @@ class RemapSelector extends HTMLElement {
     // Synchronize input changes with attribute updates
     setupEventListeners() {
         const buttonClear = this.shadowRoot.querySelector('.button-clear');
-        const buttonReset = this.shadowRoot.querySelector('.button-reset');
+        //const buttonReset = this.shadowRoot.querySelector('.button-reset');
         const buttonCapture = this.shadowRoot.querySelector('.button-capture');
 
         // Handle button clicks
         buttonClear.addEventListener('click', () => {
-            this.clearValues();
             this.emitChangeEvent('clear');
         });
 
-        buttonReset.addEventListener('click', () => {
-            this.resetValues();
-            this.emitChangeEvent('reset');
-        });
+        //buttonReset.addEventListener('click', () => {
+        //    this.resetValues();
+        //    this.emitChangeEvent('reset');
+        //});
 
         buttonCapture.addEventListener('click', () => {
             this.captureValue();
@@ -95,17 +96,11 @@ class RemapSelector extends HTMLElement {
         }
     }
 
-    // Clear values programmatically
-    clearValues() {
-        this.setAttribute('in-value', "0");
-        this.setAttribute('out-value', "0");
-    }
-
     // Reset values programmatically
-    resetValues() {
-        console.log("Reset button clicked");
-        // Add custom logic for resetting values if needed
-    }
+    //resetValues() {
+    //    console.log("Reset button clicked");
+    //    // Add custom logic for resetting values if needed
+    //}
 
     // Capture value programmatically
     captureValue() {
@@ -152,13 +147,18 @@ class RemapSelector extends HTMLElement {
 
         if(listening) btn.textContent = `⧗`;
         else btn.textContent = `⊘`;
+
+        let btn2 = this.shadowRoot.querySelector('button[class="button-clear"]');
+        btn2.setAttribute('disabled', 'true');
     }
 
     enableCaptureButton() {
         let btn = this.shadowRoot.querySelector('button[class="button-capture"]');
+        let btn2 = this.shadowRoot.querySelector('button[class="button-clear"]');
 
         try {
             btn.removeAttribute('disabled');
+            btn2.removeAttribute('disabled');
         }
         catch(err) {}
 

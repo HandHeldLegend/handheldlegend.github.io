@@ -40,6 +40,19 @@
     background: var(--color-button-off);
 }
 
+.button-clear[disabled="true"]
+{
+    margin-left: 0;
+    background: var(--color-button-disabled);
+    cursor: not-allowed;
+}
+.button-clear:hover[disabled="true"]
+{
+    margin-left: 0;
+    background: var(--color-button-disabled);
+    cursor: not-allowed;
+}
+
 .button-reset
 {
     margin-right: 0;
