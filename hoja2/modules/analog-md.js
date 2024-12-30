@@ -409,7 +409,8 @@ function commandCallback(data) {
 
 // Render the analog settings page
 export function render(container) {
-
+    selectedAxis = 0;
+    
     /** @type {Anglemap[]} */
     let angleConfigs = gamepad.analog_cfg.l_angle_maps;
     let anglePickersHTML = "";

@@ -87,7 +87,7 @@ const gamecubeMapCodes = [
     "D-Pad Left",
     "D-Pad Right",
     "A", "B", "X", "Y",
-    "Z (Left)", "L", "Z", "R",
+    "Special Function", "L", "Z", "R",
     "Start", "~", "~", "~"
 ];
 
@@ -116,7 +116,7 @@ function softReloadRemapValues() {
             let idxNum = parseInt( e.getAttribute("idx") );
             let inputNum = getInputForOutput(idxNum);
 
-            let writeValue = (inputNum < 0) ? "⊘" : getCurrentMapCodeText(inputNum);
+            let writeValue = (inputNum < 0) ? "⊘" : inputMapCodes[inputNum];
 
             // Update the input value
             e.setInValue(writeValue);

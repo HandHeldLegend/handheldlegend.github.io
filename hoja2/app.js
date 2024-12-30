@@ -143,12 +143,24 @@ class ConfigApp {
 var debug = false;
 
 
+async function sendSaveCommand() {
+    console.log("Attempting save...");
+    if(gamepad) {
+        gamepad.save();
+    }
+    else {
+        console.log("No Gamepad Present");
+    }
+}
+
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.configApp = new ConfigApp();
 
     const connectButton = document.getElementById('connect-button');
     const saveButton = document.getElementById('save-button');
+
+    saveButton.setOnClick(sendSaveCommand);
 
     if (debug) {
         // Debug module
@@ -174,7 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
         window.configApp.enableIcon(2, analogEnable); // Analog
         window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0); // RGB
 
-        let triggerEnable = (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt) ? true : false;
+        let triggerEnable = 
+        (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt | 
+         gamepad.device_static.joybus_supported) ? true : false;
         window.configApp.enableIcon(4, triggerEnable); // Triggers
 
         let imuEnable = (gamepad.imu_static.axis_gyro_a) ? true : false;

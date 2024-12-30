@@ -162,6 +162,12 @@ class HojaGamepad {
     }
   }
 
+  // Commit settings blocks on the gamepad
+  async save() {
+    // WEBUSB_ID_SAVE_SETTINGS is 5
+    await this.sendCommand(5, new Uint8Array([0]));
+  }
+
   // Internal polling method
   #pollDevice() {
     if (!this.#isConnected) {

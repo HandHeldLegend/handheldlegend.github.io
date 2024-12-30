@@ -1,4 +1,5 @@
-// Import the number selector (optional, as it's now globally defined)
+import HojaGamepad from '../gamepad/gamepad.js';
+
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
@@ -10,11 +11,13 @@ import SingleShotButton from '../components/single-shot-button.js';
 
 import { enableTooltips } from '../tooltips.js';
 
+/** @type {HojaGamepad} */
+const gamepad = HojaGamepad.getInstance();
+
 export function render(container) {
 
-    let gamecubeEnabled = true;
-    let analogTriggersEnabled = true;
-
+    let gamecubeEnabled = gamepad.device_static.joybus_supported;
+    let analogTriggersEnabled = (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt);
 
     let enabledOnlyAnalogSectionHTML = `
     <div class="app-row">
