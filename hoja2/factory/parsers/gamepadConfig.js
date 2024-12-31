@@ -2,7 +2,7 @@
 
 export default class Gamepadconfig {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(32);
+    this.buffer = buffer || new Uint8Array(64);
   }
 
   	/** @type {Uint8} */
@@ -10,29 +10,39 @@ export default class Gamepadconfig {
 		return this.#_getUint8(0);
 	}
 
-	/** @type {Uint8Array} */
-	get switch_mac_address() {
-		return this.#_getUint8Array(1, 6);
-	}
-
 	/** @type {Uint8} */
 	get gamepad_default_mode() {
-		return this.#_getUint8(7);
+		return this.#_getUint8(1);
 	}
 
-	/** @type {Uint8} */
-	get sp_function_mode() {
-		return this.#_getUint8(8);
+	/** @type {Uint8Array} */
+	get switch_mac_address() {
+		return this.#_getUint8Array(2, 6);
 	}
 
-	/** @type {Uint8} */
-	get dpad_socd_mode() {
-		return this.#_getUint8(9);
+	/** @type {Uint32} */
+	get gamepad_color_body() {
+		return this.#_getUint32(8);
+	}
+
+	/** @type {Uint32} */
+	get gamepad_color_buttons() {
+		return this.#_getUint32(12);
+	}
+
+	/** @type {Uint32} */
+	get gamepad_color_grip_left() {
+		return this.#_getUint32(16);
+	}
+
+	/** @type {Uint32} */
+	get gamepad_color_grip_right() {
+		return this.#_getUint32(20);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(10, 22);
+		return this.#_getUint8Array(24, 40);
 	}
 
 
@@ -42,29 +52,39 @@ export default class Gamepadconfig {
 		this.#_setUint8(0, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set switch_mac_address(value) {
-		this.#_setUint8Array(1, value);
-	}
-
 	/** @param {Uint8} value */
 	set gamepad_default_mode(value) {
-		this.#_setUint8(7, value);
+		this.#_setUint8(1, value);
 	}
 
-	/** @param {Uint8} value */
-	set sp_function_mode(value) {
-		this.#_setUint8(8, value);
+	/** @param {Uint8Array} value */
+	set switch_mac_address(value) {
+		this.#_setUint8Array(2, value);
 	}
 
-	/** @param {Uint8} value */
-	set dpad_socd_mode(value) {
-		this.#_setUint8(9, value);
+	/** @param {Uint32} value */
+	set gamepad_color_body(value) {
+		this.#_setUint32(8, value);
+	}
+
+	/** @param {Uint32} value */
+	set gamepad_color_buttons(value) {
+		this.#_setUint32(12, value);
+	}
+
+	/** @param {Uint32} value */
+	set gamepad_color_grip_left(value) {
+		this.#_setUint32(16, value);
+	}
+
+	/** @param {Uint32} value */
+	set gamepad_color_grip_right(value) {
+		this.#_setUint32(20, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(10, value);
+		this.#_setUint8Array(24, value);
 	}
 
 

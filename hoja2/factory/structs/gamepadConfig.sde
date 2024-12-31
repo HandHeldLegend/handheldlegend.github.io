@@ -1,9 +1,11 @@
 typedef struct 
 {
-    uint8_t gamepad_config_version;
-    uint8_t switch_mac_address[6];
-    uint8_t gamepad_default_mode;
-    uint8_t sp_function_mode;
-    uint8_t dpad_socd_mode;
-    uint8_t reserved[22];
+    uint8_t  gamepad_config_version;
+    uint8_t  gamepad_default_mode;
+    uint8_t  switch_mac_address[6];
+    uint32_t gamepad_color_body;
+    uint32_t gamepad_color_buttons;
+    uint32_t gamepad_color_grip_left;
+    uint32_t gamepad_color_grip_right;
+    uint8_t  reserved[40];
 } gamepadConfig_s;
