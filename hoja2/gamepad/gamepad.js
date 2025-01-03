@@ -280,6 +280,21 @@ class HojaGamepad {
             this.#_inputReportHook = null;
           }
         break;
+      
+      // WEBUSB_ID_ANALOG_DUMP
+      case 250:
+        let out = [];
+
+        for(let i = 0; i < 31; i++) {
+          let distance = ((data.getUint8((i*2) + 2) << 8) | data.getUint8((i*2) + 3)) & 0x7FF;
+          let direction = (data.getUint8((i*2) + 2) & 0x80) ? -1 : 1;
+          distance = direction * distance;
+
+          out.push(distance);
+        }
+
+        console.log(out);
+        break;
 
       default:
         console.warn(`Unhandled report ID: ${data.getUint8(0)}`);
