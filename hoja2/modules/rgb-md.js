@@ -56,6 +56,10 @@ export function render(container) {
     let names = gamepad.rgb_static.rgb_group_names;
     let startBrightness = ((gamepad.rgb_cfg.rgb_brightness) / 4096) * 100;
     startBrightness = Math.round(startBrightness);
+
+    let animationTime = gamepad.rgb_cfg.rgb_speed;
+
+    let rgbMode = gamepad.rgb_cfg.rgb_mode;
     
     let decodedNames = []
 
@@ -92,11 +96,21 @@ export function render(container) {
                 default-value="${startBrightness}"
             ></number-selector>
 
+            <h2>Animation Time (ms)</h2>
+            <number-selector 
+                id="speed-slider" 
+                type="int" 
+                min="300" 
+                max="5000" 
+                step="25" 
+                default-value="${animationTime}"
+            ></number-selector>
+
             <h2>Mode</h2>
             <multi-position-button 
-                id="rgbModeButton" 
-                labels="User, Rainbow"
-                default-selected="0"
+                id="rgb-mode-select" 
+                labels="User, Rainbow, React"
+                default-selected="${rgbMode}"
             ></multi-position-button>
 
             <h2>Colors</h2>
@@ -116,6 +130,16 @@ export function render(container) {
         writeRgbMemBlock();
     });
 
+    const speedSelector = container.querySelector('number-selector[id="speed-slider"]');
+    speedSelector.addEventListener('change', (e) => {
+        console.log(`Speeed changed to: ${e.detail.value}`);
+        let speed = e.detail.value;
+        speed = (speed > 5000) ? 5000 : speed;
+        speed = (speed < 300) ? 300 : speed;
+        gamepad.rgb_cfg.rgb_speed = speed;
+        writeRgbMemBlock();
+    });
+
     const rgbModuleVersion = 0x1;
 
     const rgbPickers = container.querySelectorAll('group-rgb-picker');
@@ -131,5 +155,12 @@ export function render(container) {
 
             writeRgbMemBlock();
         });
+    });
+
+    const modeSelector = container.querySelector('multi-position-button[id="rgb-mode-select"]');
+    modeSelector.addEventListener('change', (e) => {
+        console.log("RGB mode change");
+        gamepad.rgb_cfg.rgb_mode = e.detail.selectedIndex;
+        writeRgbMemBlock();
     });
 }

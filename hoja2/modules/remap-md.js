@@ -505,6 +505,7 @@ function resetProfileToDefault() {
     writeRemapMemBlock();
 }
 
+
 export function render(container) {
     currentContainer = container;
 
@@ -544,6 +545,4 @@ export function render(container) {
 
     const resetButton = container.querySelector('single-shot-button[id="reset-remap-button"]');
     resetButton.setOnClick(resetProfileToDefault);
-
-    
-}
+} 
