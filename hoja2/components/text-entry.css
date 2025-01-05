@@ -1,0 +1,30 @@
+.text-entry-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-input {
+    width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.text-input:focus {
+    border-color: #007bff;
+}
+
+.text-input:hover {
+    border-color: #999;
+}
+
+/* Placeholder styling */
+.text-input::placeholder {
+    color: #999;
+    opacity: 1;
+}

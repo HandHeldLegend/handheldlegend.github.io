@@ -140,8 +140,7 @@ class ConfigApp {
     }
 }
 
-var debug = true;
-
+var debug = false;
 
 async function sendSaveCommand() {
     console.log("Attempting save...");
@@ -167,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/analog-md.js',
+                path: './modules/gamepad-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
