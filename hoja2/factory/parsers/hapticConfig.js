@@ -10,9 +10,14 @@ export default class Hapticconfig {
 		return this.#_getUint8(0);
 	}
 
+	/** @type {Uint8} */
+	get haptic_triggers() {
+		return this.#_getUint8(1);
+	}
+
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(1, 7);
+		return this.#_getUint8Array(2, 6);
 	}
 
 
@@ -22,9 +27,14 @@ export default class Hapticconfig {
 		this.#_setUint8(0, value);
 	}
 
+	/** @param {Uint8} value */
+	set haptic_triggers(value) {
+		this.#_setUint8(1, value);
+	}
+
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(1, value);
+		this.#_setUint8Array(2, value);
 	}
 
 

@@ -140,7 +140,7 @@ class ConfigApp {
     }
 }
 
-var debug = false;
+var debug = true;
 
 
 async function sendSaveCommand() {
@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/remap-md.js',
+                path: './modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];

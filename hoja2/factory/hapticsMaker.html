@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Haptic Pattern Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            background: white;
+        }
+        .controls {
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .peaks-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .peak-control {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Haptic Pattern Editor</h1>
+        
+        <div class="controls">
+            <div>
+                <label>Duration (ms): </label>
+                <input type="number" id="duration" value="64" step="16" min="16">
+            </div>
+            <div>
+                <button onclick="addPeak()">Add Peak</button>
+                <button onclick="exportPattern()">Export Pattern</button>
+            </div>
+        </div>
+        
+        <canvas id="canvas"></canvas>
+        <div id="peaksContainer" class="peaks-container"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const SAMPLE_RATE = 16000;
+        const BUFFER_SIZE = 256;
+        
+        let peaks = [];
+        
+        // Define a color palette for peaks
+        const peakColors = [
+            '#007bff', // blue
+            '#28a745', // green
+            '#dc3545', // red
+            '#ffc107', // yellow
+            '#6f42c1', // purple
+            '#fd7e14', // orange
+            '#20c997', // teal
+            '#e83e8c'  // pink
+        ];
+
+        class Peak {
+            constructor(position = 0.5, width = 0.2, height = 256, colorIndex = 0) {
+                this.position = position; // 0 to 1
+                this.width = width;       // 0 to 1
+                this.height = height;     // -255 to 255
+                this.color = peakColors[colorIndex % peakColors.length];
+            }
+
+            calculateValue(x) {
+                const distance = Math.abs(x - this.position);
+                const halfWidth = this.width / 2;
+                
+                if (distance > halfWidth) return 0;
+                
+                // Use cosine function for smooth peak
+                const normalized = (distance / halfWidth) * Math.PI;
+                return this.height * Math.cos(normalized) * 0.5 + this.height * 0.5;
+            }
+        }
+
+        function initializePeaks() {
+            peaks = [new Peak()];
+            updatePeaksUI();
+            draw();
+        }
+
+        function addPeak() {
+            // Calculate position after the last peak
+            let position = 0.5;
+            if (peaks.length > 0) {
+                const lastPeak = peaks[peaks.length - 1];
+                position = Math.min(1, lastPeak.position + 0.2); // Place it 20% after the last peak
+            }
+            
+            peaks.push(new Peak(position, 0.2, 256, peaks.length));
+            updatePeaksUI();
+            draw();
+        }
+
+        function removePeak(index) {
+            peaks.splice(index, 1);
+            // Update colors for remaining peaks
+            peaks.forEach((peak, idx) => {
+                peak.color = peakColors[idx % peakColors.length];
+            });
+            updatePeaksUI();
+            draw();
+        }
+
+        function updatePeaksUI() {
+            const container = document.getElementById('peaksContainer');
+            container.innerHTML = '<h3>Peaks</h3>';
+            
+            peaks.forEach((peak, index) => {
+                const peakDiv = document.createElement('div');
+                peakDiv.className = 'peak-control';
+                peakDiv.style.borderLeft = `4px solid ${peak.color}`;
+                
+                // Create elements
+                const positionDiv = document.createElement('div');
+                positionDiv.innerHTML = `
+                    <label>Position (${(peak.position * 100).toFixed(1)}%):</label>
+                    <input type="range" class="position-slider" min="0" max="100" value="${peak.position * 100}">
+                `;
+                
+                const widthDiv = document.createElement('div');
+                widthDiv.innerHTML = `
+                    <label>Width (${(peak.width * 100).toFixed(1)}%):</label>
+                    <input type="range" class="width-slider" min="1" max="100" value="${peak.width * 100}">
+                `;
+                
+                const heightDiv = document.createElement('div');
+                heightDiv.innerHTML = `
+                    <label>Height (${peak.height}):</label>
+                    <input type="range" class="height-slider" min="-255" max="255" value="${peak.height}">
+                `;
+                
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove Peak';
+                removeButton.onclick = () => removePeak(index);
+
+                // Add event listeners
+                const positionSlider = positionDiv.querySelector('.position-slider');
+                positionSlider.addEventListener('input', e => updatePeak(index, 'position', e.target.value / 100));
+                
+                const widthSlider = widthDiv.querySelector('.width-slider');
+                widthSlider.addEventListener('input', e => updatePeak(index, 'width', e.target.value / 100));
+                
+                const heightSlider = heightDiv.querySelector('.height-slider');
+                heightSlider.addEventListener('input', e => updatePeak(index, 'height', parseInt(e.target.value)));
+
+                // Append elements
+                peakDiv.appendChild(positionDiv);
+                peakDiv.appendChild(widthDiv);
+                peakDiv.appendChild(heightDiv);
+                peakDiv.appendChild(removeButton);
+                container.appendChild(peakDiv);
+            });
+        }
+
+        function updatePeak(index, property, value) {
+            peaks[index][property] = value;
+            updatePeakLabels(index);
+            draw();
+        }
+
+        function updatePeakLabels(index) {
+            const peak = peaks[index];
+            const peakDiv = document.getElementById(`peak-${index}`);
+            if (peakDiv) {
+                peakDiv.querySelector('.position-label').textContent = `Position (${(peak.position * 100).toFixed(1)}%):`;
+                peakDiv.querySelector('.width-label').textContent = `Width (${(peak.width * 100).toFixed(1)}%):`;
+                peakDiv.querySelector('.height-label').textContent = `Height (${peak.height}):`;
+            }
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth - 40;
+            canvas.height = 400;
+            draw();
+        }
+
+        function calculateCombinedValue(x) {
+            let value = 0;
+            peaks.forEach(peak => {
+                value += peak.calculateValue(x);
+            });
+            return Math.max(-256, Math.min(256, value));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#eee';
+            ctx.lineWidth = 1;
+            
+            // Vertical grid lines
+            for (let x = 0; x <= canvas.width; x += canvas.width / 10) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            // Horizontal grid lines
+            for (let y = 0; y <= canvas.height; y += canvas.height / 8) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Draw center line
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.stroke();
+
+            // Draw individual peak waveforms
+            peaks.forEach(peak => {
+                ctx.strokeStyle = peak.color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                
+                for (let i = 0; i <= canvas.width; i++) {
+                    const x = i / canvas.width;
+                    const y = peak.calculateValue(x);
+                    const canvasY = canvas.height / 2 - (y / 256 * canvas.height / 2);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(i, canvasY);
+                    } else {
+                        ctx.lineTo(i, canvasY);
+                    }
+                }
+                ctx.stroke();
+            });
+
+            // Draw combined waveform
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i <= canvas.width; i++) {
+                const x = i / canvas.width;
+                const y = calculateCombinedValue(x);
+                const canvasY = canvas.height / 2 - (y / 256 * canvas.height / 2);
+                
+                if (i === 0) {
+                    ctx.moveTo(i, canvasY);
+                } else {
+                    ctx.lineTo(i, canvasY);
+                }
+            }
+            ctx.stroke();
+
+            // Draw peak centers
+            peaks.forEach(peak => {
+                ctx.fillStyle = peak.color;
+                ctx.beginPath();
+                ctx.arc(
+                    peak.position * canvas.width,
+                    canvas.height / 2 - (peak.height / 256 * canvas.height / 2),
+                    5,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            });
+        }
+
+        function exportPattern() {
+            const duration = parseInt(document.getElementById('duration').value);
+            const numSamples = Math.ceil((duration / 1000) * SAMPLE_RATE / BUFFER_SIZE) * BUFFER_SIZE;
+            const samples = new Array(numSamples);
+            
+            // Convert to 0-255 range for export
+            for (let i = 0; i < numSamples; i++) {
+                const t = i / numSamples;
+                let value = calculateCombinedValue(t);
+
+                value = value < 0 ? 0 : value;
+                
+                // Normalize -255 to 255 range to 0-255 range
+                value = Math.floor(value);
+                samples[i] = Math.max(0, Math.min(255, value));
+            }
+            
+            // Format as C array
+            let output = `const uint8_t hapticPattern[${numSamples}] = {\n    `;
+            output += samples.map(v => v.toString()).join(', ');
+            output += '\n};';
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(output).then(() => {
+                alert('Pattern copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy pattern:', err);
+                alert('Failed to copy pattern to clipboard');
+            });
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        initializePeaks();
+    </script>
+</body>
+</html>

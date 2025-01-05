@@ -141,6 +141,58 @@ function populateAngleSelectors(maps) {
         });
 }
 
+function angleDistance(angle1, angle2) {
+    // Normalize angles to be within 0-360
+    angle1 = ((angle1 % 360) + 360) % 360;
+    angle2 = ((angle2 % 360) + 360) % 360;
+
+    // Calculate the absolute difference
+    let diff = Math.abs(angle1 - angle2);
+
+    // Account for wraparound
+    return Math.min(diff, 360 - diff);
+}
+
+async function populateNearestAngle(capturedAngle) {
+    let anglePickers = mdContainer.querySelectorAll('angle-selector');
+
+    // Find the index of the closest where the distance is non-zero
+    let matchingIdx = 0;
+    let lowestDistance = 360;
+    let listToCheck = null;
+    if(!selectedAxis)
+    {
+        listToCheck = gamepad.analog_cfg.l_angle_maps;
+    }
+    else 
+    {
+        listToCheck = gamepad.analog_cfg.r_angle_maps;
+    }
+
+    listToCheck.forEach((value, index) => {
+        let d = angleDistance(value.output, capturedAngle);
+        if(d<lowestDistance) {
+            lowestDistance = d;
+            matchingIdx = index;
+        }
+    });
+
+    // Update value and re-populate
+    listToCheck[matchingIdx].input = capturedAngle;
+
+    if(!selectedAxis)
+    {
+        gamepad.analog_cfg.l_angle_maps = listToCheck;
+    }
+    else 
+    {
+        gamepad.analog_cfg.r_angle_maps = listToCheck;
+    }
+
+    populateAngleSelectors(listToCheck);
+    await writeAngleMemBlock();
+}
+
 // Sort and clean up an array of Anglemaps
 function sortAndFilterAnglemaps(maps) {
     // Filter out objects where the distance is less than 1000
@@ -435,13 +487,24 @@ export function render(container) {
             <h1>Joystick Settings</h1>
             <h2>Calibrate</h2>
             <p>To calibrate both sticks, press Start. Move both analog sticks in a full circle slowly. Press Stop to complete calibration.</p>
-            <tristate-button 
-                id="calibrate-button" 
-                off-text="Calibrate" 
-                on-text="Stop"
-                off-to-on-text="Calibrate"
-                on-to-off-text="Stop"
-            ></tristate-button>
+            <div class="app-row">
+                <tristate-button 
+                    id="calibrate-button" 
+                    off-text="Calibrate" 
+                    on-text="Stop"
+                    off-to-on-text="Calibrate"
+                    on-to-off-text="Stop"
+                ></tristate-button>
+
+                <single-shot-button 
+                    id="global-angle-button" 
+                    state="ready" 
+                    ready-text="Angle Set" 
+                    disabled-text="Angle Set"
+                    pending-text="Angle Set"
+                    tooltip="Quickly capture an angle and it will be assigned to the most similar angle."
+                ></single-shot-button>
+            </div>
 
             <h2>Axis Selection</h2>
             <multi-position-button 
@@ -531,6 +594,13 @@ export function render(container) {
     copyButton.setOnClick(exportAngles);
     pasteButton.setOnClick(importAngles);
     resetButton.setOnClick(resetAllAnglesDefault);
+
+    // Global angle capture
+    const globalCaptureButton = container.querySelector('single-shot-button[id="global-angle-button"]');
+    globalCaptureButton.setOnClick(async function () {
+        let angle = await captureAngleHandler();
+        await populateNearestAngle(angle);
+    });
 
     const scaleModeButton = container.querySelector('multi-position-button[id="scale-mode-selector"]');
     scaleModeButton.addEventListener('change', (e) => {
