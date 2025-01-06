@@ -1,5 +1,6 @@
 typedef struct 
 {
+    uint8_t user_config_version;
     uint8_t user_name[24];
-    uint8_t reserved[40];
+    uint8_t reserved[39];
 } userConfig_s;

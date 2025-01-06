@@ -1,6 +1,5 @@
 typedef struct 
 {
-
     uint8_t     imu_config_version;
     uint8_t     imu_a_gyro_config[3];
     uint8_t     imu_a_accel_config[3];

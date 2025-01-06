@@ -1,4 +1,17 @@
+:host {
+    background-color: var(--color-background-light);
+    height: var(--config-box-height);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    width: 90%;
+    max-width: 550px;
+    overflow: hidden;
+}
+
 .text-entry-container {
+    margin-left: auto;
+    margin-right: auto;
     display: flex;
     align-items: center;
     justify-content: center;

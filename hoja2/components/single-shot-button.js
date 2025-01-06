@@ -13,6 +13,14 @@ class SingleShotButton extends HTMLElement {
                 text: 'Loading...', 
                 class: 'state-pending' 
             }, 
+            success: {
+                text: 'Success!',
+                class: 'state-success'
+            },
+            failure: {
+                text: 'Failed!',
+                class: 'state-failure'
+            },
             disabled: {
                 text: 'Disabled',
                 class: 'state-disabled'
@@ -21,6 +29,8 @@ class SingleShotButton extends HTMLElement {
 
         // Callback for button action
         this._onClick = null;
+        // Timer for auto-transition
+        this._stateTimer = null;
     }
 
     static get observedAttributes() {
@@ -28,6 +38,8 @@ class SingleShotButton extends HTMLElement {
             'state', 
             'ready-text', 
             'pending-text',
+            'success-text',
+            'failure-text',
             'disabled-text'
         ];
     }
@@ -51,6 +63,14 @@ class SingleShotButton extends HTMLElement {
                 break;
             case 'pending-text':
                 this._states.pending.text = newValue || 'Loading...';
+                this.updateButtonText();
+                break;
+            case 'success-text':
+                this._states.success.text = newValue || 'Success!';
+                this.updateButtonText();
+                break;
+            case 'failure-text':
+                this._states.failure.text = newValue || 'Failed!';
                 this.updateButtonText();
                 break;
             case 'disabled-text':
@@ -84,6 +104,11 @@ class SingleShotButton extends HTMLElement {
             }
 
             try {
+                // Clear any existing timers
+                if (this._stateTimer) {
+                    clearTimeout(this._stateTimer);
+                }
+
                 // Set to pending state
                 this.setAttribute('state', 'pending');
                 
@@ -92,18 +117,31 @@ class SingleShotButton extends HTMLElement {
 
                 // Call the onClick handler if provided
                 if (this._onClick != null) {
-                    await this._onClick();
+                    const result = await this._onClick();
+                    
+                    // Set success or failure state based on result
+                    const resultState = result ? 'success' : 'failure';
+                    this.setAttribute('state', resultState);
+
+                    // Set timer to return to ready state after 1 second
+                    this._stateTimer = setTimeout(() => {
+                        this.setAttribute('state', 'ready');
+                        button.disabled = false;
+                    }, 1000);
+
+                    return;
                 }
 
             } catch (error) {
-                // Handle error and return to ready state
+                // Handle error and show failure state
                 console.error('Button action failed:', error);
-                this.setAttribute('state', 'ready');
-            } finally {
-                // Return to ready state
-                this.setAttribute('state', 'ready');
-                // Ensure button is re-enabled
-                button.disabled = false;
+                this.setAttribute('state', 'failure');
+                
+                // Set timer to return to ready state after 1 second
+                this._stateTimer = setTimeout(() => {
+                    this.setAttribute('state', 'ready');
+                    button.disabled = false;
+                }, 1000);
             }
         });
     }
@@ -112,7 +150,7 @@ class SingleShotButton extends HTMLElement {
         const button = this.shadowRoot.querySelector('.single-shot-button');
         
         try {
-             // Remove all state classes
+            // Remove all state classes
             Object.values(this._states).forEach(stateConfig => {
                 button.classList.remove(stateConfig.class);
             });
@@ -126,9 +164,8 @@ class SingleShotButton extends HTMLElement {
             this.updateButtonText();
         }
         catch(err) {
-
+            
         }
-       
     }
 
     updateButtonText() {
@@ -137,7 +174,9 @@ class SingleShotButton extends HTMLElement {
         try {
             button.textContent = this._states[currentState].text;
         }
-        catch(err) {}
+        catch(err) {
+            
+        }
     }
 
     // Set custom click handler
@@ -147,10 +186,22 @@ class SingleShotButton extends HTMLElement {
 
     // Enable or disable the button and update its state
     enableButton(enable) {
+        // Clear any existing timers when enabling/disabling
+        if (this._stateTimer) {
+            clearTimeout(this._stateTimer);
+        }
+        
         const newState = enable ? 'ready' : 'disabled';
         this.setAttribute('state', newState);
         const button = this.shadowRoot.querySelector('.single-shot-button');
         button.disabled = !enable;
+    }
+
+    // Cleanup when element is removed
+    disconnectedCallback() {
+        if (this._stateTimer) {
+            clearTimeout(this._stateTimer);
+        }
     }
 }
 

@@ -143,12 +143,12 @@ class ConfigApp {
 var debug = false;
 
 async function sendSaveCommand() {
-    console.log("Attempting save...");
     if(gamepad) {
-        gamepad.save();
+        return gamepad.save();
     }
     else {
         console.log("No Gamepad Present");
+        return false;
     }
 }
 
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/gamepad-md.js',
+                path: './modules/user-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];

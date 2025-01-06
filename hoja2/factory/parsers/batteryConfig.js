@@ -2,29 +2,39 @@
 
 export default class Batteryconfig {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(8);
+    this.buffer = buffer || new Uint8Array(16);
   }
 
-  	/** @type {Float32} */
+  	/** @type {Uint8} */
+	get battery_config_version() {
+		return this.#_getUint8(0);
+	}
+
+	/** @type {Float32} */
 	get charge_level_percent() {
-		return this.#_getFloat32(0);
+		return this.#_getFloat32(1);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(4, 4);
+		return this.#_getUint8Array(5, 11);
 	}
 
 
 
-  	/** @param {Float32} value */
+  	/** @param {Uint8} value */
+	set battery_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Float32} value */
 	set charge_level_percent(value) {
-		this.#_setFloat32(0, value);
+		this.#_setFloat32(1, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(4, value);
+		this.#_setUint8Array(5, value);
 	}
 
 

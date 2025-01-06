@@ -50,6 +50,7 @@ function resetAllAnglesDefault() {
     populateAngleSelectors(outMaps);
     updateAnalogSelectorDefaults(outMaps);
     writeAngleMemBlock();
+    return true;
 }
 
 function mapsToStyleString(maps) {
@@ -154,8 +155,6 @@ function angleDistance(angle1, angle2) {
 }
 
 async function populateNearestAngle(capturedAngle) {
-    let anglePickers = mdContainer.querySelectorAll('angle-selector');
-
     // Find the index of the closest where the distance is non-zero
     let matchingIdx = 0;
     let lowestDistance = 360;
@@ -283,10 +282,10 @@ function exportAngles() {
 
         // Convert to JSON string
         writeToClipboard(JSON.stringify(exportObject, null, 2));
-        return;
+        return true;
     } catch (error) {
         console.error('Failed to export angles:', error);
-        return null; // Indicate failure gracefully
+        return false; // Indicate failure gracefully
     }
 }
 
@@ -335,8 +334,10 @@ async function importAngles(textLengthCap = 10000) {
         writeAngleMemBlock();
 
         console.log('Import successful.');
+        return true;
     } catch (error) {
         console.error('Failed to import angles:', error);
+        return false;
     }
 }
 
@@ -359,37 +360,26 @@ function getAnglemapsFromAngleSelectors() {
     return angleEntries;
 }
 
-async function waitForAngleData(timeout = 5000) {
-    const pollInterval = 50; // Poll every 50ms
-    let elapsedTime = 0;
-
-    // Poll until confirmation or timeout
-    while (watingForAngles) {
-      if (elapsedTime >= timeout) {
-        throw new Error("Timeout waiting for angles.");
-      }
-      await new Promise(resolve => setTimeout(resolve, pollInterval));
-      elapsedTime += pollInterval;
-    }
-  }
-
 async function captureAngleHandler() {
-    const anglePickers = mdContainer.querySelectorAll('angle-selector');
-    watingForAngles = true;
-
-    // WEBUSB_ID_CONFIG_COMMAND 4
     // CFG_BLOCK_ANALOG 2
     // ANALOG_CMD_CAPTURE_ANGLE 3
-    await gamepad.sendCommand(4, new Uint8Array([analogCfgBlockNumber, 3]));
+    let {status, data} = await gamepad.sendConfigCommand(analogCfgBlockNumber, 3);
 
-    await waitForAngleData();
+    if(status && data) {
+        // Create DataView from your Uint8Array
+        const view = new DataView(data.buffer);
+        capturedAngles.left     = view.getFloat32(0, true);
+        capturedAngles.right    = view.getFloat32(4, true);
 
-    if(selectedAxis==0) {
-        return capturedAngles.left;
+        if(selectedAxis==0) {
+            return capturedAngles.left;
+        }
+        else {
+            return capturedAngles.right;
+        }
     }
-    else {
-        return capturedAngles.right;
-    }
+
+    return null;
 }
 
 // Grab all the current config option values
@@ -430,33 +420,6 @@ async function writeAngleMemBlock() {
     }
 
     await gamepad.sendBlock(analogCfgBlockNumber);
-}
-
-// Command hook callback 
-function commandCallback(data) {
-    const commandBlock = data.getUint8(1);
-    const commandType = data.getUint8(2);
-    
-    if(commandBlock == analogCfgBlockNumber) {
-        // ANALOG_CMD_CALIBRATE_START
-        if(commandType == 1) {
-            console.log("Calibration Started");
-        }
-        // ANALOG_CMD_CALIBRATE_STOP
-        else if(commandType == 2) {
-            console.log("Calibration Stopped");
-        }
-        // ANALOG_CMD_CAPTURE_ANGLE 
-        else if(commandType == 3) {
-            console.log("Angle captured");
-
-            capturedAngles.left     = data.getFloat32(3, true);
-            capturedAngles.right    = data.getFloat32(7, true);
-
-            console.log(capturedAngles);
-            watingForAngles = false;
-        }
-    }
 }
 
 // Render the analog settings page
@@ -501,7 +464,9 @@ export function render(container) {
                     state="ready" 
                     ready-text="Angle Set" 
                     disabled-text="Angle Set"
-                    pending-text="Angle Set"
+                    pending-text="Setting..."
+                    success-text="Set Success"
+                    failure-text="Set Error"
                     tooltip="Quickly capture an angle and it will be assigned to the most similar angle."
                 ></single-shot-button>
             </div>
@@ -546,6 +511,8 @@ export function render(container) {
                     ready-text="Copy" 
                     disabled-text="Copy"
                     pending-text="Copy"
+                    success-text="Copied!"
+                    failure-text="Copy Error"
                     tooltip="Copy your Output/Distance\ndata as JSON"
                 ></single-shot-button>
 
@@ -555,6 +522,8 @@ export function render(container) {
                     ready-text="Paste" 
                     disabled-text="Paste"
                     pending-text="Paste"
+                    success-text="Pasted!"
+                    failure-text="Paste Error"
                     tooltip="Paste your Output/Distance data as JSON"
                 ></single-shot-button>
 
@@ -564,6 +533,8 @@ export function render(container) {
                     ready-text="Reset All" 
                     disabled-text="Reset All"
                     pending-text="Reset All"
+                    success-text="Reset!"
+                    failure-text="Reset Error"
                     tooltip="Reset all angles to an 8 angle setup"
                 ></single-shot-button>
             </div>
@@ -599,7 +570,12 @@ export function render(container) {
     const globalCaptureButton = container.querySelector('single-shot-button[id="global-angle-button"]');
     globalCaptureButton.setOnClick(async function () {
         let angle = await captureAngleHandler();
-        await populateNearestAngle(angle);
+
+        if(angle) {
+            await populateNearestAngle(angle);
+            return true;
+        }
+        else return false;
     });
 
     const scaleModeButton = container.querySelector('multi-position-button[id="scale-mode-selector"]');
@@ -616,27 +592,22 @@ export function render(container) {
 
     // Set calibration command handlers 
     const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
+
     calibrateButton.setOnHandler(async () => {
-        // WEBUSB_ID_CONFIG_COMMAND
-        let reportId = 4;
         // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_START
-        let commandData = new Uint8Array([2, 1]);
-        await gamepad.sendCommand(reportId, commandData);
-        return true;
+        let {status, data} = await gamepad.sendConfigCommand(2, 1);
+        return status;
     });
 
     calibrateButton.setOffHandler(async () => {
-        // WEBUSB_ID_CONFIG_COMMAND
-        let reportId = 4;
         // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_STOP
-        let commandData = new Uint8Array([2, 2]);
-        await gamepad.sendCommand(reportId, commandData);
+        let {status, data} = await gamepad.sendConfigCommand(2, 2);
 
         // Reload our mem block
         await gamepad.requestBlock(analogCfgBlockNumber);
         console.log(gamepad.analog_cfg.l_angle_maps);
         console.log(gamepad.analog_cfg.l_packed_distances);
-        return true;
+        return status;
     });
 
     enableTooltips(container);
@@ -662,8 +633,6 @@ export function render(container) {
 
         analogVisualizer.setAnalogInput(x, y);
     });
-
-    gamepad.setCommandHook(commandCallback);
 
     mdContainer = container;
 }

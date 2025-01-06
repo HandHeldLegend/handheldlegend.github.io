@@ -5,26 +5,36 @@ export default class Userconfig {
     this.buffer = buffer || new Uint8Array(64);
   }
 
-  	/** @type {Uint8Array} */
+  	/** @type {Uint8} */
+	get user_config_version() {
+		return this.#_getUint8(0);
+	}
+
+	/** @type {Uint8Array} */
 	get user_name() {
-		return this.#_getUint8Array(0, 24);
+		return this.#_getUint8Array(1, 24);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(24, 40);
+		return this.#_getUint8Array(25, 39);
 	}
 
 
 
-  	/** @param {Uint8Array} value */
+  	/** @param {Uint8} value */
+	set user_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint8Array} value */
 	set user_name(value) {
-		this.#_setUint8Array(0, value);
+		this.#_setUint8Array(1, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(24, value);
+		this.#_setUint8Array(25, value);
 	}
 
 

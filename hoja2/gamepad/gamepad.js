@@ -74,16 +74,18 @@ class HojaGamepad {
     currentWriteIdx: 0,
   };
 
-  #commandMemoryState = {
-    currentCommand: 0,
-    commandConfirmed: false,
+  #cfgCommandState = {
+    cfgBlockUsed: -1,       // Which command block we sent to
+    cfbCmdSent: -1,         // Which command we sent to the block
+    cfgReturnData: null,    // Data that we can return
+    cfgSentSuccess: false,  // If we have received our command confirmation yet
+    cfgReturnStatus: false, // Value we return which is the status of our sent command
   };
 
   // Event hooks
   #_connectHook = null;
   #_disconnectHook = null;
   #_inputReportHook = null;
-  #_commandHook = null;
 
   // Private constructor to enforce singleton
   constructor() {
@@ -164,8 +166,12 @@ class HojaGamepad {
 
   // Commit settings blocks on the gamepad
   async save() {
-    // WEBUSB_ID_SAVE_SETTINGS is 5
-    await this.sendCommand(5, new Uint8Array([0]));
+    // CFG_BLOCK_GAMEPAD(0) GAMEPAD_CMD_SAVE_ALL(255)
+    console.log("Attempting save...");
+    let {status, data} = await this.sendConfigCommand(0, 0xFF);
+    if(status) console.log("Save success.");
+    else console.log("Save failed.");
+    return status;
   }
 
   // Internal polling method
@@ -231,7 +237,6 @@ class HojaGamepad {
   // Parse incoming USB report
   #parseReport(data) {
     switch (data.getUint8(0)) {
-
       // WEBUSB_ID_READ_CONFIG_BLOCK
       case 1:
         this.#blockParser(data);
@@ -257,15 +262,25 @@ class HojaGamepad {
 
       // WEBUSB_ID_CONFIG_COMMAND
       case 4:
-        if( data.getUint8(1) == this.#commandMemoryState.currentCommand) {
-          console.log("Command confirmed.");
-          this.#commandMemoryState.commandConfirmed = true;
+        {
+          let block = data.getUint8(1);
+          let command = data.getUint8(2);
+          let success = data.getUint8(3);
+          let gotData = (data.byteLength > 4) ? true : false;
 
-          try {
-            this.#_commandHook(data);
-          } catch (error) { 
-            console.error("Command report hook missing or unassigned:", error); 
-            this.#_commandHook = null;
+          if(
+            block   == this.#cfgCommandState.cfgBlockUsed &&
+            command == this.#cfgCommandState.cfbCmdSent
+          ) {
+
+            this.#cfgCommandState.cfgReturnStatus = success;
+
+            if(success && gotData) {
+              let newData = new Uint8Array(data.buffer.slice(4));
+              this.#cfgCommandState.cfgReturnData = newData; // Set returnable data
+            }
+
+            this.#cfgCommandState.cfgSentSuccess = true;
           }
         }
         break;
@@ -317,10 +332,6 @@ class HojaGamepad {
   setReportHook(callback) {
     this.#_inputReportHook = callback;
   }
-  
-  setCommandHook(callback) {
-    this.#_commandHook = callback;
-  }
 
   async getAllBlocks() {
     console.log("Starting block read...");
@@ -339,7 +350,7 @@ class HojaGamepad {
     this.#blockMemoryState.isDoneReading = false; // Reset done state for this block
 
     // Send request for the block
-    await this.sendCommand(0x01, new Uint8Array([blockIndex]));
+    await this.sendReport(0x01, new Uint8Array([blockIndex]));
 
     // Wait for block parsing to finish (using a confirmation signal)
     await this.waitForReadConfirmation();
@@ -368,7 +379,7 @@ class HojaGamepad {
     this.#blockMemoryState.isDoneReading = false; // Reset done state for this block
 
     // Send request for the block
-    await this.sendCommand(0x03, new Uint8Array([blockIndex]));
+    await this.sendReport(0x03, new Uint8Array([blockIndex]));
 
     // Wait for block parsing to finish (using a confirmation signal)
     await this.waitForReadConfirmation();
@@ -464,46 +475,74 @@ class HojaGamepad {
     }
   }
 
+  async sendReport(reportId, data) {
+    try {
+      if (!this.#isConnected) {
+        throw new Error("Can't send report, device not connected!");
+      }
+
+      // Create a Uint8Array with the first byte as the command and the rest as data
+      const payload = new Uint8Array([reportId, ...data]);
+
+      this.#device.transferOut(this.#deviceEp, payload);
+    } catch (error) {
+      console.error('Failed to send report.', error);
+      return false;
+    }
+  }  
+
   async waitForCommandConfirmation(timeout = 5000) {
     const pollInterval = 50; // Poll every 50ms
     let elapsedTime = 0;
 
     // Poll until confirmation or timeout
-    while (!this.#commandMemoryState.commandConfirmed) {
+    while (!this.#cfgCommandState.cfgSentSuccess) {
       if (elapsedTime >= timeout) {
-        throw new Error("Timeout waiting for block confirmation.");
+        // Set config command state
+        this.#cfgCommandState.cfgBlockUsed    = -1;
+        this.#cfgCommandState.cfbCmdSent      = -1;
+        this.#cfgCommandState.cfgReturnData   = null;
+        this.#cfgCommandState.cfgReturnStatus = false;
+        this.#cfgCommandState.cfgSentSuccess  = false;
+        return {
+          status: false,
+          data:   null
+        };
       }
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       elapsedTime += pollInterval;
     }
+
+    // Return the status and data for our command confirmation
+    return {
+      status: this.#cfgCommandState.cfgReturnStatus,
+      data:   this.#cfgCommandState.cfgReturnData
+    };
   }
 
-  async sendCommand(reportId, commandData) {
+  async sendConfigCommand(block, command) {
     try {
       if (!this.#isConnected) {
         throw new Error("Can't send command, device not connected!");
       }
 
-      let commandThisTime = false;
-      // WEBUSB_ID_CONFIG_COMMAND
-      if(reportId == 4) {
-        this.#commandMemoryState.currentCommand = commandData[0];
-        this.#commandMemoryState.commandConfirmed = false;
-        commandThisTime = true;
-      }
+      // Set config command state
+      this.#cfgCommandState.cfgBlockUsed    = block;
+      this.#cfgCommandState.cfbCmdSent      = command;
+      this.#cfgCommandState.cfgReturnStatus = false;
+      this.#cfgCommandState.cfgSentSuccess  = false;
 
       // Create a Uint8Array with the first byte as the command and the rest as data
-      const payload = new Uint8Array([reportId, ...commandData]);
-      this.#device.transferOut(this.#deviceEp, payload);
+      
+      let payload = new Uint8Array([block, command]);
+      // WEBUSB_ID_CONFIG_COMMAND = 4
+      await this.sendReport(4, payload);
 
-      if(commandThisTime)
-      {
-        commandThisTime = false;
-        await this.waitForCommandConfirmation();
-      }
+      return await this.waitForCommandConfirmation();
 
     } catch (error) {
       console.error('Failed to send command.', error);
+      return false;
     }
   }
 }

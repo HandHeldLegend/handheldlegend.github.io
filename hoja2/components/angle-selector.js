@@ -147,13 +147,13 @@ class AngleSelector extends HTMLElement {
     }
 
     #setInAngle(value) {
-        this._inAngleInput.value = value;
+        this._inAngleInput.value = parseFloat(value).toFixed(3);
         this.setAttribute('in-angle', value);
         this.#emitChangeEvent();
     }
 
     #setOutAngle(value) {
-        this._outAngleInput.value = value;
+        this._outAngleInput.value = parseFloat(value).toFixed(3);
         this.setAttribute('out-angle', value);
         this.#emitChangeEvent();
     }
@@ -180,13 +180,12 @@ class AngleSelector extends HTMLElement {
         }
         
         if(output != null) {
-            this._outAngleInput.value = output;
+            this._outAngleInput.value = parseFloat(output).toFixed(3);
             this.setAttribute('out-angle', output);
         }
 
         if(input != null) {
-            console.log(input);
-            this._inAngleInput.value = input;
+            this._inAngleInput.value = parseFloat(input).toFixed(3);
             this.setAttribute('in-angle', input);
         }
 
@@ -221,8 +220,8 @@ class AngleSelector extends HTMLElement {
 
     render(css) {
         this._idx = parseInt(this.getAttribute('idx') || "0");
-        const inAngle = parseFloat(this.getAttribute('in-angle') || "0");
-        const outAngle = parseFloat(this.getAttribute('out-angle') || "0");
+        const inAngle = parseFloat(this.getAttribute('in-angle') || "0").toFixed(3);
+        const outAngle = parseFloat(this.getAttribute('out-angle') || "0").toFixed(3);
         const distance = parseInt(this.getAttribute('distance') || "0");
 
         this.shadowRoot.innerHTML = `

@@ -503,8 +503,8 @@ function resetProfileToDefault() {
     }
     softReloadRemapValues();
     writeRemapMemBlock();
+    return true;
 }
-
 
 export function render(container) {
     currentContainer = container;
@@ -518,6 +518,8 @@ export function render(container) {
                     ready-text="Reset Profile" 
                     disabled-text="Reset Profile"
                     pending-text="Reset Profile"
+                    success-text="Reset!"
+                    failure-text="Reset Error"
                     tooltip="Reset this input profile to defaults."
                 ></single-shot-button>
             </div>

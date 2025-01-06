@@ -6,35 +6,45 @@ export default class Hapticconfig {
   }
 
   	/** @type {Uint8} */
-	get haptic_strength() {
+	get haptic_config_version() {
 		return this.#_getUint8(0);
 	}
 
 	/** @type {Uint8} */
-	get haptic_triggers() {
+	get haptic_strength() {
 		return this.#_getUint8(1);
+	}
+
+	/** @type {Uint8} */
+	get haptic_triggers() {
+		return this.#_getUint8(2);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(2, 6);
+		return this.#_getUint8Array(3, 5);
 	}
 
 
 
   	/** @param {Uint8} value */
-	set haptic_strength(value) {
+	set haptic_config_version(value) {
 		this.#_setUint8(0, value);
 	}
 
 	/** @param {Uint8} value */
-	set haptic_triggers(value) {
+	set haptic_strength(value) {
 		this.#_setUint8(1, value);
+	}
+
+	/** @param {Uint8} value */
+	set haptic_triggers(value) {
+		this.#_setUint8(2, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(2, value);
+		this.#_setUint8Array(3, value);
 	}
 
 
