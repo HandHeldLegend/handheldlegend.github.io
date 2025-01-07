@@ -140,7 +140,7 @@ class ConfigApp {
     }
 }
 
-var debug = false;
+var debug = true;
 
 async function sendSaveCommand() {
     if(gamepad) {

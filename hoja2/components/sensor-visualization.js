@@ -245,7 +245,7 @@ class SensorVisualization extends HTMLElement {
         // Add lights
         const ambientLight = new THREE.AmbientLight(0x404040);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 3, 10);
+        directionalLight.position.set(1, 2, 10);
         this._scene.add(ambientLight);
         this._scene.add(directionalLight);
     }
