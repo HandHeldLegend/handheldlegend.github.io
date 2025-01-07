@@ -74,7 +74,6 @@ export function render(container) {
     }
 
     container.innerHTML = `
-            <h1>User Settings</h1>
             <h2>Username</h2>
             ${userNameHTML}
     `;

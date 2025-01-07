@@ -85,7 +85,6 @@ export function render(container) {
     }
 
     container.innerHTML = `
-            <h1>RGB Settings</h1>
             <h2>Brightness</h2>
             <number-selector 
                 id="brightness-slider" 

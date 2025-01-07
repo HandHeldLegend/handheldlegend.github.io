@@ -140,8 +140,6 @@ export function render(container) {
     if(!gamecubeEnabled) gameCubeOnlySectionHTML = "";
 
     container.innerHTML = `
-            <h1>Trigger Settings</h1>
-
             ${enabledOnlyAnalogSectionHTML}
             
             <h2 title="Test">Left Trigger</h2>

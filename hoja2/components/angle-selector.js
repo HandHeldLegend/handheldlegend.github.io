@@ -19,6 +19,8 @@ class AngleSelector extends HTMLElement {
         this._inputDefault  = 0;
         this._outputDefault = 0;
         this._distanceDefault = 0;
+
+        this._fixedValue = 2;
     }
 
     /**
@@ -34,7 +36,11 @@ class AngleSelector extends HTMLElement {
     async connectedCallback() {
         try {
             const cssResponse = await fetch('./components/angle-selector.css');
-            const css = await cssResponse.text();
+            const cssHostResponse = await fetch('./components/host-template.css');
+            const cssHost = await cssHostResponse.text();
+            
+            const css = cssHost + await cssResponse.text();
+
             this.render(css);
             this.#setupReferences();
             this.#setupEventListeners();
@@ -147,13 +153,13 @@ class AngleSelector extends HTMLElement {
     }
 
     #setInAngle(value) {
-        this._inAngleInput.value = parseFloat(value).toFixed(3);
+        this._inAngleInput.value = parseFloat(value).toFixed(this._fixedValue);
         this.setAttribute('in-angle', value);
         this.#emitChangeEvent();
     }
 
     #setOutAngle(value) {
-        this._outAngleInput.value = parseFloat(value).toFixed(3);
+        this._outAngleInput.value = parseFloat(value).toFixed(this._fixedValue);
         this.setAttribute('out-angle', value);
         this.#emitChangeEvent();
     }
@@ -180,12 +186,12 @@ class AngleSelector extends HTMLElement {
         }
         
         if(output != null) {
-            this._outAngleInput.value = parseFloat(output).toFixed(3);
+            this._outAngleInput.value = parseFloat(output).toFixed(this._fixedValue);
             this.setAttribute('out-angle', output);
         }
 
         if(input != null) {
-            this._inAngleInput.value = parseFloat(input).toFixed(3);
+            this._inAngleInput.value = parseFloat(input).toFixed(this._fixedValue);
             this.setAttribute('in-angle', input);
         }
 
@@ -220,8 +226,8 @@ class AngleSelector extends HTMLElement {
 
     render(css) {
         this._idx = parseInt(this.getAttribute('idx') || "0");
-        const inAngle = parseFloat(this.getAttribute('in-angle') || "0").toFixed(3);
-        const outAngle = parseFloat(this.getAttribute('out-angle') || "0").toFixed(3);
+        const inAngle = parseFloat(this.getAttribute('in-angle') || "0").toFixed(this._fixedValue);
+        const outAngle = parseFloat(this.getAttribute('out-angle') || "0").toFixed(this._fixedValue);
         const distance = parseInt(this.getAttribute('distance') || "0");
 
         this.shadowRoot.innerHTML = `

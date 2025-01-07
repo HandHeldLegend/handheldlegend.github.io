@@ -4,8 +4,8 @@
     border-radius: var(--border-radius-md);
     display: flex;
     align-items: center;
-    width: 90%;
-    max-width: 550px;
+    width: var(--config-box-width-min);
+    max-width: var(--config-box-width-max);
     overflow: hidden;
 }
 
@@ -19,6 +19,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2),
+              inset 0 0 40px rgba(0, 0, 0, 0.15),
+              inset 0 0 60px rgba(0, 0, 0, 0.1),
+              inset 8px 8px 15px rgba(0, 0, 0, 0.3),
+              inset -8px -8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .visualization-canvas {

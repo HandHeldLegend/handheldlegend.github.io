@@ -447,7 +447,6 @@ export function render(container) {
     let polyVerticesString = mapsToStyleString(angleConfigs);
 
     container.innerHTML = `
-            <h1>Joystick Settings</h1>
             <h2>Calibrate</h2>
             <p>To calibrate both sticks, press Start. Move both analog sticks in a full circle slowly. Press Stop to complete calibration.</p>
             <div class="app-row">

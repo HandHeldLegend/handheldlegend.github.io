@@ -23,8 +23,8 @@
     /* Config Box Elements */
     --config-box-height: 40px;
     --config-box-divider-color: #919191;
-    --config-box-max-width-small: 85%;
-    --config-box-max-width-medium: 95%;
+    --config-box-width-min: 95%;
+    --config-box-width-max: 550px;
 
     --box-shadow-inset: inset 4px 4px 6px rgba(0, 0, 0, 0.192), inset -4px -4px 6px rgba(0, 0, 0, 0.192);
     --box-shadow-open: inset 0px 4px 6px rgba(0, 0, 0, 0.192), inset 0px -4px 6px rgba(0, 0, 0, 0.192);
@@ -163,7 +163,7 @@ body {
 /* Module header stays fixed at the top */
 #module-header {
     box-shadow: 0;
-    background-color: grey;
+    background-color: rgb(196, 196, 196);
     display: flex;
     flex-shrink: 0; /* Prevent shrinking */
     align-items: center;
@@ -176,8 +176,28 @@ body {
     transition: box-shadow 0.25s ease;
 }
 
+#module-header h1 {
+    display: flex;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+}
+
 #module-header[shadow="true"] {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.575);
+}
+
+/* Back button styling */
+#back-button {
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: var(--transition-quick);
+    font-weight: bold;
+    font-size: 16px;
+    min-width: 70px;
+    height: var(--config-box-height);
 }
 
 /* Module content becomes scrollable */
@@ -197,17 +217,6 @@ body {
     gap: 10px;
     align-items: center;
     flex-direction: column;
-}
-
-/* Back button styling */
-#back-button {
-    display: flex;
-    align-items: center;
-    height: 25px;
-    margin: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
 }
 
 /* Visible state for module container */
@@ -318,22 +327,6 @@ h1, h2, h3 {
 
 .tooltip.show {
     opacity: 1;
-}
-
-number-selector,
-angle-selector,
-multi-position-button, 
-group-rgb-picker, 
-remap-selector,
-mac-address-selector {
-    background-color: var(--color-background-light);
-    height: var(--config-box-height);
-    border-radius: var(--border-radius-md);
-    display: flex;
-    align-items: center;
-    width: 90%;
-    max-width: 550px;
-    overflow: hidden;
 }
 
 remap-selector-container {

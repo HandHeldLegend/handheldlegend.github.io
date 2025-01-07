@@ -12,7 +12,9 @@ class MacAddressSelector extends HTMLElement {
     async connectedCallback() {
         // Load the component-specific CSS
         const csstext = await fetch('./components/mac-address-selector.css');
-        const css = await csstext.text();
+        const cssHostResponse = await fetch('./components/host-template.css');
+        const cssHost = await cssHostResponse.text();
+        const css = cssHost + await csstext.text();
 
         this.render(css);
         this.setupEventListeners();

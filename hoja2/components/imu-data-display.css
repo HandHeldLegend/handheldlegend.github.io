@@ -4,15 +4,14 @@
     border-radius: var(--border-radius-md);
     display: flex;
     align-items: center;
-    width: 90%;
-    max-width: 550px;
-    padding: 5px;
+    width: var(--config-box-width-min);
+    max-width: var(--config-box-width-max);
     overflow: hidden;
 }
 
 .imu-display {
     align-content: center;
-    margin: 5px;
+    margin: 8px;
     width: 100%;
     height: 100%;
 }

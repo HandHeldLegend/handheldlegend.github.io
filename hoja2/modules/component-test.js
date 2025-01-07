@@ -14,7 +14,6 @@ import { globalState } from '../app.js';
 
 export function render(container) {
     container.innerHTML = `
-        <h1>Display Settings</h1>
         <div class="display-settings">
             <number-selector 
                 label="Brightness" 

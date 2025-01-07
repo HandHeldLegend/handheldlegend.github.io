@@ -137,7 +137,6 @@ export function render(container) {
     let hexColorBody = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
 
     container.innerHTML = `
-            <h1>Motion Settings</h1>
             <h2>Calibration
                 <div class="header-tooltip" tooltip="Start IMU calibration. Place controller on a flat, solid surface and press this button to calibrate.">?</div>
             </h2>
@@ -159,7 +158,7 @@ export function render(container) {
                 scale="3"
                 rotation-offset="0,0,0"
                 color="#${hexColorBody}"
-                reflectivity="0.5"
+                reflectivity="0.16"
             ></sensor-visualization>
             <imu-data-display></imu-data-display>
 

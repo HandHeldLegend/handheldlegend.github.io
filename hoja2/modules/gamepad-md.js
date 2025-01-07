@@ -55,7 +55,6 @@ export function render(container) {
     }
 
     container.innerHTML = `
-            <h1>Gamepad Settings</h1>
             <h2>Switch USB Mac Address
                 <div class="header-tooltip" tooltip="This is the MAC address only used for 
                 Switch mode when connected via USB.">?</div>

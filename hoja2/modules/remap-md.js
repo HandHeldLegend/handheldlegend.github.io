@@ -510,7 +510,6 @@ export function render(container) {
     currentContainer = container;
 
     container.innerHTML = `
-            <h1>Remap Settings</h1>
             <div class="app-row">
                 <single-shot-button 
                     id="reset-remap-button" 

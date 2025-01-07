@@ -12,10 +12,11 @@ class ConfigApp {
 
     #appIcons = [];
 
-    constructor() {
+    constructor(appTitleHeader) {
 
         this.appGridContainer = document.getElementById('app-grid-container');
         this.appGrid = document.getElementById('app-grid');
+        this._appTitleHeader = appTitleHeader;
 
         // Contain our scrollable module content container
         this.moduleScrollable = document.getElementById('module-content-container');
@@ -67,7 +68,7 @@ class ConfigApp {
             if(icon.getAttribute("enabled") == "true")
             {
                 // Open module
-                this.openmoduleView(module)
+                this.openmoduleView(module, module.name)
             }
                 
         });
@@ -117,7 +118,7 @@ class ConfigApp {
         }
     }
 
-    async openmoduleView(module) {
+    async openmoduleView(module, title) {
         // Reset scrollable position
         this.moduleScrollable.scrollTo(0,0);
 
@@ -129,6 +130,8 @@ class ConfigApp {
 
         // Render module content
         if (settingsModule.render) {
+            if(this._appTitleHeader)
+                this._appTitleHeader.innerHTML = title;
             settingsModule.render(this.moduleContent);
         }
 
@@ -140,7 +143,7 @@ class ConfigApp {
     }
 }
 
-var debug = true;
+var debug = false;
 
 async function sendSaveCommand() {
     if(gamepad) {
@@ -154,10 +157,13 @@ async function sendSaveCommand() {
 
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.configApp = new ConfigApp();
+    
 
     const connectButton = document.getElementById('connect-button');
     const saveButton = document.getElementById('save-button');
+    const appTitleHeader = document.getElementById('app-title');
+
+    window.configApp = new ConfigApp(appTitleHeader);
 
     saveButton.setOnClick(sendSaveCommand);
 
@@ -171,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 color: '#3498db'
             }];
 
-        window.configApp.openmoduleView(debugModule[0]);
+        window.configApp.openmoduleView(debugModule[0], "Debug");
     }
 
     enableTooltips();

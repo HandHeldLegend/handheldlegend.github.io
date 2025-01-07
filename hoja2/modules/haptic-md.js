@@ -12,7 +12,6 @@ import { enableTooltips } from '../tooltips.js';
 
 export function render(container) {
     container.innerHTML = `
-            <h1>RGB Settings</h1>
             <number-selector 
                 label="Brightness" 
                 type="integer" 
@@ -82,37 +81,4 @@ export function render(container) {
                 pending-text="Saving..."
             ></single-shot-button>
     `;
-
-    // Optional: Add event listeners to specific number selectors
-    const brightnessSelector = container.querySelector('number-selector[label="Brightness"]');
-    brightnessSelector.addEventListener('change', (e) => {
-        console.log(`Brightness changed to: ${e.detail.value}`);
-    });
-
-
-
-    const startButton = document.getElementById("component-test-tristate");
-
-    // Optional async handlers for connection/disconnection
-    startButton.setOnClickOff(async () => {
-        // Simulate an async connection process
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Connected!');
-    });
-
-    startButton.setOnClickOn(async () => {
-        // Simulate an async disconnection process
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        console.log('Disconnected!');
-    });
-
-    const actionButton = document.getElementById('component-test-singleshot');
-
-    // Set an async handler for the button
-    actionButton.setOnClick(async () => {
-        console.log("action started");
-        // Simulate an async operation
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log('Action completed!');
-    });
 }

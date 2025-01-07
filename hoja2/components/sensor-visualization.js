@@ -7,7 +7,7 @@ class SensorVisualization extends HTMLElement {
         this._camera = null;
         this._renderer = null;
         this._model = null;
-        this._lastData = { 
+        this._lastData = {
             gyro: { x: 0, y: 0, z: 0 },
             accel: { x: 0, y: 0, z: 0 }
         };
@@ -45,7 +45,7 @@ class SensorVisualization extends HTMLElement {
 
         //const threeScript = await fetch('./libs/three.min.js');
         //const stlScript = await fetch('./libs/STLLoader.js');
-        
+
         await this.loadThreeJS();
         this.render(css);
         await this.setupScene();
@@ -55,7 +55,7 @@ class SensorVisualization extends HTMLElement {
 
     disconnectedCallback() {
         this.stopAnimation();
-        
+
         // Properly dispose of Three.js resources
         if (this._scene) {
             // Dispose of materials and geometries
@@ -73,19 +73,19 @@ class SensorVisualization extends HTMLElement {
                     }
                 }
             });
-    
+
             // Clear the scene
-            while(this._scene.children.length > 0) { 
+            while (this._scene.children.length > 0) {
                 this._scene.remove(this._scene.children[0]);
             }
         }
-    
+
         // Dispose of the renderer
         if (this._renderer) {
             this._renderer.dispose();
             this._renderer = null;
         }
-    
+
         // Clear references
         this._scene = null;
         this._camera = null;
@@ -194,9 +194,9 @@ class SensorVisualization extends HTMLElement {
 
     async setupScene() {
         const container = this.shadowRoot.querySelector('.visualization-canvas');
-        
+
         this._scene = new THREE.Scene();
-        
+
         //this._camera = new THREE.PerspectiveCamera(
         //    75,
         //    container.clientWidth / container.clientHeight,
@@ -229,7 +229,7 @@ class SensorVisualization extends HTMLElement {
         const modelPath = this.getModelPath();
         const scale = this.getScale();
         this._model = await this.loadModel(modelPath, scale);
-        
+
         if (!this._model) {
             this._model = this.createFallbackCube();
         }
@@ -243,11 +243,29 @@ class SensorVisualization extends HTMLElement {
         this._scene.add(this._model);
 
         // Add lights
-        const ambientLight = new THREE.AmbientLight(0x404040);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 2, 10);
+        // Brighter ambient light for better base visibility
+        const ambientLight = new THREE.AmbientLight(0x666666);
+
+        // Main directional light from front
+        const frontLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        frontLight.position.set(0, 0, 10);
+
+        // Secondary lights for better coverage during rotation
+        const leftLight = new THREE.DirectionalLight(0xffffff, 1);
+        leftLight.position.set(-8, 0, 8);
+
+        const rightLight = new THREE.DirectionalLight(0xffffff, 1);
+        rightLight.position.set(8, 0, 8);
+
+        const topLight = new THREE.DirectionalLight(0xffffff, 1);
+        topLight.position.set(0, 8, 8);
+
+        // Add all lights to scene
         this._scene.add(ambientLight);
-        this._scene.add(directionalLight);
+        this._scene.add(frontLight);
+        this._scene.add(leftLight);
+        this._scene.add(rightLight);
+        this._scene.add(topLight);
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
@@ -292,6 +310,7 @@ class SensorVisualization extends HTMLElement {
 
     handleResize() {
         // In your resize handler:
+        const container = this.shadowRoot.querySelector('.visualization-canvas');
         const aspect = container.clientWidth / container.clientHeight;
         const frustumSize = 10;
 
@@ -315,14 +334,14 @@ class SensorVisualization extends HTMLElement {
 
     animate() {
         if (!this._isAnimating) return;
-    
+
         requestAnimationFrame(this.animate.bind(this));
-        
+
         const offset = this.getRotationOffset();
-        
+
         // Add sensitivity multiplier (0.5 = half as sensitive, 0.25 = quarter as sensitive)
-        const sensitivityMultiplier = 0.25; 
-        
+        const sensitivityMultiplier = 0.25;
+
         // Apply smooth rotation based on scaled gyro data
         this._model.rotation.x = THREE.MathUtils.lerp(
             this._model.rotation.x,
@@ -344,20 +363,20 @@ class SensorVisualization extends HTMLElement {
         this._lastData.gyro.x = THREE.MathUtils.lerp(this._lastData.gyro.x, 0, this._returnSpeed);
         this._lastData.gyro.y = THREE.MathUtils.lerp(this._lastData.gyro.y, 0, this._returnSpeed);
         this._lastData.gyro.z = THREE.MathUtils.lerp(this._lastData.gyro.z, 0, this._returnSpeed);
-    
+
         this._renderer.render(this._scene, this._camera);
     }
 
     updateSensorData(buffer) {
         if (!buffer) return;
-        
+
         const view = new DataView(buffer);
         const gyroScale = 70.0; // LSM6DSR scale factor for ±2000dps in mdps
         const accelScale = 0.061; // LSM6DSR scale factor for ±2g in mg
 
         // Update gyroscope data (first 6 bytes)
         this._lastData.gyro = {
-            x: view.getInt16(0, true) * gyroScale / 1000, // Convert to dps
+            x: -view.getInt16(0, true) * gyroScale / 1000, // Convert to dps
             y: view.getInt16(2, true) * gyroScale / 1000,
             z: view.getInt16(4, true) * gyroScale / 1000
         };
