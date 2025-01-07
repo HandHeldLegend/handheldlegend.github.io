@@ -42,6 +42,9 @@ class SensorVisualization extends HTMLElement {
     async connectedCallback() {
         const cssText = await fetch('./components/sensor-visualization.css');
         const css = await cssText.text();
+
+        //const threeScript = await fetch('./libs/three.min.js');
+        //const stlScript = await fetch('./libs/STLLoader.js');
         
         await this.loadThreeJS();
         this.render(css);
@@ -90,7 +93,7 @@ class SensorVisualization extends HTMLElement {
     }
 
     async loadThreeJS() {
-        // First load Three.js core
+        // First load Three.js core from CDN
         await new Promise((resolve, reject) => {
             if (window.THREE) {
                 resolve();
@@ -98,9 +101,14 @@ class SensorVisualization extends HTMLElement {
             }
 
             const script = document.createElement('script');
-            script.src = '/libs/three.min.js';
+            // Use absolute path - adjust these URLs to match your server's structure
+            // Assuming scripts are in a 'libs' directory relative to where this component is served
+            script.src = '../libs/three.min.js';
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load Three.js'));
+            script.onerror = (e) => {
+                console.error('Failed to load Three.js:', e);
+                reject(new Error('Failed to load Three.js'));
+            };
             document.head.appendChild(script);
         });
 
@@ -112,9 +120,13 @@ class SensorVisualization extends HTMLElement {
             }
 
             const script = document.createElement('script');
-            script.src = '/libs/STLLoader.js';
+            // Use absolute path
+            script.src = '../libs/STLLoader.js';
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error('Failed to load STLLoader'));
+            script.onerror = (e) => {
+                console.error('Failed to load STLLoader:', e);
+                reject(new Error('Failed to load STLLoader'));
+            };
             document.head.appendChild(script);
         });
     }
