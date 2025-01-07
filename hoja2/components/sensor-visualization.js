@@ -103,7 +103,7 @@ class SensorVisualization extends HTMLElement {
             const script = document.createElement('script');
             // Use absolute path - adjust these URLs to match your server's structure
             // Assuming scripts are in a 'libs' directory relative to where this component is served
-            script.src = '../libs/three.min.js';
+            script.src = './libs/three.min.js';
             script.onload = () => resolve();
             script.onerror = (e) => {
                 console.error('Failed to load Three.js:', e);
@@ -121,7 +121,7 @@ class SensorVisualization extends HTMLElement {
 
             const script = document.createElement('script');
             // Use absolute path
-            script.src = '../libs/STLLoader.js';
+            script.src = './libs/STLLoader.js';
             script.onload = () => resolve();
             script.onerror = (e) => {
                 console.error('Failed to load STLLoader:', e);
