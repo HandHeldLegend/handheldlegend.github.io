@@ -19,7 +19,13 @@
     background-color: var(--color-button-on);
 }
 .tristate-button.state-off:hover {
-    background-color: var(--color-button-on-hover);
+    background-color: var(--color-button-on);
+}
+
+@media (hover: hover) {
+    .tristate-button.state-off:hover {
+        background: var(--color-button-on-hover);
+    }
 }
 
 
@@ -34,7 +40,13 @@
     background-color: var(--color-button-off);
 }
 .tristate-button.state-on:hover {
-    background-color: var(--color-button-off-hover);
+    background-color: var(--color-button-off);
+}
+
+@media (hover: hover) {
+    .tristate-button.state-on:hover {
+        background: var(--color-button-off-hover);
+    }
 }
 
 .tristate-button:disabled, .tristate-button:disabled:hover {

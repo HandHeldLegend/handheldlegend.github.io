@@ -18,7 +18,13 @@
     background-color: var(--color-button-on);
 }
 .single-shot-button.state-ready:hover {
-    background-color: var(--color-button-on-hover);
+    background-color: var(--color-button-on);
+}
+
+@media (hover: hover) {
+    .single-shot-button.state-ready:hover {
+        background-color: var(--color-button-on-hover);
+    }
 }
 
 .single-shot-button.state-pending {

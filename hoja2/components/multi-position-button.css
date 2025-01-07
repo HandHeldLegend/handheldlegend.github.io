@@ -16,7 +16,13 @@
 }
 
 .button-item:hover {
-    background: var(--color-button-off-hover);
+    background: var(--color-button-off);
+}
+
+@media (hover: hover) {
+    .button-item:hover {
+        background: var(--color-button-off-hover);
+    }
 }
 
 .button-item.active {

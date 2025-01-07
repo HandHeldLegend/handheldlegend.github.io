@@ -61,7 +61,13 @@
 
 .button-capture:hover
 {
-    background-color: var(--color-button-on-hover);
+    background-color: var(--color-button-on);
+}
+
+@media (hover: hover) {
+    .button-capture:hover {
+        background: var(--color-button-on-hover);
+    }
 }
 
 .button-reset:hover
@@ -72,8 +78,15 @@
 
 .button-clear:hover
 {
-    background: var(--color-button-off-hover);
+    background: var(--color-button-off);
 }
+
+@media (hover: hover) {
+    .button-clear:hover {
+        background: var(--color-button-off-hover);
+    }
+}
+
 
 .even-container {
     padding-left: 8px;
