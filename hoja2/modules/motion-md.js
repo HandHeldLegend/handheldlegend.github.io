@@ -155,7 +155,7 @@ export function render(container) {
             </div>
             <h2>Visualizer</h2>
             <sensor-visualization
-                model="../assets/3d/supergamepad.stl"
+                model="./assets/3d/supergamepad.stl"
                 scale="3"
                 rotation-offset="0,0,0"
                 color="#${hexColorBody}"
