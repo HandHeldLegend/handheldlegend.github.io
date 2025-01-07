@@ -520,7 +520,7 @@ class HojaGamepad {
     };
   }
 
-  async sendConfigCommand(block, command) {
+  async sendConfigCommand(block, command, timeout=null) {
     try {
       if (!this.#isConnected) {
         throw new Error("Can't send command, device not connected!");
@@ -538,7 +538,10 @@ class HojaGamepad {
       // WEBUSB_ID_CONFIG_COMMAND = 4
       await this.sendReport(4, payload);
 
-      return await this.waitForCommandConfirmation();
+      if(timeout)
+        return await this.waitForCommandConfirmation(timeout);
+      else 
+        return await this.waitForCommandConfirmation()
 
     } catch (error) {
       console.error('Failed to send command.', error);

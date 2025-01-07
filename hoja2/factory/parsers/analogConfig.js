@@ -104,9 +104,19 @@ export default class Analogconfig {
 		return this.#_getUint16(657);
 	}
 
+	/** @type {Uint8} */
+	get l_snapback_type() {
+		return this.#_getUint8(659);
+	}
+
+	/** @type {Uint8} */
+	get r_snapback_type() {
+		return this.#_getUint8(660);
+	}
+
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(659, 365);
+		return this.#_getUint8Array(661, 363);
 	}
 
 
@@ -210,9 +220,19 @@ export default class Analogconfig {
 		this.#_setUint16(657, value);
 	}
 
+	/** @param {Uint8} value */
+	set l_snapback_type(value) {
+		this.#_setUint8(659, value);
+	}
+
+	/** @param {Uint8} value */
+	set r_snapback_type(value) {
+		this.#_setUint8(660, value);
+	}
+
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(659, value);
+		this.#_setUint8Array(661, value);
 	}
 
 

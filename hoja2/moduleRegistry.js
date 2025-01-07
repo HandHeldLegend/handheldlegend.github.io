@@ -33,7 +33,7 @@ export async function registerSettingsModules() {
         },
         {
             name: 'Motion',
-            path: './modules/imu-md.js',
+            path: './modules/motion-md.js',
             icon: '🔄', // Suggests movement and orientation
             color: '#1abc9c' // Teal for a fresh and dynamic feel
         },

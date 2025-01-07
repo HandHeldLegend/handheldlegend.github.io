@@ -140,7 +140,7 @@ class ConfigApp {
     }
 }
 
-var debug = false;
+var debug = true;
 
 async function sendSaveCommand() {
     if(gamepad) {
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/user-md.js',
+                path: './modules/motion-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
