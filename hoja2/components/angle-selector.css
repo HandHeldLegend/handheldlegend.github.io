@@ -41,11 +41,21 @@
 
 .button-reset:hover
 {
-    background-color: var(--color-button-neutral-hover);
+    background-color: var(--color-button-neutral);
+}
+@media (hover: hover) {
+    .button-reset:hover {
+        background: var(--color-button-neutral-hover);
+    }
 }
 
 .button-capture:hover {
-    background-color: var(--color-button-on-hover);
+    background-color: var(--color-button-on);
+}
+@media (hover: hover) {
+    .button-reset:hover {
+        background: var(--color-button-on-hover);
+    }
 }
 
 .button-disable
@@ -55,7 +65,12 @@
 
 .button-disable:hover
 {
-    background-color: var(--color-button-off-hover);
+    background-color: var(--color-button-off);
+}
+@media (hover: hover) {
+    .button-reset:hover {
+        background: var(--color-button-off-hover);
+    }
 }
 
 .even-container {
