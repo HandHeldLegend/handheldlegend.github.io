@@ -10,29 +10,34 @@ export default class Imuconfig {
 		return this.#_getUint8(0);
 	}
 
-	/** @type {Uint8Array} */
-	get imu_a_gyro_config() {
-		return this.#_getUint8Array(1, 3);
+	/** @type {Int8Array} */
+	get imu_a_gyro_offsets() {
+		return this.#_getInt8Array(1, 3);
 	}
 
-	/** @type {Uint8Array} */
+	/** @type {Int8Array} */
 	get imu_a_accel_config() {
-		return this.#_getUint8Array(4, 3);
+		return this.#_getInt8Array(4, 3);
 	}
 
-	/** @type {Uint8Array} */
-	get imu_b_gyro_config() {
-		return this.#_getUint8Array(7, 3);
+	/** @type {Int8Array} */
+	get imu_b_gyro_offsets() {
+		return this.#_getInt8Array(7, 3);
 	}
 
-	/** @type {Uint8Array} */
+	/** @type {Int8Array} */
 	get imu_b_accel_config() {
-		return this.#_getUint8Array(10, 3);
+		return this.#_getInt8Array(10, 3);
+	}
+
+	/** @type {Uint8} */
+	get imu_disabled() {
+		return this.#_getUint8(13);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(13, 19);
+		return this.#_getUint8Array(14, 18);
 	}
 
 
@@ -42,29 +47,34 @@ export default class Imuconfig {
 		this.#_setUint8(0, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set imu_a_gyro_config(value) {
-		this.#_setUint8Array(1, value);
+	/** @param {Int8Array} value */
+	set imu_a_gyro_offsets(value) {
+		this.#_setInt8Array(1, value);
 	}
 
-	/** @param {Uint8Array} value */
+	/** @param {Int8Array} value */
 	set imu_a_accel_config(value) {
-		this.#_setUint8Array(4, value);
+		this.#_setInt8Array(4, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set imu_b_gyro_config(value) {
-		this.#_setUint8Array(7, value);
+	/** @param {Int8Array} value */
+	set imu_b_gyro_offsets(value) {
+		this.#_setInt8Array(7, value);
 	}
 
-	/** @param {Uint8Array} value */
+	/** @param {Int8Array} value */
 	set imu_b_accel_config(value) {
-		this.#_setUint8Array(10, value);
+		this.#_setInt8Array(10, value);
+	}
+
+	/** @param {Uint8} value */
+	set imu_disabled(value) {
+		this.#_setUint8(13, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(13, value);
+		this.#_setUint8Array(14, value);
 	}
 
 

@@ -6,7 +6,11 @@
     align-content: center;
     cursor: pointer;
     background: var(--color-button-off);
-    transition: all 0.3s;
+    transition: var(--transition-quick);
+    width: fit-content;
+    padding-left: 8px;
+    padding-right: 8px;
+    min-width: 50px;
 
     /* Prevent text selection */
     -webkit-user-select: none;

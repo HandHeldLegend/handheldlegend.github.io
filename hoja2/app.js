@@ -1,9 +1,10 @@
+import HojaGamepad from './gamepad/gamepad.js';
+
 // Dynamic module loader and settings management
 import { registerSettingsModules } from './moduleRegistry.js';
 import { enableTooltips } from './tooltips.js';
 import TristateButton from './components/tristate-button.js';
 import SingleShotButton from './components/single-shot-button.js';
-import HojaGamepad from './gamepad/gamepad.js';
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
@@ -143,7 +144,7 @@ class ConfigApp {
     }
 }
 
-var debug = false;
+var debug = true;
 
 async function sendSaveCommand() {
     if(gamepad) {
@@ -157,7 +158,6 @@ async function sendSaveCommand() {
 
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
-    
 
     const connectButton = document.getElementById('connect-button');
     const saveButton = document.getElementById('save-button');
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/motion-md.js',
+                path: './modules/haptic-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];

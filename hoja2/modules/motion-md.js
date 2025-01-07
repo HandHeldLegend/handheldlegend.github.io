@@ -5,17 +5,22 @@ import IMUDataDisplay from '../components/imu-data-display.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
+import MultiPositionButton from '../components/multi-position-button.js';
 
 import { enableTooltips } from '../tooltips.js';
 
 /** @type {HojaGamepad} */
 let gamepad = HojaGamepad.getInstance();
-const gyroCfgBlockNumber = 7;
+const gyroCfgBlockNumber = 5;
 let sensorVis = null;
 let imuDisplay = null;
 
 let debugInterval = null;
 let debugTime = 0;
+
+async function writeRemapMemBlock() {
+    await gamepad.sendBlock(gyroCfgBlockNumber);
+}
 
 function startSensorDebug(sensorVis, options = {}) {
     const {
@@ -137,31 +142,33 @@ export function render(container) {
     let hexColorBody = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
 
     container.innerHTML = `
-            <h2>Calibration
-                <div class="header-tooltip" tooltip="Start IMU calibration. Place controller on a flat, solid surface and press this button to calibrate.">?</div>
-            </h2>
-            <div class="app-row">
-                <single-shot-button 
-                    id="calibrate-imu-button" 
-                    state="ready" 
-                    ready-text="Calibrate" 
-                    disabled-text="Calibrate"
-                    pending-text="Calibrating..."
-                    success-text="Complete!"
-                    failure-text="Failure..."
-                    tooltip="Calibrate the IMU."
-                ></single-shot-button>
-            </div>
-            <h2>Visualizer</h2>
-            <sensor-visualization
-                model="./assets/3d/supergamepad.stl"
-                scale="3"
-                rotation-offset="0,0,0"
-                color="#${hexColorBody}"
-                reflectivity="0.16"
-            ></sensor-visualization>
-            <imu-data-display></imu-data-display>
-
+        <h2>Primary Options</h2>
+        <div class="app-row">
+            <single-shot-button 
+                id="calibrate-imu-button" 
+                state="ready" 
+                ready-text="Calibrate" 
+                disabled-text="Calibrate"
+                pending-text="Calibrating..."
+                success-text="Complete!"
+                failure-text="Failure..."
+                tooltip="Start IMU calibration. Place controller on a flat, solid surface and press this button to calibrate."
+            ></single-shot-button>
+            <multi-position-button 
+                id="gyro-disable-select" 
+                labels="Enabled, Disabled"
+                default-selected="${gamepad.imu_cfg.imu_disabled}"
+            ></multi-position-button>
+        </div>
+        <h2>Visualizer</h2>
+        <sensor-visualization
+            model="./assets/3d/supergamepad.stl"
+            scale="2.5"
+            rotation-offset="0,0,0"
+            color="#${hexColorBody}"
+            reflectivity="0.16"
+        ></sensor-visualization>
+        <imu-data-display></imu-data-display>
     `;
 
     sensorVis = container.querySelector('sensor-visualization');
@@ -172,6 +179,14 @@ export function render(container) {
 
     const calibrateButton = container.querySelector('single-shot-button[id="calibrate-imu-button"]');
     calibrateButton.setOnClick(calibrateImuHandler);
+
+    /** @type {MultiPositionButton} */
+    const enableSelector = container.querySelector('multi-position-button[id="gyro-disable-select"]');
+    enableSelector.addEventListener('change', async (e) => {
+        console.log("IMU Disable Changed.");
+        gamepad.imu_cfg.imu_disabled = e.detail.selectedIndex;
+        await writeRemapMemBlock();
+    });
 
     enableTooltips(container);
 }
