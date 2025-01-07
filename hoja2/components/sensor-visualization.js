@@ -247,17 +247,17 @@ class SensorVisualization extends HTMLElement {
         const ambientLight = new THREE.AmbientLight(0x666666);
 
         // Main directional light from front
-        const frontLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        const frontLight = new THREE.DirectionalLight(0xffffff, 0.5);
         frontLight.position.set(0, 0, 10);
 
         // Secondary lights for better coverage during rotation
-        const leftLight = new THREE.DirectionalLight(0xffffff, 1);
+        const leftLight = new THREE.DirectionalLight(0xffffff, 0.5);
         leftLight.position.set(-8, 0, 8);
 
-        const rightLight = new THREE.DirectionalLight(0xffffff, 1);
+        const rightLight = new THREE.DirectionalLight(0xffffff, 0.5);
         rightLight.position.set(8, 0, 8);
 
-        const topLight = new THREE.DirectionalLight(0xffffff, 1);
+        const topLight = new THREE.DirectionalLight(0xffffff, 0.5);
         topLight.position.set(0, 8, 8);
 
         // Add all lights to scene
