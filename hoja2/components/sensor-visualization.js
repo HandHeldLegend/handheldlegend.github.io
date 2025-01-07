@@ -185,13 +185,26 @@ class SensorVisualization extends HTMLElement {
         
         this._scene = new THREE.Scene();
         
-        this._camera = new THREE.PerspectiveCamera(
-            75,
-            container.clientWidth / container.clientHeight,
-            0.1,
-            1000
+        //this._camera = new THREE.PerspectiveCamera(
+        //    75,
+        //    container.clientWidth / container.clientHeight,
+        //    0.1,
+        //    1000
+        //);
+
+        const frustumSize = 10; // Adjust this value to control how much of the scene is visible
+        const aspect = container.clientWidth / container.clientHeight;
+
+        this._camera = new THREE.OrthographicCamera(
+            frustumSize * aspect / -2, // left
+            frustumSize * aspect / 2,  // right
+            frustumSize / 2,          // top
+            frustumSize / -2,         // bottom
+            0.1,                      // near
+            1000                      // far
         );
-        this._camera.position.z = 5;
+
+        this._camera.position.z = 10;
 
         this._renderer = new THREE.WebGLRenderer({
             canvas: container,
@@ -220,7 +233,7 @@ class SensorVisualization extends HTMLElement {
         // Add lights
         const ambientLight = new THREE.AmbientLight(0x404040);
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(1, 1, 1);
+        directionalLight.position.set(1, 3, 10);
         this._scene.add(ambientLight);
         this._scene.add(directionalLight);
     }
@@ -266,13 +279,15 @@ class SensorVisualization extends HTMLElement {
     }
 
     handleResize() {
-        const container = this.shadowRoot.querySelector('.visualization-canvas');
-        const width = container.clientWidth;
-        const height = container.clientHeight;
+        // In your resize handler:
+        const aspect = container.clientWidth / container.clientHeight;
+        const frustumSize = 10;
 
-        this._camera.aspect = width / height;
-        this._camera.updateProjectionMatrix();
-        this._renderer.setSize(width, height);
+        this._camera.left = frustumSize * aspect / -2;
+        this._camera.right = frustumSize * aspect / 2;
+        this._camera.top = frustumSize / 2;
+        this._camera.bottom = frustumSize / -2;
+        this._camera.updateProjectionMatrix(); // Important! Call this after changing parameters
     }
 
     startAnimation() {

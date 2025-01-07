@@ -120,11 +120,27 @@ async function calibrateImuHandler() {
     return status;
 }
 
+function uint32ToRgbHex(uint32) {
+    // Mask out everything except the RGB components (last 3 bytes)
+    uint32 &= 0x00FFFFFF;  // Mask the last byte (keeping the RGB part)
+    //uint32 >>>= 8;         // Unsigned right shift to get only the RGB components
+    
+    // Convert to hex string and pad with leading zeros if necessary
+    let hexString = uint32.toString(16).padStart(6, '0');
+    
+    // Ensure it's exactly 6 characters long
+    return hexString;
+}
+
 export function render(container) {
+
+    let hexColorBody = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
 
     container.innerHTML = `
             <h1>Motion Settings</h1>
-            <h2>Calibration</h2>
+            <h2>Calibration
+                <div class="header-tooltip" tooltip="Start IMU calibration. Place controller on a flat, solid surface and press this button to calibrate.">?</div>
+            </h2>
             <div class="app-row">
                 <single-shot-button 
                     id="calibrate-imu-button" 
@@ -140,9 +156,9 @@ export function render(container) {
             <h2>Visualizer</h2>
             <sensor-visualization
                 model="../assets/3d/supergamepad.stl"
-                scale="2"
+                scale="3"
                 rotation-offset="0,0,0"
-                color="#daff8f"
+                color="#${hexColorBody}"
                 reflectivity="0.5"
             ></sensor-visualization>
             <imu-data-display></imu-data-display>
