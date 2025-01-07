@@ -1,5 +1,4 @@
 // tooltips.js
-// CSS for tooltips (can be added to a separate CSS file)
 const tooltipStyles = `
 <style>
 .tooltip-container {
@@ -14,8 +13,8 @@ const tooltipStyles = `
     transition: opacity 0.2s ease-in-out;
     pointer-events: none;
     white-space: normal;
-    word-wrap: break-word; /* Break long words if necessary */
-    max-width: 200px; /* Optional: Set a max-width to prevent tooltips from becoming too wide */
+    word-wrap: break-word;
+    max-width: 200px;
     text-align: center;
 }
 
@@ -26,107 +25,133 @@ const tooltipStyles = `
 `;
 
 const adjustTooltipPosition = (tooltipContainer, rect) => {
-    // Calculate initial position
     const tooltipWidth = tooltipContainer.offsetWidth;
     const viewportWidth = window.innerWidth;
 
-    // Horizontal adjustment
-    let left = rect.left + rect.width / 2 - tooltipWidth / 2; // Center horizontally
+    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
     if (left < 0) {
-        left = 10; // Nudge away from the left edge
+        left = 10;
     } else if (left + tooltipWidth > viewportWidth) {
-        left = viewportWidth - tooltipWidth - 10; // Nudge away from the right edge
+        left = viewportWidth - tooltipWidth - 10;
     }
 
-    // Vertical adjustment
-    let top = rect.bottom + 6; // Tooltip below the element
+    let top = rect.bottom + 6;
     if (top + tooltipContainer.offsetHeight > window.innerHeight) {
-        top = rect.top - tooltipContainer.offsetHeight - 6; // Move above if it overflows
+        top = rect.top - tooltipContainer.offsetHeight - 6;
     }
 
-    // Apply calculated positions
     tooltipContainer.style.left = `${left}px`;
     tooltipContainer.style.top = `${top}px`;
 };
 
 export function enableTooltips(rootElement) {
-    // Inject tooltip styles into the document
     const styleTag = document.createElement('style');
     styleTag.textContent = tooltipStyles.match(/<style>(.*)<\/style>/s)[1];
     document.head.appendChild(styleTag);
 
-    try
-    {
+    try {
         const tooltipElements = rootElement.querySelectorAll('[tooltip]');
         
         tooltipElements.forEach(element => {
-            // Create tooltip container
             const tooltipContainer = document.createElement('div');
             tooltipContainer.className = 'tooltip-container';
             
-            // Create tooltip text element
             const tooltipText = document.createElement('span');
             tooltipText.className = 'tooltip-text';
             tooltipText.textContent = element.getAttribute('tooltip');
             
-            // Append tooltip to container
             tooltipContainer.appendChild(tooltipText);
             
-            // Positioning and visibility logic
             let tooltipTimeout;
+            let isTooltipVisible = false;
+            let touchStartTime = 0;
             
             const showTooltip = () => {
+                if (tooltipTimeout) {
+                    clearTimeout(tooltipTimeout);
+                }
+                
                 tooltipTimeout = setTimeout(() => {
-                    // Position the tooltip
                     const rect = element.getBoundingClientRect();
                     tooltipContainer.style.position = 'fixed';
-                    //tooltipContainer.style.left = `${rect.left + rect.width / 2}px`;
-                    //tooltipContainer.style.top = `${rect.bottom + 6}px`;
-                    //tooltipContainer.style.transform = 'translateX(-50%)';
                     
-                    // Add to document and show
-                    document.body.appendChild(tooltipContainer);
-
-                    // Adjust position to stay within the viewport
+                    if (!tooltipContainer.parentNode) {
+                        document.body.appendChild(tooltipContainer);
+                    }
+                    
                     adjustTooltipPosition(tooltipContainer, rect);
-                    
-                    // Trigger reflow to enable transition
                     tooltipContainer.offsetWidth;
                     tooltipContainer.classList.add('tooltip-visible');
-                }, 500); // 0.5 seconds delay
+                    isTooltipVisible = true;
+                }, 500);
             };
             
             const hideTooltip = () => {
-                // Clear the timeout to prevent showing if mouse leaves quickly
-                clearTimeout(tooltipTimeout);
+                if (tooltipTimeout) {
+                    clearTimeout(tooltipTimeout);
+                }
                 
-                // Remove tooltip if it exists
-                if (tooltipContainer.parentNode) {
-
-                    try {
-                        tooltipContainer.classList.remove('tooltip-visible');
-                        setTimeout(() => {
-                            document.body.removeChild(tooltipContainer);
-                        }, 200); // Match transition time
-                    }
-                    catch(err) {}
+                if (isTooltipVisible && tooltipContainer.parentNode) {
+                    tooltipContainer.classList.remove('tooltip-visible');
+                    isTooltipVisible = false;
                     
+                    setTimeout(() => {
+                        if (tooltipContainer.parentNode) {
+                            document.body.removeChild(tooltipContainer);
+                        }
+                    }, 200);
                 }
             };
-            
-            // Add event listeners
+
+            // Mouse event handlers
             element.addEventListener('mouseenter', showTooltip);
             element.addEventListener('mouseleave', hideTooltip);
 
-            // Event listeners (mobile)
-            element.addEventListener('touchstart', showTooltip);
-            element.addEventListener('touchend', hideTooltip);
-            element.addEventListener('touchcancel', hideTooltip); // Handle canceled touches
-        });
+            // Touch event handlers
+            element.addEventListener('touchstart', (e) => {
+                touchStartTime = Date.now();
+                showTooltip();
+                
+                // Prevent context menu on long press
+                element.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                }, { once: true });
+            }, { passive: true });
 
-    }
-    catch(error) {
-        
+            element.addEventListener('touchend', (e) => {
+                const touchDuration = Date.now() - touchStartTime;
+                
+                // If touch was short (like a tap), hide immediately
+                if (touchDuration < 300) {
+                    hideTooltip();
+                }
+                // For longer touches, hide after a short delay
+                else {
+                    setTimeout(hideTooltip, 100);
+                }
+                
+                touchStartTime = 0;
+            }, { passive: true });
+
+            // Ensure tooltip hides on any touch cancellation
+            element.addEventListener('touchcancel', () => {
+                touchStartTime = 0;
+                hideTooltip();
+            }, { passive: true });
+
+            // Handle touch moving away
+            element.addEventListener('touchmove', () => {
+                hideTooltip();
+            }, { passive: true });
+
+            // Global handlers to ensure tooltip cleanup
+            window.addEventListener('scroll', hideTooltip, { passive: true });
+            window.addEventListener('resize', hideTooltip, { passive: true });
+            
+            // Cleanup when leaving the page
+            window.addEventListener('beforeunload', hideTooltip);
+        });
+    } catch(error) {
+        console.error('Error initializing tooltips:', error);
     }
 }
-

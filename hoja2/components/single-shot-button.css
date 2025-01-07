@@ -6,6 +6,13 @@
     font-weight: bold;
     min-width: 120px;
     height: var(--config-box-height);
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .single-shot-button.state-ready {
