@@ -1,4 +1,3 @@
-// tooltips.js
 const tooltipStyles = `
 <style>
 .tooltip-container {
@@ -6,7 +5,7 @@ const tooltipStyles = `
     z-index: 1000;
     background-color: #333;
     color: white;
-    padding: 5px 5px;
+    padding: 5px 10px;
     border-radius: 4px;
     font-size: 14px;
     opacity: 0;
@@ -18,30 +17,95 @@ const tooltipStyles = `
     text-align: center;
 }
 
+@media (max-width: 768px) {
+    .tooltip-container {
+        padding: 12px 20px;
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        max-width: 90%;
+        width: fit-content;
+    }
+}
+
 .tooltip-container.tooltip-visible {
     opacity: 1;
 }
 </style>
 `;
 
-const adjustTooltipPosition = (tooltipContainer, rect) => {
-    const tooltipWidth = tooltipContainer.offsetWidth;
+const isMobile = () => window.innerWidth <= 768;
+
+const getMobilePosition = (touchX, touchY, tooltipWidth, tooltipHeight) => {
     const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const padding = 20; // Minimum padding from screen edges
+    const thumbOffset = 70; // Space to avoid thumb obstruction
 
-    let left = rect.left + rect.width / 2 - tooltipWidth / 2;
-    if (left < 0) {
-        left = 10;
-    } else if (left + tooltipWidth > viewportWidth) {
-        left = viewportWidth - tooltipWidth - 10;
+    // Start with a position above the touch point to avoid the thumb
+    let left = touchX - (tooltipWidth / 2);
+    let top = touchY - tooltipHeight - thumbOffset;
+
+    // If tooltip would go off the top, position it below the touch point instead
+    if (top < padding) {
+        top = touchY + thumbOffset;
     }
 
-    let top = rect.bottom + 6;
-    if (top + tooltipContainer.offsetHeight > window.innerHeight) {
-        top = rect.top - tooltipContainer.offsetHeight - 6;
+    // Ensure left/right bounds
+    if (left < padding) {
+        left = padding;
+    } else if (left + tooltipWidth > viewportWidth - padding) {
+        left = viewportWidth - tooltipWidth - padding;
     }
 
-    tooltipContainer.style.left = `${left}px`;
-    tooltipContainer.style.top = `${top}px`;
+    // Final bounds check for top/bottom
+    if (top + tooltipHeight > viewportHeight - padding) {
+        top = viewportHeight - tooltipHeight - padding;
+    }
+    if (top < padding) {
+        top = padding;
+    }
+
+    return { left, top };
+};
+
+const adjustTooltipPosition = (tooltipContainer, rect, touchX = null, touchY = null) => {
+    if (isMobile() && touchX !== null && touchY !== null) {
+        // Get tooltip dimensions
+        const tooltipWidth = tooltipContainer.offsetWidth;
+        const tooltipHeight = tooltipContainer.offsetHeight;
+        
+        // Calculate position based on touch point
+        const position = getMobilePosition(touchX, touchY, tooltipWidth, tooltipHeight);
+        
+        tooltipContainer.style.left = `${position.left}px`;
+        tooltipContainer.style.top = `${position.top}px`;
+        tooltipContainer.style.transform = 'none';
+    } else {
+        // Desktop positioning - centered below element with screen boundary checks
+        const tooltipWidth = tooltipContainer.offsetWidth;
+        const tooltipHeight = tooltipContainer.offsetHeight;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        let top = rect.bottom + 6;
+
+        // Adjust horizontal position if it would overflow
+        if (left < 10) {
+            left = 10;
+        } else if (left + tooltipWidth > viewportWidth - 10) {
+            left = viewportWidth - tooltipWidth - 10;
+        }
+
+        // If tooltip would overflow bottom, position it above the element
+        if (top + tooltipHeight > viewportHeight - 10) {
+            top = rect.top - tooltipHeight - 6;
+        }
+
+        tooltipContainer.style.left = `${left}px`;
+        tooltipContainer.style.top = `${top}px`;
+        tooltipContainer.style.transform = 'none';
+    }
 };
 
 export function enableTooltips(rootElement) {
@@ -65,25 +129,26 @@ export function enableTooltips(rootElement) {
             let tooltipTimeout;
             let isTooltipVisible = false;
             let touchStartTime = 0;
+            let touchStartX = 0;
+            let touchStartY = 0;
             
-            const showTooltip = () => {
+            const showTooltip = (touchX = null, touchY = null) => {
                 if (tooltipTimeout) {
                     clearTimeout(tooltipTimeout);
                 }
                 
                 tooltipTimeout = setTimeout(() => {
                     const rect = element.getBoundingClientRect();
-                    tooltipContainer.style.position = 'fixed';
                     
                     if (!tooltipContainer.parentNode) {
                         document.body.appendChild(tooltipContainer);
                     }
                     
-                    adjustTooltipPosition(tooltipContainer, rect);
-                    tooltipContainer.offsetWidth;
+                    adjustTooltipPosition(tooltipContainer, rect, touchX, touchY);
+                    tooltipContainer.offsetWidth; // Force reflow
                     tooltipContainer.classList.add('tooltip-visible');
                     isTooltipVisible = true;
-                }, 500);
+                }, isMobile() ? 300 : 500);
             };
             
             const hideTooltip = () => {
@@ -103,14 +168,18 @@ export function enableTooltips(rootElement) {
                 }
             };
 
-            // Mouse event handlers
-            element.addEventListener('mouseenter', showTooltip);
-            element.addEventListener('mouseleave', hideTooltip);
+            // Mouse event handlers (desktop only)
+            if (!isMobile()) {
+                element.addEventListener('mouseenter', () => showTooltip());
+                element.addEventListener('mouseleave', hideTooltip);
+            }
 
             // Touch event handlers
             element.addEventListener('touchstart', (e) => {
                 touchStartTime = Date.now();
-                showTooltip();
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                showTooltip(touchStartX, touchStartY);
                 
                 // Prevent context menu on long press
                 element.addEventListener('contextmenu', (e) => {
@@ -121,37 +190,28 @@ export function enableTooltips(rootElement) {
             element.addEventListener('touchend', (e) => {
                 const touchDuration = Date.now() - touchStartTime;
                 
-                // If touch was short (like a tap), hide immediately
-                if (touchDuration < 300) {
+                // For mobile, keep tooltip visible slightly longer on long press
+                if (isMobile() && touchDuration > 300) {
+                    setTimeout(hideTooltip, 1000);
+                } else {
                     hideTooltip();
-                }
-                // For longer touches, hide after a short delay
-                else {
-                    setTimeout(hideTooltip, 100);
                 }
                 
                 touchStartTime = 0;
+                touchStartX = 0;
+                touchStartY = 0;
             }, { passive: true });
 
-            // Ensure tooltip hides on any touch cancellation
-            element.addEventListener('touchcancel', () => {
-                touchStartTime = 0;
-                hideTooltip();
-            }, { passive: true });
+            // Handle touch cancellation and movement
+            element.addEventListener('touchcancel', hideTooltip, { passive: true });
+            element.addEventListener('touchmove', hideTooltip, { passive: true });
 
-            // Handle touch moving away
-            element.addEventListener('touchmove', () => {
-                hideTooltip();
-            }, { passive: true });
-
-            // Global handlers to ensure tooltip cleanup
+            // Global handlers
             window.addEventListener('scroll', hideTooltip, { passive: true });
             window.addEventListener('resize', hideTooltip, { passive: true });
-            
-            // Cleanup when leaving the page
             window.addEventListener('beforeunload', hideTooltip);
         });
     } catch(error) {
-        console.error('Error initializing tooltips:', error);
+        //console.error('Error initializing tooltips:', error);
     }
 }
