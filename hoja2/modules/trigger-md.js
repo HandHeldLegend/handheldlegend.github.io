@@ -23,9 +23,10 @@ let analogTriggerBar = null;
 
 function triggerReportHook(data) {
     const lt = data.getUint8(12) << 8 | data.getUint8(13);
+    const rt = data.getUint8(14) << 8 | data.getUint8(15);
 
     if(analogTriggerBar) {
-        analogTriggerBar.setValues(lt, 0);
+        analogTriggerBar.setValues(lt, rt);
     }
 }
 
@@ -38,6 +39,16 @@ export function render(container) {
     let gamecubeEnabled = gamepad.device_static.joybus_supported;
     let analogTriggersEnabled = (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt);
 
+    /*
+    <single-shot-button 
+        tooltip="Reset all trigger settings to default."
+        id="trigger-default-btn" 
+        state="ready"
+        ready-text="Reset" 
+        pending-text="Resetting..."
+    ></single-shot-button>
+    */
+
     let enabledOnlyAnalogSectionHTML = `
     <div class="app-row">
         <tristate-button 
@@ -48,14 +59,6 @@ export function render(container) {
             off-to-on-transitioning-text="Calibrate" 
             on-to-off-transitioning-text="Stop"
         ></tristate-button>
-
-        <single-shot-button 
-            tooltip="Reset all trigger settings to default."
-            id="trigger-default-btn" 
-            state="ready"
-            ready-text="Reset" 
-            pending-text="Resetting..."
-        ></single-shot-button>
     </div>
     <dual-analog-trigger></dual-analog-trigger>
     `
@@ -193,6 +196,101 @@ export function render(container) {
             }
     
             writeTriggerMemBlock();
+        });
+
+        const rightHairpinEl = container.querySelector('number-selector[id="r-hairtrigger-number"]');
+        rightHairpinEl.addEventListener('change', (e) => {
+            console.log(`Right hairpin changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.right_hairpin_value = pinVal;
+
+            if(analogTriggerBar) {
+                analogTriggerBar.setThresholds(null, pinVal);
+            }
+    
+            writeTriggerMemBlock();
+        });
+
+        const leftDeadzoneEl = container.querySelector('number-selector[id="l-deadzone-number"]');
+        leftDeadzoneEl.addEventListener('change', (e) => {
+            console.log(`Left deadzone changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.left_deadzone = pinVal;
+    
+            writeTriggerMemBlock();
+        });
+
+        const rightDeadzoneEl = container.querySelector('number-selector[id="r-deadzone-number"]');
+        rightDeadzoneEl.addEventListener('change', (e) => {
+            console.log(`Right deadzone changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.right_deadzone = pinVal;
+    
+            writeTriggerMemBlock();
+        });
+
+        const rightSplitEl = container.querySelector('number-selector[id="r-static-number"]');
+        rightSplitEl.addEventListener('change', (e) => {
+            console.log(`Right static/split changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.right_static_output_value = pinVal;
+    
+            writeTriggerMemBlock();
+        });
+
+        const leftSplitEl = container.querySelector('number-selector[id="l-static-number"]');
+        leftSplitEl.addEventListener('change', (e) => {
+            console.log(`Left static/split changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.left_static_output_value = pinVal;
+    
+            writeTriggerMemBlock();
+        });
+
+        const lDisable = container.querySelector('multi-position-button[id="l-trigger-mode"]');
+        lDisable.addEventListener('change', (e) => {
+            console.log("L Trigger disable change");
+            gamepad.trigger_cfg.left_disabled = e.detail.selectedIndex;
+            writeTriggerMemBlock();
+        });
+
+        const rDisable = container.querySelector('multi-position-button[id="r-trigger-mode"]');
+        rDisable.addEventListener('change', (e) => {
+            console.log("R Trigger disable change");
+            gamepad.trigger_cfg.right_disabled = e.detail.selectedIndex;
+            writeTriggerMemBlock();
+        });
+
+        // Set calibration command handlers 
+        const calibrateButton = container.querySelector('tristate-button[id="trigger-calibrate-btn"]');
+
+        calibrateButton.setOnHandler(async () => {
+            // CFG_BLOCK_TRIGGER, ANALOG_CMD_CALIBRATE_START
+            let {status, data} = await gamepad.sendConfigCommand(triggerCfgBlockNumber, 1);
+            return status;
+        });
+
+        calibrateButton.setOffHandler(async () => {
+            // CFG_BLOCK_TRIGGER, ANALOG_CMD_CALIBRATE_STOP
+            let {status, data} = await gamepad.sendConfigCommand(triggerCfgBlockNumber, 2);
+            // Reload our mem block
+            await gamepad.requestBlock(triggerCfgBlockNumber);
+            return status;
         });
     }
 

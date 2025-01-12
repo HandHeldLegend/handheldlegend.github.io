@@ -100,8 +100,8 @@ class DualAnalogTrigger extends HTMLElement {
         rightThresholdLine.style.left = `${rightThresholdPercent}%`;
 
         // Update classes for threshold crossing
-        leftBar.classList.toggle('above-threshold',     this._leftValue > this._leftThreshold);
-        rightBar.classList.toggle('above-threshold',    this._rightValue > this._rightThreshold);
+        leftBar.classList.toggle('above-threshold',     (this._leftValue > this._leftThreshold) && this._leftThreshold);
+        rightBar.classList.toggle('above-threshold',    (this._rightValue > this._rightThreshold) && this._rightThreshold);
 
         // Update value labels
         leftLabel.textContent = this._leftValue;

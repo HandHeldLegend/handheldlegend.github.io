@@ -604,8 +604,6 @@ export function render(container) {
 
         // Reload our mem block
         await gamepad.requestBlock(analogCfgBlockNumber);
-        console.log(gamepad.analog_cfg.l_angle_maps);
-        console.log(gamepad.analog_cfg.l_packed_distances);
         return status;
     });
 
