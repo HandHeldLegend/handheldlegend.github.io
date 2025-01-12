@@ -489,6 +489,7 @@ async function newRenderRemaps(inputMode) {
                     // Just clear our output setting for this 
                     assignInputToOutput(-1, idxNum)
                     softReloadRemapValues();
+                    writeRemapMemBlock();
                 }
             });
         });

@@ -6,6 +6,8 @@ import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
 import RemapSelector from '../components/remap-selector.js';
 
+import DualAnalogTrigger from '../components/dual-analog-trigger.js';
+
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
@@ -13,6 +15,23 @@ import { enableTooltips } from '../tooltips.js';
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
+
+const triggerCfgBlockNumber = 4;
+
+/** @type {DualAnalogTrigger} */
+let analogTriggerBar = null;
+
+function triggerReportHook(data) {
+    const lt = data.getUint8(12) << 8 | data.getUint8(13);
+
+    if(analogTriggerBar) {
+        analogTriggerBar.setValues(lt, 0);
+    }
+}
+
+async function writeTriggerMemBlock() {
+    await gamepad.sendBlock(triggerCfgBlockNumber);
+}
 
 export function render(container) {
 
@@ -38,6 +57,7 @@ export function render(container) {
             pending-text="Resetting..."
         ></single-shot-button>
     </div>
+    <dual-analog-trigger></dual-analog-trigger>
     `
     if(!analogTriggersEnabled) enabledOnlyAnalogSectionHTML = "";
 
@@ -46,7 +66,7 @@ export function render(container) {
     <multi-position-button 
         id="l-trigger-mode" 
         labels="Analog, Disabled"
-        default-selected="0"
+        default-selected="${gamepad.trigger_cfg.left_disabled}"
     ></multi-position-button>
 
     <h3>Digital Threshold<div class="header-tooltip" tooltip="The analog value which will trigger the equivalent digital press and full analog output. Setting to 0 disables this feature.">?</div></h3>
@@ -54,9 +74,9 @@ export function render(container) {
         id="l-hairtrigger-number"
         type="integer" 
         min="0" 
-        max="255" 
+        max="4095" 
         step="1" 
-        default-value="50"
+        default-value="${gamepad.trigger_cfg.left_hairpin_value}"
     ></number-selector>
 
     <h3>Deadzone<div class="header-tooltip" tooltip="Analog levels below this value will be zero.">?</div></h3>
@@ -64,9 +84,9 @@ export function render(container) {
         id="l-deadzone-number"
         type="integer" 
         min="0" 
-        max="255" 
+        max="2500" 
         step="1" 
-        default-value="50"
+        default-value="${gamepad.trigger_cfg.left_deadzone}"
     ></number-selector>
     `;
     if(!analogTriggersEnabled) leftAnalogSectionHTML = "";
@@ -77,9 +97,9 @@ export function render(container) {
         id="l-static-number"
         type="integer" 
         min="0" 
-        max="255" 
+        max="4095" 
         step="1" 
-        default-value="50"
+        default-value="${gamepad.trigger_cfg.left_static_output_value}"
     ></number-selector>
     `;
     if(!gamecubeEnabled) leftAnalogSectionGameCubeHTML = "";
@@ -89,7 +109,7 @@ export function render(container) {
     <multi-position-button 
         id="r-trigger-mode" 
         labels="Analog, Disabled"
-        default-selected="0"
+        default-selected="${gamepad.trigger_cfg.right_disabled}"
     ></multi-position-button>
 
     <h3>Digital Threshold<div class="header-tooltip" tooltip="The analog value which will trigger the equivalent digital press and full analog output. Setting to 0 disables this feature.">?</div></h3>
@@ -97,9 +117,9 @@ export function render(container) {
         id="r-hairtrigger-number"
         type="integer" 
         min="0" 
-        max="255" 
+        max="4095" 
         step="1" 
-        default-value="50"
+        default-value="${gamepad.trigger_cfg.right_hairpin_value}"
     ></number-selector>
 
     <h3>Deadzone<div class="header-tooltip" tooltip="Analog levels below this value will be zero.">?</div></h3>
@@ -107,9 +127,9 @@ export function render(container) {
         id="r-deadzone-number"
         type="integer" 
         min="0" 
-        max="255" 
+        max="2500" 
         step="1" 
-        default-value="50"
+        default-value="${gamepad.trigger_cfg.right_deadzone}"
     ></number-selector>
     `;
     if(!analogTriggersEnabled) rightAnalogSectionHTML = "";
@@ -120,9 +140,9 @@ export function render(container) {
         id="r-static-number"
         type="integer" 
         min="0" 
-        max="255" 
+        max="4095" 
         step="1" 
-        default-value="50"
+        default-value="${gamepad.trigger_cfg.right_static_output_value}"
     ></number-selector>
     `;
     if(!gamecubeEnabled) rightAnalogSectionGameCubeHTML = "";
@@ -134,7 +154,7 @@ export function render(container) {
     <multi-position-button 
         id="gamecube-trigger-mode" 
         labels="Default, L Split, R Split, Dual Z"
-        default-selected="0"
+        default-selected="${gamepad.trigger_cfg.trigger_mode_gamecube}"
     ></multi-position-button>
     `;
     if(!gamecubeEnabled) gameCubeOnlySectionHTML = "";
@@ -154,5 +174,29 @@ export function render(container) {
             ${gameCubeOnlySectionHTML}
     `;
 
+
+    if(analogTriggersEnabled) {
+        analogTriggerBar = container.querySelector('dual-analog-trigger');
+        analogTriggerBar.setThresholds(gamepad.trigger_cfg.left_hairpin_value, gamepad.trigger_cfg.right_hairpin_value);
+
+        const leftHairpinEl = container.querySelector('number-selector[id="l-hairtrigger-number"]');
+        leftHairpinEl.addEventListener('change', (e) => {
+            console.log(`Left hairpin changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.left_hairpin_value = pinVal;
+
+            if(analogTriggerBar) {
+                analogTriggerBar.setThresholds(pinVal, null);
+            }
+    
+            writeTriggerMemBlock();
+        });
+    }
+
+    gamepad.setReportHook(triggerReportHook);
+    
     enableTooltips(container);
 }

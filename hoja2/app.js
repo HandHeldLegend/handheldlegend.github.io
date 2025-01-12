@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/haptic-md.js',
+                path: './modules/trigger-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
