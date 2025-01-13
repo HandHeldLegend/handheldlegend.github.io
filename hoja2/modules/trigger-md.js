@@ -77,8 +77,8 @@ export function render(container) {
         id="l-hairtrigger-number"
         type="integer" 
         min="0" 
-        max="4095" 
-        step="1" 
+        max="4096" 
+        step="128" 
         default-value="${gamepad.trigger_cfg.left_hairpin_value}"
     ></number-selector>
 
@@ -87,8 +87,8 @@ export function render(container) {
         id="l-deadzone-number"
         type="integer" 
         min="0" 
-        max="2500" 
-        step="1" 
+        max="2560" 
+        step="128" 
         default-value="${gamepad.trigger_cfg.left_deadzone}"
     ></number-selector>
     `;
@@ -100,8 +100,8 @@ export function render(container) {
         id="l-static-number"
         type="integer" 
         min="0" 
-        max="4095" 
-        step="1" 
+        max="4096" 
+        step="128" 
         default-value="${gamepad.trigger_cfg.left_static_output_value}"
     ></number-selector>
     `;
@@ -120,8 +120,8 @@ export function render(container) {
         id="r-hairtrigger-number"
         type="integer" 
         min="0" 
-        max="4095" 
-        step="1" 
+        max="4096" 
+        step="128" 
         default-value="${gamepad.trigger_cfg.right_hairpin_value}"
     ></number-selector>
 
@@ -130,8 +130,8 @@ export function render(container) {
         id="r-deadzone-number"
         type="integer" 
         min="0" 
-        max="2500" 
-        step="1" 
+        max="2560" 
+        step="128" 
         default-value="${gamepad.trigger_cfg.right_deadzone}"
     ></number-selector>
     `;
@@ -143,8 +143,8 @@ export function render(container) {
         id="r-static-number"
         type="integer" 
         min="0" 
-        max="4095" 
-        step="1" 
+        max="4096" 
+        step="128" 
         default-value="${gamepad.trigger_cfg.right_static_output_value}"
     ></number-selector>
     `;
@@ -177,6 +177,39 @@ export function render(container) {
             ${gameCubeOnlySectionHTML}
     `;
 
+    if(gamecubeEnabled) {
+        const rightSplitEl = container.querySelector('number-selector[id="r-static-number"]');
+        rightSplitEl.addEventListener('change', (e) => {
+            console.log(`Right static/split changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.right_static_output_value = pinVal;
+    
+            writeTriggerMemBlock();
+        });
+
+        const leftSplitEl = container.querySelector('number-selector[id="l-static-number"]');
+        leftSplitEl.addEventListener('change', (e) => {
+            console.log(`Left static/split changed to: ${e.detail.value}`);
+            let pinVal = e.detail.value;
+            pinVal = (pinVal > 4095) ? 4095 : pinVal;
+            pinVal = (pinVal < 0) ? 0 : pinVal;
+
+            gamepad.trigger_cfg.left_static_output_value = pinVal;
+    
+            writeTriggerMemBlock();
+        });
+
+        const gcModeSelector = container.querySelector('multi-position-button[id="gamecube-trigger-mode"]');
+        gcModeSelector.addEventListener('change', (e) => {
+            console.log("GC trigger mode change");
+            gamepad.trigger_cfg.trigger_mode_gamecube = e.detail.selectedIndex;
+            writeTriggerMemBlock();
+        });
+
+    }
 
     if(analogTriggersEnabled) {
         analogTriggerBar = container.querySelector('dual-analog-trigger');
@@ -234,30 +267,6 @@ export function render(container) {
             pinVal = (pinVal < 0) ? 0 : pinVal;
 
             gamepad.trigger_cfg.right_deadzone = pinVal;
-    
-            writeTriggerMemBlock();
-        });
-
-        const rightSplitEl = container.querySelector('number-selector[id="r-static-number"]');
-        rightSplitEl.addEventListener('change', (e) => {
-            console.log(`Right static/split changed to: ${e.detail.value}`);
-            let pinVal = e.detail.value;
-            pinVal = (pinVal > 4095) ? 4095 : pinVal;
-            pinVal = (pinVal < 0) ? 0 : pinVal;
-
-            gamepad.trigger_cfg.right_static_output_value = pinVal;
-    
-            writeTriggerMemBlock();
-        });
-
-        const leftSplitEl = container.querySelector('number-selector[id="l-static-number"]');
-        leftSplitEl.addEventListener('change', (e) => {
-            console.log(`Left static/split changed to: ${e.detail.value}`);
-            let pinVal = e.detail.value;
-            pinVal = (pinVal > 4095) ? 4095 : pinVal;
-            pinVal = (pinVal < 0) ? 0 : pinVal;
-
-            gamepad.trigger_cfg.left_static_output_value = pinVal;
     
             writeTriggerMemBlock();
         });
