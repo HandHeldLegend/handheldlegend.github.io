@@ -1,4 +1,4 @@
-import HojaGamepad from '../gamepad/gamepad.js';
+import HojaGamepad from '../js/gamepad.js';
 
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
@@ -11,7 +11,7 @@ import DualAnalogTrigger from '../components/dual-analog-trigger.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
-import { enableTooltips } from '../tooltips.js';
+import { enableTooltips } from '../js/tooltips.js';
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();

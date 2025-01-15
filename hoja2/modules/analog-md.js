@@ -1,4 +1,5 @@
-import HojaGamepad from '../gamepad/gamepad.js';
+import HojaGamepad from '../js/gamepad.js';
+import { enableTooltips } from '../js/tooltips.js';
 
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
@@ -12,8 +13,6 @@ import AxisInvertSelector from '../components/axis-invert-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
-
-import { enableTooltips } from '../tooltips.js';
 
 let selectedAxis = 0;
 let mdContainer = null;

@@ -8,7 +8,7 @@ import RemapSelector from '../components/remap-selector.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
-import { enableTooltips } from '../tooltips.js';
+import { enableTooltips } from '../js/tooltips.js';
 
 export function render(container) {
     container.innerHTML = `

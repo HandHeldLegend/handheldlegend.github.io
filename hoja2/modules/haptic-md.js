@@ -1,4 +1,4 @@
-import HojaGamepad from '../gamepad/gamepad.js';
+import HojaGamepad from '../js/gamepad.js';
 
 // Import the number selector (optional, as it's now globally defined)
 import NumberSelector from '../components/number-selector.js';
@@ -15,7 +15,7 @@ const hapticCfgBlockNumber = 6;
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 
-import { enableTooltips } from '../tooltips.js';
+import { enableTooltips } from '../js/tooltips.js';
 
 async function writeHapticMemBlock() {
     await gamepad.sendBlock(hapticCfgBlockNumber);

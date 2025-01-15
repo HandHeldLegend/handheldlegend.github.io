@@ -1,10 +1,105 @@
-import HojaGamepad from './gamepad/gamepad.js';
+import HojaGamepad from './gamepad.js';
 
 // Dynamic module loader and settings management
-import { registerSettingsModules } from './moduleRegistry.js';
+import { registerSettingsModules } from './module-registry.js';
 import { enableTooltips } from './tooltips.js';
-import TristateButton from './components/tristate-button.js';
-import SingleShotButton from './components/single-shot-button.js';
+import TristateButton from '../components/tristate-button.js';
+import SingleShotButton from '../components/single-shot-button.js';
+
+// In your app.js or main entry point
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+        // Check install state when page loads
+        await checkInstallState();
+
+        navigator.serviceWorker.register('../app_sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registered:', registration);
+                
+                // Optional: Check for updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    console.log('Service Worker update found!');
+                    
+                    newWorker.addEventListener('statechange', () => {
+                        console.log('Service Worker state:', newWorker.state);
+                        if (newWorker.state === 'installed') {
+                            if (navigator.serviceWorker.controller) {
+                                // New content is available, you might want to notify the user
+                                console.log('New content is available; please refresh.');
+                                enableNotifMessage(`App has updated. Refresh to complete update.`);
+                            } else {
+                                // First time installation
+                                console.log('Content is cached for offline use.');
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.log('ServiceWorker registration failed:', error);
+            });
+    });
+}
+
+// In your app.js or main entry point
+let deferredPrompt; // Store the prompt event for later use
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
+    // Stash the event so it can be triggered later
+    deferredPrompt = e;
+    // Update UI to show the install button
+    enableInstallButton(true);
+});
+
+// Add this to know when the app is installed
+window.addEventListener('appinstalled', (evt) => {
+    // App is installed, hide the install button
+    enableInstallButton(false);
+    // Clear the deferredPrompt
+    deferredPrompt = null;
+});
+
+// Function to check if app is already installed
+async function checkInstallState() {
+    // First check if it's already installed via getInstalledRelatedApps()
+    if ('getInstalledRelatedApps' in navigator) {
+        const relatedApps = await navigator.getInstalledRelatedApps();
+        const isInstalled = relatedApps.length > 0;
+        if (isInstalled) {
+            enableInstallButton(false);
+            return true;
+        }
+    }
+    
+    // Also check if it was installed via other means
+    const displayMode = window.matchMedia('(display-mode: standalone)').matches ||
+                       window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+                       window.navigator.standalone === true;
+    
+    if (displayMode) {
+        enableInstallButton(false);
+        return true;
+    }
+    
+    return false;
+}
+
+// Function to show install prompt when install button is clicked
+async function installApp() {
+    if (!deferredPrompt) {
+        return;
+    }
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to install prompt: ${outcome}`);
+    // Clear the deferredPrompt
+    deferredPrompt = null;
+}
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
@@ -37,6 +132,10 @@ class ConfigApp {
 
         this.registerKeyboardEvents();
         this.loadSettingsModules();
+    }
+
+    currentModule() {
+        return this._appTitleHeader;
     }
 
     registerKeyboardEvents() {
@@ -166,6 +265,35 @@ async function getManifestVersion(manifestUrl) {
     }
 }
 
+function enableInstallButton(enable) {
+    const installButton = document.getElementById("app-install-button");
+
+    if(enable) {
+        console.log("Install button enable.");
+        installButton.setAttribute("visible", "true");
+    }
+    else {
+        console.log("Install button disable.");
+        installButton.setAttribute("visible", "false");
+    }
+}
+
+async function enableNotifMessage(msg) {
+    const fwMessageBox = document.getElementById("fw-update-box");
+    const notifMsgBox = document.getElementById("notif-msg-box");
+
+    if(msg != "") {
+        fwMessageBox.setAttribute("visible", "false");
+
+        notifMsgBox.innerHTML = msg;
+
+        notifMsgBox.setAttribute("visible", "true");
+    }
+    else {
+        notifMsgBox.setAttribute("visible", "false");
+    }
+}
+
 async function enableFwUpdateMessage(enable, url) {
     const bootloaderButton = document.getElementById("bootloader-button");
     const downloadButton = document.getElementById("download-button");
@@ -218,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/analog-md.js',
+                path: '../modules/wireless-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
@@ -253,6 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let batteryEnable = (gamepad.battery_static.capacity_mah > 0) ? true : false;
         window.configApp.enableIcon(8, batteryEnable); // Battery
 
+        let wirelessEnable = (gamepad.bluetooth_static.bluetooth_bdr | gamepad.bluetooth_static.bluetooth_ble) ? true : false;
+        window.configApp.enableIcon(9, wirelessEnable); // Battery
+
         // Enable Save
         saveButton.enableButton(true);
 
@@ -278,8 +409,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         connectButton.setState('off');
 
-        window.configApp.closemoduleView();
-        for(let i = 0; i < 9; i++)
+        if(window.configApp.currentModule != "Wireless") {
+            window.configApp.closemoduleView();
+        }
+
+        for(let i = 0; i < 10; i++)
         {
             window.configApp.enableIcon(i, false);
         }
@@ -298,4 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
     connectButton.setOffHandler(async () => {
         return await gamepad.disconnect();
     });
+
+    const installButton = document.getElementById('app-install-button');
+    installButton.addEventListener('click', async function () {
+        await installApp();
+    });
 });
+

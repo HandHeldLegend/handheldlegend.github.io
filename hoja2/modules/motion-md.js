@@ -1,4 +1,4 @@
-import HojaGamepad from '../gamepad/gamepad.js';
+import HojaGamepad from '../js/gamepad.js';
 
 import SensorVisualization from '../components/sensor-visualization.js';
 import IMUDataDisplay from '../components/imu-data-display.js';
@@ -7,7 +7,7 @@ import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 
-import { enableTooltips } from '../tooltips.js';
+import { enableTooltips } from '../js/tooltips.js';
 
 /** @type {HojaGamepad} */
 let gamepad = HojaGamepad.getInstance();

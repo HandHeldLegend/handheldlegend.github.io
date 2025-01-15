@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Configuration App</title>
+    <title>Hoja2 Config</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
@@ -12,18 +13,25 @@
     <div class="app-container">
         <div class="app-header-container">
             <div class="app-header">
+                <div class="center-buttons">
+                    <tristate-button id="connect-button" off-text="Connect" on-text="Disconnect"
+                        off-to-on-text="Connecting..."
+                        on-to-off-text="Disconnect"
+                    ></tristate-button>
+            
+                    <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
+                        pending-text="Saving..."
+                    ></single-shot-button>
+                </div>
 
-                <tristate-button id="connect-button" off-text="Connect" on-text="Disconnect"
-                    off-to-on-text="Connecting..."
-                    on-to-off-text="Disconnect"
-                ></tristate-button>
-
-                <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
-                    pending-text="Saving..."
-                ></single-shot-button>
+                <button visible="false" id="app-install-button" class="install-button">
+                    Install HOJA
+                </button>
             </div>
 
-            <div visible="false" id="notif-msg-box" class="header-msg-box"></div>
+            <div visible="false" id="notif-msg-box" class="header-msg-box">
+
+            </div>
 
             <div visible="false" id="fw-update-box" class="header-msg-box">
                 <h2>Update Available</h2>
@@ -73,7 +81,7 @@
         });
     </script>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 
 </html>

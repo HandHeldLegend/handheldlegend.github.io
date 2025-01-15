@@ -1,4 +1,4 @@
-import { enableTooltips } from "../tooltips.js";
+import { enableTooltips } from "../js/tooltips.js";
 
 class AngleSelector extends HTMLElement {
     constructor() {

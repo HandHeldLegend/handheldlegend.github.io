@@ -91,8 +91,47 @@ body {
     display: flex;
     gap: 10px;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     background-color: rgba(255, 0, 0, 0.692);
+}
+
+.center-buttons {
+    display: flex;
+    gap: 10px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.install-button {
+    display: block;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: var(--transition-quick);
+    font-weight: bold;
+    min-width: 90px;
+    height: var(--config-box-height);
+    margin-left: auto; /* This will push it to the right */
+    margin-right: 10px;
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.install-button[visible="false"] {
+    display: none;
+}
+
+.install-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.install-button:active {
+    transform: translateY(0);
 }
 
 .header-msg-box {
@@ -345,6 +384,26 @@ h1, h2, h3 {
 
 .tooltip.show {
     opacity: 1;
+}
+
+.app-text-container {
+    background-color: var(--color-background-light);
+    text-align: center;
+    height: fit-content;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: var(--config-box-width-min);
+    max-width: var(--config-box-width-max);
+    overflow: hidden;
+    padding: 8px;
+}
+
+.app-text-container br {
+    content: "";
+    margin: 3px 0;
+    display: block;
 }
 
 remap-selector-container {

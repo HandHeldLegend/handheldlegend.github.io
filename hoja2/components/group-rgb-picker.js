@@ -1,4 +1,4 @@
-import { enableTooltips } from "../tooltips.js";
+import { enableTooltips } from "../js/tooltips.js";
 
 class GroupRgbPicker extends HTMLElement {
     constructor() {
