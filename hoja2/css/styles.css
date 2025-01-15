@@ -96,11 +96,10 @@ body {
 }
 
 .center-buttons {
-    display: flex;
+    display: block;
+    width: fit-content;
     gap: 10px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    margin-left: 40px;
 }
 
 .install-button {
@@ -113,7 +112,7 @@ body {
     min-width: 90px;
     height: var(--config-box-height);
     margin-left: auto; /* This will push it to the right */
-    margin-right: 10px;
+    margin-right: 40px;
     /* Prevent text selection */
     -webkit-user-select: none;
     -moz-user-select: none;
