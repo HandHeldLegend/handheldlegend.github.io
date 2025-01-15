@@ -191,6 +191,7 @@ body {
 
 /* App grid styles */
 #app-grid-container {
+    overflow-y: auto;
     flex: 1;
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
