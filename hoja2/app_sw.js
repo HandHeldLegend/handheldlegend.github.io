@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.01', // Increment this when you update files
+    version: 'v0.02', // Increment this when you update files
     folders: {
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
         '/assets/3d/': ['supergamepad.stl'],
@@ -100,6 +100,9 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
             .then((response) => {
+                // If we have a cached response, keep it for fallback
+                const cachedResponse = response;
+                
                 // Always try network first for fresh content
                 return fetch(event.request)
                     .then(networkResponse => {
@@ -114,7 +117,19 @@ self.addEventListener('fetch', (event) => {
                     })
                     .catch(() => {
                         // Fall back to cache if network fails
-                        return response;
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // If no cached response, return custom offline response
+                        return caches.match('/offline.html')
+                            .then(offlineResponse => {
+                                return offlineResponse || new Response(
+                                    'You are offline and this content is not cached.',
+                                    {
+                                        headers: { 'Content-Type': 'text/html' }
+                                    }
+                                );
+                            });
                     });
             })
     );
