@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.03', // Increment this when you update files
+    version: 'v0.04', // Increment this when you update files
     folders: {
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
         '/assets/3d/': ['supergamepad.stl'],

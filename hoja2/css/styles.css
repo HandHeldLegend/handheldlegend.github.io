@@ -105,6 +105,7 @@ body {
 .install-button {
     display: block;
     border: none;
+    background-color: var(--color-button-neutral);
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: var(--transition-quick);
@@ -113,6 +114,7 @@ body {
     height: var(--config-box-height);
     margin-left: auto; /* This will push it to the right */
     margin-right: 40px;
+
     /* Prevent text selection */
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -125,12 +127,7 @@ body {
 }
 
 .install-button:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-.install-button:active {
-    transform: translateY(0);
+    background-color: var(--color-button-neutral-hover);
 }
 
 .header-msg-box {
