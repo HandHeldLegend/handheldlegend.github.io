@@ -2,7 +2,7 @@
 
 export default class Deviceinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(1024);
+    this.buffer = buffer || new Uint8Array(1026);
   }
 
   	/** @type {Uint8Array} */
@@ -35,29 +35,29 @@ export default class Deviceinfostatic {
 		return this.#_getUint8Array(672, 256);
 	}
 
-	/** @type {Uint16} */
+	/** @type {Uint32} */
 	get fw_version() {
-		return this.#_getUint16(928);
+		return this.#_getUint32(928);
 	}
 
 	/** @type {Uint8} */
 	get snes_supported() {
-		return this.#_getBitfield(930, 1, 1, 0);
+		return this.#_getBitfield(932, 1, 1, 0);
 	}
 
 	/** @type {Uint8} */
 	get joybus_supported() {
-		return this.#_getBitfield(930, 1, 1, 1);
+		return this.#_getBitfield(932, 1, 1, 1);
 	}
 
 	/** @type {Uint8} */
 	get reserved_bits() {
-		return this.#_getBitfield(930, 1, 6, 2);
+		return this.#_getBitfield(932, 1, 6, 2);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved_bytes() {
-		return this.#_getUint8Array(931, 93);
+		return this.#_getUint8Array(933, 93);
 	}
 
 
@@ -92,29 +92,29 @@ export default class Deviceinfostatic {
 		this.#_setUint8Array(672, value);
 	}
 
-	/** @param {Uint16} value */
+	/** @param {Uint32} value */
 	set fw_version(value) {
-		this.#_setUint16(928, value);
+		this.#_setUint32(928, value);
 	}
 
 	/** @param {Uint8} value */
 	set snes_supported(value) {
-		this.#_setBitfield(930, 1, 1, 0, value);
+		this.#_setBitfield(932, 1, 1, 0, value);
 	}
 
 	/** @param {Uint8} value */
 	set joybus_supported(value) {
-		this.#_setBitfield(930, 1, 1, 1, value);
+		this.#_setBitfield(932, 1, 1, 1, value);
 	}
 
 	/** @param {Uint8} value */
 	set reserved_bits(value) {
-		this.#_setBitfield(930, 1, 6, 2, value);
+		this.#_setBitfield(932, 1, 6, 2, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved_bytes(value) {
-		this.#_setUint8Array(931, value);
+		this.#_setUint8Array(933, value);
 	}
 
 

@@ -96,21 +96,37 @@ body {
 }
 
 .header-msg-box {
+    gap: 8px;
     padding: 0rem;
     display: flex;
+    flex-direction: column;
     background-color: rgb(255, 108, 108);
     max-width: inherit; 
     max-height: 0; /* Start with 0 height */
     overflow: hidden;
     transition: all 0.3s ease-in-out;
     box-shadow: var(--box-shadow-open);
+    padding-bottom: 0;
+    padding-top: 0;
+    align-items: center;
+    text-align: center;
 }
 
 .header-msg-box[visible=true] {
     align-items: center;
     text-align: center;
-    max-height: fit-content; /* Adjust as needed */
-    padding: 0.5rem;
+    max-height: 300px; /* Adjust as needed */
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
+
+.header-msg-box p {
+    max-width: 500px;
+    margin-block-end: 0;
+    margin-block-start: 0;
+    height: fit-content;
+    padding: 0;
+    width: 100%;
 }
 
 .swap-space {
@@ -271,8 +287,10 @@ h1, h2, h3 {
 }
 
 .app-row {
+    width: 100%;
     display: flex;
     gap: inherit;
+    justify-content: center;
 }
 
 .module-icon {

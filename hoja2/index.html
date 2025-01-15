@@ -12,13 +12,34 @@
     <div class="app-container">
         <div class="app-header-container">
             <div class="app-header">
+
                 <tristate-button id="connect-button" off-text="Connect" on-text="Disconnect"
                     off-to-on-text="Connecting..."
-                    on-to-off-text="Disconnect"></tristate-button>
+                    on-to-off-text="Disconnect"
+                ></tristate-button>
+
                 <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
-                    pending-text="Saving..."></single-shot-button>
+                    pending-text="Saving..."
+                ></single-shot-button>
             </div>
-            <div visible="false" class="header-msg-box visible">This is a test message</div>
+
+            <div visible="false" id="notif-msg-box" class="header-msg-box"></div>
+
+            <div visible="false" id="fw-update-box" class="header-msg-box">
+                <h2>Update Available</h2>
+                <p>Click 'Enter Update Mode'. Click 'Download' to retrieve the latest firmware. 
+                    Save the .uf2 firmware for your device to the RPI-RP2 USB device in your file explorer.</p>
+                <div class="app-row">
+                    <single-shot-button id="bootloader-button" state="ready" ready-text="Enter Update Mode" disabled-text="..."
+                        pending-text="Entering..." failure-text="Entering..." success-text="Entering..."
+                    ></single-shot-button>
+
+                    <single-shot-button id="download-button" state="ready" ready-text="Download" disabled-text="Download"
+                        pending-text="Download" success-text="Opening..."
+                    ></single-shot-button>
+                </div>
+            </div>
+
         </div>
         <div class="swap-space">
 

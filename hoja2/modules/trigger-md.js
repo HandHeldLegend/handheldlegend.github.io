@@ -208,13 +208,13 @@ export function render(container) {
             gamepad.trigger_cfg.trigger_mode_gamecube = e.detail.selectedIndex;
             writeTriggerMemBlock();
         });
-
     }
 
     if(analogTriggersEnabled) {
         analogTriggerBar = container.querySelector('dual-analog-trigger');
         analogTriggerBar.setThresholds(gamepad.trigger_cfg.left_hairpin_value, gamepad.trigger_cfg.right_hairpin_value);
-
+        analogTriggerBar.setValues(0, 0);
+        
         const leftHairpinEl = container.querySelector('number-selector[id="l-hairtrigger-number"]');
         leftHairpinEl.addEventListener('change', (e) => {
             console.log(`Left hairpin changed to: ${e.detail.value}`);
@@ -301,6 +301,8 @@ export function render(container) {
             await gamepad.requestBlock(triggerCfgBlockNumber);
             return status;
         });
+
+
     }
 
     gamepad.setReportHook(triggerReportHook);

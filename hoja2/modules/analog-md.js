@@ -6,9 +6,9 @@ import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
 import Analogpackeddistances from '../factory/parsers/analogPackedDistances.js';
 import Anglemap from '../factory/parsers/angleMap.js';
-import RemapSelector from '../components/remap-selector.js';
 
 import AnalogStickVisual from '../components/analog-stick-visual.js';
+import AxisInvertSelector from '../components/axis-invert-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
@@ -538,6 +538,12 @@ export function render(container) {
                 ></single-shot-button>
             </div>
             ${anglePickersHTML}
+            <axis-invert-selector 
+                default-lx="false"
+                default-ly="false"
+                default-rx="false"
+                default-ry="false"
+            ></axis-invert-selector>
     `;
 
     // Set analog angle change handler
@@ -605,6 +611,34 @@ export function render(container) {
         // Reload our mem block
         await gamepad.requestBlock(analogCfgBlockNumber);
         return status;
+    });
+
+    const invertAxisSelector = container.querySelector('axis-invert-selector');
+
+    invertAxisSelector.addEventListener('change', (event) => {
+        const { axis, inverted } = event.detail;
+        console.log(`${axis} is now ${inverted ? 'inverted' : 'normal'}`);
+        switch(axis) {
+            case 'LX':
+                // Left stick X-axis inversion
+                gamepad.analog_cfg.lx_invert = inverted;
+                break;
+            case 'LY':
+                // Left stick Y-axis inversion
+                gamepad.analog_cfg.ly_invert = inverted;
+                break;
+            case 'RX':
+                // Right stick X-axis inversion
+                gamepad.analog_cfg.rx_invert = inverted;
+                break;
+            case 'RY':
+                // Right stick Y-axis inversion
+                gamepad.analog_cfg.ry_invert = inverted;
+                break;
+            default:
+                console.warn(`Unknown axis: ${axis}`);
+        }
+        writeAngleMemBlock();
     });
 
     enableTooltips(container);

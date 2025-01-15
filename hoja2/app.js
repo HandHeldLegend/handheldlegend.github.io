@@ -9,6 +9,10 @@ import SingleShotButton from './components/single-shot-button.js';
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 
+// GAMEPAD_CMD_RESET_TO_BOOTLOADER = 1
+const bootloaderCmd = 1;
+const gamepadCfgBlock = 0;
+
 class ConfigApp {
 
     #appIcons = [];
@@ -144,7 +148,49 @@ class ConfigApp {
     }
 }
 
+const parseBufferText = buffer => {
+    const text = new TextDecoder().decode(buffer).trim();
+    return text === '~' ? false : text;
+};
+
 var debug = false;
+
+async function getManifestVersion(manifestUrl) {
+
+    let response = await fetch(manifestUrl);
+
+    if(response.ok) {
+        const data = await response.json();
+        if(data.fw_version) return data.fw_version;
+        else return false;
+    }
+}
+
+async function enableFwUpdateMessage(enable, url) {
+    const bootloaderButton = document.getElementById("bootloader-button");
+    const downloadButton = document.getElementById("download-button");
+    const fwMessageBox = document.getElementById("fw-update-box");
+
+    if(enable) {
+        bootloaderButton.setOnClick(async () => {
+            if(gamepad) {
+                gamepad.sendConfigCommand(gamepadCfgBlock, bootloaderCmd);
+                return true;
+            }
+        });
+
+        downloadButton.setOnClick(() => {
+            window.open(url, '_blank');
+            return true;
+        });
+
+        fwMessageBox.setAttribute("visible", "true");
+    }
+    else {
+        fwMessageBox.setAttribute("visible", "false");
+    }
+    
+}
 
 async function sendSaveCommand() {
     if(gamepad) {
@@ -172,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: './modules/trigger-md.js',
+                path: './modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
@@ -182,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     enableTooltips();
 
-    function connectHandle() {
+    async function connectHandle() {
         // Enable Icons
         window.configApp.enableIcon(0, true); // Gamepad
         window.configApp.enableIcon(1, true); // Remap
@@ -209,6 +255,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Enable Save
         saveButton.enableButton(true);
+
+        // Get FW version and compare
+        let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
+
+        console.log("Newest version: " + parseInt(fwVersion));
+        console.log("This version: " + parseInt(gamepad.device_static.fw_version));
+
+        if(fwVersion > gamepad.device_static.fw_version) {
+            // Enable FW update
+            enableFwUpdateMessage(true, parseBufferText(gamepad.device_static.firmware_url));
+        }
+        else {
+            // Enable FW update
+            enableFwUpdateMessage(false, parseBufferText(gamepad.device_static.firmware_url));
+        }        
     }
 
     function disconnectHandle() {
@@ -228,8 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gamepad.setConnectHook(connectHandle);
     gamepad.setDisconnectHook(disconnectHandle);
-
-    
 
     // Optional async handlers for connection/disconnection
     connectButton.setOnHandler(async () => {

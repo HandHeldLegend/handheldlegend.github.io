@@ -90,6 +90,8 @@ export function render(container) {
                 group-name="Right Grip" 
                 color="${griprColor}"
             ></group-rgb-picker>
+
+            <h3 class="devinfo">Build: ${String(gamepad.device_static.fw_version)}</h3>
     `;
 
     const macSelector = container.querySelector('mac-address-selector');

@@ -2,39 +2,59 @@
 
 export default class Bluetoothinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(1);
+    this.buffer = buffer || new Uint8Array(5);
   }
 
-  	/** @type {Uint8} */
+  	/** @type {Uint16} */
+	get baseband_version() {
+		return this.#_getUint16(0);
+	}
+
+	/** @type {Uint16} */
+	get baseband_type() {
+		return this.#_getUint16(2);
+	}
+
+	/** @type {Uint8} */
 	get bluetooth_bdr() {
-		return this.#_getBitfield(0, 1, 1, 0);
+		return this.#_getBitfield(4, 1, 1, 0);
 	}
 
 	/** @type {Uint8} */
 	get bluetooth_ble() {
-		return this.#_getBitfield(0, 1, 1, 1);
+		return this.#_getBitfield(4, 1, 1, 1);
 	}
 
 	/** @type {Uint8} */
 	get reserved() {
-		return this.#_getBitfield(0, 1, 6, 2);
+		return this.#_getBitfield(4, 1, 6, 2);
 	}
 
 
 
-  	/** @param {Uint8} value */
+  	/** @param {Uint16} value */
+	set baseband_version(value) {
+		this.#_setUint16(0, value);
+	}
+
+	/** @param {Uint16} value */
+	set baseband_type(value) {
+		this.#_setUint16(2, value);
+	}
+
+	/** @param {Uint8} value */
 	set bluetooth_bdr(value) {
-		this.#_setBitfield(0, 1, 1, 0, value);
+		this.#_setBitfield(4, 1, 1, 0, value);
 	}
 
 	/** @param {Uint8} value */
 	set bluetooth_ble(value) {
-		this.#_setBitfield(0, 1, 1, 1, value);
+		this.#_setBitfield(4, 1, 1, 1, value);
 	}
 
 	/** @param {Uint8} value */
 	set reserved(value) {
-		this.#_setBitfield(0, 1, 6, 2, value);
+		this.#_setBitfield(4, 1, 6, 2, value);
 	}
 
 
