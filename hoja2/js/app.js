@@ -154,13 +154,11 @@ class ConfigApp {
 
         // Handle mobile back gesture
         window.onpopstate = (event) => {
+            event.preventDefault();
+            this.closemoduleView();
             // Only handle back gesture if a module is open
-            if (this.moduleContainer.getAttribute("visible") === "true") {
-                event.preventDefault();
-                this.closemoduleView();
-                // Push a new state to maintain history stack
-                history.pushState(null, '', window.location.pathname);
-            }
+            // Push a new state to maintain history stack
+            history.pushState(null, '', window.location.pathname);
         };
 
         // Add initial state when app loads

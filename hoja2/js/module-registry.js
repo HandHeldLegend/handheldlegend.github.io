@@ -3,7 +3,7 @@ export async function registerSettingsModules() {
     const moduleConfigs = [
         {
             name: 'Gamepad',
-            path: '../../modules/gamepad-md.js',
+            path: '../modules/gamepad-md.js',
             icon: '🎮', // Represents gaming controllers
             color: '#2980b9' // Deep blue for a tech/gaming vibe
         },
