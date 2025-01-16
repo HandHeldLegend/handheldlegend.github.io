@@ -9,36 +9,41 @@ import SingleShotButton from '../components/single-shot-button.js';
 // In your app.js or main entry point
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
-        // Check install state when page loads
-        await checkInstallState();
-
-        navigator.serviceWorker.register('../app_sw.js')
-            .then(registration => {
-                console.log('ServiceWorker registered:', registration);
-                
-                // Optional: Check for updates
-                registration.addEventListener('updatefound', () => {
-                    const newWorker = registration.installing;
-                    console.log('Service Worker update found!');
-                    
-                    newWorker.addEventListener('statechange', () => {
-                        console.log('Service Worker state:', newWorker.state);
-                        if (newWorker.state === 'installed') {
-                            if (navigator.serviceWorker.controller) {
-                                // New content is available, you might want to notify the user
-                                console.log('New content is available; please refresh.');
-                                enableNotifMessage(`App has updated. Refresh to complete update.`);
-                            } else {
-                                // First time installation
-                                console.log('Content is cached for offline use.');
-                            }
-                        }
-                    });
-                });
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed:', error);
+        try {
+            // Check install state when page loads
+            await checkInstallState();
+            
+            // Register service worker
+            const registration = await navigator.serviceWorker.register('../app_sw.js', {
+                type: 'module'
             });
+            
+            console.log('ServiceWorker registered:', registration);
+
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                console.log('Service Worker update found!');
+                
+                newWorker.addEventListener('statechange', () => {
+                    console.log('Service Worker state:', newWorker.state);
+                    
+                    if (newWorker.state === 'installed') {
+                        if (navigator.serviceWorker.controller) {
+                            // New version installed but waiting to activate
+                            console.log('New content is available; please refresh.');
+                            enableNotifMessage('App has updated. Refresh to complete update.');
+                        } else {
+                            // First time installation
+                            console.log('Content is cached for offline use.');
+                        }
+                    }
+                });
+            });
+
+        } catch (error) {
+            console.error('ServiceWorker registration failed:', error);
+        }
     });
 }
 
