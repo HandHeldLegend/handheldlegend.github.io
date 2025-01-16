@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.06a', // Increment this when you update files
+    version: 'v0.07a', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
@@ -96,24 +96,41 @@ async function precacheResources() {
     }
 }
 
+// Cache management utility function
+async function clearOldCaches(currentCacheName) {
+  try {
+      const names = await caches.keys();
+      const deletionPromises = names
+          .filter(name => name !== currentCacheName)
+          .map(name => {
+              console.log(`Deleting old cache: ${name}`);
+              return caches.delete(name);
+          });
+      
+      await Promise.all(deletionPromises);
+  } catch (error) {
+      console.error('Error clearing old caches:', error);
+      throw error; // Re-throw to handle in calling context if needed
+  }
+}
+
 // Usage in service worker:
-self.addEventListener('install', event => {
+self.addEventListener('install', async event => {
+    try {
+      await clearOldCaches(CACHE_NAME);
+    }
+    catch(e) {}
+
     event.waitUntil(precacheResources());
 });
 
-// Simplified and fixed activate event handler
+
+
+// Simplified activate event handler
 self.addEventListener("activate", (event) => {
   event.waitUntil(
       (async () => {
-          const names = await caches.keys();
-          await Promise.all(
-              names.map(name => {
-                  if (name !== CACHE_NAME) {
-                      console.log(`Deleting old cache: ${name}`);
-                      return caches.delete(name);
-                  }
-              }).filter(Boolean) // Filter out undefined values from the map
-          );
+          await clearOldCaches(CACHE_NAME);
           await clients.claim();
       })()
   );
