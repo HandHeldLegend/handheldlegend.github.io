@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.03a', // Increment this when you update files
+    version: 'v0.06a', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
@@ -123,12 +123,11 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     (async () => {
       const requestURL = event.request.url;
-      console.log(`[SW] Fetch request for: ${requestURL}`);
 
       // First, try to get from cache
       try {
         const cache = await caches.open(CACHE_NAME);
-        console.log(`[SW] Checking cache: ${CACHE_NAME}`);
+
         
         // Important: Need to create a new Request to ensure proper matching
         const normalizedRequest = new Request(requestURL, {
@@ -140,26 +139,26 @@ self.addEventListener("fetch", (event) => {
         const cachedResponse = await cache.match(normalizedRequest);
         
         if (cachedResponse) {
-          console.log(`[SW] Found in cache: ${requestURL}`);
+
           return cachedResponse;
         }
-        console.log(`[SW] Not found in cache: ${requestURL}`);
+
       } catch (cacheError) {
         console.error(`[SW] Cache access error:`, cacheError);
       }
 
       // If not in cache or cache error, try network
       try {
-        console.log(`[SW] Attempting network fetch: ${requestURL}`);
+
         const networkResponse = await fetch(event.request);
         
         if (networkResponse.ok) {
-          console.log(`[SW] Network fetch successful: ${requestURL}`);
+
           // Cache the successful response
           try {
             const cache = await caches.open(CACHE_NAME);
             await cache.put(event.request, networkResponse.clone());
-            console.log(`[SW] Cached network response: ${requestURL}`);
+
           } catch (cacheError) {
             console.error(`[SW] Error caching network response:`, cacheError);
           }
@@ -169,13 +168,11 @@ self.addEventListener("fetch", (event) => {
         
         throw new Error(`Network response was not ok: ${networkResponse.status}`);
       } catch (networkError) {
-        console.error(`[SW] Network fetch failed:`, networkError);
-        
+
         // One last try from cache with less strict matching
         try {
           const cache = await caches.open(CACHE_NAME);
           const allCacheKeys = await cache.keys();
-          console.log(`[SW] All cached URLs:`, allCacheKeys.map(req => req.url));
           
           // Try to find a match ignoring search params
           const urlWithoutSearch = requestURL.split('?')[0];
@@ -186,7 +183,6 @@ self.addEventListener("fetch", (event) => {
           if (matchingKey) {
             const cachedResponse = await cache.match(matchingKey);
             if (cachedResponse) {
-              console.log(`[SW] Found in cache with relaxed matching: ${requestURL}`);
               return cachedResponse;
             }
           }
