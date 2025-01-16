@@ -14,7 +14,7 @@ if ('serviceWorker' in navigator) {
             await checkInstallState();
             
             // Register service worker
-            const registration = await navigator.serviceWorker.register('../app_sw.js', {
+            const registration = await navigator.serviceWorker.register('./app_sw.js', {
                 type: 'module'
             });
             
