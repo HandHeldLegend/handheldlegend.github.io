@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.05b', // Increment this when you update files
+    version: 'v0.07b', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
@@ -139,41 +139,41 @@ self.addEventListener('activate', event => {
       })()
   );
 });
-  
+
 // Fetch event - serve from cache or network
 self.addEventListener('fetch', event => {
   event.respondWith(
-      (async () => {
-          const cache = await caches.open(CACHE_NAME);
-          
-          // Try cache first
-          const cachedResponse = await cache.match(event.request);
-          if (cachedResponse) {
-              return cachedResponse;
+    (async () => {
+      try {
+        const cache = await caches.open(CACHE_NAME);
+
+        // Check the cache first
+        const cachedResponse = await cache.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // Fetch from the network if not in cache
+        const networkResponse = await fetch(event.request);
+
+        // Cache the network response if successful
+        if (networkResponse.ok) {
+          await cache.put(event.request, networkResponse.clone());
+        }
+
+        return networkResponse;
+      } catch (error) {
+        console.error(`Fetch failed for ${event.request.url}:`, error);
+
+        // Return a fallback response or meaningful error
+        return new Response('Unable to fetch resource', {
+          status: 504,
+          statusText: 'Gateway Timeout',
+          headers: {
+            'Content-Type': 'text/plain'
           }
-          
-          // If not in cache, try network
-          try {
-              const networkResponse = await fetch(event.request);
-              
-              // Cache successful responses
-              if (networkResponse.ok) {
-                  await cache.put(event.request, networkResponse.clone());
-              }
-              
-              return networkResponse;
-          } catch (error) {
-              console.error(`Network fetch failed for: ${event.request.url}`, error);
-              
-              // Return a meaningful error response
-              return new Response('Network fetch failed', {
-                  status: 504,
-                  statusText: 'Gateway Timeout',
-                  headers: new Headers({
-                      'Content-Type': 'text/plain'
-                  })
-              });
-          }
-      })()
+        });
+      }
+    })()
   );
 });
