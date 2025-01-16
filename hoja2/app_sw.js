@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.07a', // Increment this when you update files
+    version: 'v0.09a', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
@@ -114,17 +114,24 @@ async function clearOldCaches(currentCacheName) {
   }
 }
 
-// Usage in service worker:
-self.addEventListener('install', async event => {
-    try {
-      await clearOldCaches(CACHE_NAME);
-    }
-    catch(e) {}
-
-    event.waitUntil(precacheResources());
+self.addEventListener('install', event => {
+  event.waitUntil(
+      (async () => {
+          try {
+              // Clear old caches first
+              await clearOldCaches(CACHE_NAME);
+              
+              // Then precache new resources
+              await precacheResources();
+          } catch (error) {
+              console.error('Error during service worker installation:', error);
+              // We still throw the error to ensure the service worker 
+              // installation fails if critical operations couldn't complete
+              throw error;
+          }
+      })()
+  );
 });
-
-
 
 // Simplified activate event handler
 self.addEventListener("activate", (event) => {
