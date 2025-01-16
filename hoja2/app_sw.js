@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.01b', // Increment this when you update files
+    version: 'v0.05b', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js'],
@@ -53,177 +53,127 @@ const CACHE_CONFIG = {
 
 const CACHE_NAME = `app-cache-${CACHE_CONFIG.version}`;
 
-async function precacheResources() {
-    
-    const resourceList = [];
-
-    // Flatten the folder structure into a list of complete URLs
-    for (const [folderPath, files] of Object.entries(CACHE_CONFIG.folders)) {
-        for (const file of files) {
-            resourceList.push(folderPath + file);
-        }
-    }
-
-    console.log(resourceList);
-
-    try {
-        // Open the cache
-        const cache = await caches.open(CACHE_NAME);
-        
-        // Add all resources to the cache
-        await cache.addAll(resourceList);
-        
-        console.log(`Successfully cached ${resourceList.length} resources in ${CACHE_NAME}`);
-        
-        // Optional: Delete old caches
-        const existingCaches = await caches.keys();
-        const oldCaches = existingCaches.filter(name => 
-            name.startsWith('app-cache-') && name !== CACHE_NAME
-        );
-        
-        await Promise.all(
-            oldCaches.map(CACHE_NAME => caches.delete(CACHE_NAME))
-        );
-        
-        if (oldCaches.length > 0) {
-            console.log(`Deleted ${oldCaches.length} old cache(s)`);
-        }
-        
-        return true;
-    } catch (error) {
-        console.error('Failed to precache resources:', error);
-        return false;
-    }
+// Utility function to get a list of all resources to cache
+function getResourceList() {
+  const resourceList = [];
+  for (const [folderPath, files] of Object.entries(CACHE_CONFIG.folders)) {
+      for (const file of files) {
+          resourceList.push(folderPath + file);
+      }
+  }
+  return resourceList;
 }
 
-// Cache management utility function
-async function clearOldCaches(currentCacheName) {
+async function precacheResources() {
   try {
-      const names = await caches.keys();
-      const deletionPromises = names
-          .filter(name => name !== currentCacheName)
-          .map(name => {
-              console.log(`Deleting old cache: ${name}`);
-              return caches.delete(name);
-          });
+      const cache = await caches.open(CACHE_NAME);
+      const resourceList = getResourceList();
       
-      await Promise.all(deletionPromises);
+      // Add all resources to the cache
+      await cache.addAll(resourceList);
+      console.log(`Successfully cached ${resourceList.length} resources in ${CACHE_NAME}`);
+      return true;
   } catch (error) {
-      console.error('Error clearing old caches:', error);
-      throw error; // Re-throw to handle in calling context if needed
+      console.error('Failed to precache resources:', error);
+      return false;
   }
 }
 
+async function clearOldCaches() {
+  const existingCaches = await caches.keys();
+  const oldCaches = existingCaches.filter(name => 
+      name.startsWith('app-cache-') && name !== CACHE_NAME
+  );
+  
+  await Promise.all(
+      oldCaches.map(cacheName => {
+          console.log(`Deleting old cache: ${cacheName}`);
+          return caches.delete(cacheName);
+      })
+  );
+  
+  return oldCaches.length;
+}
+
+// Install event - precache all resources
 self.addEventListener('install', event => {
+  console.log(`Installing new service worker with cache: ${CACHE_NAME}`);
+  
   event.waitUntil(
       (async () => {
           try {
-              // Clear old caches first
-              await clearOldCaches(CACHE_NAME);
+              // Skip waiting immediately to ensure the new service worker takes over
+              await self.skipWaiting();
               
-              // Then precache new resources
+              // Precache resources
               await precacheResources();
+              
+              console.log('Service worker installation complete');
           } catch (error) {
-              console.error('Error during service worker installation:', error);
-              // We still throw the error to ensure the service worker 
-              // installation fails if critical operations couldn't complete
+              console.error('Service worker installation failed:', error);
               throw error;
           }
       })()
   );
 });
 
-// Simplified activate event handler
-self.addEventListener("activate", (event) => {
+// Activate event - clean up old caches
+self.addEventListener('activate', event => {
+  console.log('New service worker activating...');
+  
   event.waitUntil(
       (async () => {
-          await clearOldCaches(CACHE_NAME);
-          await clients.claim();
+          try {
+              // Clear old caches
+              const deletedCaches = await clearOldCaches();
+              console.log(`Cleared ${deletedCaches} old cache(s)`);
+              
+              // Take control of all clients immediately
+              await clients.claim();
+              
+              console.log('Service worker activation complete');
+          } catch (error) {
+              console.error('Service worker activation failed:', error);
+              throw error;
+          }
       })()
   );
 });
   
-self.addEventListener("fetch", (event) => {
+// Fetch event - serve from cache or network
+self.addEventListener('fetch', event => {
   event.respondWith(
-    (async () => {
-      const requestURL = event.request.url;
-
-      // First, try to get from cache
-      try {
-        const cache = await caches.open(CACHE_NAME);
-
-        
-        // Important: Need to create a new Request to ensure proper matching
-        const normalizedRequest = new Request(requestURL, {
-          mode: 'cors',  // or 'same-origin' depending on your needs
-          credentials: 'same-origin',
-          headers: new Headers(event.request.headers)
-        });
-        
-        const cachedResponse = await cache.match(normalizedRequest);
-        
-        if (cachedResponse) {
-
-          return cachedResponse;
-        }
-
-      } catch (cacheError) {
-        console.error(`[SW] Cache access error:`, cacheError);
-      }
-
-      // If not in cache or cache error, try network
-      try {
-
-        const networkResponse = await fetch(event.request);
-        
-        if (networkResponse.ok) {
-
-          // Cache the successful response
-          try {
-            const cache = await caches.open(CACHE_NAME);
-            await cache.put(event.request, networkResponse.clone());
-
-          } catch (cacheError) {
-            console.error(`[SW] Error caching network response:`, cacheError);
-          }
-          
-          return networkResponse;
-        }
-        
-        throw new Error(`Network response was not ok: ${networkResponse.status}`);
-      } catch (networkError) {
-
-        // One last try from cache with less strict matching
-        try {
+      (async () => {
           const cache = await caches.open(CACHE_NAME);
-          const allCacheKeys = await cache.keys();
           
-          // Try to find a match ignoring search params
-          const urlWithoutSearch = requestURL.split('?')[0];
-          const matchingKey = allCacheKeys.find(key => 
-            key.url.split('?')[0] === urlWithoutSearch
-          );
-          
-          if (matchingKey) {
-            const cachedResponse = await cache.match(matchingKey);
-            if (cachedResponse) {
+          // Try cache first
+          const cachedResponse = await cache.match(event.request);
+          if (cachedResponse) {
               return cachedResponse;
-            }
           }
-        } catch (fallbackError) {
-          console.error(`[SW] Fallback cache access error:`, fallbackError);
-        }
-        
-        // If we get here, both network and cache have failed
-        console.error(`[SW] All retrieval methods failed for: ${requestURL}`);
-        return new Response(`Network and cache both failed for: ${requestURL}`, {
-          status: 504,
-          statusText: 'Gateway Timeout',
-          headers: new Headers({
-            'Content-Type': 'text/plain'
-          })
-        });
-      }
-    })()
+          
+          // If not in cache, try network
+          try {
+              const networkResponse = await fetch(event.request);
+              
+              // Cache successful responses
+              if (networkResponse.ok) {
+                  await cache.put(event.request, networkResponse.clone());
+              }
+              
+              return networkResponse;
+          } catch (error) {
+              console.error(`Network fetch failed for: ${event.request.url}`, error);
+              
+              // Return a meaningful error response
+              return new Response('Network fetch failed', {
+                  status: 504,
+                  statusText: 'Gateway Timeout',
+                  headers: new Headers({
+                      'Content-Type': 'text/plain'
+                  })
+              });
+          }
+      })()
   );
 });
