@@ -91,10 +91,65 @@ const gamecubeMapCodes = [
     "Start", "~", "~", "~"
 ];
 
+class ButtonListener {
+    constructor() {
+        this.resolveButtonPress = null;
+        this.rejectButtonPress = null;
+        this.currentPromise = null;
+        this.timeout = null;
+    }
+
+    startListening(timeoutMs = 5000) {
+        // Cancel any existing listening session
+        this.stopListening();
+        
+        this.currentPromise = new Promise((resolve, reject) => {
+            this.resolveButtonPress = resolve;
+            this.rejectButtonPress = reject;
+            
+            // Set timeout to automatically cancel listening
+            this.timeout = setTimeout(() => {
+                this.stopListening('Listening timeout');
+            }, timeoutMs);
+        });
+
+        return this.currentPromise;
+    }
+
+    stopListening(reason = 'Listening cancelled') {
+        if (this.rejectButtonPress) {
+            this.rejectButtonPress(new Error(reason));
+        }
+        
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
+
+        this.resolveButtonPress = null;
+        this.rejectButtonPress = null;
+        this.currentPromise = null;
+    }
+
+    handleButtonPress(buttonIdx) {
+        if (this.resolveButtonPress) {
+            this.resolveButtonPress(buttonIdx);
+            this.stopListening();
+            return true;
+        }
+        return false;
+    }
+
+    isListening() {
+        return this.currentPromise !== null;
+    }
+}
+
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 const remapCfgBlockNumber = 1;
 
+let buttonListener = null;
 let remapPickers = null;
 
 let remapSelectorContainer = null;
@@ -307,35 +362,27 @@ function getOutputForInput(inputNum) {
     }
 }
 
-// In use, OK
 function reportHook(data) {
     let buttonsAll = (data.getUint8(9) << 8) | (data.getUint8(10));
 
-    if(waitingForButton) {
-        let buttonIdxGot = -1;
-        // Scan buttons
-        for(let i = 0; i < 16; i++) {
-            let found = (buttonsAll & (1<<(15-i))) ? true : false;
-            if(found)
-            {
-                buttonIdxGot = 15-i;
-                waitingForButton = false;
-                resolveButtonPress(buttonIdxGot);
-                break;
+    if(buttonListener) {
+        if (buttonListener.isListening()) {
+            // Scan buttons
+            for (let i = 0; i < 16; i++) {
+                if (buttonsAll & (1 << i) ? true : false) {
+                    buttonListener.handleButtonPress(i);
+                    break;
+                }
             }
         }
     }
 
-    if(remapPickers) {
+    if (remapPickers) {
         remapPickers.forEach((e) => {
             let idx = parseInt(e.getAttribute('idx'));
             let matchingInput = getInputForOutput(idx);
-            let masked = ((1<<matchingInput) & buttonsAll) ? true : false;
-            if(masked) {
-                
-                e.setPressed(true);
-            }
-            else e.setPressed(false);
+            let masked = ((1 << matchingInput) & buttonsAll) ? true : false;
+            e.setPressed(masked);
         });
     }
 }
@@ -370,46 +417,41 @@ function getCurrentMapCodeText(code) {
     return codes[code];
 }
 
-// In use, OK
 async function startListening(remapButtonElement) {
-    // Output index really
-    let idxText = remapButtonElement.getAttribute('idx');
-    let idx = parseInt(idxText);
-
-    if(remapPickers) {
+    // Initialize the singleton instance if it doesn't exist
+    if (!buttonListener) {
+        buttonListener = new ButtonListener();
+    }
+    
+    if (remapPickers) {
         remapPickers.forEach(element => {
             let compidx = element.getAttribute('idx');
-
-            if(compidx==idxText)
-            {
+            if (compidx === remapButtonElement.getAttribute('idx')) {
                 element.disableCaptureButton(true);
-            }
-            else 
+            } else {
                 element.disableCaptureButton(false);
+            }
+        });
+    } else return;
+
+    try {
+        const idx = parseInt(remapButtonElement.getAttribute('idx'));
+        console.log(`Listening for press for ${getCurrentMapCodeText(idx)}`);
+        
+        const buttonPressedValue = await buttonListener.startListening();
+        console.log(`Button pressed: ${inputMapCodes[buttonPressedValue]}`);
+
+        assignInputToOutput(buttonPressedValue, idx);
+        console.log(`Assigned to: ${getCurrentMapCodeText(idx)}`);
+
+        softReloadRemapValues();
+    } catch (error) {
+        console.warn('Button listening cancelled:', error);
+    } finally {
+        remapPickers.forEach(element => {
+            element.enableCaptureButton();
         });
     }
-    else return;
-
-    // Create a promise that resolves when a button is pressed
-    const buttonPressed = new Promise((resolve) => {
-        resolveButtonPress = resolve; // Assign the resolver function
-        waitingForButton = true; // Set the flag to true
-    });
-
-    console.log(`Listening for press for ${getCurrentMapCodeText(idx)}`);
-    const buttonPressedValue = await buttonPressed;
-    console.log(`Button pressed: ${inputMapCodes[buttonPressedValue]}`);
-
-    assignInputToOutput(buttonPressedValue, idx);
-
-    console.log(`Assigned to: ${getCurrentMapCodeText(idx)}`);
-
-    // Soft reload
-    softReloadRemapValues();
-
-    remapPickers.forEach(element => {
-        element.enableCaptureButton();
-    });
 }
 
 // Call to render the appropriate render mode
@@ -450,7 +492,7 @@ async function newRenderRemaps(inputMode) {
         let idx = 15-i; // Inverted index for bit shifting
         let enabled = (buttons & ( 1<<idx) ) >> idx; // If this controller supports this specific button
 
-        if(enabled && (codes[i]!="~")) {
+        if(codes[i]!="~") {
 
             // Get input value for output
             let inputMatching = getInputForOutput(i);
@@ -500,7 +542,12 @@ async function newRenderRemaps(inputMode) {
 
 function resetProfileToDefault() {
     for(let i = 0; i<16; i++) {
-        assignInputToOutput(i, i);
+        let idx = (1<<i);
+        if(idx & gamepad.button_static.main_buttons) {
+            assignInputToOutput(i, i);
+        }
+        else assignInputToOutput(i, -1);
+            
     }
     softReloadRemapValues();
     writeRemapMemBlock();
