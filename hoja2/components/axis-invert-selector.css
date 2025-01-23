@@ -25,53 +25,58 @@
     min-width: 30px;
 }
 
-.toggle-button {
+.checkbox-container {
     position: relative;
-    max-width: 120px;
-    width: 80px;
-    height: 100%;
-    background: var(--button-bg);
-    border-radius: 20px;
+    display: block;
     cursor: pointer;
-    overflow: hidden;
+    user-select: none;
+}
+
+.axis-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 25px;
+    background-color: #ccc;
+    border-radius: 25px;
     transition: background-color 0.3s ease;
 }
 
-.toggle-button .toggle-state {
+.checkmark::after {
+    content: '';
     position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 3px;
+    left: 3px;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     transition: transform 0.3s ease;
-    font-size: 0.9rem;
 }
 
-.toggle-button .toggle-state:first-child {
-    background: var(--button-active);
-    transform: translateX(0);
+.checkbox-container input:checked + .checkmark {
+    background-color: #4CAF50;
 }
 
-.toggle-button .toggle-state:last-child {
-    background: var(--button-warning);
-    transform: translateX(100%);
-}
-
-.toggle-button.inverted .toggle-state:first-child {
-    transform: translateX(-100%);
-}
-
-.toggle-button.inverted .toggle-state:last-child {
-    transform: translateX(0);
+.checkbox-container input:checked + .checkmark::after {
+    transform: translateX(25px);
 }
 
 /* Hover and focus states */
-.toggle-button:hover {
+.checkbox-container:hover .checkmark {
     opacity: 0.9;
 }
 
-.toggle-button:focus-visible {
-    outline: 2px solid var(--focus-color);
+.checkbox-container:focus-visible .checkmark {
+    outline: 2px solid blue;
     outline-offset: 2px;
 }

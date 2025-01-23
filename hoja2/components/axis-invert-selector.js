@@ -4,13 +4,11 @@ class AxisInvertSelector extends HTMLElement {
         this.attachShadow({ mode: 'open' });
     }
 
-    // Observed attributes for default inversion states
     static get observedAttributes() {
         return ['default-lx', 'default-ly', 'default-rx', 'default-ry'];
     }
 
     async connectedCallback() {
-        // Load the component-specific CSS
         const csstext = await fetch('./components/axis-invert-selector.css');
         
         const cssHostResponse = await fetch('./components/host-template.css');
@@ -28,13 +26,11 @@ class AxisInvertSelector extends HTMLElement {
         }
     }
 
-    // Get default state for each axis
     getDefaultState(axis) {
         const value = this.getAttribute(`default-${axis.toLowerCase()}`);
         return value === 'true';
     }
 
-    // Render the component
     render(css) {
         const axes = ['LX', 'LY', 'RX', 'RY'];
         
@@ -44,68 +40,56 @@ class AxisInvertSelector extends HTMLElement {
                 ${axes.map(axis => `
                     <div class="axis-item">
                         <span class="axis-label">${axis}</span>
-                        <div class="toggle-button" data-axis="${axis}">
-                            <div class="toggle-state">Normal</div>
-                            <div class="toggle-state">Inverted</div>
-                        </div>
+                        <label class="checkbox-container" data-axis="${axis}">
+                            <input type="checkbox" class="axis-checkbox">
+                            <span class="checkmark"></span>
+                        </label>
                     </div>
                 `).join('')}
             </div>
         `;
     }
 
-    // Apply default states based on attributes
     applyDefaultStates() {
-        const toggleButtons = this.shadowRoot.querySelectorAll('.toggle-button');
-        toggleButtons.forEach(button => {
-            const axis = button.dataset.axis;
-            const isInverted = this.getDefaultState(axis);
-            if (isInverted) {
-                button.classList.add('inverted');
-            } else {
-                button.classList.remove('inverted');
-            }
+        const checkboxContainers = this.shadowRoot.querySelectorAll('.checkbox-container');
+        checkboxContainers.forEach(container => {
+            const axis = container.dataset.axis;
+            const checkbox = container.querySelector('.axis-checkbox');
+            checkbox.checked = this.getDefaultState(axis);
         });
     }
 
-    // Set state for a specific axis
     setState(axis, inverted) {
-        const button = this.shadowRoot.querySelector(`[data-axis="${axis}"]`);
-        if (!button) return;
-
-        if (inverted) {
-            button.classList.add('inverted');
-        } else {
-            button.classList.remove('inverted');
+        const checkbox = this.shadowRoot.querySelector(`[data-axis="${axis}"] .axis-checkbox`);
+        if (checkbox) {
+            checkbox.checked = inverted;
         }
     }
 
-    // Get current state of all axes
     getState() {
         const state = {};
-        const toggleButtons = this.shadowRoot.querySelectorAll('.toggle-button');
+        const checkboxContainers = this.shadowRoot.querySelectorAll('.checkbox-container');
         
-        toggleButtons.forEach(button => {
-            const axis = button.dataset.axis;
-            state[axis] = button.classList.contains('inverted');
+        checkboxContainers.forEach(container => {
+            const axis = container.dataset.axis;
+            const checkbox = container.querySelector('.axis-checkbox');
+            state[axis] = checkbox.checked;
         });
 
         return state;
     }
 
-    // Setup event listeners for toggle buttons
     setupEventListeners() {
-        const toggleButtons = this.shadowRoot.querySelectorAll('.toggle-button');
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                button.classList.toggle('inverted');
-                const axis = button.dataset.axis;
-                const isInverted = button.classList.contains('inverted');
+        const checkboxContainers = this.shadowRoot.querySelectorAll('.checkbox-container');
+        checkboxContainers.forEach(container => {
+            const checkbox = container.querySelector('.axis-checkbox');
+            checkbox.addEventListener('change', () => {
+                const axis = container.dataset.axis;
                 
                 this.dispatchEvent(new CustomEvent('change', {
                     detail: {
                         axis: axis,
-                        inverted: isInverted
+                        inverted: checkbox.checked
                     }
                 }));
             });
@@ -113,7 +97,6 @@ class AxisInvertSelector extends HTMLElement {
     }
 }
 
-// Define the custom element
 customElements.define('axis-invert-selector', AxisInvertSelector);
 
 export default AxisInvertSelector;

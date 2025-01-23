@@ -447,7 +447,10 @@ export function render(container) {
 
     container.innerHTML = `
             <h2>Calibrate</h2>
-            <p>To calibrate both sticks, press Start. Move both analog sticks in a full circle slowly. Press Stop to complete calibration.</p>
+            <div class="app-text-container">
+            To calibrate both sticks, press Start. Move both analog sticks in a full circle slowly. Press Stop to complete calibration.
+            <strong>You must calibrate both analog sticks at once.</strong>
+            </div>
             <div class="app-row">
                 <tristate-button 
                     id="calibrate-button" 
@@ -537,11 +540,12 @@ export function render(container) {
                 ></single-shot-button>
             </div>
             ${anglePickersHTML}
+            <h2>Invert Axis</h2>
             <axis-invert-selector 
-                default-lx="false"
-                default-ly="false"
-                default-rx="false"
-                default-ry="false"
+                default-lx="${gamepad.analog_cfg.lx_invert ? 'true' : 'false'}"
+                default-ly="${gamepad.analog_cfg.ly_invert ? 'true' : 'false'}"
+                default-rx="${gamepad.analog_cfg.rx_invert ? 'true' : 'false'}"
+                default-ry="${gamepad.analog_cfg.ry_invert ? 'true' : 'false'}"
             ></axis-invert-selector>
     `;
 

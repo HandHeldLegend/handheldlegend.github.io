@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: '../modules/wireless-md.js',
+                path: '../modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
