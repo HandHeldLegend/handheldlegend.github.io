@@ -55,6 +55,14 @@ export function render(container) {
     }
 
     container.innerHTML = `
+            <h2>Default Mode</h2>
+            <multi-position-button 
+                id="default-mode-selector" 
+                labels="SWITCH, XINPUT, GCUSB, GC, N64, SNES"
+                default-selected="${gamepad.gamepad_cfg.default_mode}"
+            ></multi-position-button>
+            </h2>
+
             <h2>Switch USB Mac Address
                 <div class="header-tooltip" tooltip="This is the MAC address only used for 
                 Switch mode when connected via USB.">?</div>
@@ -94,6 +102,14 @@ export function render(container) {
             <h3 class="devinfo">Build: ${String(gamepad.device_static.fw_version)}</h3>
     `;
 
+    /** @type {MultiPositionButton} */
+    const modeSelector = container.querySelector('multi-position-button[id="default-mode-selector"]');
+    modeSelector.addEventListener('change', async (e) => {
+        console.log("Default mode change");
+        gamepad.gamepad_cfg.gamepad_default_mode = e.detail.selectedIndex;
+        await writeGamepadMemBlock();
+    });
+
     const macSelector = container.querySelector('mac-address-selector');
     const bodyPicker = container.querySelector('group-rgb-picker[id="body-color"]');
     const buttonPicker = container.querySelector('group-rgb-picker[id="button-color"]');
@@ -125,4 +141,6 @@ export function render(container) {
     });
 
     enableTooltips(container);
+
+    console.log(gamepad.gamepad_cfg);
 }
