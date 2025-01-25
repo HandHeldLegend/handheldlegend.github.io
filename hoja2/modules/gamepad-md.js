@@ -56,10 +56,15 @@ export function render(container) {
 
     container.innerHTML = `
             <h2>Default Mode</h2>
+            <div class="app-text-container">
+                <strong>WARNING</strong>
+                <br>
+                Changing the default mode will require you to hold A upon plugging in the controller to connect to this configuration app. 
+            </div>
             <multi-position-button 
                 id="default-mode-selector" 
                 labels="SWITCH, XINPUT, GCUSB, GC, N64, SNES"
-                default-selected="${gamepad.gamepad_cfg.default_mode}"
+                default-selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
             ></multi-position-button>
             </h2>
 
