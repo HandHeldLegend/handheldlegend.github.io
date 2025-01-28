@@ -158,6 +158,8 @@ export function render(container) {
                 id="gyro-disable-select" 
                 labels="Enabled, Disabled"
                 default-selected="${gamepad.imu_cfg.imu_disabled}"
+
+                style="max-width: 350px"
             ></multi-position-button>
         </div>
         <h2>Visualizer</h2>
