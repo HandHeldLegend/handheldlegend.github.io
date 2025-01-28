@@ -71,15 +71,18 @@ function switchConfigAxis(axis) {
     let mode = 'round';
     let modeNum = 0;
     let deadzone = 0;
+    let snapbackMode = 0;
     if(!selectedAxis) {
         mode = (gamepad.analog_cfg.l_scaler_type==1) ? 'polygon' : 'round';
         modeNum = gamepad.analog_cfg.l_scaler_type;
         deadzone = gamepad.analog_cfg.l_deadzone;
+        snapbackMode = gamepad.analog_cfg.l_snapback_type;
     }
     else {
         mode = (gamepad.analog_cfg.r_scaler_type==1) ? 'polygon' : 'round';
         modeNum = gamepad.analog_cfg.r_scaler_type;
         deadzone = gamepad.analog_cfg.r_deadzone;
+        snapbackMode = gamepad.analog_cfg.r_snapback_type
     }
     
     updateAnalogSelectorDefaults(maps);
@@ -89,6 +92,7 @@ function switchConfigAxis(axis) {
     populateDeadzone(deadzone);
     populateScalerType(modeNum);
     populateAngleSelectors(maps);
+    populateSnapbackType(snapbackMode);
 }
 
 function populateDeadzone(value) {
@@ -101,6 +105,12 @@ function populateScalerType(mode) {
     /** @type {MultiPositionButton} */
     const scalerButtons = mdContainer.querySelector('multi-position-button[id="scale-mode-selector"]');
     scalerButtons.setState(mode);
+}
+
+function populateSnapbackType(mode) {
+    /** @type {MultiPositionButton} */
+    const snapbackButtons = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector"]');
+    snapbackButtons.setState(mode);
 }
 
 function updateAnalogVisualizerPolygon(maps) {
@@ -397,9 +407,11 @@ async function writeAngleMemBlock() {
     /** @type {MultiPositionButton} */
     const scalerModePicker = mdContainer.querySelector('multi-position-button[id="scale-mode-selector"]');
 
+    const snapbackModePicker = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector"]');
+
     let scalerModeIdx = scalerModePicker.getState().selectedIndex;
     let deadzoneValue = deadzoneSlider.getState().formattedValue;
-
+    let snapbackMode = snapbackModePicker.getState().selectedIndex;
 
     updateAnalogVisualizerScaler(scalerModeIdx);
     updateAnalogVisualizerDeadzone(deadzoneValue);
@@ -407,15 +419,17 @@ async function writeAngleMemBlock() {
 
     if(selectedAxis==0)
     {
-        gamepad.analog_cfg.l_angle_maps = maps;
-        gamepad.analog_cfg.l_deadzone = deadzoneValue;
-        gamepad.analog_cfg.l_scaler_type = scalerModeIdx;
+        gamepad.analog_cfg.l_angle_maps = maps; 
+        gamepad.analog_cfg.l_deadzone = deadzoneValue; 
+        gamepad.analog_cfg.l_scaler_type = scalerModeIdx; 
+        gamepad.analog_cfg.l_snapback_type = snapbackMode; 
     }
     else 
     {
-        gamepad.analog_cfg.r_angle_maps = maps;
-        gamepad.analog_cfg.r_deadzone = deadzoneValue;
-        gamepad.analog_cfg.r_scaler_type = scalerModeIdx;
+        gamepad.analog_cfg.r_angle_maps = maps; 
+        gamepad.analog_cfg.r_deadzone = deadzoneValue; 
+        gamepad.analog_cfg.r_scaler_type = scalerModeIdx; 
+        gamepad.analog_cfg.r_snapback_type = snapbackMode; 
     }
 
     await gamepad.sendBlock(analogCfgBlockNumber);
@@ -441,6 +455,7 @@ export function render(container) {
     }
 
     let modeIdx = gamepad.analog_cfg.l_scaler_type;
+    let snapbackIdx = gamepad.analog_cfg.l_snapback_type;
     let mode = (gamepad.analog_cfg.l_scaler_type==1) ? 'polygon' : 'round';
     let deadzone = gamepad.analog_cfg.l_deadzone;
     let polyVerticesString = mapsToStyleString(angleConfigs);
@@ -502,6 +517,15 @@ export function render(container) {
                 id="scale-mode-selector" 
                 labels="Round, Polygon"
                 default-selected="${modeIdx}"
+            ></multi-position-button>
+
+            <h2>Snapback Filter
+            <div class="header-tooltip" tooltip="The snapback filter required for ProCon sticks is quite aggressive and may not be to your liking. For more responsiveness, you may disable this filter per stick.">?</div>
+            </h2>
+            <multi-position-button 
+                id="snapback-mode-selector" 
+                labels="On, Off"
+                default-selected="${snapbackIdx}"
             ></multi-position-button>
 
             <h2>Angles</h2>
@@ -589,6 +613,12 @@ export function render(container) {
     const scaleModeButton = container.querySelector('multi-position-button[id="scale-mode-selector"]');
     scaleModeButton.addEventListener('change', (e) => {
         console.log("Scale Mode Change");
+        writeAngleMemBlock();
+    });
+
+    const snapbackModeButton = container.querySelector('multi-position-button[id="snapback-mode-selector"]');
+    snapbackModeButton.addEventListener('change', (e) => {
+        console.log("Snapback Mode Change");
         writeAngleMemBlock();
     });
 
