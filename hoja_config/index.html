@@ -1,1135 +1,160 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
-  <link rel="stylesheet" href="css/hojaConfig.css" type="text/css">
-  <link rel="stylesheet" href="css/hojaColor.css" type="text/css">
-  <link rel="stylesheet" href="css/hojaAnalog.css" type="text/css">
-  <link rel="stylesheet" href="css/hojaTrigger.css" type="text/css">
-  <link rel="stylesheet" href="css/hojaRemap.css" type="text/css">
-  <link rel="stylesheet" href="css/hojaGyro.css" type="text/css">
-  <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
-  <link rel="stylesheet" href="/css/radioPicker.css" type="text/css">
-  <link rel="stylesheet" href="/css/containers.css" type="text/css">
 
-  <link rel="stylesheet" href="/css/spooky/spooky.css" type="text/css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Meta Tags required for
-       Progressive Web App -->
-  <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
-  <meta name="theme-color" content="black">
-
-  <!-- Manifest File link -->
-  <link rel="manifest" href="manifest.json">
-</head>
-
-<body>
-  <div id="toast"></div>
-  <div class="context">
-
-    <ul class="circles">
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-    </ul>
-
-    <h1>{title}</h1>
-
-    <div class="box">
-      <div id="hoja-top-row">
-        <div id="offline-indicator" disabled="true">Offline Mode</div>
-      </div>
-      <button type="button" id="langButton" onclick="changeLang(1)">JP</button>
-
-      <button type="button" id="installButton" onclick="installButton()" disabled="true">{install}</button>
-      <div class="row">
-        <button type="button" id="connectButton" onclick="connectButton()">{connect}</button>
-        <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled="true">{disconnect}</button>
-      </div>
-
-      <!-- FW Update Message Box -->
-      <div class="message-box" id="ood" disabled="true">
-
-        <h2>{fwMsg1}</h2>
-        {fwMsg2}
-        <button type="button" id="fwButton" onclick="version_reset_to_bootloader()">{bootloader}</button>
-        <div class="full-width">
-          <div class="line"></div>
-        </div>
-
-        <div class="full-width" id="fwChangeLog">
-        </div>
-
-        <div class="full-width">
-          <div class="line"></div>
-        </div>
-        <div id="fwInstallText">{fwInstall}</div>
-        
-        <a id="downloadLink" download>
-          <button type="button" id="fwButtonInstall">{download}</button>
-        </a>
-      </div>
-
-      <!-- BT Baseband Update Box -->
-      <div class="message-box" id="baseband-box" disabled="true">
-
-        <h2>{basebandMsg1}</h2>
-        {basebandMsg2}
-        <div class="row">
-          <button disabled type="button" id="basebandButton" onclick="version_reset_to_baseband()">{baseband}</button>
-        </div>
-        <div class="full-width">
-          <div class="line"></div>
-        </div>
-
-        <div class="full-width">
-          <div class="row">
-            <button type="button"
-              onclick="window.open('https:/\/\/handheldlegend.github.io/hoja_baseband', '_blank')">{basebandOpen}</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- INITIAL FW INSTALL MSG BOX -->
-      <div class="message-box" id="initialize-board-box" disabled="true">
-
-        <h2>{fwMsgInitTitle}</h2>
-
-        <div class="full-width" id="fwInitializeInstructions">
-          Placeholder.
-        </div>
-
-        <div class="full-width">
-          <div class="line"></div>
-        </div>
-
-        <a id="downloadLinkInitial" href="https://github.com/HandHeldLegend/" download>
-          <button type="button" id="fwButton">{download}</button>
-        </a>
-      </div>
-
-      <!-- DEBUG -->
-      <!-- --------------- -->
-      <div class="collapsible" enabled="false" id="debug_collapsible">
-
-        <input id="debug-drop" class="toggle" type="checkbox">
-
-        <label for="debug-drop" id="debug-toggle" , class="lbl-toggle">Debug</label>
-        <div class="dropdown">
-          <div class="full-width">
-            <div id="epilepsy-warning">
-              <p>Only use these options if you have been directed to by support staff!</p>
-            </div>
-          </div>
-          <div class="full-width">
-            <h2>Reset to Bootloader</h2>
-            <button type="button" id="fwButton" onclick="version_reset_to_bootloader()">{bootloader}</button>
-          </div>
-
-          <div class="full-width">
-            <h2>Exit Bootloader</h2>
-            <button type="button" id="fwButton" onclick="pico_exit_bootloader_attempt()">Exit</button>
-          </div>
-
-          <div class="full-width">
-          <div class="line"></div></div>
-
-          <div class="full-width">
-            <h2>Bluetooth Firmware</h2>
-            <button type="button" id="basebandButton" onclick="version_reset_to_baseband()">{baseband}</button>
-          </div>
-
-          <div class="full-width">
-            <h2>Baseband Page</h2>
-              <button type="button"
-                onclick="window.open('https:/\/\/handheldlegend.github.io/hoja_baseband', '_blank')">{basebandOpen}</button>
-          </div>
-
-        </div>
-      </div>
-      <!-- --------------- -->
-
-      <!-- INFO -->
-      <!-- --------------- -->
-      <div class="collapsible" enabled="true">
-
-        <input id="info-drop" class="toggle" type="checkbox">
-
-        <label for="info-drop" id="info-toggle" , class="lbl-toggle">{information}</label>
-        <div class="dropdown">
-          <div class="full-width">
-            <div class="collapsible-row-double">
-              <row>
-                <h2>Switch Mode</h2>
-                Hold A on plug
-              </row>
-              <row>
-                <h2>XInput Mode</h2>
-                Hold X on plug
-              </row>
-            </div>
-          </div>
-
-          <div class="line"></div>
-
-          <div class="full-width">
-            <div class="collapsible-row-double">
-
-              <row>
-                <h2>Slippi/Dolphin Mode</h2>
-                Hold Y on plug
-              </row>
-              <row>
-                <h2>GC Mode</h2>
-                Hold D→ on plug
-              </row>
-            </div>
-          </div>
-
-          <div class="line"></div>
-
-          <div class="full-width">
-            <div class="collapsible-row-double">
-              <row>
-                <h2>N64 Mode</h2>
-                Hold D↓ on plug
-              </row>
-              <row>
-                <h2>SNES Mode</h2>
-                Hold D← on plug
-              </row>
-            </div>
-          </div>
-
-          <div class="line"></div>
-
-          <div class="full-width">
-            <div class="row">
-              <button type="button"
-                onclick="window.open('https:/\/\/discord.gg/CVNh38mA7y', '_blank')">{discord}</button>
-              <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">{twitter}</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-      <!-- --------------- -->
-
-      <!-- Script to determine if arrows are pressed or released-->
-      <script>
-        var keysPressed = false;
-        var setLaterMain = false;
-        var setLaterFloor = false;
-        var toSetMain = 0;
-        var toSetFloor = 0;
-
-        function areArrowKeysPressed(event) {
-          return ['ArrowLeft', 'ArrowRight'].includes(event.key) && (event.type === 'keydown');
-        }
-
-        function isSpacePressed(event) {
-          event.preventDefault();
-          return event.key === ' ' && event.type === 'keyup';
-        }
-
-        // Usage:
-        document.addEventListener('keydown', function (e) {
-          if (areArrowKeysPressed(e)) {
-            keysPressed = true;
-          }
-        });
-
-        document.addEventListener('keyup', function (e) {
-          if (!areArrowKeysPressed(e)) {
-            keysPressed = false;
-
-            if (setLaterMain) {
-              vibrate_set_value(toSetMain);
-              setLaterMain = false;
-            }
-
-            if (setLaterFloor) {
-              vibratefloor_set_value(toSetFloor);
-              setLaterFloor = false;
-            }
-          }
-
-          if (isSpacePressed(e) && octagon_menu_open) {
-            analog_update_octagon();
-          }
-        });
-      </script>
-
-      <!-- SYSTEM SETTING -->
-      <!-- --------------- -->
-      <div class="collapsible" id="system-collapsible">
-
-        <input id="system_collapsible" class="toggle" type="checkbox">
-
-        <label for="system_collapsible" id="system_collapsible_toggle" class="lbl-toggle">{systemTitle}</label>
-
-        <div class="dropdown">
-          <div class="full-width">
-            <p>{defaultMode}</p>
-
-            <div id="epilepsy-warning">
-              Changing the default mode will require you to hold 'A' when connecting to use the configuration app.
-            </div>
-
-            <div class="sora_radio_container" id="default_mode_radio_picker">
-
-              <input type="radio" name="radio_default_mode" id="default_mode_switch" checked
-                onchange="system_change_mode_radio(0)">
-              <label for="default_mode_switch" id="default_mode_switch_label_label">Switch</label>
-
-              <input type="radio" name="radio_default_mode" id="default_mode_xinput"
-                onchange="system_change_mode_radio(1)">
-              <label for="default_mode_xinput" id="default_mode_xinput_label">XInput</label>
-
-              <input type="radio" name="radio_default_mode" id="default_mode_gcusb" checked
-                onchange="system_change_mode_radio(2)">
-              <label for="default_mode_gcusb" id="default_mode_gcusb_label">Slippi</label>
-
-              <input type="radio" name="radio_default_mode" id="default_mode_gc" onchange="system_change_mode_radio(3)">
-              <label for="default_mode_gc" id="default_mode_gc_label">GC</label>
-
-              <input type="radio" name="radio_default_mode" id="default_mode_n64" checked
-                onchange="system_change_mode_radio(4)">
-              <label for="default_mode_n64" id="default_mode_n64_label">N64</label>
-
-              <input type="radio" name="radio_default_mode" id="default_mode_snes"
-                onchange="system_change_mode_radio(5)">
-              <label for="default_mode_snes" id="default_mode_snes_label">SNES</label>
-
-
-            </div>
-
-            <div class="row">
-              <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VIBRATE SETTING -->
-      <!-- --------------- -->
-      <div class="collapsible" id="vibrate-collapsible">
-
-        <input id="vibrate_collapsible" class="toggle" type="checkbox">
-
-        <label for="vibrate_collapsible" id="vibrate_collapsible_toggle" class="lbl-toggle">{vibrateTitle}</label>
-
-        <div class="dropdown">
-          <div class="full-width">
-
-            <p>{vibrationStrength}</p>
-            <div class="slider">
-              <input type="range" min="0" max="100" value="0" id="vibration_strength" oninput="vibrate_update_text()"
-                onchange="vibrate_set_intensity(this.value)">
-              <p id="vibration_strength_text">0</p>
-            </div>
-          </div>
-
-          <div class="line"></div>
-
-          <div class="full-width">
-
-            <p>{rumbleType}</p>
-            <div class="sora_radio_container" id="erm_lra_radio_picker">
-
-              <input type="radio" name="radio_erm_lra_profile" id="erm_switch" checked onchange="vibrate_set_mode(0)">
-              <label for="erm_switch" id="erm_switch_label">ERM</label>
-
-              <input type="radio" name="radio_erm_lra_profile" id="lra_switch" onchange="vibrate_set_mode(1)">
-              <label for="lra_switch" id="lra_switch_label">LRA</label>
-            </div>
-
-            <div class="row">
-              <button type="button" id="test_vibe_button" onclick="vibrate_test_start()">{test}</button>
-              <button type="button" id="save_vibe_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- PROCON COLOR SETTINGS -->
-      <div class="collapsible" id="color-collapsible">
-
-        <input id="color-settings" class="toggle" type="checkbox">
-
-        <label for="color-settings" id="color-settings-toggle" , class="lbl-toggle">{colorTitle}</label>
-        <div class="dropdown">
-
-          <div class="full-width">
-            <div class="sora_radio_container" id="rp_radio_picker">
-
-              <input type="radio" name="radio_color_mode" id="cm_user" checked onchange="rgb_set_mode(0)">
-              <label for="cm_user" id="cm_user_label">User</label>
-
-              <input type="radio" name="radio_color_mode" id="cm_rainbow" onchange="rgb_set_mode(1)">
-              <label for="cm_rainbow" id="cm_rainbow_label">Rainbow</label>
-
-              <input type="radio" name="radio_color_mode" id="cm_fairy" onchange="rgb_set_mode(2)">
-              <label for="cm_fairy" id="cm_fairy_label">Fairy</label>
-
-              <input type="radio" name="radio_color_mode" id="cm_cycle" onchange="rgb_set_mode(3)">
-              <label for="cm_cycle" id="cm_cycle_label">User Fade</label>
-
-              <input type="radio" name="radio_color_mode" id="cm_cyclefade" onchange="rgb_set_mode(4)">
-              <label for="cm_cyclefade" id="cm_cyclefade_label">User Fairy</label>
-
-            </div>
-          </div>
-
-          <div class="full-width" id="speed-color-div">
-            <div id="epilepsy-warning">
-              <p>{epilepsyWarning}</p>
-            </div>
-            <h3>Animation Speed</h3>
-            <div class="slider">
-              <input type="range" min="1" max="50" value="1" id="speed-color-value"
-                oninput="rgb_update_speed_text(this.value)" onchange="rgb_set_speed(this.value)">
-              <p id="speed-color-text">1</p>
-            </div>
-          </div>
-
-          <div class="full-width" id="cycle-color-div">
-            <!-- Color Pickers -->
-            <div class="color-picker-container">
-              <label for="color-picker-1">Color 1:</label>
-              <input type="color" id="color-picker-1" onchange="rgb_set_usercycle(0, this.value)">
-            </div>
-
-            <div class="color-picker-container">
-              <label for="color-picker-2">Color 2:</label>
-              <input type="color" id="color-picker-2" onchange="rgb_set_usercycle(1, this.value)">
-            </div>
-
-            <div class="color-picker-container">
-              <label for="color-picker-3">Color 3:</label>
-              <input type="color" id="color-picker-3" onchange="rgb_set_usercycle(2, this.value)">
-            </div>
-
-            <div class="color-picker-container">
-              <label for="color-picker-4">Color 4:</label>
-              <input type="color" id="color-picker-4" onchange="rgb_set_usercycle(3, this.value)">
-            </div>
-
-            <div class="color-picker-container">
-              <label for="color-picker-5">Color 5:</label>
-              <input type="color" id="color-picker-5" onchange="rgb_set_usercycle(4, this.value)">
-            </div>
-
-            <div class="color-picker-container">
-              <label for="color-picker-6">Color 6:</label>
-              <input type="color" id="color-picker-6" onchange="rgb_set_usercycle(5, this.value)">
-            </div>
-          </div>
-
-
-
-          <div id="user-color-div">
-            <div id="hojaColorSvg">
-              <svg id="colorSvgLoader" class="controller-led" data-src="svg/snescontroller.svg" data-cache="disabled"
-                data-unique-ids="disabled" data-css-scoping="disabled"></svg>
-
-
-              <!--  <svg id="colorSvgLoaderTriggers" class="controller-led-triggers" data-src="svg/procontriggers.svg" data-cache="true"
-                data-unique-ids="disabled" data-css-scoping="disabled"></svg> -->
-
-              <div id="triggerLedPicker" class="triggerColor">
-                <div id="lButton" class="triggerColorBtn">L</div>
-                <div id="rButton" class="triggerColorBtn">R</div>
-                <div id="zlButton" class="triggerColorBtn">ZL</div>
-                <div id="zrButton" class="triggerColorBtn">ZR</div>
-                <div id="playerButton" class="triggerColorBtn">Player</div>
-              </div>
-
-            </div>
-
-            <div id="hojaColorPicker">
-              <div id="colorPicker"></div>
-              <input id="colorHexBox" disabled type="text" value="#FFFFFF"
-                onchange="color_hexbox_changed(this.value)" />
-              <div class="row">
-                <button id="copyButton" class="small" onclick="color_copy()">{copy}</button>
-                <button id="pasteButton" class="small" onclick="color_paste()">{paste}</button>
-                <button id="pasteAllButton" class="small" onclick="color_paste_all()">{pasteAll}</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-            <div class="row">
-              <button type="button" id="save_color_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
-
-        </div>
-      </div>
-
-
-      <!-- SNAPBACK SETTINGS -->
-      <!-- ---------------   -->
-      <div class="collapsible" id="snapback-collapsible">
-        <input id="snapback-settings" class="toggle" type="checkbox">
-
-        <label for="snapback-settings" id="snapback-settings-toggle" , class="lbl-toggle">{snapbackTitle}</label>
-        <div class="dropdown">
-          <div class="full-width">
-            <p>{snapbackDesc}</p>
-            <div class="snapback-visualizer">
-              <svg id="waveform-output" width="100%" , height="100%"></svg>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      <!-- ANALOG SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible" id="analog-collapsible">
-
-        <input id="analog_collapsible" class="toggle" type="checkbox">
-
-        <label for="analog_collapsible" id="analog_collapsible_toggle" class="lbl-toggle">{calibrateTitle}</label>
-
-        <div class="dropdown">
-
-          <div class="full-width">
-            <p>{calibrateDesc}</p>
-            <div class="line"></div>
-          </div>
-
-
-
-          <div class="collapsible-row-double">
-            <div class="collapsible-column">
-              <div class="circle" id="left-stick-ui" hidden>
-                <div class="inner-stick"></div>
-                <div class="analog-center"></div>
-                <div id="circle-analog-pointer-l" class="analog-position"></div>
-              </div>
-            </div>
-
-            <div class="collapsible-column">
-              <div class="circle" id="right-stick-ui" hidden>
-                <div class="inner-stick"></div>
-                <div class="analog-center"></div>
-                <div id="circle-analog-pointer-r" class="analog-position"></div>
-              </div>
-            </div>
-            <div class="line"></div>
-          </div>
-          <div class="row">
-            <button type="button" id="start_calibration_button" onclick="analog_start_calibration()">{start}</button>
-            <button type="button" id="stop_calibration_button" onclick="analog_stop_calibration()"
-              disabled>{stop}</button>
-            <button type="button" id="save_calibration_button" onclick="saveButton()">{save}</button>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-            <h2>{deadzoneInner}</h2>
-            <p>Left</p>
-            <div class="slider">
-              <input type="range" min="0" max="1000" value="0" id="deadzone_inner_left_value"
-                oninput="analog_deadzone_update_text(_analog_dz_l_in_text, this.value)"
-                onchange="analog_set_deadzone(0, this.value)">
-              <p id="deadzone_inner_left_text">0</p>
-            </div>
-
-            <p>Right</p>
-            <div class="slider">
-              <input type="range" min="0" max="1000" value="0" id="deadzone_inner_right_value"
-                oninput="analog_deadzone_update_text(_analog_dz_r_in_text, this.value)"
-                onchange="analog_set_deadzone(2, this.value)">
-              <p id="deadzone_inner_right_text">0</p>
-            </div>
-
-
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-            <h2>{deadzoneOuter}</h2>
-            <p>Left</p>
-            <div class="slider">
-              <input type="range" min="0" max="500" value="0" id="deadzone_outer_left_value"
-                oninput="analog_deadzone_update_text(_analog_dz_l_out_text, this.value)"
-                onchange="analog_set_deadzone(1, this.value)">
-              <p id="deadzone_outer_left_text">0</p>
-            </div>
-
-            <p>Right</p>
-            <div class="slider">
-              <input type="range" min="0" max="500" value="0" id="deadzone_outer_right_value"
-                oninput="analog_deadzone_update_text(_analog_dz_r_out_text, this.value)"
-                onchange="analog_set_deadzone(3, this.value)">
-              <p id="deadzone_outer_right_text">0</p>
-            </div>
-
-
-          </div>
-
-
-
-          <div class="full-width">
-            <div class="line"></div>
-            <p>Invert Axis</p>
-
-            <div class="row">
-              <div class="invert_container">
-                <input type="checkbox" id="lx_invert" name="lx_invert_" onchange="analog_set_invert(0, this.checked)">
-                <label for="lx_invert">LX</label>
-
-                <input type="checkbox" id="ly_invert" name="ly_invert_" onchange="analog_set_invert(1, this.checked)">
-                <label for="ly_invert">LY</label>
-
-                <input type="checkbox" id="rx_invert" name="rx_invert_" onchange="analog_set_invert(2, this.checked)">
-                <label for="rx_invert">RX</label>
-
-                <input type="checkbox" id="ry_invert" name="ry_invert_" onchange="analog_set_invert(3, this.checked)">
-                <label for="ry_invert">RY</label>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-      <!-- OCTAGON SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible" id="octagon-collapsible">
-
-        <input id="octagon_collapsible" class="toggle" type="checkbox" onchange="octagon_enable_spacebar(this.checked)">
-
-        <label for="octagon_collapsible" id="octagon_collapsible_toggle" class="lbl-toggle">{octagonTitle}</label>
-
-        <div class="dropdown">
-
-          <div class="full-width">
-            <p>{octagonDesc}</p>
-
-            <div class="line"></div>
-          </div>
-
-          <div class="collapsible-row-double">
-
-            <div class="collapsible-column">
-              <input id="octagon-angle-text-l" type="text" disabled />
-              <div class="octagon" id="leftocto-stick-ui" hidden>
-                <div class="inner-stick"></div>
-                <div class="analog-center"></div>
-                <div id="octo-analog-pointer-l" class="analog-position"></div>
-              </div>
-            </div>
-
-            <div class="collapsible-column">
-              <input id="octagon-angle-text-r" type="text" disabled />
-              <div class="octagon" id="rightocto-stick-ui" hidden>
-                <div class="inner-stick"></div>
-                <div class="analog-center"></div>
-                <div id="octo-analog-pointer-r" class="analog-position"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-
-
-            <div class="row">
-              <button type="button" id="update_octagon_button" onclick="analog_update_octagon()">{update}</button>
-              <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
-
-
-          <div class="full-width">
-            <h3>{octoAdjustTitle}</h3>
-            <p>{octoAdjustDesc}</p>
-            <input class="floatingAdjustment" type="number" id="floatingInputOcto" step="0.1" onchange="" value="0.0000"
-              disabled>
-          </div>
-          <div class="row">
-            <button type="button" id="get_octoangle_button" onclick="analog_get_octoangle_value()">{get}</button>
-            <button type="button" id="set_octoangle_button"
-              onclick='analog_update_octoangle(document.getElementById("floatingInputOcto").value)'
-              disabled>{update}</button>
-            <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-
-
-            <h3>{subAdjustTitle}</h3>
-            <p>{subnotchDesc}</p>
-            <input class="floatingAdjustment" type="number" id="floatingInput" step="0.1" onchange="" min="-15" max="15"
-              value="0.0000" disabled>
-          </div>
-          <div class="row">
-            <button type="button" id="get_subangle_button" onclick="analog_get_subangle_value()">{get}</button>
-            <button type="button" id="set_subangle_button"
-              onclick='analog_update_subangle(document.getElementById("floatingInput").value)'
-              disabled>{update}</button>
-            <button type="button" id="save_octagon_button" onclick="saveButton()">{save}</button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- TRIGGER SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible" id="trigger-collapsible">
-
-        <input id="trigger_collapsible" class="toggle" type="checkbox">
-
-        <label for="trigger_collapsible" id="trigger_collapsible_toggle" class="lbl-toggle">{triggerTitle}</label>
-
-        <div class="dropdown">
-
-          <div class="full-width">
-            <p>{triggerDesc}</p>
-            <div class="line"></div>
-          </div>
-
-          <div class="collapsible-row-double">
-            <div class="collapsible-column">
-              <div class="trigger-container">
-                <label for="left-trigger">Left</label>
-                <div class="bar-container">
-                  <div class="bar" id="left-bar"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="collapsible-column">
-              <div class="trigger-container">
-                <label for="right-trigger">Right</label>
-                <div class="bar-container">
-                  <div class="bar" id="right-bar"></div>
-                </div>
-              </div>
-            </div>
-            <div class="line"></div>
-          </div>
-          <br>
-          <div class="full-width">
-            <p>Disable Triggers</p>
-            <div class="row">
-              <div class="invert_container">
-                <input type="checkbox" id="lt_disable" name="lt_disable_"
-                  onchange="triggers_set_disabled(0, this.checked)">
-                <label for="lt_disable">Left</label>
-
-                <input type="checkbox" id="rt_disable" name="rt_disable_"
-                  onchange="triggers_set_disabled(1, this.checked)">
-                <label for="rt_disable">Right</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <button type="button" id="start_triggercalibration_button"
-              onclick="triggers_start_calibration()">{start}</button>
-            <button type="button" id="stop_triggercalibration_button" onclick="triggers_stop_calibration()"
-              disabled="true">{stop}</button>
-            <button type="button" id="save_triggers_button" onclick="saveButton()">{save}</button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- GYRO SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible" id="gyro-collapsible">
-
-        <input id="gyro_collapsible" class="toggle" type="checkbox">
-
-        <label for="gyro_collapsible" id="gyro_collapsible_toggle" class="lbl-toggle">{gyroTitle}</label>
-
-        <div class="dropdown">
-          <div class="full-width">
-            <p>{gyroDesc}</p>
-
-
-            <div class="line"></div>
-
-            <div class="row">
-              <button type="button" id="start_imu_calibration_button" onclick="imu_start_calibration()">{start}</button>
-            </div>
-
-            <div class="line"></div>
-
-            <div class="gyro-container">
-              <label for="gyro-ax">AX</label>
-              <div class="gbar-container">
-                <div class="gbar" id="gax-bar"></div>
-              </div>
-            </div>
-
-            <div class="gyro-container">
-              <label for="gyro-ay">AY</label>
-              <div class="gbar-container">
-                <div class="gbar" id="gay-bar"></div>
-              </div>
-            </div>
-
-            <div class="gyro-container">
-              <label for="gyro-az">AZ</label>
-              <div class="gbar-container">
-                <div class="gbar" id="gaz-bar"></div>
-              </div>
-            </div>
-
-            <div class="gyro-container">
-              <label for="gyro-gx">GX</label>
-              <div class="gbar-container">
-                <div class="gbar" id="ggx-bar"></div>
-              </div>
-            </div>
-
-            <div class="gyro-container">
-              <label for="gyro-gy">GY</label>
-              <div class="gbar-container">
-                <div class="gbar" id="ggy-bar"></div>
-              </div>
-            </div>
-
-            <div class="gyro-container">
-              <label for="gyro-gz">GZ</label>
-              <div class="gbar-container">
-                <div class="gbar" id="ggz-bar"></div>
-              </div>
-            </div>
+    <script>
+        (function() {
+            // Check if we've already reloaded
+            if (sessionStorage.getItem('cacheCleared')) return;
             
-          </div>
+            // Mark that we've cleared the cache
+            sessionStorage.setItem('cacheCleared', 'true');
+    
+            // Clear localStorage
+            localStorage.clear();
+    
+            // Clear sessionStorage (excluding the reload flag)
+            const reloadFlag = sessionStorage.getItem('cacheCleared');
+            sessionStorage.clear();
+            sessionStorage.setItem('cacheCleared', reloadFlag);
+    
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) {
+                document.cookie = c.replace(/^ +/, "")
+                    .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+    
+            // Clear cache using Service Worker if available
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    names.forEach(function(name) {
+                        caches.delete(name);
+                    });
+                });
+            }
+    
+            // Unregister any existing service workers
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    registrations.forEach(function(registration) {
+                        registration.unregister().then(function(success) {
+                            console.log("Service Worker unregistered:", success);
+                        });
+                    });
+                });
+            }
+    
+            // Prevent back-forward cache
+            window.onpageshow = function(event) {
+                if (event.persisted) {
+                    window.location.reload();
+                }
+            };
+    
+            // Force reload from server (only once)
+            window.location.reload(true);
+        })();
+    </script>
+
+    <title>Config Tool Update Notice</title>
+    <style>
+        :root {
+            --pastel-blue: #24b1e9;
+            --pastel-pink: #f5afaf;
+            --pastel-green: #abf3b0;
+            --text-color: #2e2d2d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--pastel-blue);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .announcement {
+            background-color: var(--pastel-pink);
+            padding: 0.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: #2D3748;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: var(--pastel-green);
+            color: var(--text-color);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="announcement">
+            <div class="icon">🎉</div>
+            <h1>We've Upgraded to Hoja 2!</h1>
+            <p>Our configuration tool and Hoja firmware has been completely redesigned with new features and improvements.</p>
         </div>
-      </div>
+        
+        <div class="details">
+            <h2>What's New?</h2>
+            <p>An all-new angle calibration system allowing for notched gateplates with user-specified input/output angles.</p>
+            <p>Gyro is smoother and more efficient.</p>
+            <p>Low-level performance-related bugs have been ironed out.</p>
+            <p>Haptics are more responsive and more detailed.</p>
+            <p>New RGB Reactive Mode.</p>
+            <p>More control over analog triggers.</p>
+            <p>Appearance settings for Nintendo Switch consoles (Wired only)</p>
 
-      <!-- REMAPPING -->
-      <!-- --------------- -->
-      <div class="collapsible" id="remapping-collapsible">
+            <h2>What is being worked on?</h2>
+            <p>Existing RGB modes such as Fairy mode have not been ported (yet).</p>
+            <p>Battery status indicators</p>
 
-        <input id="remapping" class="toggle" type="checkbox">
-
-        <label for="remapping" id="remapping-toggle" , class="lbl-toggle">{remapTitle}</label>
-        <div class="dropdown">
-
-          <div class="full-width">
-            <p>{remapDesc}</p>
-            <p>{remapDesc2}</p>
-            <div class="line"></div>
-            <div class="sora_radio_container" id="rp_radio_picker">
-
-              <input type="radio" name="radio_remap_profile" id="rp_switch" checked
-                onchange="remap_switch_profile(INPUT_MODE_SWPRO)">
-              <label for="rp_switch">Switch</label>
-
-              <input type="radio" name="radio_remap_profile" id="rp_xinput"
-                onchange="remap_switch_profile(INPUT_MODE_XINPUT)">
-              <label for="rp_xinput" id="rp_xinput_label">XInput</label>
-
-              <input type="radio" name="radio_remap_profile" id="rp_gamecube"
-                onchange="remap_switch_profile(INPUT_MODE_GAMECUBE)">
-              <label for="rp_gamecube" id="rp_ginput_label">GC</label>
-
-              <input type="radio" name="radio_remap_profile" id="rp_n64"
-                onchange="remap_switch_profile(INPUT_MODE_N64)">
-              <label for="rp_n64" id="rp_n64_label">N64</label>
-
-              <input type="radio" name="radio_remap_profile" id="rp_snes"
-                onchange="remap_switch_profile(INPUT_MODE_SNES)">
-              <label for="rp_snes" id="rp_snes_label">SNES</label>
-
-            </div>
-          </div>
-          <div class="remap-row">
-            <!-- A -->
-            <button type="button" class="button-map-init" id="bo_a" onclick="remap_init_new(MAPCODE_B_A)">A</button>
-            <button type="button" class="button-map-view" id="bi_a">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- B -->
-            <button type="button" class="button-map-init" id="bo_b" onclick="remap_init_new(MAPCODE_B_B)">B</button>
-            <button type="button" class="button-map-view" id="bi_b">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- X -->
-            <button type="button" class="button-map-init" id="bo_x" onclick="remap_init_new(MAPCODE_B_X)">X</button>
-            <button type="button" class="button-map-view" id="bi_x">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Y -->
-            <button type="button" class="button-map-init" id="bo_y" onclick="remap_init_new(MAPCODE_B_Y)">Y</button>
-            <button type="button" class="button-map-view" id="bi_y">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Up -->
-            <button type="button" class="button-map-init" id="bo_dup" onclick="remap_init_new(MAPCODE_DUP)">↑</button>
-            <button type="button" class="button-map-view" id="bi_dup">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Down -->
-            <button type="button" class="button-map-init" id="bo_ddown"
-              onclick="remap_init_new(MAPCODE_DDOWN)">↓</button>
-            <button type="button" class="button-map-view" id="bi_ddown">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Left -->
-            <button type="button" class="button-map-init" id="bo_dleft"
-              onclick="remap_init_new(MAPCODE_DLEFT)">←</button>
-            <button type="button" class="button-map-view" id="bi_dleft">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Dpad Right -->
-            <button type="button" class="button-map-init" id="bo_dright"
-              onclick="remap_init_new(MAPCODE_DRIGHT)">→</button>
-            <button type="button" class="button-map-view" id="bi_dright">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Plus -->
-            <button type="button" class="button-map-init" id="bo_plus"
-              onclick="remap_init_new(MAPCODE_B_PLUS)">+</button>
-            <button type="button" class="button-map-view" id="bi_plus">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Minus -->
-            <button type="button" class="button-map-init" id="bo_minus"
-              onclick="remap_init_new(MAPCODE_B_MINUS)">-</button>
-            <button type="button" class="button-map-view" id="bi_minus">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- L -->
-            <button type="button" class="button-map-init" id="bo_l" onclick="remap_init_new(MAPCODE_T_L)">L</button>
-            <button type="button" class="button-map-view" id="bi_l">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- ZL -->
-            <button type="button" class="button-map-init" id="bo_zl" onclick="remap_init_new(MAPCODE_T_ZL)">ZL</button>
-            <button type="button" class="button-map-view" id="bi_zl">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- R -->
-            <button type="button" class="button-map-init" id="bo_r" onclick="remap_init_new(MAPCODE_T_R)">R</button>
-            <button type="button" class="button-map-view" id="bi_r">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- ZR -->
-            <button type="button" class="button-map-init" id="bo_zr" onclick="remap_init_new(MAPCODE_T_ZR)">ZR</button>
-            <button type="button" class="button-map-view" id="bi_zr">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Stick L -->
-            <button type="button" class="button-map-init" id="bo_stickl"
-              onclick="remap_init_new(MAPCODE_B_STICKL)">SL</button>
-            <button type="button" class="button-map-view" id="bi_stickl">...</button>
-          </div>
-
-          <div class="remap-row">
-            <!-- Stick R -->
-            <button type="button" class="button-map-init" id="bo_stickr"
-              onclick="remap_init_new(MAPCODE_B_STICKR)">SR</button>
-            <button type="button" class="button-map-view" id="bi_stickr">...</button>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-            <div class="row">
-              <button type="button" id="reset_remap_button" onclick="remap_set_default()">{reset}</button>
-              <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
+            <h2>How do I install?</h2>
+            <p>Simply navigate to our new tool using the button below.</p>
+            <p>Connect your controller and follow the prompt instructions.</p>
+            
+            <a href="https://handheldlegend.github.io/hoja2/" class="button">Try the New Config Tool →</a>
         </div>
-      </div>
-
-      <!-- GAMECUBE SETTINGS -->
-      <!-- --------------- -->
-      <div class="collapsible" id="gcsp-collapsible">
-
-        <input id="gamecube_collapsible" class="toggle" type="checkbox">
-
-        <label for="gamecube_collapsible" id="gamecube_collapsible_toggle" class="lbl-toggle">{gamecubeTitle}</label>
-
-        <div class="dropdown">
-
-          <div class="full-width">
-            <p>{gamecubeDesc}</p>
-            <div class="line"></div>
-            <div class="sora_radio_container" id="radio_gc_sp_picker">
-              <input type="radio" name="radio_gc_sp" id="gc_sp_0" checked onchange="gcsp_set_value(0)">
-              <label for="gc_sp_0">Off</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_1" onchange="gcsp_set_value(1, 0)">
-              <label for="gc_sp_1">Light L</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_2" onchange="gcsp_set_value(2, 0)">
-              <label for="gc_sp_2">Light R</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_3" onchange="gcsp_set_value(3, 0)">
-              <label for="gc_sp_3">Reset</label>
-              <input type="radio" name="radio_gc_sp" id="gc_sp_4" onchange="gcsp_set_value(4, 0)">
-              <label for="gc_sp_4">Dual Z</label>
-            </div>
-            <div class="line"></div>
-            <p>{gamecubeTrigger}</p>
-            <div class="slider">
-              <input type="range" min="50" max="255" value="50" id="lightValue"
-                oninput="lightTextValue.innerText = this.value.toString()" onchange="gcsp_set_value(0xFF, this.value)">
-              <p id="lightTextValue">50</p>
-            </div>
-            <div class="row">
-              <button type="button" id="save_remap_button" onclick="saveButton()">{save}</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- HARDWARE TEST -->
-      <!-- --------------- -->
-      <div class="collapsible" id="hwtest-collapsible">
-
-        <input id="hwtest_collapsible" class="toggle" type="checkbox">
-
-        <label for="hwtest_collapsible" id="hwtest_collapsible_toggle" class="lbl-toggle">{hwtestTitle}</label>
-
-        <div class="dropdown">
-
-
-          <div class="full-width">
-            <p>{hwtestDesc}</p>
-            <br>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_data" disabled>
-              <label for="fwc_data">Data Pin</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_latch" disabled>
-              <label for="fwc_latch">Latch Pin</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_clock" disabled>
-              <label for="fwc_clock">Clock Pin</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_rgb" disabled>
-              <label for="fwc_rgb">RGB Output</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_analog" disabled>
-              <label for="fwc_analog">Analog Comms</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_imu" disabled>
-              <label for="fwc_imu">IMU Comms</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_bluetooth" disabled>
-              <label for="fwc_bluetooth">Bluetooth Comms</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_battery" disabled>
-              <label for="fwc_battery">Battery Comms</label>
-            </div>
-
-            <div class="hwtest_c">
-              <input type="checkbox" id="fwc_rumble" disabled>
-              <label for="fwc_rumble">Rumble</label>
-            </div>
-
-            <div class="line"></div>
-
-            <div class="row">
-              <button type="button" id="start_hwtest_button" onclick="fwtest_start()">{start}</button>
-            </div>
-          </div>
-
-
-        </div>
-      </div>
-
     </div>
-
-  </div>
-  <!-- --------------- -->
-
-
-
-  </div>
-  </div>
-  </div>
-  <div class="footer">
-    <img id="footer-wrench-svg" src="svg/wrench-svgrepo-com.svg" onclick="debugWrenchClick()">
-    <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
-    Cairns | ©
-    2024, Hand Held Legend, LLC
-  </div>
-  <script type="module" src="js/esp/install-button.js"></script>
-  <script src="js/hoja_config_codes.js"></script>
-  <script src="js/hoja_global.js"></script>
-  <script src="js/hoja_strings.js"></script>
-  <script src="js/hoja_input.js"></script>
-  <script src="js/modules/network.js"></script>
-  <script src="js/modules/device_ids.js"></script>
-  <script src="js/modules/version.js"></script>
-  <script src="js/modules/capabilities.js"></script>
-  <script src="js/modules/system.js"></script>
-  <script src="js/modules/analog_stick.js"></script>
-  <script src="js/modules/analog_triggers.js"></script>
-  <script src="js/modules/color_settings.js"></script>
-  <script src="js/modules/gyroscope.js"></script>
-  <script src="js/modules/hardware_test.js"></script>
-  <script src="js/modules/octagon_calibration.js"></script>
-  <script src="js/modules/remapping.js"></script>
-  <script src="js/modules/snapback_viewer.js"></script>
-  <script src="js/modules/system.js"></script>
-  <script src="js/modules/vibration.js"></script>
-  <script src="js/modules/pico_update.js"></script>
-  <script src="js/svg-loader.min.js"></script>
-  <script src="js/iro.min.js"></script>
-
-  <script src="js/hoja_config.js"></script>
-
 </body>
-
 </html>

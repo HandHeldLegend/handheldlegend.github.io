@@ -17,6 +17,8 @@ import Imuinfostatic from "../factory/parsers/imuInfoStatic.js";
 import Buttoninfostatic from "../factory/parsers/buttonInfoStatic.js";
 import Hapticinfostatic from "../factory/parsers/hapticInfoStatic.js";
 
+import HojaLegacyManager from "./legacy.js";
+
 class HojaGamepad {
 
   // Static instance for singleton pattern
@@ -40,6 +42,8 @@ class HojaGamepad {
   haptic_cfg = new Hapticconfig();
   user_cfg = new Userconfig();
   battery_cfg = new Batteryconfig();
+
+  legacy_manager = new HojaLegacyManager();
 
   #configBlocks = [this.gamepad_cfg, this.remap_cfg,
   this.analog_cfg, this.rgb_cfg, this.trigger_cfg,
@@ -82,10 +86,16 @@ class HojaGamepad {
     cfgReturnStatus: false, // Value we return which is the status of our sent command
   };
 
+  #legacyCheckState = {
+    checkComplete: false,
+    isLegacyDevice: false,
+  };
+
   // Event hooks
   #_connectHook = null;
   #_disconnectHook = null;
   #_inputReportHook = null;
+  #_legacyDetectionHook = null;
 
   // Private constructor to enforce singleton
   constructor() {
@@ -131,8 +141,18 @@ class HojaGamepad {
       this.#isConnected = true;
 
       this.#pollDevice();
-      await this.getAllBlocks();
-      await this.getAllStatics();
+
+      let legacyCheck = await this.#attemptLegacyCheck();
+
+      // Attempt legacy check and wait for result
+      if(!legacyCheck) {
+        console.log("Device is not legacy, proceeding with block read...");
+        await this.getAllBlocks();
+        await this.getAllStatics();
+      }
+      else {
+        return true;
+      }
 
       if (this.#_connectHook) this.#_connectHook();
 
@@ -142,6 +162,70 @@ class HojaGamepad {
 
       return false;
     }
+  }
+
+  #handleLegacyData(data) {
+    this.#legacyCheckState.checkComplete = true;
+    this.#legacyCheckState.isLegacyDevice = true;
+
+    let _device_id = (data.getUint8(3) << 8) | (data.getUint8(4));
+    console.log("Legacy device detected " + _device_id.toString(16));
+
+    let url = this.legacy_manager.getLegacyUrl(_device_id);
+
+    if(this.#_legacyDetectionHook) {
+      this.#_legacyDetectionHook(url);
+    }
+  }
+
+  async setBootloaderLegacy() {
+    try {
+      console.log("Setting legacy bootloader mode...");
+      // WEBUSB_CMD_FW_SET 0x0F
+      let dataOut = new Uint8Array([0x0F]);
+      await this.#device.transferOut(2, dataOut);
+    }
+    catch (error) {
+    }
+  }
+
+  async #waitForLegacyConfirmation(timeout = 250) {
+    const pollInterval = 50; // Poll every 50ms
+    let elapsedTime = 0;
+
+    // Poll until confirmation or timeout
+    while (!this.#legacyCheckState.checkComplete) {
+      if (elapsedTime >= timeout) {
+        throw new Error("Timeout waiting for legacy confirmation.");
+      }
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+      elapsedTime += pollInterval;
+    }
+  }
+
+  async #attemptLegacyCheck() {  
+      // Send legacy check command
+      try {
+
+        this.#legacyCheckState.checkComplete = false;
+        this.#legacyCheckState.isLegacyDevice = false;
+
+        // WEBUSB_LEGACY_GET_FW_VERSION = 0xAF
+        const dataOut = new Uint8Array([0xAF]);
+        await this.#device.transferOut(2, dataOut);
+
+        await this.#waitForLegacyConfirmation();
+
+        if(!this.#legacyCheckState.isLegacyDevice) {
+          console.log("Not a legacy device");
+          return false;
+        }
+        else {
+          console.log("Legacy device detected");
+          return true;
+        }
+      } catch (error) {
+      }
   }
 
   // Disconnect the device
@@ -311,14 +395,25 @@ class HojaGamepad {
         console.log(out);
         break;
 
+      // WEBUSB_CMD_FW_GET (LEGACY FW VERSION DATA)
+      case 175:
+        console.log("Legacy device detected");
+        this.#handleLegacyData(data);
+        break;
+
       default:
-        console.warn(`Unhandled report ID: ${data.getUint8(0)}`);
+        // No warnings
+        break;
     }
   }
 
   // Update internal state based on parsed report
   #updateInternalState(parsedData) {
 
+  }
+
+  setLegacyDetectionHook(callback) {
+    this.#_legacyDetectionHook = callback;
   }
 
   setConnectHook(callback) {
