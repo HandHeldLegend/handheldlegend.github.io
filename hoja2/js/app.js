@@ -176,8 +176,22 @@ class ConfigApp {
 
         const icon = document.createElement('div');
         icon.className = 'icon';
+
         icon.style.backgroundColor = module.color || this.getRandomColor();
-        icon.textContent = module.icon || module.name.charAt(0).toUpperCase();
+        
+        const svgIcon = document.createElement('img');
+        svgIcon.src = "assets/icons/"+module.icon;
+        svgIcon.className = 'svg-icon';
+        svgIcon.alt = `${module.name} icon`;
+        
+        // Add error handler for fallback
+        svgIcon.onerror = () => {
+            svgIcon.remove();
+            icon.textContent = module.name.charAt(0).toUpperCase();
+            console.error(`Failed to load SVG for ${module.name}`);
+        };
+
+        icon.appendChild(svgIcon);
 
         const label = document.createElement('span');
         label.textContent = module.name;

@@ -31,6 +31,19 @@ export function render(container) {
 
     let hapticIntensity = Math.round((gamepad.haptic_cfg.haptic_strength/255) * 100);
 
+    let hapticTriggerBlock = `
+    <h2>Haptic Triggers</h2>
+    <multi-position-button 
+        id="haptic-trigger-mode" 
+        labels="Off, On"
+        default-selected="${gamepad.haptic_cfg.haptic_triggers}"
+    ></multi-position-button>
+    `
+
+    if(!gamepad.haptic_static.haptic_hd) {
+        hapticTriggerBlock = "";
+    }
+
     container.innerHTML = `
         <single-shot-button 
                 id="haptic-test-button" 
@@ -51,13 +64,8 @@ export function render(container) {
             step="1" 
             default-value="${hapticIntensity}"
         ></number-selector>
-
-        <h2>Haptic Triggers</h2>
-        <multi-position-button 
-            id="haptic-trigger-mode" 
-            labels="Off, On"
-            default-selected="${gamepad.haptic_cfg.haptic_triggers}"
-        ></multi-position-button>
+        
+        ${hapticTriggerBlock}
     `;
 
     /** @type {SingleShotButton} */

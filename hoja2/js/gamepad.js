@@ -189,14 +189,15 @@ class HojaGamepad {
     }
   }
 
-  async #waitForLegacyConfirmation(timeout = 250) {
+  async #waitForLegacyConfirmation(timeout = 150) {
     const pollInterval = 50; // Poll every 50ms
     let elapsedTime = 0;
 
     // Poll until confirmation or timeout
     while (!this.#legacyCheckState.checkComplete) {
       if (elapsedTime >= timeout) {
-        throw new Error("Timeout waiting for legacy confirmation.");
+        console.log("Timeout waiting for legacy confirmation.");
+        return;
       }
       await new Promise(resolve => setTimeout(resolve, pollInterval));
       elapsedTime += pollInterval;
@@ -204,28 +205,23 @@ class HojaGamepad {
   }
 
   async #attemptLegacyCheck() {  
-      // Send legacy check command
-      try {
+    this.#legacyCheckState.checkComplete = false;
+    this.#legacyCheckState.isLegacyDevice = false;
 
-        this.#legacyCheckState.checkComplete = false;
-        this.#legacyCheckState.isLegacyDevice = false;
+    // WEBUSB_LEGACY_GET_FW_VERSION = 0xAF
+    const dataOut = new Uint8Array([0xAF]);
+    await this.#device.transferOut(2, dataOut);
 
-        // WEBUSB_LEGACY_GET_FW_VERSION = 0xAF
-        const dataOut = new Uint8Array([0xAF]);
-        await this.#device.transferOut(2, dataOut);
+    await this.#waitForLegacyConfirmation();
 
-        await this.#waitForLegacyConfirmation();
-
-        if(!this.#legacyCheckState.isLegacyDevice) {
-          console.log("Not a legacy device");
-          return false;
-        }
-        else {
-          console.log("Legacy device detected");
-          return true;
-        }
-      } catch (error) {
-      }
+    if(!this.#legacyCheckState.isLegacyDevice) {
+      console.log("Not a legacy device");
+      return false;
+    }
+    else {
+      console.log("Legacy device detected");
+      return true;
+    }
   }
 
   // Disconnect the device

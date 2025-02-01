@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.12c', // Increment this when you update files
+    version: 'v0.12g', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js'],
@@ -47,7 +47,8 @@ const CACHE_CONFIG = {
             'remapConfig.js', 'rgbConfig.js',
             'rgbGroupName.js', 'rgbInfoStatic.js',
             'triggerConfig.js', 'userConfig.js'
-        ]
+        ],
+        '/assets/icons/': ['analog.svg', 'battery.svg', 'gamepad.svg', 'haptics.svg', 'motion.svg', 'remap.svg', 'rgb.svg', 'triggers.svg', 'user.svg', 'wireless.svg']
     }
 };
 
