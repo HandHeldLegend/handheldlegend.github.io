@@ -1,23 +1,29 @@
 :root {
-    --app-background-color: #988dfff5;
-    --ether-background-color: #594ebbf5;
+
+    --background-lowest: #11081b;
+    --background-low: #1f0f3b;
+    --background-mid: #311750;
+    --background-high: #4f2d7f;
+    --background-highest: #6b4aa5;
+
     --blur-amt: 5px;
 
     /* Color Palette */
     --color-primary: #4CAF50;
     --color-secondary: #2196F3;
-    --color-background-light: #b9edff;
-    --color-background-light-hover: rgb(145, 206, 226);
+    --color-background-light: #0181ac;
+    --color-background-light-hover: #0195c7;
     --color-background-dark: #b4b4b4af;
-    --color-text-primary: #131313;
-    --color-text-secondary: #000000;
+    --color-text-primary: #cfcfcf;
+    --color-text-secondary: #c7c7c7;
+    --color-text-tertiary: #aaaaaa;
 
     --color-button-disabled: rgb(136, 136, 136);
-    --color-button-neutral: rgb(120, 133, 255);
-    --color-button-neutral-hover: rgb(73, 88, 221);
-    --color-button-off: rgb(255, 99, 99);
-    --color-button-off-hover: rgb(216, 72, 72);
-    --color-button-on: rgb(73, 255, 128);
+    --color-button-neutral: rgb(69, 84, 219);
+    --color-button-neutral-hover: rgb(105, 117, 224);
+    --color-button-off: rgb(170, 0, 0);
+    --color-button-off-hover: rgb(194, 45, 45);
+    --color-button-on: rgb(0, 168, 50);
     --color-button-on-hover: rgb(34, 201, 84);
 
     /* Config Box Elements */
@@ -45,12 +51,14 @@
     /* Typography */
     --font-family-primary: Arial, sans-serif;
     --font-size-sm: 12px;
-    --font-size-md: 20px;
-    --font-size-lg: 28px;
+    --font-size-md: 16px;
+    --font-size-lg: 20px;
 
     /* Transitions */
     --transition-quick: 0.2s ease;
     --transition-standard: 0.3s ease;
+
+    color: var(--color-text-primary);
 }
 
 body {
@@ -60,13 +68,13 @@ body {
     width: 100vw;
     height: 100vh;
     display: block;
-    background-color: var(--ether-background-color);
+    background-color: var(--background-lowest);
 }
 
 .app-container {
     margin-left: auto;
     margin-right: auto;
-    background-color: var(--app-background-color);
+    background-color: var(--background-mid);
     display: flex;
     flex-direction: column;
 
@@ -92,7 +100,7 @@ body {
     gap: 10px;
     align-items: center;
     justify-content: space-between;
-    background-color: rgba(255, 0, 0, 0.692);
+    background-color: var(--background-low);
 }
 
 .center-buttons {
@@ -135,7 +143,7 @@ body {
     padding: 0rem;
     display: flex;
     flex-direction: column;
-    background-color: rgb(255, 108, 108);
+    background-color: var(--background-high);
     max-width: inherit; 
     max-height: 0; /* Start with 0 height */
     overflow: hidden;
@@ -206,7 +214,7 @@ body {
     left: 0; /* Start off-screen */
     width: 100%;
     height: 100%; /* Fill the viewport */
-    background-color: #ffffff; /* Example background */
+    background-color: var(--background-high); /* Example background */
     transition: transform 0.5s ease;
     transform: translateX(100%);
     overflow: hidden; /* Prevent scrollbars on the container itself */
@@ -215,7 +223,7 @@ body {
 /* Module header stays fixed at the top */
 #module-header {
     box-shadow: 0;
-    background-color: rgb(196, 196, 196);
+    background-color: var(--background-mid);
     display: flex;
     flex-shrink: 0; /* Prevent shrinking */
     align-items: center;
@@ -242,6 +250,8 @@ body {
 
 /* Back button styling */
 #back-button {
+    background-color: var(--color-button-neutral);
+    color: var(--color-text-primary);
     border: none;
     border-radius: var(--border-radius-md);
     cursor: pointer;
@@ -250,6 +260,10 @@ body {
     font-size: 16px;
     min-width: 70px;
     height: var(--config-box-height);
+}
+
+#back-button:hover {
+    background-color: var(--color-button-neutral-hover);
 }
 
 /* Module content becomes scrollable */
@@ -317,9 +331,10 @@ h1, h2, h3 {
 
 #app-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 10px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 0.5fr));
+    gap: 8px;
+    margin-top: 10px;
+    padding: 5px;
     background-color: rgba(255, 255, 255, 0);
 }
 
@@ -336,30 +351,55 @@ h1, h2, h3 {
     align-items: center; 
 }
 
+.svg-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.svg-icon-container svg {
+    width: 24px;
+    height: 24px;
+}
+
+.icon[enabled="false"] .svg-icon-container svg {
+    opacity: 0.5;
+}
+
 .module-icon .icon {
     transition: all 0.2s;
     -webkit-filter: saturate(0);
-    transform: scale(0.85);
+    transform: scale(0.75);
     cursor: not-allowed;
-    width: 120px;
-    height: 120px;
-    border-radius: 15px;
+    width: 96px;
+    height: 96px;
+    border-radius: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 3rem;
     color: white;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .module-icon .icon[enabled="true"]:hover {
-    transform: scale(1.05);
+    transform: scale(1);
 }
 
 .module-icon .icon[enabled="true"]{
-    transform: scale(1);
+    transform: scale(0.9);
     -webkit-filter: saturate(1);
     cursor: pointer;
+}
+
+.module-icon span{
+    margin:0;
+    width: 100%;
+    text-align: center;
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
 }
 
 .label {

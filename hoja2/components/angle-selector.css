@@ -25,7 +25,7 @@
     
     cursor: pointer;
     font-size: var(--font-size-md);
-    color: rgb(66, 66, 66);
+    color: var(--color-text-primary);
     transition: background-color var(--transition-quick);
 }
 
@@ -53,7 +53,7 @@
     background-color: var(--color-button-on);
 }
 @media (hover: hover) {
-    .button-reset:hover {
+    .button-capture:hover {
         background: var(--color-button-on-hover);
     }
 }
@@ -68,7 +68,7 @@
     background-color: var(--color-button-off);
 }
 @media (hover: hover) {
-    .button-reset:hover {
+    .button-disable:hover {
         background: var(--color-button-off-hover);
     }
 }

@@ -176,8 +176,22 @@ class ConfigApp {
 
         const icon = document.createElement('div');
         icon.className = 'icon';
+
         icon.style.backgroundColor = module.color || this.getRandomColor();
-        icon.textContent = module.icon || module.name.charAt(0).toUpperCase();
+        
+        const svgIcon = document.createElement('img');
+        svgIcon.src = "assets/icons/"+module.icon;
+        svgIcon.className = 'svg-icon';
+        svgIcon.alt = `${module.name} icon`;
+        
+        // Add error handler for fallback
+        svgIcon.onerror = () => {
+            svgIcon.remove();
+            icon.textContent = module.name.charAt(0).toUpperCase();
+            console.error(`Failed to load SVG for ${module.name}`);
+        };
+
+        icon.appendChild(svgIcon);
 
         const label = document.createElement('span');
         label.textContent = module.name;
@@ -311,6 +325,26 @@ async function enableNotifMessage(msg) {
     }
 }
 
+async function enableLegacyFwUpdateMessage(url) {
+    const bootloaderButton = document.getElementById("bootloader-button");
+    const downloadButton = document.getElementById("download-button");
+    const fwMessageBox = document.getElementById("fw-update-box");
+
+    bootloaderButton.setOnClick(async () => {
+        if(gamepad) {
+            await gamepad.setBootloaderLegacy();
+            return true;
+        }
+    });
+
+    downloadButton.setOnClick(() => {
+        window.open(url, '_blank');
+        return true;
+    });
+
+    fwMessageBox.setAttribute("visible", "true");
+}
+
 async function enableFwUpdateMessage(enable, url) {
     const bootloaderButton = document.getElementById("bootloader-button");
     const downloadButton = document.getElementById("download-button");
@@ -440,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gamepad.setConnectHook(connectHandle);
     gamepad.setDisconnectHook(disconnectHandle);
+    gamepad.setLegacyDetectionHook(enableLegacyFwUpdateMessage);
 
     // Optional async handlers for connection/disconnection
     connectButton.setOnHandler(async () => {
