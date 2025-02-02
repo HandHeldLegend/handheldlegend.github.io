@@ -38,7 +38,7 @@ export function render(container) {
         labels="Off, On"
         default-selected="${gamepad.haptic_cfg.haptic_triggers}"
     ></multi-position-button>
-    `
+    `;
 
     if(!gamepad.haptic_static.haptic_hd) {
         hapticTriggerBlock = "";
