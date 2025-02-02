@@ -40,11 +40,11 @@ export function render(container) {
     ></multi-position-button>
     `;
 
-    let hapticTriggerEnable = false;
+    let hapticTriggerEnable = true;
 
     if(!gamepad.haptic_static.haptic_hd) {
         hapticTriggerBlock = "";
-        hapticTriggerEnable = true;
+        hapticTriggerEnable = false;
     }
 
     container.innerHTML = `
