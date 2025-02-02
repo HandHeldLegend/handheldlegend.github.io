@@ -40,8 +40,11 @@ export function render(container) {
     ></multi-position-button>
     `;
 
+    let hapticTriggerEnable = false;
+
     if(!gamepad.haptic_static.haptic_hd) {
         hapticTriggerBlock = "";
+        hapticTriggerEnable = true;
     }
 
     container.innerHTML = `
@@ -82,11 +85,13 @@ export function render(container) {
         await writeHapticMemBlock();
     });
 
-    /** @type {MultiPositionButton} */
+    if(hapticTriggerEnable) {
+        /** @type {MultiPositionButton} */
     const hapticTriggerSelector = container.querySelector('multi-position-button[id="haptic-trigger-mode"]');
     hapticTriggerSelector.addEventListener('change', async (e) => {
         console.log("Haptic trigger mode change");
         gamepad.haptic_cfg.haptic_triggers = e.detail.selectedIndex;
         await writeHapticMemBlock();
     });
+    }
 }
