@@ -88,6 +88,10 @@ export async function render(container) {
             <single-shot-button id="open-update-page-button" state="ready" ready-text="Update Tool" disabled-text="..."
                 pending-text="Opening..." failure-text="Opening..." success-text="Opening..."
             ></single-shot-button>
+
+            <single-shot-button id="open-update-guide-button" state="ready" ready-text="Update Guide" disabled-text="..."
+                pending-text="Opening..." failure-text="Opening..." success-text="Opening..."
+            ></single-shot-button>
         </div>
         <div visible="true" class="app-text-container">
             To update your wireless firmware, first, click the 'Enter Baseband Mode' button. 
@@ -107,6 +111,7 @@ export async function render(container) {
     if(gamepad.bluetooth_static.baseband_version < currentBasebandVersion) {
         const basebandButton = container.querySelector('single-shot-button[id="baseband-button"]');
         const openToolButton = container.querySelector('single-shot-button[id="open-update-page-button"]');
+        const openGuideButton = container.querySelector('single-shot-button[id="open-update-guide-button"]');
 
         basebandButton.setOnClick(async () => {
             try {
@@ -123,6 +128,11 @@ export async function render(container) {
 
         openToolButton.setOnClick(() => {
             window.open("https://handheldlegend.github.io/hoja_baseband/", '_blank');
+            return true;
+        });
+
+        openGuideButton.setOnClick(() => {
+            window.open("https://docs.handheldlegend.com/s/portal/doc/esp32-baseband-update-page-vhX2Im50kN", '_blank');
             return true;
         });
     }   

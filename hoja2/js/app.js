@@ -139,6 +139,37 @@ class ConfigApp {
         this.loadSettingsModules();
     }
 
+    setNotificationBadge(idx, show) {
+        try {
+            const icon = this.#appIcons[idx];
+            let badge = icon.querySelector('.notification-badge');
+            
+            if (!badge && show) {
+                // Create badge if it doesn't exist
+                badge = document.createElement('div');
+                badge.className = 'notification-badge';
+                badge.textContent = '!';
+                icon.appendChild(badge);
+                
+                // Trigger reflow before adding visible class for animation
+                badge.offsetHeight;
+                badge.classList.add('visible');
+            } else if (badge) {
+                if (show) {
+                    badge.classList.add('visible');
+                } else {
+                    badge.classList.remove('visible');
+                    // Optional: Remove badge element after animation
+                    badge.addEventListener('transitionend', () => {
+                        badge.remove();
+                    });
+                }
+            }
+        } catch(err) {
+            console.error('Error setting notification badge:', err);
+        }
+    }
+
     currentModule() {
         return this._appTitleHeader;
     }
@@ -211,6 +242,9 @@ class ConfigApp {
         this.appGrid.appendChild(iconContainer);
 
         this.#appIcons.push(icon);
+
+        // Initialize without badge
+        this.setNotificationBadge(this.#appIcons.length - 1, false);
     }
 
     enableIcon(idx, enable)
@@ -407,6 +441,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     enableTooltips();
 
+    async function getCurrentBasebandVersion() {
+        const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
+        let response = await fetch(btManifestUrl);
+    
+        if(response.ok) {
+            const data = await response.json();
+            if(data.fw_version) return data.fw_version;
+            else return false;
+        }
+    }
+
     async function connectHandle() {
         // Enable Icons
         window.configApp.enableIcon(0, true); // Gamepad
@@ -451,7 +496,19 @@ document.addEventListener('DOMContentLoaded', () => {
         else {
             // Enable FW update
             enableFwUpdateMessage(false, parseBufferText(gamepad.device_static.firmware_url));
-        }        
+        }       
+        
+
+        // Check Baseband Version
+        let currentBasebandVersion = await getCurrentBasebandVersion();
+
+        console.log(currentBasebandVersion);
+        console.log(gamepad.bluetooth_static.baseband_version);
+
+        if(gamepad.bluetooth_static.baseband_version < currentBasebandVersion) {
+            window.configApp.setNotificationBadge(9, true);
+        }
+        // End Baseband Version Check
     }
 
     function disconnectHandle() {

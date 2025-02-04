@@ -364,11 +364,38 @@ h1, h2, h3 {
     height: 24px;
 }
 
+.notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: #ff4444;  /* Red color for the badge */
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    border: 2px solid white;  /* White border to make it stand out */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    opacity: 0;              /* Hidden by default */
+    transform: scale(0);     /* Start scaled down */
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.notification-badge.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .icon[enabled="false"] .svg-icon-container svg {
     opacity: 0.5;
 }
 
 .module-icon .icon {
+    position: relative;
     transition: all 0.2s;
     -webkit-filter: saturate(0);
     transform: scale(0.75);
