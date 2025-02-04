@@ -512,6 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(gamepad.bluetooth_static.baseband_version < currentBasebandVersion) {
             window.configApp.setNotificationBadge(9, true);
         }
+        else window.configApp.setNotificationBadge(9, false);
         // End Baseband Version Check
     }
 
