@@ -1,7 +1,7 @@
 const CACHE_CONFIG = {
-  version: 'v0.13.82', // Increment this when you update files
+  version: 'v0.001.010', // Increment this when you update files
   folders: {
-    '/': ['index.html', 'attributions.txt'],
+    '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
     '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js'],
     '/assets/3d/': ['supergamepad.stl'],
     '/libs/': ['STLLoader.js', 'three.min.js'],
@@ -48,235 +48,110 @@ const CACHE_CONFIG = {
       'rgbGroupName.js', 'rgbInfoStatic.js',
       'triggerConfig.js', 'userConfig.js'
     ],
+    '/images/' : ['icon_transparent.png', 'favicon.ico'], 
     '/assets/icons/': ['analog.svg', 'battery.svg', 'gamepad.svg', 'haptics.svg', 'motion.svg', 'remap.svg', 'rgb.svg', 'triggers.svg', 'user.svg', 'wireless.svg']
   }
 };
 
+const PWA_SCOPE = '/hoja2';
 const CACHE_NAME = `app-cache-${CACHE_CONFIG.version}`;
-const VERSION_CHECK_INTERVAL = 60 * 60 * 1000; // Check for updates every hour
 
-// Store the last update check time
-let lastUpdateCheck = 0;
+/**
+ * Generate a list of resources with the correct scope prefix.
+ * @returns {string[]} List of resources to cache
+ */
+function getCacheResourceList() {
+  const resources = [];
 
-async function checkForUpdates() {
-  const now = Date.now();
-  if (now - lastUpdateCheck < VERSION_CHECK_INTERVAL) {
-      return false;
+  for (const folder in CACHE_CONFIG.folders) {
+    CACHE_CONFIG.folders[folder].forEach(file => {
+      const fullPath = `.${folder}${file}`;
+      resources.push(fullPath);
+    });
   }
-  
-  lastUpdateCheck = now;
-  
-  try {
-      // Get the path to the current service worker script
-      const scriptURL = new URL(self.location.href);
-      
-      // Fetch the service worker script to check for updates
-      const response = await fetch(scriptURL.href, {
-          cache: 'no-cache',
-          headers: {
-              'Cache-Control': 'no-cache'
-          }
-      });
-      
-      if (!response.ok) {
-          throw new Error('Failed to fetch service worker');
-      }
-      
-      const text = await response.text();
-      // Check if the version in the fetched script is different
-      const versionMatch = text.match(/version:\s*['"]([^'"]+)['"]/);
-      if (versionMatch && versionMatch[1] !== CACHE_CONFIG.version) {
-          console.log('New version detected:', versionMatch[1]);
-          await self.registration.update();
-          return true;
-      }
-  } catch (error) {
-      console.error('Update check failed:', error);
-  }
-  return false;
+
+  console.log(resources);
+
+  return resources;
 }
 
-// Utility function to get a list of all resources to cache
-function getResourceList() {
-  const resourceList = [];
-  for (const [folderPath, files] of Object.entries(CACHE_CONFIG.folders)) {
-    for (const file of files) {
-      resourceList.push(folderPath + file);
-    }
-  }
-  return resourceList;
-}
+// Example usage
+const ASSETS_TO_CACHE = getCacheResourceList();
 
-async function precacheResources() {
-  try {
-    // First, delete the existing cache with the same name if it exists
-    await caches.delete(CACHE_NAME);
-
-    // Open fresh cache
-    const cache = await caches.open(CACHE_NAME);
-    const resourceList = getResourceList();
-
-    // Fetch and cache all resources with no-cache
-    await Promise.all(resourceList.map(async (url) => {
-      try {
-        const response = await fetch(url, {
-          cache: 'no-cache',
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
-        });
-        if (response.ok) {
-          await cache.put(url, response);
-        } else {
-          console.error(`Failed to fetch: ${url}`);
-        }
-      } catch (error) {
-        console.error(`Failed to cache: ${url}`, error);
-      }
-    }));
-    console.log(`Successfully cached ${resourceList.length} resources in ${CACHE_NAME}`);
-    return true;
-  } catch (error) {
-    console.error('Failed to precache resources:', error);
-    return false;
-  }
-}
-
-async function clearOldCaches() {
-  const existingCaches = await caches.keys();
-  const oldCaches = existingCaches.filter(name =>
-    name.startsWith('app-cache-') && name !== CACHE_NAME
-  );
-
-  await Promise.all(
-    oldCaches.map(cacheName => {
-      console.log(`Deleting old cache: ${cacheName}`);
-      return caches.delete(cacheName);
-    })
-  );
-
-  return oldCaches.length;
-}
-
-// Install event - precache all resources
+// Install event - cache everything upfront
 self.addEventListener('install', event => {
-  console.log(`Installing new service worker with cache: ${CACHE_NAME}`);
+  console.log('[Service Worker] Installing');
 
   event.waitUntil(
-    (async () => {
-      try {
-        // Precache resources
-        await precacheResources();
-
-        // Skip waiting immediately to ensure the new service worker takes over
-        await self.skipWaiting();
-
-        console.log('Service worker installation complete');
-      } catch (error) {
-        console.error('Service worker installation failed:', error);
-        throw error;
-      }
-    })()
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[Service Worker] Caching all resources');
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
+      .catch(error => console.error('[Service Worker] Caching failed:', error))
   );
+
+  self.skipWaiting(); // Force activation of the new SW
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', event => {
-  console.log('New service worker activating...');
-
   event.waitUntil(
-    (async () => {
-      try {
-        // Clear old caches
-        const deletedCaches = await clearOldCaches();
-        console.log(`Cleared ${deletedCaches} old cache(s)`);
-
-        // Take control of all clients immediately
-        await clients.claim();
-
-        console.log('Service worker activation complete');
-      } catch (error) {
-        console.error('Service worker activation failed:', error);
-        throw error;
-      }
-    })()
+    caches.keys().then(keys =>
+      Promise.all(
+        keys
+          .filter(key => key !== CACHE_NAME) // Remove old caches
+          .map(key => caches.delete(key))
+      )
+    )
   );
+  self.clients.claim(); // Ensure all pages immediately use the new service worker
 });
-
-// New function to check if a URL should be cached
-function shouldCache(url) {
-  try {
-    const resourcePath = new URL(url).pathname;
-    const resourceList = getResourceList();
-    return resourceList.includes(resourcePath);
-  } catch (error) {
-    console.error('Error checking cache eligibility:', error);
-    return false;
-  }
-}
 
 self.addEventListener('fetch', event => {
-  // Check for updates periodically
-  event.waitUntil(checkForUpdates());
+  console.log('[Service Worker] Fetch request:', {
+    url: event.request.url,
+    mode: event.request.mode,
+    destination: event.request.destination
+  });
+
+  // Force no-cors mode for JavaScript files
+  let request = event.request;
+  if (request.url.endsWith('.js')) {
+    request = new Request(request, { mode: 'no-cors' });
+  }
 
   event.respondWith(
-    (async () => {
-      try {
-        // Only proceed with caching logic if this is a resource we should cache
-        const shouldCacheResource = shouldCache(event.request.url);
-
-        if (shouldCacheResource) {
-          const cache = await caches.open(CACHE_NAME);
-
-          // For HTML documents, try network first
-          if (event.request.mode === 'navigate' ||
-            (event.request.method === 'GET' &&
-              event.request.headers.get('accept')?.includes('text/html'))) {
-            try {
-              const networkResponse = await fetch(event.request, {
-                cache: 'no-cache',
-                headers: {
-                  'Cache-Control': 'no-cache'
-                }
-              });
-              if (networkResponse.ok) {
-                await cache.put(event.request, networkResponse.clone());
-                return networkResponse;
-              }
-            } catch (error) {
-              console.log('Network request failed, falling back to cache');
-            }
-          }
-
-          // For other cacheable resources, check cache first
-          const cachedResponse = await cache.match(event.request);
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-
-          // If not in cache, try network
-          const networkResponse = await fetch(event.request);
-          if (networkResponse.ok) {
-            await cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          }
-        } else {
-          // For non-cached resources, just fetch from network
-          return fetch(event.request);
+    caches.match(request)
+      .then(response => {
+        if (response) {
+          console.log('[Service Worker] Cache hit for:', request.url);
+          return response;
         }
 
-        // If all else fails, return error
-        return new Response('Unable to fetch resource', {
-          status: 504,
-          statusText: 'Gateway Timeout',
-          headers: {
-            'Content-Type': 'text/plain'
-          }
+        console.error('[Service Worker] Cache miss for:', request.url);
+
+        // If it's a JSON request, fall back to network
+        if (request.url.endsWith('.json')) {
+          console.log('[Service Worker] Fetching JSON from network:', request.url);
+          return fetch(request)
+            .then(networkResponse => {
+              if (!networkResponse || !networkResponse.ok) {
+                throw new Error('Network response failed');
+              }
+              return networkResponse;
+            })
+            .catch(error => {
+              console.error('[Service Worker] Network fetch failed for JSON:', request.url, error);
+              return new Response('Failed to fetch JSON resource', { status: 500 });
+            });
+        }
+
+        // Default behavior: Log cache contents and return a 404 response
+        return caches.open(CACHE_NAME).then(cache => {
+          return cache.keys().then(keys => {
+            return new Response('Resource not available offline', { status: 404 });
+          });
         });
-      } catch (error) {
-        console.error(`Fetch failed for ${event.request.url}:`, error);
-        throw error;
-      }
-    })()
+      })
   );
 });

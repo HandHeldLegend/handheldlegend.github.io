@@ -6,6 +6,17 @@ import { enableTooltips } from './tooltips.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
+async function isOnline() {
+    try {
+        const response = await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
+        console.log("ONLINE");
+        return response.ok;
+    } catch (error) {
+        console.log("OFFLINE");
+        return false; // Network request failed, assume offline
+    }
+}
+
 // In your app.js or main entry point
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
@@ -14,11 +25,8 @@ if ('serviceWorker' in navigator) {
             await checkInstallState();
             
             // Register service worker
-            const registration = await navigator.serviceWorker.register('./app_sw.js', {
-                type: 'module'
-            });
-            
-            console.log('ServiceWorker registered:', registration);
+            const registration = await navigator.serviceWorker.register('/hoja2/app_sw.js');
+            console.log('Service Worker registered with scope:', registration.scope);
 
             // Listen for updates
             registration.addEventListener('updatefound', () => {
@@ -290,24 +298,62 @@ class ConfigApp {
 
     async openmoduleView(module, title) {
         // Reset scrollable position
-        this.moduleScrollable.scrollTo(0,0);
-
-        // Dynamically import the module
-        const settingsModule = await import(module.path);
-
+        this.moduleScrollable.scrollTo(0, 0);
+    
+        let moduleUrl = module.path;
+        let moduleScript;
+    
+        try {
+            if (isOnline()) {
+                // Online: Directly import the module
+                moduleScript = await import(moduleUrl);
+            } else {
+                // Offline: Load from the first available cache
+                const cacheNames = await caches.keys();
+                if (cacheNames.length === 0) throw new Error('No caches found');
+    
+                const cache = await caches.open(cacheNames[0]);
+                const response = await cache.match(moduleUrl);
+    
+                if (!response) {
+                    throw new Error(`Module ${moduleUrl} not found in cache.`);
+                }
+    
+                let moduleText = await response.text();
+    
+                // Rewrite relative imports to absolute paths
+                moduleText = moduleText.replace(
+                    /import\s+["'](\.\.\/[^"']+)["']/g,
+                    (match, relativePath) => {
+                        const absolutePath = new URL(relativePath, location.origin).href;
+                        return `import "${absolutePath}"`;
+                    }
+                );
+    
+                const blob = new Blob([moduleText], { type: "application/javascript" });
+                const blobUrl = URL.createObjectURL(blob);
+    
+                moduleScript = await import(blobUrl);
+                URL.revokeObjectURL(blobUrl); // Clean up
+            }
+        } catch (error) {
+            console.error(`Error loading module ${moduleUrl}:`, error);
+            return;
+        }
+    
         // Clear previous content
         this.moduleContent.innerHTML = '';
-
+    
         // Render module content
-        if (settingsModule.render) {
-            if(this._appTitleHeader)
+        if (moduleScript.render) {
+            if (this._appTitleHeader)
                 this._appTitleHeader.innerHTML = title;
-            settingsModule.render(this.moduleContent);
+            moduleScript.render(this.moduleContent);
         }
-
+    
         // Set current module title
         this._currentAppTitle = title;
-
+    
         this.setView(true);
     }
 
@@ -324,6 +370,8 @@ const parseBufferText = buffer => {
 var debug = false;
 
 async function getManifestVersion(manifestUrl) {
+
+    if(!isOnline()) return false;
 
     let response = await fetch(manifestUrl);
 
@@ -446,6 +494,8 @@ document.addEventListener('DOMContentLoaded', () => {
     enableTooltips();
 
     async function getCurrentBasebandVersion() {
+        if(!isOnline()) return false;
+
         const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
         let response = await fetch(btManifestUrl);
     
@@ -492,8 +542,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("Newest version: " + parseInt(fwVersion));
         console.log("This version: " + parseInt(gamepad.device_static.fw_version));
+        
+        if(fwVersion == false)
+        {
 
-        if(fwVersion > gamepad.device_static.fw_version) {
+        }
+        else if(fwVersion > gamepad.device_static.fw_version) {
             // Enable FW update
             enableFwUpdateMessage(true, parseBufferText(gamepad.device_static.firmware_url));
         }
