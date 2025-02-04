@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-    version: 'v0.13.2', // Increment this when you update files
+    version: 'v0.13.5', // Increment this when you update files
     folders: {
         '/': ['index.html', 'attributions.txt'],
         '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js'],
@@ -67,6 +67,9 @@ function getResourceList() {
 
 async function precacheResources() {
   try {
+      // First, delete the existing cache with the same name if it exists
+      await caches.delete(CACHE_NAME);
+
       const cache = await caches.open(CACHE_NAME);
       const resourceList = getResourceList();
       
@@ -103,13 +106,13 @@ self.addEventListener('install', event => {
   event.waitUntil(
       (async () => {
           try {
-              // Skip waiting immediately to ensure the new service worker takes over
-              await self.skipWaiting();
+            // Precache resources
+            await precacheResources();
+
+            // Skip waiting immediately to ensure the new service worker takes over
+            await self.skipWaiting();
               
-              // Precache resources
-              await precacheResources();
-              
-              console.log('Service worker installation complete');
+            console.log('Service worker installation complete');
           } catch (error) {
               console.error('Service worker installation failed:', error);
               throw error;
@@ -141,40 +144,42 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - serve from cache or network
 self.addEventListener('fetch', event => {
   event.respondWith(
-    (async () => {
-      try {
-        const cache = await caches.open(CACHE_NAME);
+      (async () => {
+          try {
+              const cache = await caches.open(CACHE_NAME);
 
-        // Check the cache first
-        const cachedResponse = await cache.match(event.request);
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+              // Try network first
+              try {
+                  const networkResponse = await fetch(event.request);
+                  if (networkResponse.ok) {
+                      await cache.put(event.request, networkResponse.clone());
+                      return networkResponse;
+                  }
+              } catch (error) {
+                  // Network failed, fall back to cache
+                  console.log('Network request failed, falling back to cache');
+              }
 
-        // Fetch from the network if not in cache
-        const networkResponse = await fetch(event.request);
+              // Return cached response if available
+              const cachedResponse = await cache.match(event.request);
+              if (cachedResponse) {
+                  return cachedResponse;
+              }
 
-        // Cache the network response if successful
-        if (networkResponse.ok) {
-          await cache.put(event.request, networkResponse.clone());
-        }
-
-        return networkResponse;
-      } catch (error) {
-        console.error(`Fetch failed for ${event.request.url}:`, error);
-
-        // Return a fallback response or meaningful error
-        return new Response('Unable to fetch resource', {
-          status: 504,
-          statusText: 'Gateway Timeout',
-          headers: {
-            'Content-Type': 'text/plain'
+              // If neither network nor cache worked, return error
+              return new Response('Unable to fetch resource', {
+                  status: 504,
+                  statusText: 'Gateway Timeout',
+                  headers: {
+                      'Content-Type': 'text/plain'
+                  }
+              });
+          } catch (error) {
+              console.error(`Fetch failed for ${event.request.url}:`, error);
+              throw error;
           }
-        });
-      }
-    })()
+      })()
   );
 });
