@@ -122,6 +122,7 @@ class ConfigApp {
         this.appGridContainer = document.getElementById('app-grid-container');
         this.appGrid = document.getElementById('app-grid');
         this._appTitleHeader = appTitleHeader;
+        this._currentAppTitle = -1;
 
         // Contain our scrollable module content container
         this.moduleScrollable = document.getElementById('module-content-container');
@@ -171,7 +172,7 @@ class ConfigApp {
     }
 
     currentModule() {
-        return this._appTitleHeader;
+        return this._currentAppTitle;
     }
 
     registerKeyboardEvents() {
@@ -303,6 +304,9 @@ class ConfigApp {
                 this._appTitleHeader.innerHTML = title;
             settingsModule.render(this.moduleContent);
         }
+
+        // Set current module title
+        this._currentAppTitle = title;
 
         this.setView(true);
     }
@@ -514,10 +518,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function disconnectHandle() {
         // Disable Save
         saveButton.enableButton(false);
-
         connectButton.setState('off');
 
-        if(window.configApp.currentModule != "Wireless") {
+        console.log("Closing module: " + window.configApp.currentModule());
+
+        if(window.configApp.currentModule() != "Wireless") {
             window.configApp.closemoduleView();
         }
 
