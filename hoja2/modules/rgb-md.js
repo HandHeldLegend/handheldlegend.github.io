@@ -112,6 +112,17 @@ export function render(container) {
                 default-selected="${rgbMode}"
             ></multi-position-button>
 
+            <h2>Bulk Options</h2>
+            <single-shot-button 
+                id="color-paste-button" 
+                state="ready" 
+                ready-text="Paste All" 
+                disabled-text="Paste All"
+                pending-text="Pasting"
+                success-text="Complete!"
+                failure-text="Failure..."
+            ></single-shot-button>
+
             <h2>Colors</h2>
             ${rgbPickersHTML}
     `;
@@ -141,6 +152,7 @@ export function render(container) {
 
     const rgbModuleVersion = 0x1;
 
+    /** @type {GroupRgbPicker[]} */
     const rgbPickers = container.querySelectorAll('group-rgb-picker');
     rgbPickers.forEach(picker => {
         picker.addEventListener('color-change', (e) => {
@@ -154,6 +166,49 @@ export function render(container) {
 
             writeRgbMemBlock();
         });
+    });
+
+    /** @type {SingleShotButton} */
+    const pasteButton = container.querySelector('single-shot-button[id="color-paste-button"]');
+    pasteButton.setOnClick(async () => {
+        try {
+            const clipText = await navigator.clipboard.readText();
+            const cleaned = clipText.replace(/[^a-zA-Z0-9]/g, '');
+            
+            if (cleaned.length > 6) {
+                console.error("Clipboard hex contains more than 6 chars");
+                return false;
+            }
+            
+            // Verify it's a valid hex value
+            const isValidHex = /^[0-9A-Fa-f]+$/.test(cleaned);
+            if (!isValidHex) {
+                console.error("No valid hex data in clipboard");
+                return false;
+            }
+            
+            // Custom logic placeholder here
+            rgbPickers.forEach(picker =>  {
+                picker.setColor(cleaned);
+            });
+
+            let tmpArr = gamepad.rgb_cfg.rgb_colors;
+            let numColor = hexToUint32Rgb(cleaned);
+
+            for(let i = 0; i < gamepad.rgb_static.rgb_groups; i++)
+            {
+                tmpArr[i] = numColor;
+            }
+
+            gamepad.rgb_cfg.rgb_colors = tmpArr;
+
+            writeRgbMemBlock();
+            
+            return true;
+        } catch (err) {
+            console.info('Clipboard access failed:', err);
+            return false;
+        }
     });
 
     const modeSelector = container.querySelector('multi-position-button[id="rgb-mode-select"]');

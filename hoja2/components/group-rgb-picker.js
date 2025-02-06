@@ -3,6 +3,7 @@ import { enableTooltips } from "../js/tooltips.js";
 class GroupRgbPicker extends HTMLElement {
     constructor() {
         super();
+        this._emitBlock = false;
         this.attachShadow({ mode: 'open' });
     }
 
@@ -114,6 +115,8 @@ class GroupRgbPicker extends HTMLElement {
 
     // Emit a change event when the color changes
     emitChangeEvent(color) {
+        if(this._emitBlock) return;
+
         this.dispatchEvent(
             new CustomEvent('color-change', {
                 detail: { color },
@@ -123,14 +126,19 @@ class GroupRgbPicker extends HTMLElement {
 
     // Set the group name programmatically
     setGroupName(name) {
+        this._emitBlock = true;
         this.setAttribute('group-name', name);
+        this._emitBlock = false;
     }
 
     // Set the color programmatically
     setColor(color) {
+        
         if (/^[0-9A-Fa-f]{6}$/.test(color)) {
+            this._emitBlock = true;
             this.setAttribute('color', color);
-        }
+            this._emitBlock = false;
+        }   
     }
 }
 
