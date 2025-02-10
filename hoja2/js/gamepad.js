@@ -316,91 +316,94 @@ class HojaGamepad {
 
   // Parse incoming USB report
   #parseReport(data) {
-    switch (data.getUint8(0)) {
-      // WEBUSB_ID_READ_CONFIG_BLOCK
-      case 1:
-        this.#blockParser(data);
-        break;
-
-      // WEBUSB_ID_WRITE_CONFIG_BLOCK
-      case 2:
-        // Confirm write done
-        let wr_block = data.getUint8(1);
-        let wr_idx = data.getUint8(2);
-
-        if ((this.#blockMemoryState.currentWriteBlock == wr_block) &&
-          (this.#blockMemoryState.currentWriteIdx == wr_idx)) {
-          console.log("Done writing " + wr_block + " " + wr_idx);
-          this.#blockMemoryState.isDoneWriting = true;
-        }
-        break;
-
-      // WEBUSB_ID_READ_STATIC_BLOCK
-      case 3:
-        this.#staticParser(data);
-        break;
-
-      // WEBUSB_ID_CONFIG_COMMAND
-      case 4:
-        {
-          let block = data.getUint8(1);
-          let command = data.getUint8(2);
-          let success = data.getUint8(3);
-          let gotData = (data.byteLength > 4) ? true : false;
-
-          if(
-            block   == this.#cfgCommandState.cfgBlockUsed &&
-            command == this.#cfgCommandState.cfbCmdSent
-          ) {
-
-            this.#cfgCommandState.cfgReturnStatus = success;
-
-            if(success && gotData) {
-              let newData = new Uint8Array(data.buffer.slice(4));
-              this.#cfgCommandState.cfgReturnData = newData; // Set returnable data
-            }
-
-            this.#cfgCommandState.cfgSentSuccess = true;
-          }
-        }
-        break;
-      
-      // WEBUSB_INPUT_RAW
-      case 255:
-        if(this.#_inputReportHook)
-          try {
-            this.#_inputReportHook(data);
-          } catch (error) { 
-            console.error("Input report hook missing or unassigned:", error); 
-            this.#_inputReportHook = null;
-          }
-        break;
-      
-      // WEBUSB_ID_ANALOG_DUMP
-      case 250:
-        let out = [];
-
-        for(let i = 0; i < 31; i++) {
-          let distance = ((data.getUint8((i*2) + 2) << 8) | data.getUint8((i*2) + 3)) & 0x7FF;
-          let direction = (data.getUint8((i*2) + 2) & 0x80) ? -1 : 1;
-          distance = direction * distance;
-
-          out.push(distance);
-        }
-
-        console.log(out);
-        break;
-
-      // WEBUSB_CMD_FW_GET (LEGACY FW VERSION DATA)
-      case 175:
-        console.log("Legacy device detected");
-        this.#handleLegacyData(data);
-        break;
-
-      default:
-        // No warnings
-        break;
-    }
+     // Create a DataView from the incoming data buffer
+     const view = new DataView(data.buffer);
+    
+     // Get first byte to determine message type
+     try {
+         switch (view.getUint8(0)) {
+             case 1: // WEBUSB_ID_READ_CONFIG_BLOCK
+                 this.#blockParser(view);
+                 break;
+ 
+             case 2: // WEBUSB_ID_WRITE_CONFIG_BLOCK
+                 // Validate we have enough data before accessing
+                 if (data.buffer.byteLength >= 3) {
+                     let wr_block = view.getUint8(1);
+                     let wr_idx = view.getUint8(2);
+ 
+                     if ((this.#blockMemoryState.currentWriteBlock == wr_block) &&
+                         (this.#blockMemoryState.currentWriteIdx == wr_idx)) {
+                         console.log("Done writing " + wr_block + " " + wr_idx);
+                         this.#blockMemoryState.isDoneWriting = true;
+                     }
+                 }
+                 break;
+ 
+             case 3: // WEBUSB_ID_READ_STATIC_BLOCK
+                 this.#staticParser(view);
+                 break;
+ 
+             case 4: // WEBUSB_ID_CONFIG_COMMAND
+                 if (data.buffer.byteLength >= 4) {
+                     let block = view.getUint8(1);
+                     let command = view.getUint8(2);
+                     let success = view.getUint8(3);
+                     let gotData = (data.buffer.byteLength > 4);
+ 
+                     if (block == this.#cfgCommandState.cfgBlockUsed &&
+                         command == this.#cfgCommandState.cfbCmdSent) {
+                         
+                         this.#cfgCommandState.cfgReturnStatus = success;
+ 
+                         if (success && gotData) {
+                             let newData = new Uint8Array(data.buffer.slice(4));
+                             this.#cfgCommandState.cfgReturnData = newData;
+                         }
+ 
+                         this.#cfgCommandState.cfgSentSuccess = true;
+                     }
+                 }
+                 break;
+ 
+             case 255: // WEBUSB_INPUT_RAW
+                 if (this.#_inputReportHook) {
+                     try {
+                         this.#_inputReportHook(view);
+                     } catch (error) {
+                         console.error("Input report hook missing or unassigned:", error);
+                         this.#_inputReportHook = null;
+                     }
+                 }
+                 break;
+ 
+             case 250: // WEBUSB_ID_ANALOG_DUMP
+                 if (data.buffer.byteLength >= 64) { // Validate we have enough data for 31 readings
+                     let out = [];
+                     for (let i = 0; i < 31; i++) {
+                         let distance = ((view.getUint8((i*2) + 2) << 8) | view.getUint8((i*2) + 3)) & 0x7FF;
+                         let direction = (view.getUint8((i*2) + 2) & 0x80) ? -1 : 1;
+                         distance = direction * distance;
+                         out.push(distance);
+                     }
+                     console.log(out);
+                 }
+                 break;
+ 
+             case 175: // WEBUSB_CMD_FW_GET
+                 console.log("Legacy device detected");
+                 this.#handleLegacyData(view);
+                 break;
+ 
+             default:
+                 // No warnings
+                 break;
+         }
+     } catch (error) {
+         console.error("Error parsing report:", error, "Buffer length:", data.buffer.byteLength);
+         // Optionally add more debug info about the buffer:
+         console.log("First few bytes:", [...new Uint8Array(data.buffer.slice(0, 4))]);
+     }
   }
 
   // Update internal state based on parsed report
