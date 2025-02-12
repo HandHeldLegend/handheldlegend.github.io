@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-  version: 'v0.001.016', // Increment this when you update files
+  version: 'v0.001.018', // Increment this when you update files
   folders: {
     '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
     '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js'],
@@ -128,30 +128,50 @@ self.addEventListener('fetch', event => {
           return response;
         }
 
-        console.error('[Service Worker] Cache miss for:', request.url);
-
-        // If it's a JSON request, fall back to network
-        if (request.url.endsWith('.json')) {
-          console.log('[Service Worker] Fetching JSON from network:', request.url);
-          return fetch(request)
-            .then(networkResponse => {
-              if (!networkResponse || !networkResponse.ok) {
-                throw new Error('Network response failed');
-              }
-              return networkResponse;
-            })
-            .catch(error => {
-              console.error('[Service Worker] Network fetch failed for JSON:', request.url, error);
-              return new Response('Failed to fetch JSON resource', { status: 500 });
-            });
-        }
-
-        // Default behavior: Log cache contents and return a 404 response
-        return caches.open(CACHE_NAME).then(cache => {
-          return cache.keys().then(keys => {
-            return new Response('Resource not available offline', { status: 404 });
+        console.log('[Service Worker] Cache miss for:', request.url);
+        
+        // Attempt network fetch for all resources
+        return fetch(request)
+          .then(networkResponse => {
+            if (!networkResponse || !networkResponse.ok) {
+              throw new Error('Network response failed');
+            }
+            
+            // Clone the response since we might want to cache it
+            const responseToCache = networkResponse.clone();
+            
+            // Cache the successful response for future use
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(request, responseToCache)
+                  .catch(error => {
+                    console.error('[Service Worker] Failed to cache response:', error);
+                  });
+              });
+            
+            return networkResponse;
+          })
+          .catch(error => {
+            console.error('[Service Worker] Network fetch failed:', request.url, error);
+            
+            // Custom error responses based on resource type
+            if (request.url.endsWith('.json')) {
+              return new Response('Failed to fetch JSON resource', { 
+                status: 500,
+                headers: { 'Content-Type': 'application/json' }
+              });
+            } else if (request.url.endsWith('.js')) {
+              return new Response('console.error("Failed to load script");', {
+                status: 500,
+                headers: { 'Content-Type': 'application/javascript' }
+              });
+            } else {
+              return new Response('Resource not available', { 
+                status: 504,
+                headers: { 'Content-Type': 'text/plain' }
+              });
+            }
           });
-        });
       })
   );
 });
