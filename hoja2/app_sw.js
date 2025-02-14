@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-  version: 'v0.001.018', // Increment this when you update files
+  version: 'v0.001.019', // Increment this when you update files
   folders: {
     '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
     '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js'],
@@ -140,14 +140,16 @@ self.addEventListener('fetch', event => {
             // Clone the response since we might want to cache it
             const responseToCache = networkResponse.clone();
             
-            // Cache the successful response for future use
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(request, responseToCache)
-                  .catch(error => {
-                    console.error('[Service Worker] Failed to cache response:', error);
-                  });
-              });
+            // Only cache if it's not a manifest.json file
+            if (!request.url.endsWith('manifest.json')) {
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(request, responseToCache)
+                    .catch(error => {
+                      console.error('[Service Worker] Failed to cache response:', error);
+                    });
+                });
+            }
             
             return networkResponse;
           })
