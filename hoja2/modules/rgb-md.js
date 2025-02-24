@@ -46,6 +46,41 @@ function hexToUint32Rgb(hexString) {
     return parseInt(hexString, 16) >>> 0; // >>> 0 ensures it's treated as unsigned
 }
 
+function updateRgbPickerTexts(mode) {
+    if(mode == "fairy") {
+        let newNames = [];
+
+        for(let i = 0; i < gamepad.rgb_static.rgb_groups; i++)
+        {
+            if(i < 6) {
+                newNames.push("Fairy " + (i + 1));
+            }
+            else {
+                newNames.push("Unused");
+            }
+        }
+
+        let rgbPickers = document.querySelectorAll('group-rgb-picker');
+        rgbPickers.forEach((picker, idx) => {
+            picker.setAttribute('group-name', newNames[idx]);
+        });
+    }
+    else {
+        let names = gamepad.rgb_static.rgb_group_names;
+        let decodedNames = []
+
+        for(let i = 0; i < gamepad.rgb_static.rgb_groups; i++)
+        {
+            decodedNames.push(decodeText(names[i].rgb_group_name));
+        }
+
+        let rgbPickers = document.querySelectorAll('group-rgb-picker');
+        rgbPickers.forEach((picker, idx) => {
+            picker.setAttribute('group-name', decodedNames[idx]);
+        });
+    }
+}
+
 export function render(container) {
 
     let colors = gamepad.rgb_cfg.rgb_colors;
@@ -108,7 +143,7 @@ export function render(container) {
             <h2>Mode</h2>
             <multi-position-button 
                 id="rgb-mode-select" 
-                labels="User, Rainbow, React"
+                labels="User, Rainbow, React, Fairy"
                 default-selected="${rgbMode}"
             ></multi-position-button>
 
@@ -126,6 +161,8 @@ export function render(container) {
             <h2>Colors</h2>
             ${rgbPickersHTML}
     `;
+
+    updateRgbPickerTexts(rgbMode == 3 ? "fairy" : "normal");
 
     // Optional: Add event listeners to specific number selectors
     const brightnessSelector = container.querySelector('number-selector[id="brightness-slider"]');
@@ -215,6 +252,14 @@ export function render(container) {
     modeSelector.addEventListener('change', (e) => {
         console.log("RGB mode change");
         gamepad.rgb_cfg.rgb_mode = e.detail.selectedIndex;
+
+        if(e.detail.selectedIndex == 3) {
+            updateRgbPickerTexts("fairy");
+        }
+        else {
+            updateRgbPickerTexts("normal");
+        }
+
         writeRgbMemBlock();
     });
 }
