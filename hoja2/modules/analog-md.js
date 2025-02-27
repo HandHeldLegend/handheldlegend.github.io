@@ -463,7 +463,8 @@ export function render(container) {
     container.innerHTML = `
             <h2>Calibrate</h2>
             <div class="app-text-container">
-            To calibrate both sticks, press Start. Move both analog sticks in a full circle slowly. Press Stop to complete calibration.
+            To calibrate both sticks, press Calibrate. Move both analog sticks in a full circle slowly. Press Stop. 
+            Verify the output of your analog sticks and that they both reach the full output range. Click Save to retain your new calibration settings.
             <strong>You must calibrate both analog sticks at once.</strong>
             </div>
             <div class="app-row">
