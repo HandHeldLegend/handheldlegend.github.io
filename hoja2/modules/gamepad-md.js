@@ -39,6 +39,10 @@ function uint32ToRgbHex(uint32) {
     return hexString;
 }
 
+function stringToArray(input) {
+    return input.split(',');
+}
+
 export function render(container) {
 
     let bodyColor = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
@@ -142,6 +146,20 @@ export function render(container) {
     rgripPicker.addEventListener('color-change', async (e) => {
         let u32color = hexToUint32Rgb(e.detail.color);
         gamepad.gamepad_cfg.gamepad_color_grip_right = u32color;
+        await writeGamepadMemBlock();
+    });
+
+    macSelector.addEventListener('change', async (e) => {
+        let macArray = stringToArray(e.detail.value);
+        let tmpAddress = gamepad.gamepad_cfg.switch_mac_address;
+
+        for(let i = 0; i < 6; i++)
+        {
+            tmpAddress[i] = parseInt(macArray[i], 16);
+        }
+
+        gamepad.gamepad_cfg.switch_mac_address = tmpAddress;
+
         await writeGamepadMemBlock();
     });
 

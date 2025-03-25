@@ -542,6 +542,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("Newest version: " + parseInt(fwVersion));
         console.log("This version: " + parseInt(gamepad.device_static.fw_version));
+
+        console.log("Paired host:");
+        console.log(gamepad.gamepad_cfg.host_mac_switch);
         
         if(fwVersion == false)
         {
