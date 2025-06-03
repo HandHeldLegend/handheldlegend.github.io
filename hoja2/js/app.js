@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.configApp.enableIcon(7, true); // User
 
-        let batteryEnable = (gamepad.battery_static.capacity_mah > 0) ? true : false;
+        let batteryEnable = (gamepad.battery_static.part_number != "" && gamepad.battery_static.part_number != "N/A") ? true : false;
         window.configApp.enableIcon(8, batteryEnable); // Battery
 
         let wirelessEnable = (gamepad.bluetooth_static.bluetooth_bdr | gamepad.bluetooth_static.bluetooth_ble) ? true : false;
