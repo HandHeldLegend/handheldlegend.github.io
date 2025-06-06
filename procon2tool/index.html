@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ProCon 2 Enabler Tool</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e2f;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background: linear-gradient(90deg, #3a3fbd, #6b6ff7);
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: #fff;
+    }
+
+    .content {
+      padding: 2rem;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    button {
+      background: #6b6ff7;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    button:hover {
+      background: #4f53d0;
+    }
+
+    pre {
+      background: #2d2d3a;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      text-align: left;
+      max-height: 300px;
+    }
+
+    .gc-ultimate {
+      background: #29293f;
+      margin-top: 3rem;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .gc-ultimate h2 {
+      margin-top: 0;
+      color: #90caff;
+    }
+
+    .gc-ultimate img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+
+    .gc-ultimate ul {
+      text-align: left;
+      margin: 1rem auto;
+      display: inline-block;
+    }
+
+    .gc-ultimate a {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.8rem 1.5rem;
+      background: #90caff;
+      color: #1e1e2f;
+      font-weight: bold;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    .gc-ultimate a:hover {
+      background: #69b8ff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ProCon 2 Enabler Tool</h1>
+    <p>Free & Open Source Utility to Enable ProCon 2 on Windows/Android</p>
+  </header>
+
+  <div class="content">
+    <button id="sendBtn">Connect & Send Report</button>
+    <pre id="log">Ready to connect...</pre>
+
+    <div class="gc-ultimate">
+      <p>While you're here... check out another project I developed!</p>
+      <h2>Introducing: GC Ultimate</h2>
+      <p>An open source GameCube style gamepad built for pros, tinkerers, and retro lovers.</p>
+      <img src="https://handheldlegend.com/cdn/shop/files/GCU_Photo_Studio_2025-May-30_10-43-30PM-000_CustomizedView7560275539_png.png?v=1748891487&width=700" alt="GC Ultimate Render Placeholder">
+      <ul>
+        <li>🕹️ Hall effect / TMR joysticks</li>
+        <li>🔄 Swappable gateplate</li>
+        <li>🖥️ Compatible with Switch 2, Switch, PC</li>
+        <li>🎮 Retro console support</li>
+        <li>🌈 RGB underglow buttons</li>
+        <li>🎯 Analog trigger support (XInput + GameCube)</li>
+        <li>🧠 Fully open source 3D parts + firmware</li>
+        <li>🔌 Bluetooth + USB-C operation</li>
+      </ul>
+      <br>
+      <a href="https://gcultimate.com" target="_blank">Sign Up For Launch Notification!</a>
+    </div>
+  </div>
+
+  <script>
+    const VENDOR_ID = 0x057E;
+    const PRODUCT_ID = 0x2069;
+    const INTERFACE_NUMBER = 1;
+    const REPORT_DATA = new Uint8Array([
+      0x03, 0x91, 0x00, 0x0d, 0x00, 0x08,
+      0x00, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+    ]);
+
+    const log = (msg) => {
+      const el = document.getElementById('log');
+      el.textContent += msg + '\n';
+    };
+
+    document.getElementById('sendBtn').addEventListener('click', async () => {
+      try {
+        const device = await navigator.usb.requestDevice({
+          filters: [{ vendorId: VENDOR_ID, productId: PRODUCT_ID }]
+        });
+
+        await device.open();
+        log('Device opened');
+
+        if (!device.configuration) {
+          await device.selectConfiguration(1);
+          log('Configuration selected');
+        }
+
+        await device.claimInterface(INTERFACE_NUMBER);
+        log('Interface claimed');
+
+        const iface = device.configuration.interfaces[INTERFACE_NUMBER];
+        const endpointOut = iface.alternate.endpoints.find(
+          ep => ep.direction === 'out' && ep.type === 'bulk'
+        );
+
+        if (!endpointOut) {
+          log('No bulk OUT endpoint found');
+          return;
+        }
+
+        log(`Using endpoint 0x${endpointOut.endpointNumber.toString(16)}`);
+
+        const result = await device.transferOut(endpointOut.endpointNumber, REPORT_DATA);
+        log(`Data sent. Status: ${result.status}`);
+
+      } catch (err) {
+        console.error(err);
+        log('Error: ' + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
