@@ -44,10 +44,16 @@
       cursor: pointer;
       transition: background 0.3s ease;
       margin-bottom: 1rem;
+      margin-right: 0.5rem;
     }
 
     button:hover {
       background: #4f53d0;
+    }
+
+    button:disabled {
+      background: #4a4a5a;
+      cursor: not-allowed;
     }
 
     pre {
@@ -57,6 +63,45 @@
       overflow-x: auto;
       text-align: left;
       max-height: 300px;
+    }
+
+    .hex-section {
+      background: #29293f;
+      margin-top: 2rem;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .hex-section h3 {
+      margin-top: 0;
+      color: #90caff;
+    }
+
+    .hex-input {
+      width: 100%;
+      max-width: 600px;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background: #2d2d3a;
+      border: 2px solid #4a4a5a;
+      border-radius: 6px;
+      color: #ffffff;
+      font-family: 'Courier New', monospace;
+      margin-bottom: 1rem;
+    }
+
+    .hex-input:focus {
+      outline: none;
+      border-color: #6b6ff7;
+    }
+
+    .hex-examples {
+      text-align: left;
+      margin: 1rem auto;
+      display: inline-block;
+      font-size: 0.9rem;
+      color: #aaa;
     }
 
     .gc-ultimate {
@@ -99,6 +144,20 @@
     .gc-ultimate a:hover {
       background: #69b8ff;
     }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff4444;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .status-indicator.connected {
+      background: #44ff44;
+    }
   </style>
 </head>
 <body>
@@ -108,8 +167,30 @@
   </header>
 
   <div class="content">
-    <button id="sendBtn">Connect & Send Report</button>
+    <div>
+      <span class="status-indicator" id="statusIndicator"></span>
+      <span id="statusText">Disconnected</span>
+    </div>
+    <br>
+    <button id="connectBtn">Connect Device</button>
+    <button id="sendBtn" disabled>Send Default Report</button>
     <pre id="log">Ready to connect...</pre>
+
+    <div class="hex-section">
+      <h3>Send Custom Hex Data</h3>
+      <p>Enter hex values separated by spaces or commas. Device must be connected first.</p>
+      <input type="text" class="hex-input" id="hexInput" placeholder="03 91 00 0d 00 08 00 00 01 00 FF FF FF FF FF FF" disabled>
+      <br>
+      <button id="sendHexBtn" disabled>Send Custom Data</button>
+      
+      <div class="hex-examples">
+        <strong>Example formats:</strong><br>
+        • Space separated: 03 91 00 0d 00 08<br>
+        • Comma separated: 0x03, 0x91, 0x00, 0x0d<br>
+        • Mixed: 03,91 00 0d,00 08<br>
+        • No prefix needed: FF FF FF or 0xFF 0xFF 0xFF
+      </div>
+    </div>
 
     <div class="gc-ultimate">
       <p>While you're here... check out another project I developed!</p>
@@ -133,24 +214,94 @@
 
   <script>
     const VENDOR_ID = 0x057E;
-    const PRODUCT_ID = 0x2069;
+    const PRODUCT_ID_PROCON2 = 0x2069;
+    const PRODUCT_ID_GCNSO = 0x2073;
     const INTERFACE_NUMBER = 1;
-    const REPORT_DATA = new Uint8Array([
+    const DEFAULT_REPORT_DATA = new Uint8Array([
       0x03, 0x91, 0x00, 0x0d, 0x00, 0x08,
       0x00, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     ]);
 
+    let currentDevice = null;
+    let currentEndpoint = null;
+
     const log = (msg) => {
       const el = document.getElementById('log');
       el.textContent += msg + '\n';
+      el.scrollTop = el.scrollHeight;
     };
 
-    document.getElementById('sendBtn').addEventListener('click', async () => {
+    const updateStatus = (connected) => {
+      const indicator = document.getElementById('statusIndicator');
+      const text = document.getElementById('statusText');
+      const sendBtn = document.getElementById('sendBtn');
+      const hexInput = document.getElementById('hexInput');
+      const sendHexBtn = document.getElementById('sendHexBtn');
+      
+      if (connected) {
+        indicator.classList.add('connected');
+        text.textContent = 'Connected';
+        sendBtn.disabled = false;
+        hexInput.disabled = false;
+        sendHexBtn.disabled = false;
+      } else {
+        indicator.classList.remove('connected');
+        text.textContent = 'Disconnected';
+        sendBtn.disabled = true;
+        hexInput.disabled = true;
+        sendHexBtn.disabled = true;
+      }
+    };
+
+    const parseHexString = (hexStr) => {
+      // Remove common prefixes and clean up the string
+      const cleaned = hexStr
+        .replace(/0x/gi, '')
+        .replace(/[,\s]+/g, ' ')
+        .trim();
+      
+      if (!cleaned) {
+        throw new Error('Empty hex string');
+      }
+      
+      const hexPairs = cleaned.split(' ').filter(h => h.length > 0);
+      const bytes = [];
+      
+      for (const hex of hexPairs) {
+        if (hex.length > 2) {
+          throw new Error(`Invalid hex value: ${hex} (too long)`);
+        }
+        
+        const padded = hex.padStart(2, '0');
+        const byte = parseInt(padded, 16);
+        
+        if (isNaN(byte)) {
+          throw new Error(`Invalid hex value: ${hex}`);
+        }
+        
+        bytes.push(byte);
+      }
+      
+      return new Uint8Array(bytes);
+    };
+
+    const sendData = async (data) => {
+      if (!currentDevice || !currentEndpoint) {
+        throw new Error('Device not connected');
+      }
+
+      const result = await currentDevice.transferOut(currentEndpoint.endpointNumber, data);
+      return result;
+    };
+
+    document.getElementById('connectBtn').addEventListener('click', async () => {
       try {
+        log('Requesting device...');
         const device = await navigator.usb.requestDevice({
-          filters: [{ vendorId: VENDOR_ID, productId: PRODUCT_ID }]
+          filters: [{ vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 }, { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }]
         });
 
+        log('Opening device...');
         await device.open();
         log('Device opened');
 
@@ -168,18 +319,67 @@
         );
 
         if (!endpointOut) {
-          log('No bulk OUT endpoint found');
-          return;
+          throw new Error('No bulk OUT endpoint found');
         }
 
-        log(`Using endpoint 0x${endpointOut.endpointNumber.toString(16)}`);
-
-        const result = await device.transferOut(endpointOut.endpointNumber, REPORT_DATA);
-        log(`Data sent. Status: ${result.status}`);
+        log(`Found endpoint 0x${endpointOut.endpointNumber.toString(16)}`);
+        
+        currentDevice = device;
+        currentEndpoint = endpointOut;
+        updateStatus(true);
+        log('Device ready for communication!');
 
       } catch (err) {
         console.error(err);
         log('Error: ' + err.message);
+        updateStatus(false);
+        currentDevice = null;
+        currentEndpoint = null;
+      }
+    });
+
+    document.getElementById('sendBtn').addEventListener('click', async () => {
+      try {
+        log('Sending default report data...');
+        const result = await sendData(DEFAULT_REPORT_DATA);
+        log(`Default data sent. Status: ${result.status}`);
+        log(`Bytes transferred: ${result.bytesWritten}`);
+      } catch (err) {
+        console.error(err);
+        log('Error sending default data: ' + err.message);
+      }
+    });
+
+    document.getElementById('sendHexBtn').addEventListener('click', async () => {
+      try {
+        const hexInput = document.getElementById('hexInput');
+        const hexStr = hexInput.value.trim();
+        
+        if (!hexStr) {
+          log('Error: Please enter hex data');
+          return;
+        }
+
+        log(`Parsing hex string: "${hexStr}"`);
+        const data = parseHexString(hexStr);
+        
+        log(`Parsed ${data.length} bytes: [${Array.from(data).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]`);
+        log('Sending custom data...');
+        
+        const result = await sendData(data);
+        log(`Custom data sent. Status: ${result.status}`);
+        log(`Bytes transferred: ${result.bytesWritten}`);
+        
+      } catch (err) {
+        console.error(err);
+        log('Error sending custom data: ' + err.message);
+      }
+    });
+
+    // Allow Enter key to send custom data
+    document.getElementById('hexInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !document.getElementById('sendHexBtn').disabled) {
+        document.getElementById('sendHexBtn').click();
       }
     });
   </script>
