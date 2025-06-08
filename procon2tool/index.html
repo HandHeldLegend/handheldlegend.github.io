@@ -30,7 +30,7 @@
 
     .content {
       padding: 2rem;
-      max-width: 800px;
+      max-width: 900px;
       text-align: center;
     }
 
@@ -62,7 +62,20 @@
       border-radius: 8px;
       overflow-x: auto;
       text-align: left;
-      max-height: 300px;
+      max-height: 400px;
+    }
+
+    .connection-section {
+      background: #29293f;
+      margin-top: 2rem;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .connection-section h3 {
+      margin-top: 0;
+      color: #90caff;
     }
 
     .hex-section {
@@ -158,6 +171,48 @@
     .status-indicator.connected {
       background: #44ff44;
     }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .status-item {
+      background: #2d2d3a;
+      padding: 1rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dual-input-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .input-group {
+      background: #2d2d3a;
+      padding: 1.5rem;
+      border-radius: 8px;
+    }
+
+    .input-group h4 {
+      margin-top: 0;
+      color: #90caff;
+      font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+      .status-grid,
+      .dual-input-section {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -167,28 +222,52 @@
   </header>
 
   <div class="content">
-    <div>
-      <span class="status-indicator" id="statusIndicator"></span>
-      <span id="statusText">Disconnected</span>
+    <div class="connection-section">
+      <h3>Device Connection</h3>
+      <div class="status-grid">
+        <div class="status-item">
+          <span class="status-indicator" id="usbStatusIndicator"></span>
+          <span id="usbStatusText">USB: Disconnected</span>
+        </div>
+        <div class="status-item">
+          <span class="status-indicator" id="hidStatusIndicator"></span>
+          <span id="hidStatusText">HID: Disconnected</span>
+        </div>
+      </div>
+      <button id="connectUsbBtn">Enable HID Output</button>
+      <button id="connectHidBtn">Dev Mode</button>
+      <pre id="log">Ready to connect...</pre>
     </div>
-    <br>
-    <button id="connectBtn">Connect Device</button>
-    <button id="sendBtn" disabled>Send Default Report</button>
-    <pre id="log">Ready to connect...</pre>
 
     <div class="hex-section">
-      <h3>Send Custom Hex Data</h3>
+      <h3>Send Custom Data</h3>
       <p>Enter hex values separated by spaces or commas. Device must be connected first.</p>
-      <input type="text" class="hex-input" id="hexInput" placeholder="03 91 00 0d 00 08 00 00 01 00 FF FF FF FF FF FF" disabled>
-      <br>
-      <button id="sendHexBtn" disabled>Send Custom Data</button>
+      
+      <div class="dual-input-section">
+        <div class="input-group">
+          <h4>USB Bulk Endpoint</h4>
+          <input type="text" class="hex-input" id="usbHexInput" placeholder="03 91 00 0d 00 08 00 00 01 00 FF FF FF FF FF FF" disabled>
+          <button id="sendUsbHexBtn" disabled>Send USB Data</button>
+        </div>
+        
+        <div class="input-group">
+          <h4>HID Output Report</h4>
+          <input type="text" class="hex-input" id="hidHexInput" placeholder="02 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10" disabled>
+          <button id="sendHidHexBtn" disabled>Send HID Report</button>
+        </div>
+      </div>
       
       <div class="hex-examples">
         <strong>Example formats:</strong><br>
         • Space separated: 03 91 00 0d 00 08<br>
         • Comma separated: 0x03, 0x91, 0x00, 0x0d<br>
         • Mixed: 03,91 00 0d,00 08<br>
-        • No prefix needed: FF FF FF or 0xFF 0xFF 0xFF
+        • No prefix needed: FF FF FF or 0xFF 0xFF 0xFF<br>
+        <br>
+        <strong>HID Output Reports:</strong><br>
+        • Start with report ID (usually 0x02)<br>
+        • Followed by data payload<br>
+        • Example: 02 01 02 03 04 (Report ID 0x02 + 4 data bytes)
       </div>
     </div>
 
@@ -216,14 +295,19 @@
     const VENDOR_ID = 0x057E;
     const PRODUCT_ID_PROCON2 = 0x2069;
     const PRODUCT_ID_GCNSO = 0x2073;
-    const INTERFACE_NUMBER = 1;
+    const USB_INTERFACE_NUMBER = 1;
     const DEFAULT_REPORT_DATA = new Uint8Array([
       0x03, 0x91, 0x00, 0x0d, 0x00, 0x08,
       0x00, 0x00, 0x01, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     ]);
 
-    let currentDevice = null;
-    let currentEndpoint = null;
+    const SET_LED_DATA = new Uint8Array([
+      0x09, 0x91, 0x00, 0x07, 0x00, 0x08, 0x00, 0x00, 0x01, 0,0,0,0,0,0,0
+    ]);
+
+    let currentUsbDevice = null;
+    let currentUsbEndpoint = null;
+    let currentHidDevice = null;
 
     const log = (msg) => {
       const el = document.getElementById('log');
@@ -231,30 +315,45 @@
       el.scrollTop = el.scrollHeight;
     };
 
-    const updateStatus = (connected) => {
-      const indicator = document.getElementById('statusIndicator');
-      const text = document.getElementById('statusText');
-      const sendBtn = document.getElementById('sendBtn');
-      const hexInput = document.getElementById('hexInput');
-      const sendHexBtn = document.getElementById('sendHexBtn');
+    const updateUsbStatus = (connected) => {
+      const indicator = document.getElementById('usbStatusIndicator');
+      const text = document.getElementById('usbStatusText');
       
       if (connected) {
         indicator.classList.add('connected');
-        text.textContent = 'Connected';
-        sendBtn.disabled = false;
-        hexInput.disabled = false;
-        sendHexBtn.disabled = false;
+        text.textContent = 'USB: Connected';
       } else {
         indicator.classList.remove('connected');
-        text.textContent = 'Disconnected';
-        sendBtn.disabled = true;
-        hexInput.disabled = true;
-        sendHexBtn.disabled = true;
+        text.textContent = 'USB: Disconnected';
       }
+      updateButtonStates();
+    };
+
+    const updateHidStatus = (connected) => {
+      const indicator = document.getElementById('hidStatusIndicator');
+      const text = document.getElementById('hidStatusText');
+      
+      if (connected) {
+        indicator.classList.add('connected');
+        text.textContent = 'HID: Connected';
+      } else {
+        indicator.classList.remove('connected');
+        text.textContent = 'HID: Disconnected';
+      }
+      updateButtonStates();
+    };
+
+    const updateButtonStates = () => {
+      const usbConnected = currentUsbDevice && currentUsbEndpoint;
+      const hidConnected = currentHidDevice;
+      
+      document.getElementById('usbHexInput').disabled = !usbConnected;
+      document.getElementById('sendUsbHexBtn').disabled = !usbConnected;
+      document.getElementById('hidHexInput').disabled = !hidConnected;
+      document.getElementById('sendHidHexBtn').disabled = !hidConnected;
     };
 
     const parseHexString = (hexStr) => {
-      // Remove common prefixes and clean up the string
       const cleaned = hexStr
         .replace(/0x/gi, '')
         .replace(/[,\s]+/g, ' ')
@@ -285,35 +384,51 @@
       return new Uint8Array(bytes);
     };
 
-    const sendData = async (data) => {
-      if (!currentDevice || !currentEndpoint) {
-        throw new Error('Device not connected');
+    const sendUsbData = async (data) => {
+      if (!currentUsbDevice || !currentUsbEndpoint) {
+        throw new Error('USB device not connected');
       }
 
-      const result = await currentDevice.transferOut(currentEndpoint.endpointNumber, data);
+      const result = await currentUsbDevice.transferOut(currentUsbEndpoint.endpointNumber, data);
       return result;
     };
 
-    document.getElementById('connectBtn').addEventListener('click', async () => {
+    const sendHidData = async (data) => {
+      if (!currentHidDevice) {
+        throw new Error('HID device not connected');
+      }
+
+      // HID sendReport expects reportId as first parameter, data as second
+      const reportId = data[0];
+      const reportData = data.slice(1);
+      
+      await currentHidDevice.sendReport(reportId, reportData);
+      return { status: 'ok', bytesWritten: data.length };
+    };
+
+    const connectUsb = async () => {
       try {
-        log('Requesting device...');
+        log('Requesting USB device...');
         const device = await navigator.usb.requestDevice({
-          filters: [{ vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 }, { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }]
+          filters: [
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }
+          ]
         });
 
-        log('Opening device...');
+        log('Opening USB device...');
         await device.open();
-        log('Device opened');
+        log('USB device opened');
 
         if (!device.configuration) {
           await device.selectConfiguration(1);
-          log('Configuration selected');
+          log('USB configuration selected');
         }
 
-        await device.claimInterface(INTERFACE_NUMBER);
-        log('Interface claimed');
+        await device.claimInterface(USB_INTERFACE_NUMBER);
+        log('USB interface claimed');
 
-        const iface = device.configuration.interfaces[INTERFACE_NUMBER];
+        const iface = device.configuration.interfaces[USB_INTERFACE_NUMBER];
         const endpointOut = iface.alternate.endpoints.find(
           ep => ep.direction === 'out' && ep.type === 'bulk'
         );
@@ -322,66 +437,182 @@
           throw new Error('No bulk OUT endpoint found');
         }
 
-        log(`Found endpoint 0x${endpointOut.endpointNumber.toString(16)}`);
+        log(`Found USB endpoint 0x${endpointOut.endpointNumber.toString(16)}`);
         
-        currentDevice = device;
-        currentEndpoint = endpointOut;
-        updateStatus(true);
-        log('Device ready for communication!');
+        currentUsbDevice = device;
+        currentUsbEndpoint = endpointOut;
+        updateUsbStatus(true);
+        log('USB device ready for communication!');
 
+        // Automatically send the default report on connection
+        log('Automatically sending default report...');
+        try {
+          const result = await sendUsbData(DEFAULT_REPORT_DATA);
+          log(`Default report sent automatically. Status: ${result.status}`);
+          log(`Bytes transferred: ${result.bytesWritten}`);
+
+          const led_result = await sendUsbData(SET_LED_DATA);
+        } catch (err) {
+          log('Error sending automatic default report: ' + err.message);
+        }
+
+        return device;
+      } catch (err) {
+        log('USB connection error: ' + err.message);
+        updateUsbStatus(false);
+        currentUsbDevice = null;
+        currentUsbEndpoint = null;
+        throw err;
+      }
+    };
+
+    const connectHid = async () => {
+      try {
+        log('Requesting HID device...');
+        const devices = await navigator.hid.requestDevice({
+          filters: [
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }
+          ]
+        });
+
+        if (devices.length === 0) {
+          throw new Error('No HID device selected');
+        }
+
+        const device = devices[0];
+        log(`Opening HID device: ${device.productName}`);
+        
+        if (!device.opened) {
+          await device.open();
+        }
+        
+        log('HID device opened');
+        
+        currentHidDevice = device;
+        updateHidStatus(true);
+        log('HID device ready for communication!');
+
+        return device;
+      } catch (err) {
+        log('HID connection error: ' + err.message);
+        updateHidStatus(false);
+        currentHidDevice = null;
+        throw err;
+      }
+    };
+
+    document.getElementById('connectUsbBtn').addEventListener('click', async () => {
+      try {
+        await connectUsb();
       } catch (err) {
         console.error(err);
-        log('Error: ' + err.message);
-        updateStatus(false);
-        currentDevice = null;
-        currentEndpoint = null;
       }
     });
 
-    document.getElementById('sendBtn').addEventListener('click', async () => {
+    document.getElementById('connectHidBtn').addEventListener('click', async () => {
       try {
-        log('Sending default report data...');
-        const result = await sendData(DEFAULT_REPORT_DATA);
-        log(`Default data sent. Status: ${result.status}`);
-        log(`Bytes transferred: ${result.bytesWritten}`);
+        await connectHid();
       } catch (err) {
         console.error(err);
-        log('Error sending default data: ' + err.message);
       }
     });
 
-    document.getElementById('sendHexBtn').addEventListener('click', async () => {
+    document.getElementById('sendUsbHexBtn').addEventListener('click', async () => {
       try {
-        const hexInput = document.getElementById('hexInput');
+        const hexInput = document.getElementById('usbHexInput');
         const hexStr = hexInput.value.trim();
         
         if (!hexStr) {
-          log('Error: Please enter hex data');
+          log('Error: Please enter USB hex data');
           return;
         }
 
-        log(`Parsing hex string: "${hexStr}"`);
+        log(`Parsing USB hex string: "${hexStr}"`);
         const data = parseHexString(hexStr);
         
         log(`Parsed ${data.length} bytes: [${Array.from(data).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]`);
-        log('Sending custom data...');
+        log('Sending custom USB data...');
         
-        const result = await sendData(data);
-        log(`Custom data sent. Status: ${result.status}`);
+        const result = await sendUsbData(data);
+        log(`Custom USB data sent. Status: ${result.status}`);
         log(`Bytes transferred: ${result.bytesWritten}`);
         
       } catch (err) {
         console.error(err);
-        log('Error sending custom data: ' + err.message);
+        log('Error sending custom USB data: ' + err.message);
+      }
+    });
+
+    document.getElementById('sendHidHexBtn').addEventListener('click', async () => {
+      try {
+        const hexInput = document.getElementById('hidHexInput');
+        const hexStr = hexInput.value.trim();
+        
+        if (!hexStr) {
+          log('Error: Please enter HID hex data');
+          return;
+        }
+
+        log(`Parsing HID hex string: "${hexStr}"`);
+        const data = parseHexString(hexStr);
+        
+        if (data.length < 1) {
+          log('Error: HID data must include at least a report ID');
+          return;
+        }
+        
+        log(`Parsed ${data.length} bytes: [${Array.from(data).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]`);
+        log(`Report ID: 0x${data[0].toString(16).padStart(2, '0')}, Data: ${data.length - 1} bytes`);
+        log('Sending custom HID report...');
+        
+        const result = await sendHidData(data);
+        log(`Custom HID report sent. Status: ${result.status}`);
+        log(`Bytes transferred: ${result.bytesWritten}`);
+        
+      } catch (err) {
+        console.error(err);
+        log('Error sending custom HID report: ' + err.message);
       }
     });
 
     // Allow Enter key to send custom data
-    document.getElementById('hexInput').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter' && !document.getElementById('sendHexBtn').disabled) {
-        document.getElementById('sendHexBtn').click();
+    document.getElementById('usbHexInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !document.getElementById('sendUsbHexBtn').disabled) {
+        document.getElementById('sendUsbHexBtn').click();
       }
     });
+
+    document.getElementById('hidHexInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !document.getElementById('sendHidHexBtn').disabled) {
+        document.getElementById('sendHidHexBtn').click();
+      }
+    });
+
+    // Handle device disconnection
+    if ('usb' in navigator) {
+      navigator.usb.addEventListener('disconnect', (event) => {
+        if (event.device === currentUsbDevice) {
+          log('USB device disconnected');
+          currentUsbDevice = null;
+          currentUsbEndpoint = null;
+          updateUsbStatus(false);
+        }
+      });
+    }
+
+    if ('hid' in navigator) {
+      navigator.hid.addEventListener('disconnect', (event) => {
+        if (event.device === currentHidDevice) {
+          log('HID device disconnected');
+          currentHidDevice = null;
+          updateHidStatus(false);
+        }
+      });
+    }
+
+    // Initial button state
+    updateButtonStates();
   </script>
 </body>
 </html>
