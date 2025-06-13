@@ -475,8 +475,8 @@
         log('Requesting HID device...');
         const devices = await navigator.hid.requestDevice({
           filters: [
-            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_R },
-            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_L },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON2_R },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON2_L },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }
           ]
