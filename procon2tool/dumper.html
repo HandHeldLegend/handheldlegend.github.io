@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebUSB SPI Memory Dumper</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .device-info {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4299e1;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .connect-btn {
+            background: linear-gradient(45deg, #4299e1, #3182ce);
+            color: white;
+        }
+        
+        .connect-btn:hover {
+            background: linear-gradient(45deg, #3182ce, #2d3748);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+        }
+        
+        .dump-btn {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+            color: white;
+        }
+        
+        .dump-btn:hover:not(:disabled) {
+            background: linear-gradient(45deg, #38a169, #2f855a);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+        
+        .stop-btn {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+            color: white;
+        }
+        
+        .stop-btn:hover {
+            background: linear-gradient(45deg, #e53e3e, #c53030);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4299e1, #48bb78);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .log {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 20px 0;
+            border: 2px solid #2d3748;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-info {
+            color: #63b3ed;
+        }
+        
+        .log-success {
+            color: #68d391;
+        }
+        
+        .log-error {
+            color: #fc8181;
+        }
+        
+        .log-warning {
+            color: #fbb6ce;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .status.connected {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status.disconnected {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .status.dumping {
+            background: #bee3f8;
+            color: #1a365d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebUSB SPI Memory Dumper</h1>
+        
+        <div class="device-info">
+            <h3>Supported Devices:</h3>
+            <ul>
+                <li>Joy-Con 2 (R) - PID: 0x2066</li>
+                <li>Joy-Con 2 (L) - PID: 0x2067</li>
+                <li>Pro Controller 2 - PID: 0x2069</li>
+                <li>NSO GameCube Controller - PID: 0x2073</li>
+            </ul>
+        </div>
+        
+        <div class="status disconnected" id="status">
+            Not Connected
+        </div>
+        
+        <div class="controls">
+            <button class="connect-btn" id="connectBtn">Connect Device</button>
+            <button class="dump-btn" id="dumpBtn" disabled>Start Memory Dump</button>
+            <button class="stop-btn" id="stopBtn" disabled>Stop Dump</button>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Ready to connect...</div>
+        </div>
+        
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        class USBSPIDumper {
+            constructor() {
+                this.device = null;
+                this.isConnected = false;
+                this.isDumping = false;
+                this.shouldStop = false;
+                this.dumpedData = new Uint8Array(0);
+                this.totalSize = 0x200000; // 2MB
+                this.chunkSize = 0x40; // 64 bytes
+                this.outEndpoint = null;
+                this.inEndpoint = null;
+                
+                // Device configuration
+                this.VENDOR_ID = 0x057E;
+                this.PRODUCT_IDS = {
+                    0x2066: 'Joy-Con (R)',
+                    0x2067: 'Joy-Con (L)', 
+                    0x2069: 'Pro Controller',
+                    0x2073: 'GameCube Controller'
+                };
+                this.USB_INTERFACE_NUMBER = 1;
+                
+                this.initEventListeners();
+            }
+            
+            initEventListeners() {
+                document.getElementById('connectBtn').addEventListener('click', () => this.connectDevice());
+                document.getElementById('dumpBtn').addEventListener('click', () => this.startDump());
+                document.getElementById('stopBtn').addEventListener('click', () => this.stopDump());
+            }
+            
+            log(message, type = 'info') {
+                const logElement = document.getElementById('log');
+                const timestamp = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.className = `log-entry log-${type}`;
+                entry.textContent = `[${timestamp}] ${message}`;
+                logElement.appendChild(entry);
+                logElement.scrollTop = logElement.scrollHeight;
+            }
+            
+            updateStatus(status, className) {
+                const statusElement = document.getElementById('status');
+                statusElement.textContent = status;
+                statusElement.className = `status ${className}`;
+            }
+            
+            updateProgress(current, total) {
+                const percentage = Math.round((current / total) * 100);
+                document.getElementById('progressFill').style.width = `${percentage}%`;
+                document.getElementById('progressText').textContent = 
+                    `Progress: ${percentage}% (${current.toLocaleString()} / ${total.toLocaleString()} bytes)`;
+            }
+            
+            async connectDevice() {
+                try {
+                    this.log('Requesting USB device access...', 'info');
+                    
+                    const filters = Object.keys(this.PRODUCT_IDS).map(pid => ({
+                        vendorId: this.VENDOR_ID,
+                        productId: parseInt(pid)
+                    }));
+                    
+                    this.device = await navigator.usb.requestDevice({ filters });
+                    
+                    const deviceName = this.PRODUCT_IDS[this.device.productId] || 'Unknown Device';
+                    this.log(`Selected device: ${deviceName} (VID: 0x${this.device.vendorId.toString(16).padStart(4, '0')}, PID: 0x${this.device.productId.toString(16).padStart(4, '0')})`, 'info');
+                    
+                    await this.device.open();
+                    this.log('Device opened successfully', 'success');
+                    
+                    // Configure the device
+                    if (this.device.configuration === null) {
+                        await this.device.selectConfiguration(1);
+                        this.log('Configuration selected', 'info');
+                    }
+                    
+                    await this.device.claimInterface(this.USB_INTERFACE_NUMBER);
+                    this.log(`Interface ${this.USB_INTERFACE_NUMBER} claimed`, 'success');
+                    
+                    // Find the correct endpoints
+                    this.findEndpoints();
+                    
+                    this.isConnected = true;
+                    this.updateStatus(`Connected to ${deviceName}`, 'connected');
+                    
+                    document.getElementById('connectBtn').disabled = true;
+                    document.getElementById('dumpBtn').disabled = false;
+                    
+                } catch (error) {
+                    this.log(`Connection failed: ${error.message}`, 'error');
+                    this.updateStatus('Connection Failed', 'disconnected');
+                }
+            }
+            
+            findEndpoints() {
+                const config = this.device.configuration;
+                const iface = config.interfaces.find(i => i.interfaceNumber === this.USB_INTERFACE_NUMBER);
+                
+                if (!iface) {
+                    throw new Error(`Interface ${this.USB_INTERFACE_NUMBER} not found`);
+                }
+                
+                // Use the first alternate interface (usually alternate 0)
+                const alt = iface.alternates[0];
+                
+                // Find OUT and IN endpoints
+                for (const endpoint of alt.endpoints) {
+                    if (endpoint.type === 'bulk') {
+                        if (endpoint.direction === 'out') {
+                            this.outEndpoint = endpoint.endpointNumber;
+                            this.log(`Found OUT endpoint: ${this.outEndpoint}`, 'info');
+                        } else if (endpoint.direction === 'in') {
+                            this.inEndpoint = endpoint.endpointNumber;
+                            this.log(`Found IN endpoint: ${this.inEndpoint}`, 'info');
+                        }
+                    }
+                }
+                
+                if (!this.outEndpoint || !this.inEndpoint) {
+                    // Log all available endpoints for debugging
+                    this.log('Available endpoints:', 'warning');
+                    for (const endpoint of alt.endpoints) {
+                        this.log(`  Endpoint ${endpoint.endpointNumber}: ${endpoint.direction} ${endpoint.type}`, 'warning');
+                    }
+                    throw new Error('Required bulk endpoints not found');
+                }
+            }
+            
+            createSPIReadCommand(address) {
+                const command = new Uint8Array(16);
+                
+                // Fixed command structure
+                command[0] = 0x02;  // Command
+                command[1] = 0x91;  // 
+                command[2] = 0x00;  // 
+                command[3] = 0x04;  // 
+                command[4] = 0x00;  // 
+                command[5] = 0x08;  // 
+                command[6] = 0x00;  // 
+                command[7] = 0x00;  // 
+                command[8] = 0x40;  // Length (64 bytes)
+                command[9] = 0x7e;  // Read command
+                command[10] = 0x00; // 
+                command[11] = 0x00; // 
+                
+                // Address (little endian)
+                command[12] = address & 0xFF;           // Address field 3
+                command[13] = (address >> 8) & 0xFF;    // Address field 2  
+                command[14] = (address >> 16) & 0xFF;   // Address field 1
+                command[15] = (address >> 24) & 0xFF;   // Address field 0
+                
+                
+                
+                return command;
+            }
+            
+            async sendSPICommand(address) {
+                const command = this.createSPIReadCommand(address);
+                
+                // Send command using the discovered OUT endpoint
+                await this.device.transferOut(this.outEndpoint, command);
+                
+                // Read response using the discovered IN endpoint
+                const result = await this.device.transferIn(this.inEndpoint, this.chunkSize + 16); // Extra bytes for header
+                
+                if (result.status !== 'ok') {
+                    throw new Error(`Transfer failed with status: ${result.status}`);
+                }
+                
+                // Extract data portion (skip the 16-byte header)
+                const responseData = new Uint8Array(result.data.buffer);
+                return responseData.slice(16, 16 + this.chunkSize);
+            }
+            
+            async startDump() {
+                if (!this.isConnected || this.isDumping) return;
+                
+                this.isDumping = true;
+                this.shouldStop = false;
+                this.dumpedData = new Uint8Array(this.totalSize);
+                
+                this.updateStatus('Dumping Memory...', 'dumping');
+                this.log('Starting SPI memory dump...', 'info');
+                this.log(`Total size: ${this.totalSize.toLocaleString()} bytes (${(this.totalSize / 1024 / 1024).toFixed(2)} MB)`, 'info');
+                
+                document.getElementById('dumpBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                
+                const startTime = Date.now();
+                let currentAddress = 0;
+                
+                try {
+                    while (currentAddress < this.totalSize && !this.shouldStop) {
+                        const chunkData = await this.sendSPICommand(currentAddress);
+                        
+                        // Copy data to our buffer
+                        this.dumpedData.set(chunkData, currentAddress);
+                        
+                        currentAddress += this.chunkSize;
+                        this.updateProgress(currentAddress, this.totalSize);
+                        
+                        // Log progress every 1MB
+                        if (currentAddress % (1024 * 1024) === 0) {
+                            const elapsed = (Date.now() - startTime) / 1000;
+                            const rate = (currentAddress / 1024) / elapsed;
+                            this.log(`Progress: ${(currentAddress / 1024 / 1024).toFixed(2)} MB dumped (${rate.toFixed(1)} KB/s)`, 'info');
+                        }
+                        
+                        // Small delay to prevent overwhelming the device
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+                    
+                    if (this.shouldStop) {
+                        this.log('Dump stopped by user', 'warning');
+                        this.updateStatus('Dump Stopped', 'disconnected');
+                    } else {
+                        const elapsed = (Date.now() - startTime) / 1000;
+                        const rate = (this.totalSize / 1024) / elapsed;
+                        this.log(`Dump completed successfully in ${elapsed.toFixed(1)}s (${rate.toFixed(1)} KB/s average)`, 'success');
+                        this.updateStatus('Dump Complete', 'connected');
+                        this.downloadDump();
+                    }
+                    
+                } catch (error) {
+                    this.log(`Dump failed: ${error.message}`, 'error');
+                    this.updateStatus('Dump Failed', 'disconnected');
+                } finally {
+                    this.isDumping = false;
+                    document.getElementById('dumpBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = true;
+                }
+            }
+            
+            stopDump() {
+                if (this.isDumping) {
+                    this.shouldStop = true;
+                    this.log('Stopping dump...', 'warning');
+                }
+            }
+            
+            downloadDump() {
+                const blob = new Blob([this.dumpedData], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `spi_dump_${new Date().toISOString().replace(/[:.]/g, '-')}.bin`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                URL.revokeObjectURL(url);
+                this.log(`Download started: ${a.download}`, 'success');
+            }
+        }
+        
+        // Check WebUSB support
+        if ('usb' in navigator) {
+            const dumper = new USBSPIDumper();
+            dumper.log('WebUSB SPI Memory Dumper initialized', 'success');
+            dumper.log('Click "Connect Device" to begin', 'info');
+        } else {
+            document.body.innerHTML = `
+                <div class="container">
+                    <h1>WebUSB Not Supported</h1>
+                    <p>Your browser does not support WebUSB. Please use a recent version of Chrome, Edge, or Opera.</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
