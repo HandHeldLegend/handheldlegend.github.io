@@ -413,8 +413,8 @@
         log('Requesting USB device...');
         const device = await navigator.usb.requestDevice({
           filters: [
-            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_R },
-            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_L },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON2_L },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON2_R },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }
           ]
