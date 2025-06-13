@@ -293,6 +293,8 @@
 
   <script>
     const VENDOR_ID = 0x057E;
+    const PRODUCT_ID_JOYCON2_R = 0x2066;
+    const PRODUCT_ID_JOYCON2_L = 0x2067;
     const PRODUCT_ID_PROCON2 = 0x2069;
     const PRODUCT_ID_GCNSO = 0x2073;
     const USB_INTERFACE_NUMBER = 1;
@@ -411,6 +413,8 @@
         log('Requesting USB device...');
         const device = await navigator.usb.requestDevice({
           filters: [
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_R },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_L },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }
           ]
@@ -471,6 +475,8 @@
         log('Requesting HID device...');
         const devices = await navigator.hid.requestDevice({
           filters: [
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_R },
+            { vendorId: VENDOR_ID, productId: PRODUCT_ID_JOYCON_L },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_PROCON2 },
             { vendorId: VENDOR_ID, productId: PRODUCT_ID_GCNSO }
           ]
