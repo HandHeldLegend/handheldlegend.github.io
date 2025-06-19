@@ -114,9 +114,19 @@ export default class Analogconfig {
 		return this.#_getUint8(660);
 	}
 
+	/** @type {Uint16} */
+	get l_deadzone_outer() {
+		return this.#_getUint16(661);
+	}
+
+	/** @type {Uint16} */
+	get r_deadzone_outer() {
+		return this.#_getUint16(663);
+	}
+
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(661, 363);
+		return this.#_getUint8Array(665, 359);
 	}
 
 
@@ -230,9 +240,19 @@ export default class Analogconfig {
 		this.#_setUint8(660, value);
 	}
 
+	/** @param {Uint16} value */
+	set l_deadzone_outer(value) {
+		this.#_setUint16(661, value);
+	}
+
+	/** @param {Uint16} value */
+	set r_deadzone_outer(value) {
+		this.#_setUint16(663, value);
+	}
+
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(661, value);
+		this.#_setUint8Array(665, value);
 	}
 
 

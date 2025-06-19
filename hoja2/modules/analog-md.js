@@ -72,17 +72,21 @@ function switchConfigAxis(axis) {
     let modeNum = 0;
     let deadzone = 0;
     let snapbackMode = 0;
+    let deadzoneOuter = 0;
+
     if(!selectedAxis) {
         mode = (gamepad.analog_cfg.l_scaler_type==1) ? 'polygon' : 'round';
         modeNum = gamepad.analog_cfg.l_scaler_type;
         deadzone = gamepad.analog_cfg.l_deadzone;
         snapbackMode = gamepad.analog_cfg.l_snapback_type;
+        deadzoneOuter = gamepad.analog_cfg.l_deadzone_outer;
     }
     else {
         mode = (gamepad.analog_cfg.r_scaler_type==1) ? 'polygon' : 'round';
         modeNum = gamepad.analog_cfg.r_scaler_type;
         deadzone = gamepad.analog_cfg.r_deadzone;
         snapbackMode = gamepad.analog_cfg.r_snapback_type
+        deadzoneOuter = gamepad.analog_cfg.r_deadzone_outer;
     }
     
     updateAnalogSelectorDefaults(maps);
@@ -93,12 +97,19 @@ function switchConfigAxis(axis) {
     populateScalerType(modeNum);
     populateAngleSelectors(maps);
     populateSnapbackType(snapbackMode);
+    populateOuterDeadzone(deadzoneOuter);
 }
 
 function populateDeadzone(value) {
     /** @type {NumberSelector} */
     const deadzoneSlider = mdContainer.querySelector('number-selector[id="deadzone-slider"]');
     deadzoneSlider.setState(value);
+}
+
+function populateOuterDeadzone(value) {
+    /** @type {NumberSelector} */
+    const outerDeadzoneSlider = mdContainer.querySelector('number-selector[id="outer-deadzone-slider"]');
+    outerDeadzoneSlider.setState(value);
 }
 
 function populateScalerType(mode) {
@@ -404,6 +415,9 @@ async function writeAngleMemBlock() {
     /** @type {NumberSelector} */
     const deadzoneSlider = mdContainer.querySelector('number-selector[id="deadzone-slider"]');
 
+    /** @type {NumberSelector} */
+    const outerDeadzoneSlider = mdContainer.querySelector('number-selector[id="outer-deadzone-slider"]');
+
     /** @type {MultiPositionButton} */
     const scalerModePicker = mdContainer.querySelector('multi-position-button[id="scale-mode-selector"]');
 
@@ -412,6 +426,7 @@ async function writeAngleMemBlock() {
     let scalerModeIdx = scalerModePicker.getState().selectedIndex;
     let deadzoneValue = deadzoneSlider.getState().formattedValue;
     let snapbackMode = snapbackModePicker.getState().selectedIndex;
+    let outerDeadzoneValue = outerDeadzoneSlider.getState().formattedValue;
 
     updateAnalogVisualizerScaler(scalerModeIdx);
     updateAnalogVisualizerDeadzone(deadzoneValue);
@@ -423,6 +438,7 @@ async function writeAngleMemBlock() {
         gamepad.analog_cfg.l_deadzone = deadzoneValue; 
         gamepad.analog_cfg.l_scaler_type = scalerModeIdx; 
         gamepad.analog_cfg.l_snapback_type = snapbackMode; 
+        gamepad.analog_cfg.l_deadzone_outer = outerDeadzoneValue;
     }
     else 
     {
@@ -430,6 +446,7 @@ async function writeAngleMemBlock() {
         gamepad.analog_cfg.r_deadzone = deadzoneValue; 
         gamepad.analog_cfg.r_scaler_type = scalerModeIdx; 
         gamepad.analog_cfg.r_snapback_type = snapbackMode; 
+        gamepad.analog_cfg.r_deadzone_outer = outerDeadzoneValue;
     }
 
     await gamepad.sendBlock(analogCfgBlockNumber);
@@ -458,6 +475,7 @@ export function render(container) {
     let snapbackIdx = gamepad.analog_cfg.l_snapback_type;
     let mode = (gamepad.analog_cfg.l_scaler_type==1) ? 'polygon' : 'round';
     let deadzone = gamepad.analog_cfg.l_deadzone;
+    let outerDeadzone = gamepad.analog_cfg.l_deadzone_outer;
     let polyVerticesString = mapsToStyleString(angleConfigs);
 
     container.innerHTML = `
@@ -503,14 +521,24 @@ export function render(container) {
                 polygon-vertices="${polyVerticesString}"
             ></analog-stick>
 
-            <h2>Deadzone</h2>
+            <h2>Inner Deadzone</h2>
             <number-selector 
                 id="deadzone-slider" 
                 type="int" 
                 min="0" 
-                max="1000" 
+                max="800" 
                 step="1" 
                 default-value="${deadzone}"
+            ></number-selector>
+
+            <h2>Outer Deadzone</h2>
+            <number-selector 
+                id="outer-deadzone-slider" 
+                type="int" 
+                min="0" 
+                max="1000" 
+                step="1" 
+                default-value="${outerDeadzone}"
             ></number-selector>
 
             <h2>Mode</h2>
@@ -629,6 +657,12 @@ export function render(container) {
         writeAngleMemBlock();
     });
 
+    const outerDeadzoneSlider = container.querySelector('number-selector[id="outer-deadzone-slider"]');
+    outerDeadzoneSlider.addEventListener('change', (e) => {
+        console.log("Outer Deadzone Change");
+        writeAngleMemBlock();
+    });
+
     // Set calibration command handlers 
     const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
 
@@ -691,12 +725,16 @@ export function render(container) {
         }
 
         let x = (data.getUint8(1 + offset) << 8) | (data.getUint8(2 + offset));
-        let y = 4096- ( (data.getUint8(3 + offset) << 8) | (data.getUint8(4 + offset)) );
-
+        let y = 4096 - ( (data.getUint8(3 + offset) << 8) | (data.getUint8(4 + offset)) );
         x -= 2048;
         y -= 2048;
 
-        analogVisualizer.setAnalogInput(x, y);
+        let x_scaled = (data.getUint8(28 + offset) << 8) | (data.getUint8(29 + offset));
+        let y_scaled = 4096 - ( (data.getUint8(30 + offset) << 8) | (data.getUint8(31 + offset)) );
+        x_scaled -= 2048;
+        y_scaled -= 2048;
+
+        analogVisualizer.setAnalogInput(x, y, x_scaled, y_scaled);
     });
 
     mdContainer = container;

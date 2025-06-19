@@ -19,5 +19,7 @@ typedef struct
         uint16_t    r_deadzone; 
         uint8_t     l_snapback_type;
         uint8_t     r_snapback_type;
-        uint8_t     reserved[363];
+        uint16_t    l_deadzone_outer; 
+        uint16_t    r_deadzone_outer; 
+        uint8_t     reserved[359];
 } analogConfig_s;

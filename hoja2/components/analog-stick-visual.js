@@ -6,8 +6,11 @@ class AnalogStickVisual extends HTMLElement {
             mode: 'round', // Default mode
             x: 0,
             y: 0,
+            x_scaled: 0, 
+            y_scaled: 0,
             angle: 0,
             distance: 0,
+            distance_scaled: 0,
             deadzone: 200, // Deadzone in the -2048 to +2048 range
             polygonVertices: [] // For polygon mode
         };
@@ -131,6 +134,7 @@ class AnalogStickVisual extends HTMLElement {
 
             // Draw current position marker
             this.drawCurrentPosition(ctx, centerX, centerY, maxStickRange);
+            this.drawCurrentScaledPosition(ctx, centerX, centerY, maxStickRange);
 
             // Update coordinate displays
             this.updateDisplays();
@@ -175,9 +179,23 @@ class AnalogStickVisual extends HTMLElement {
         // Determine marker color based on deadzone
         ctx.beginPath();
         ctx.arc(posX, posY, 7, 0, 2 * Math.PI);
-        ctx.fillStyle = Math.abs(x) > this.state.deadzone || Math.abs(y) > this.state.deadzone
-            ? 'rgba(74, 40, 255, 0.79)'  // Blue when outside deadzone
-            : 'rgba(255, 51, 40, 0.79)'; // Red when inside deadzone
+        ctx.fillStyle = 'rgba(255, 51, 40, 0.79)';
+        ctx.fill();
+    }
+
+    drawCurrentScaledPosition(ctx, centerX, centerY, maxStickRange) {
+        const x = this.state.x_scaled;
+        const y = this.state.y_scaled;
+
+        // Scale the position based on the full analog stick range
+        const posX = centerX + (x / maxStickRange) * (Math.min(centerX, centerY) - 10);
+        // Invert the Y coordinate by subtracting instead of adding
+        const posY = centerY + (y / maxStickRange) * (Math.min(centerX, centerY) - 10);
+    
+        // Determine marker color based on deadzone
+        ctx.beginPath();
+        ctx.arc(posX, posY, 7, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(74, 40, 255, 0.79)';
         ctx.fill();
     }
 
@@ -190,18 +208,25 @@ class AnalogStickVisual extends HTMLElement {
     }
 
     // Public method to set analog input
-    setAnalogInput(x, y) {
+    setAnalogInput(x, y, x_scaled, y_scaled) {
         // Clamp values
         x = Math.max(-2048, Math.min(2048, x));
         y = Math.max(-2048, Math.min(2048, y));
+        x_scaled = Math.max(-2048, Math.min(2048, x_scaled));
+        y_scaled = Math.max(-2048, Math.min(2048, y_scaled));
 
         this.state.x = x;
         this.state.y = y;
+        this.state.x_scaled = x_scaled;
+        this.state.y_scaled = y_scaled;
 
         // Calculate polar coordinates
         this.state.distance = Math.sqrt(x * x + y * y);
+        this.state.distance_scaled = Math.sqrt(x_scaled * x_scaled + y_scaled * y_scaled);
+
 
         this.state.distance /= 2048; // Normalize distance to [0, 1]
+        this.state.distance_scaled /= 2048; // Normalize scaled distance to [0, 1]
 
         this.state.angle = -Math.atan2(y, x) * 180 / Math.PI;
         // Adjust angle to be in the range [0, 360]
