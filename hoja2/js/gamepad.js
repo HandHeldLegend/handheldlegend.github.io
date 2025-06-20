@@ -95,6 +95,7 @@ class HojaGamepad {
   #_connectHook = null;
   #_disconnectHook = null;
   #_inputReportHook = null;
+  #_snapbackReportHook = null;
   #_legacyDetectionHook = null;
 
   // Private constructor to enforce singleton
@@ -135,7 +136,7 @@ class HojaGamepad {
       navigator.usb.addEventListener("disconnect", (event) => {
         this.#isConnected = false;
         this.#device = null;
-          if (this.#_disconnectHook) this.#_disconnectHook();
+        if (this.#_disconnectHook) this.#_disconnectHook();
       });
 
       this.#isConnected = true;
@@ -145,7 +146,7 @@ class HojaGamepad {
       let legacyCheck = await this.#attemptLegacyCheck();
 
       // Attempt legacy check and wait for result
-      if(!legacyCheck) {
+      if (!legacyCheck) {
         console.log("Device is not legacy, proceeding with block read...");
         await this.getAllBlocks();
         await this.getAllStatics();
@@ -173,7 +174,7 @@ class HojaGamepad {
 
     let url = this.legacy_manager.getLegacyUrl(_device_id);
 
-    if(this.#_legacyDetectionHook) {
+    if (this.#_legacyDetectionHook) {
       this.#_legacyDetectionHook(url);
     }
   }
@@ -204,7 +205,7 @@ class HojaGamepad {
     }
   }
 
-  async #attemptLegacyCheck() {  
+  async #attemptLegacyCheck() {
     this.#legacyCheckState.checkComplete = false;
     this.#legacyCheckState.isLegacyDevice = false;
 
@@ -214,7 +215,7 @@ class HojaGamepad {
 
     await this.#waitForLegacyConfirmation();
 
-    if(!this.#legacyCheckState.isLegacyDevice) {
+    if (!this.#legacyCheckState.isLegacyDevice) {
       console.log("Not a legacy device");
       return false;
     }
@@ -248,8 +249,8 @@ class HojaGamepad {
   async save() {
     // CFG_BLOCK_GAMEPAD(0) GAMEPAD_CMD_SAVE_ALL(255)
     console.log("Attempting save...");
-    let {status, data} = await this.sendConfigCommand(0, 0xFF);
-    if(status) console.log("Save success.");
+    let { status, data } = await this.sendConfigCommand(0, 0xFF);
+    if (status) console.log("Save success.");
     else console.log("Save failed.");
     return status;
   }
@@ -303,7 +304,7 @@ class HojaGamepad {
     let chunkData = null;
     if (write) chunkData = new Uint8Array(data.buffer, data.byteOffset + 4, chunkSize);
 
-    const idxOffset = 32; 
+    const idxOffset = 32;
 
     if (write) this.#configBlocks[blockThisTime].buffer.set(chunkData, writeIdx * idxOffset);
     if (done) console.log("Received " + this.#configBlockNames[blockThisTime] + " config block");
@@ -316,94 +317,93 @@ class HojaGamepad {
 
   // Parse incoming USB report
   #parseReport(data) {
-     // Create a DataView from the incoming data buffer
-     const view = new DataView(data.buffer);
-    
-     // Get first byte to determine message type
-     try {
-         switch (view.getUint8(0)) {
-             case 1: // WEBUSB_ID_READ_CONFIG_BLOCK
-                 this.#blockParser(view);
-                 break;
- 
-             case 2: // WEBUSB_ID_WRITE_CONFIG_BLOCK
-                 // Validate we have enough data before accessing
-                 if (data.buffer.byteLength >= 3) {
-                     let wr_block = view.getUint8(1);
-                     let wr_idx = view.getUint8(2);
- 
-                     if ((this.#blockMemoryState.currentWriteBlock == wr_block) &&
-                         (this.#blockMemoryState.currentWriteIdx == wr_idx)) {
-                         console.log("Done writing " + wr_block + " " + wr_idx);
-                         this.#blockMemoryState.isDoneWriting = true;
-                     }
-                 }
-                 break;
- 
-             case 3: // WEBUSB_ID_READ_STATIC_BLOCK
-                 this.#staticParser(view);
-                 break;
- 
-             case 4: // WEBUSB_ID_CONFIG_COMMAND
-                 if (data.buffer.byteLength >= 4) {
-                     let block = view.getUint8(1);
-                     let command = view.getUint8(2);
-                     let success = view.getUint8(3);
-                     let gotData = (data.buffer.byteLength > 4);
- 
-                     if (block == this.#cfgCommandState.cfgBlockUsed &&
-                         command == this.#cfgCommandState.cfbCmdSent) {
-                         
-                         this.#cfgCommandState.cfgReturnStatus = success;
- 
-                         if (success && gotData) {
-                             let newData = new Uint8Array(data.buffer.slice(4));
-                             this.#cfgCommandState.cfgReturnData = newData;
-                         }
- 
-                         this.#cfgCommandState.cfgSentSuccess = true;
-                     }
-                 }
-                 break;
- 
-             case 255: // WEBUSB_INPUT_RAW
-                 if (this.#_inputReportHook) {
-                     try {
-                         this.#_inputReportHook(view);
-                     } catch (error) {
-                         console.error("Input report hook missing or unassigned:", error);
-                         this.#_inputReportHook = null;
-                     }
-                 }
-                 break;
- 
-             case 250: // WEBUSB_ID_ANALOG_DUMP
-                 if (data.buffer.byteLength >= 64) { // Validate we have enough data for 31 readings
-                     let out = [];
-                     for (let i = 0; i < 31; i++) {
-                         let distance = ((view.getUint8((i*2) + 2) << 8) | view.getUint8((i*2) + 3)) & 0x7FF;
-                         let direction = (view.getUint8((i*2) + 2) & 0x80) ? -1 : 1;
-                         distance = direction * distance;
-                         out.push(distance);
-                     }
-                     console.log(out);
-                 }
-                 break;
- 
-             case 175: // WEBUSB_CMD_FW_GET
-                 console.log("Legacy device detected");
-                 this.#handleLegacyData(view);
-                 break;
- 
-             default:
-                 // No warnings
-                 break;
-         }
-     } catch (error) {
-         console.error("Error parsing report:", error, "Buffer length:", data.buffer.byteLength);
-         // Optionally add more debug info about the buffer:
-         console.log("First few bytes:", [...new Uint8Array(data.buffer.slice(0, 4))]);
-     }
+    // Create a DataView from the incoming data buffer
+    const view = new DataView(data.buffer);
+
+    // Get first byte to determine message type
+    try {
+      switch (view.getUint8(0)) {
+        case 1: // WEBUSB_ID_READ_CONFIG_BLOCK
+          this.#blockParser(view);
+          break;
+
+        case 2: // WEBUSB_ID_WRITE_CONFIG_BLOCK
+          // Validate we have enough data before accessing
+          if (data.buffer.byteLength >= 3) {
+            let wr_block = view.getUint8(1);
+            let wr_idx = view.getUint8(2);
+
+            if ((this.#blockMemoryState.currentWriteBlock == wr_block) &&
+              (this.#blockMemoryState.currentWriteIdx == wr_idx)) {
+              console.log("Done writing " + wr_block + " " + wr_idx);
+              this.#blockMemoryState.isDoneWriting = true;
+            }
+          }
+          break;
+
+        case 3: // WEBUSB_ID_READ_STATIC_BLOCK
+          this.#staticParser(view);
+          break;
+
+        case 4: // WEBUSB_ID_CONFIG_COMMAND
+          if (data.buffer.byteLength >= 4) {
+            let block = view.getUint8(1);
+            let command = view.getUint8(2);
+            let success = view.getUint8(3);
+            let gotData = (data.buffer.byteLength > 4);
+
+            if (block == this.#cfgCommandState.cfgBlockUsed &&
+              command == this.#cfgCommandState.cfbCmdSent) {
+
+              this.#cfgCommandState.cfgReturnStatus = success;
+
+              if (success && gotData) {
+                let newData = new Uint8Array(data.buffer.slice(4));
+                this.#cfgCommandState.cfgReturnData = newData;
+              }
+
+              this.#cfgCommandState.cfgSentSuccess = true;
+            }
+          }
+          break;
+
+        case 255: // WEBUSB_INPUT_RAW
+          if (this.#_inputReportHook) {
+            try {
+              this.#_inputReportHook(view);
+            } catch (error) {
+              console.error("Input report hook missing or unassigned:", error);
+              this.#_inputReportHook = null;
+            }
+          }
+          break;
+
+        case 250: // WEBUSB_ID_ANALOG_DUMP
+          console.log("Snapback dump received");
+          if (this.#_snapbackReportHook) {
+            try {
+              this.#_snapbackReportHook(view);
+            } catch (error) {
+              console.error("Snapback report hook missing or unassigned:", error);
+              this.#_snapbackReportHook = null;
+            }
+          }
+          break;
+
+        case 175: // WEBUSB_CMD_FW_GET
+          console.log("Legacy device detected");
+          this.#handleLegacyData(view);
+          break;
+
+        default:
+          // No warnings
+          break;
+      }
+    } catch (error) {
+      console.error("Error parsing report:", error, "Buffer length:", data.buffer.byteLength);
+      // Optionally add more debug info about the buffer:
+      console.log("First few bytes:", [...new Uint8Array(data.buffer.slice(0, 4))]);
+    }
   }
 
   // Update internal state based on parsed report
@@ -421,6 +421,10 @@ class HojaGamepad {
 
   setDisconnectHook(callback) {
     this.#_disconnectHook = callback;
+  }
+
+  setSnapbackHook(callback) {
+    this.#_snapbackReportHook = callback;
   }
 
   setReportHook(callback) {
@@ -583,7 +587,7 @@ class HojaGamepad {
       console.error('Failed to send report.', error);
       return false;
     }
-  }  
+  }
 
   async waitForCommandConfirmation(timeout = 5000) {
     const pollInterval = 50; // Poll every 50ms
@@ -593,14 +597,14 @@ class HojaGamepad {
     while (!this.#cfgCommandState.cfgSentSuccess) {
       if (elapsedTime >= timeout) {
         // Set config command state
-        this.#cfgCommandState.cfgBlockUsed    = -1;
-        this.#cfgCommandState.cfbCmdSent      = -1;
-        this.#cfgCommandState.cfgReturnData   = null;
+        this.#cfgCommandState.cfgBlockUsed = -1;
+        this.#cfgCommandState.cfbCmdSent = -1;
+        this.#cfgCommandState.cfgReturnData = null;
         this.#cfgCommandState.cfgReturnStatus = false;
-        this.#cfgCommandState.cfgSentSuccess  = false;
+        this.#cfgCommandState.cfgSentSuccess = false;
         return {
           status: false,
-          data:   null
+          data: null
         };
       }
       await new Promise(resolve => setTimeout(resolve, pollInterval));
@@ -610,31 +614,31 @@ class HojaGamepad {
     // Return the status and data for our command confirmation
     return {
       status: this.#cfgCommandState.cfgReturnStatus,
-      data:   this.#cfgCommandState.cfgReturnData
+      data: this.#cfgCommandState.cfgReturnData
     };
   }
 
-  async sendConfigCommand(block, command, timeout=null) {
+  async sendConfigCommand(block, command, timeout = null) {
     try {
       if (!this.#isConnected) {
         throw new Error("Can't send command, device not connected!");
       }
 
       // Set config command state
-      this.#cfgCommandState.cfgBlockUsed    = block;
-      this.#cfgCommandState.cfbCmdSent      = command;
+      this.#cfgCommandState.cfgBlockUsed = block;
+      this.#cfgCommandState.cfbCmdSent = command;
       this.#cfgCommandState.cfgReturnStatus = false;
-      this.#cfgCommandState.cfgSentSuccess  = false;
+      this.#cfgCommandState.cfgSentSuccess = false;
 
       // Create a Uint8Array with the first byte as the command and the rest as data
-      
+
       let payload = new Uint8Array([block, command]);
       // WEBUSB_ID_CONFIG_COMMAND = 4
       await this.sendReport(4, payload);
 
-      if(timeout)
+      if (timeout)
         return await this.waitForCommandConfirmation(timeout);
-      else 
+      else
         return await this.waitForCommandConfirmation()
 
     } catch (error) {

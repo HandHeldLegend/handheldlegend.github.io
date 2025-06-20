@@ -11,6 +11,8 @@ import Anglemap from '../factory/parsers/angleMap.js';
 import AnalogStickVisual from '../components/analog-stick-visual.js';
 import AxisInvertSelector from '../components/axis-invert-selector.js';
 
+import WaveformDisplay from '../components/waveform-display.js';
+
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
@@ -21,6 +23,9 @@ let capturedAngles = {
     left: 0,
     right: 0
 };
+
+let snapbackRange = 1500-400;
+let snapbackMin = 400; // Minimum snapback intensity value
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
@@ -71,21 +76,25 @@ function switchConfigAxis(axis) {
     let mode = 'round';
     let modeNum = 0;
     let deadzone = 0;
-    let snapbackMode = 0;
+    let snapbackModeLeft = 0;
+    let snapbackModeRight = 0;
     let deadzoneOuter = 0;
+
+    snapbackModeLeft = gamepad.analog_cfg.l_snapback_type;
+    snapbackModeRight = gamepad.analog_cfg.r_snapback_type;
 
     if(!selectedAxis) {
         mode = (gamepad.analog_cfg.l_scaler_type==1) ? 'polygon' : 'round';
         modeNum = gamepad.analog_cfg.l_scaler_type;
         deadzone = gamepad.analog_cfg.l_deadzone;
-        snapbackMode = gamepad.analog_cfg.l_snapback_type;
+        
         deadzoneOuter = gamepad.analog_cfg.l_deadzone_outer;
     }
     else {
         mode = (gamepad.analog_cfg.r_scaler_type==1) ? 'polygon' : 'round';
         modeNum = gamepad.analog_cfg.r_scaler_type;
         deadzone = gamepad.analog_cfg.r_deadzone;
-        snapbackMode = gamepad.analog_cfg.r_snapback_type
+        
         deadzoneOuter = gamepad.analog_cfg.r_deadzone_outer;
     }
     
@@ -96,7 +105,7 @@ function switchConfigAxis(axis) {
     populateDeadzone(deadzone);
     populateScalerType(modeNum);
     populateAngleSelectors(maps);
-    populateSnapbackType(snapbackMode);
+    populateSnapbackType(snapbackModeLeft, snapbackModeRight);
     populateOuterDeadzone(deadzoneOuter);
 }
 
@@ -118,10 +127,14 @@ function populateScalerType(mode) {
     scalerButtons.setState(mode);
 }
 
-function populateSnapbackType(mode) {
+function populateSnapbackType(modeLeft, modeRight) {
     /** @type {MultiPositionButton} */
-    const snapbackButtons = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector"]');
-    snapbackButtons.setState(mode);
+    const snapbackButtonsLeft = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector-left"]');
+    snapbackButtonsLeft.setState(modeLeft);
+
+    /** @type {MultiPositionButton} */
+    const snapbackButtonsRight = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector-right"]');
+    snapbackButtonsRight.setState(modeRight);
 }
 
 function updateAnalogVisualizerPolygon(maps) {
@@ -421,11 +434,11 @@ async function writeAngleMemBlock() {
     /** @type {MultiPositionButton} */
     const scalerModePicker = mdContainer.querySelector('multi-position-button[id="scale-mode-selector"]');
 
-    const snapbackModePicker = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector"]');
+    const snapbackModePickerLeft = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector-left"]');
+    const snapbackModePickerRight = mdContainer.querySelector('multi-position-button[id="snapback-mode-selector-right"]');
 
     let scalerModeIdx = scalerModePicker.getState().selectedIndex;
     let deadzoneValue = deadzoneSlider.getState().formattedValue;
-    let snapbackMode = snapbackModePicker.getState().selectedIndex;
     let outerDeadzoneValue = outerDeadzoneSlider.getState().formattedValue;
 
     updateAnalogVisualizerScaler(scalerModeIdx);
@@ -437,7 +450,7 @@ async function writeAngleMemBlock() {
         gamepad.analog_cfg.l_angle_maps = maps; 
         gamepad.analog_cfg.l_deadzone = deadzoneValue; 
         gamepad.analog_cfg.l_scaler_type = scalerModeIdx; 
-        gamepad.analog_cfg.l_snapback_type = snapbackMode; 
+
         gamepad.analog_cfg.l_deadzone_outer = outerDeadzoneValue;
     }
     else 
@@ -445,9 +458,12 @@ async function writeAngleMemBlock() {
         gamepad.analog_cfg.r_angle_maps = maps; 
         gamepad.analog_cfg.r_deadzone = deadzoneValue; 
         gamepad.analog_cfg.r_scaler_type = scalerModeIdx; 
-        gamepad.analog_cfg.r_snapback_type = snapbackMode; 
+
         gamepad.analog_cfg.r_deadzone_outer = outerDeadzoneValue;
     }
+
+    gamepad.analog_cfg.l_snapback_type = snapbackModePickerLeft.getState().selectedIndex;
+    gamepad.analog_cfg.r_snapback_type = snapbackModePickerRight.getState().selectedIndex;
 
     await gamepad.sendBlock(analogCfgBlockNumber);
 }
@@ -472,11 +488,17 @@ export function render(container) {
     }
 
     let modeIdx = gamepad.analog_cfg.l_scaler_type;
-    let snapbackIdx = gamepad.analog_cfg.l_snapback_type;
+    let snapbackIdxLeft = gamepad.analog_cfg.l_snapback_type;
+    let snapbackIdxRight = gamepad.analog_cfg.r_snapback_type;
     let mode = (gamepad.analog_cfg.l_scaler_type==1) ? 'polygon' : 'round';
     let deadzone = gamepad.analog_cfg.l_deadzone;
     let outerDeadzone = gamepad.analog_cfg.l_deadzone_outer;
     let polyVerticesString = mapsToStyleString(angleConfigs);
+
+    
+
+    let snapbackCutoffLeft  = (gamepad.analog_cfg.l_snapback_intensity / 10);
+    let snapbackCutoffRight = (gamepad.analog_cfg.r_snapback_intensity / 10);
 
     container.innerHTML = `
             <h2>Calibrate</h2>
@@ -548,15 +570,6 @@ export function render(container) {
                 default-selected="${modeIdx}"
             ></multi-position-button>
 
-            <h2>Snapback Filter
-            <div class="header-tooltip" tooltip="The snapback filter required for ProCon sticks is quite aggressive and may not be to your liking. For more responsiveness, you may disable this filter per stick.">?</div>
-            </h2>
-            <multi-position-button 
-                id="snapback-mode-selector" 
-                labels="On, Off"
-                default-selected="${snapbackIdx}"
-            ></multi-position-button>
-
             <h2>Angles</h2>
             <div class="app-row">
                 <single-shot-button 
@@ -593,6 +606,45 @@ export function render(container) {
                 ></single-shot-button>
             </div>
             ${anglePickersHTML}
+
+            <h2>Snapback Filter</h2>
+
+            <h3>Left Stick</h3>
+            <multi-position-button 
+                id="snapback-mode-selector-left" 
+                labels="Auto, LPF, Off"
+                default-selected="${snapbackIdxLeft}"
+            ></multi-position-button>
+
+            <p>Cutoff Frequency Hz</p>
+            <number-selector 
+                id="snapback-cutoff-left" 
+                type="float" 
+                min="30.0" 
+                max="150.0" 
+                step="0.5" 
+                default-value="${snapbackCutoffLeft}"
+            ></number-selector>
+
+            <h3>Right Stick</h3>
+            <multi-position-button 
+                id="snapback-mode-selector-right" 
+                labels="Auto, LPF, Off"
+                default-selected="${snapbackIdxRight}"
+            ></multi-position-button>
+
+            <p>Cutoff Frequency Hz</p>
+            <number-selector 
+                id="snapback-cutoff-right" 
+                type="float" 
+                min="30.0" 
+                max="150.0" 
+                step="0.5"  
+                default-value="${snapbackCutoffRight}"
+            ></number-selector>
+
+            <waveform-display width="450" height="300"></waveform-display>
+
             <h2>Invert Axis</h2>
             <axis-invert-selector 
                 default-lx="${gamepad.analog_cfg.lx_invert ? 'true' : 'false'}"
@@ -641,19 +693,41 @@ export function render(container) {
 
     const scaleModeButton = container.querySelector('multi-position-button[id="scale-mode-selector"]');
     scaleModeButton.addEventListener('change', (e) => {
+        gamepad.analog_cfg.l_scaler_type = e.detail.selectedIndex;
         console.log("Scale Mode Change");
         writeAngleMemBlock();
     });
 
-    const snapbackModeButton = container.querySelector('multi-position-button[id="snapback-mode-selector"]');
-    snapbackModeButton.addEventListener('change', (e) => {
-        console.log("Snapback Mode Change");
+    const snapbackModeButtonLeft = container.querySelector('multi-position-button[id="snapback-mode-selector-left"]');
+    snapbackModeButtonLeft.addEventListener('change', (e) => {
+        gamepad.analog_cfg.l_snapback_type = e.detail.selectedIndex;
+        console.log("Snapback Left Mode Change");
+        writeAngleMemBlock();
+    });
+
+    const snapbackModeButtonRight = container.querySelector('multi-position-button[id="snapback-mode-selector-right"]');
+    snapbackModeButtonRight.addEventListener('change', (e) => {
+        console.log("Snapback Right Mode Change");
         writeAngleMemBlock();
     });
 
     const deadzoneSlider = container.querySelector('number-selector[id="deadzone-slider"]');
     deadzoneSlider.addEventListener('change', (e) => {
         console.log("Deadzone Change");
+        writeAngleMemBlock();
+    });
+
+    const snapbackCutoffLeftSlider = container.querySelector('number-selector[id="snapback-cutoff-left"]');
+    snapbackCutoffLeftSlider.addEventListener('change', (e) => {
+        console.log("Snapback Left Cutoff Change");
+        gamepad.analog_cfg.l_snapback_intensity = e.detail.value * 10; // Convert to 0.1Hz units
+        writeAngleMemBlock();
+    });
+
+    const snapbackCutoffRightSlider = container.querySelector('number-selector[id="snapback-cutoff-right"]');
+    snapbackCutoffRightSlider.addEventListener('change', (e) => {   
+        console.log("Snapback Right Cutoff Change");
+        gamepad.analog_cfg.r_snapback_intensity = e.detail.value * 10; // Convert to 0.1Hz units
         writeAngleMemBlock();
     });
 
@@ -711,7 +785,6 @@ export function render(container) {
 
     enableTooltips(container);
 
-
     /** @type {AnalogStickVisual} */
     const analogVisualizer = container.querySelector('analog-stick');
 
@@ -726,6 +799,7 @@ export function render(container) {
 
         let x = (data.getUint8(1 + offset) << 8) | (data.getUint8(2 + offset));
         let y = 4096 - ( (data.getUint8(3 + offset) << 8) | (data.getUint8(4 + offset)) );
+
         x -= 2048;
         y -= 2048;
 
@@ -735,6 +809,15 @@ export function render(container) {
         y_scaled -= 2048;
 
         analogVisualizer.setAnalogInput(x, y, x_scaled, y_scaled);
+    });
+
+    // Set our waveform display
+    /** @type {WaveformDisplay} */
+    const waveformDisplay = container.querySelector('waveform-display');
+
+    gamepad.setSnapbackHook((data) => {
+        const buffer = new Uint8Array(data.buffer);
+        waveformDisplay.loadData(buffer);
     });
 
     mdContainer = container;
