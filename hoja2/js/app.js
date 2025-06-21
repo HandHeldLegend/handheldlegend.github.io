@@ -6,6 +6,11 @@ import { enableTooltips } from './tooltips.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 
+import { 
+    pico_update_attempt_flash, 
+    pico_exit_bootloader_attempt 
+} from './pico_update.js';
+
 async function isOnline() {
     try {
         const response = await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
@@ -377,7 +382,11 @@ async function getManifestVersion(manifestUrl) {
 
     if(response.ok) {
         const data = await response.json();
-        if(data.fw_version) return data.fw_version;
+        if(data.fw_version) 
+        return {
+            version: data.fw_version,
+            checksum: data.checksum
+        };
         else return false;
     }
 }
@@ -431,9 +440,10 @@ async function enableLegacyFwUpdateMessage(url) {
     fwMessageBox.setAttribute("visible", "true");
 }
 
-async function enableFwUpdateMessage(enable, url) {
+async function enableFwUpdateMessage(enable, url, checksum) {
     const bootloaderButton = document.getElementById("bootloader-button");
     const downloadButton = document.getElementById("download-button");
+    const updateButton = document.getElementById("update-button");
     const fwMessageBox = document.getElementById("fw-update-box");
 
     if(enable) {
@@ -447,6 +457,10 @@ async function enableFwUpdateMessage(enable, url) {
         downloadButton.setOnClick(() => {
             window.open(url, '_blank');
             return true;
+        });
+
+        updateButton.setOnClick(async () => {
+            await pico_update_attempt_flash(url, checksum);
         });
 
         fwMessageBox.setAttribute("visible", "true");
@@ -540,7 +554,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
 
-        console.log("Newest version: " + parseInt(fwVersion));
+        console.log("Newest version: " + parseInt(fwVersion.version));
+        console.log("Checksum: " + fwVersion.checksum);
         console.log("This version: " + parseInt(gamepad.device_static.fw_version));
 
         console.log("Paired host:");
@@ -550,13 +565,13 @@ document.addEventListener('DOMContentLoaded', () => {
         {
 
         }
-        else if(fwVersion > gamepad.device_static.fw_version) {
+        else if(fwVersion.version > gamepad.device_static.fw_version) {
             // Enable FW update
-            enableFwUpdateMessage(true, parseBufferText(gamepad.device_static.firmware_url));
+            enableFwUpdateMessage(true, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
         }
         else {
             // Enable FW update
-            enableFwUpdateMessage(false, parseBufferText(gamepad.device_static.firmware_url));
+            enableFwUpdateMessage(false, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
         }       
         
 

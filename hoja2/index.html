@@ -36,17 +36,42 @@
 
             <div visible="false" id="fw-update-box" class="header-msg-box">
                 <h2>Update Available</h2>
-                <p>Click 'Enter Update Mode'. Click 'Download' to retrieve the latest firmware. 
-                    Save the .uf2 firmware for your device to the RPI-RP2 USB device in your file explorer.</p>
+                <p>Click 'Enter Update Mode' first.</p>
                 <div class="app-row">
                     <single-shot-button id="bootloader-button" state="ready" ready-text="Enter Update Mode" disabled-text="..."
                         pending-text="Entering..." failure-text="Entering..." success-text="Entering..."
                     ></single-shot-button>
+                </div>
 
+                <div class="separator"> </div>
+
+                <h3>Manual Update (Windows)</h3>
+                <p>Click 'Download' to retrieve the latest firmware. 
+                    Save the .uf2 firmware for your device to the RPI-RP2 USB device in your file explorer.</p>
+                <div class="app-row">
                     <single-shot-button id="download-button" state="ready" ready-text="Download" disabled-text="Download"
                         pending-text="Download" success-text="Opening..."
                     ></single-shot-button>
                 </div>
+
+                <div class="separator"> </div>
+
+                <h3>Easy Update</h3>
+                <p>Click 'Update' to connect to and update your gamepad.</p>
+                <div class="progress-info">
+                    <span class="status-text" id="statusText">Ready to start</span>
+                    <span class="percentage" id="percentage">0%</span>
+                </div>
+                
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="app-row">
+                    <single-shot-button id="update-button" state="ready" ready-text="Update" disabled-text="..."
+                        pending-text="Updating..." failure-text="Completed..." success-text="Completed..."
+                    ></single-shot-button>
+                </div>
+
             </div>
 
         </div>

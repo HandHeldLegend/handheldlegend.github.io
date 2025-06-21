@@ -158,7 +158,7 @@ body {
 .header-msg-box[visible=true] {
     align-items: center;
     text-align: center;
-    max-height: 300px; /* Adjust as needed */
+    max-height: 550px; /* Adjust as needed */
     padding-bottom: 8px;
     padding-top: 8px;
 }
@@ -477,6 +477,60 @@ h1, h2, h3 {
     display: block;
 }
 
+.progress-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.progress-bar-wrapper {
+    width: 400px;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0px;
+    margin-bottom: 16px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #2196F3;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 4px;
+}
+
+.progress-bar.flashing {
+    background-color: #4CAF50;
+}
+
+.status-text {
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.percentage {
+    font-weight: bold;
+    color: #2abeebcb;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #28ce80a9;
+}
+
+.separator {
+    width: 100%;
+    height: 1px;
+    background-color: #dddddda2;
+    margin: 20px 0;
+}
+
 remap-selector-container {
     width: 100%;
     align-items: center;
@@ -490,3 +544,4 @@ remap-selector-container {
 remap-selector-container[hidden="true"] {
     opacity: 0;
 }
+

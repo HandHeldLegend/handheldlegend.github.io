@@ -1,8 +1,8 @@
 const CACHE_CONFIG = {
-  version: 'v0.002.002', // Increment this when you update files
+  version: 'v0.002.006', // Increment this when you update files
   folders: {
     '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
-    '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js'],
+    '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js', 'pico_update.js'],
     '/assets/3d/': ['supergamepad.stl'],
     '/libs/': ['STLLoader.js', 'three.min.js'],
     '/css/': ['styles.css'],
