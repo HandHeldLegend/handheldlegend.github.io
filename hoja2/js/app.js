@@ -11,6 +11,10 @@ import {
     pico_exit_bootloader_attempt 
 } from './pico_update.js';
 
+let deviceDetected = false;
+let deviceFwUrl = undefined;
+let deviceFwChecksum = undefined;
+
 async function isOnline() {
     try {
         const response = await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
@@ -440,35 +444,97 @@ async function enableLegacyFwUpdateMessage(url) {
     fwMessageBox.setAttribute("visible", "true");
 }
 
-async function enableFwUpdateMessage(enable, url, checksum) {
+async function enableFwUpdateMessage({enableDropdown, enableBootloader, enableDownload, enableEasy, enableCancel}, url, checksum) {
     const bootloaderButton = document.getElementById("bootloader-button");
     const downloadButton = document.getElementById("download-button");
     const updateButton = document.getElementById("update-button");
     const fwMessageBox = document.getElementById("fw-update-box");
+    const cancelButton = document.getElementById("exit-bootloader-button");
 
-    if(enable) {
-        bootloaderButton.setOnClick(async () => {
-            if(gamepad) {
-                gamepad.sendConfigCommand(gamepadCfgBlock, bootloaderCmd);
+    if(enableDropdown != undefined) {
+        if(enableDropdown) {
+            fwMessageBox.setAttribute("visible", "true");
+        }
+        else {
+            fwMessageBox.setAttribute("visible", "false");
+        }
+    }
+
+    if(enableBootloader != undefined) {
+        if(enableBootloader) {
+            bootloaderButton.setOnClick(async () => {
+                if(gamepad) {
+                    gamepad.sendConfigCommand(gamepadCfgBlock, bootloaderCmd);
+                    return true;
+                }
+            });
+            bootloaderButton.enableButton(true);
+        }
+        else {
+            bootloaderButton.enableButton(false);
+        }
+    }
+
+    if(enableDownload != undefined)
+    {
+        if(deviceDetected != true)
+        {
+            downloadButton.setOnClick(() => {
+                window.open('https://docs.handheldlegend.com/s/portal/doc/firmware-list-NVFevpDKbQ', '_blank');
                 return true;
-            }
-        });
+            });
+        }
+        else if(url != undefined && checksum != undefined) {
+            downloadButton.setOnClick(() => {
+                window.open(url, '_blank');
+                return true;
+            });
+        }
 
-        downloadButton.setOnClick(() => {
-            window.open(url, '_blank');
-            return true;
-        });
-
-        updateButton.setOnClick(async () => {
-            await pico_update_attempt_flash(url, checksum);
-        });
-
-        fwMessageBox.setAttribute("visible", "true");
+        if(enableDownload) {
+            downloadButton.enableButton(true);
+        }
+        else {
+            downloadButton.enableButton(false);
+        }
     }
-    else {
-        fwMessageBox.setAttribute("visible", "false");
+
+    if(enableEasy != undefined) {
+
+        if(deviceDetected != true)
+        {
+            updateButton.enableButton(false);
+        }
+        else if (enableEasy == false) {
+            updateButton.enableButton(false);
+        }
+        else if (enableEasy == true) {
+            updateButton.enableButton(true);
+        }
+
+        if(url != undefined && checksum != undefined) {
+            updateButton.setOnClick(async () => {
+                if(gamepad) {
+                    await pico_update_attempt_flash(url, checksum);
+                    return true;
+                }
+            });
+        }
     }
-    
+
+    if(enableCancel != undefined)
+    {
+        if(enableCancel == true) {
+            cancelButton.setOnClick(async () => {
+                await pico_exit_bootloader_attempt();
+                return true;
+            });
+            cancelButton.enableButton(true);
+        }
+        else {
+            cancelButton.enableButton(false);
+        }
+    }
 }
 
 async function sendSaveCommand() {
@@ -551,6 +617,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable Save
         saveButton.enableButton(true);
 
+        // Set device detect flag
+        deviceDetected = true;
+
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
 
@@ -566,12 +635,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
         else if(fwVersion.version > gamepad.device_static.fw_version) {
+
+            let enableOptions = 
+            {
+                enableDropdown: true,
+                enableBootloader: true,
+                enableDownload: true,
+                enableEasy: false,
+                enableCancel: false
+            }
+
             // Enable FW update
-            enableFwUpdateMessage(true, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
+            enableFwUpdateMessage(enableOptions, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
         }
         else {
+            let enableOptions = 
+            {
+                enableDropdown: false,
+                enableBootloader: false,
+                enableDownload: false,
+                enableEasy: false,
+                enableCancel: false
+            }
             // Enable FW update
-            enableFwUpdateMessage(false, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
+            enableFwUpdateMessage(enableOptions, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
         }       
         
 
@@ -586,6 +673,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         else window.configApp.setNotificationBadge(9, false);
         // End Baseband Version Check
+
+        
     }
 
     function disconnectHandle() {
@@ -604,12 +693,68 @@ document.addEventListener('DOMContentLoaded', () => {
             window.configApp.enableIcon(i, false);
         }
 
+        let enableOptions =
+        {
+            enableDropdown: false,
+            enableBootloader: false,
+            enableDownload: false,
+            enableEasy: false
+        };
+
+        enableFwUpdateMessage(enableOptions, undefined, undefined);
+
         return true;
     }
 
     gamepad.setConnectHook(connectHandle);
     gamepad.setDisconnectHook(disconnectHandle);
     gamepad.setLegacyDetectionHook(enableLegacyFwUpdateMessage);
+
+    const PICO_VID = 0x2e8a;
+    const PICO_PID = 0x0003;
+
+    // Listen for device connect/disconnect events for Pico Bootloader
+    navigator.usb.addEventListener('connect', event => {
+        console.log('USB device connected:', event.device);
+        if (event.device.vendorId === PICO_VID && 
+            event.device.productId === PICO_PID) {
+            console.log('Pico Boot Device Detected');
+            
+            let enableOptions =
+            {
+                enableDropdown: true,
+                enableBootloader: false,
+                enableDownload: true,
+                enableEasy: true,
+                enableCancel: true
+            };
+
+            enableFwUpdateMessage(enableOptions, undefined, undefined);
+        }
+    });
+
+    // Listen for device disconnect events for Pico Bootloader
+    navigator.usb.addEventListener('disconnect', event => {
+        console.log('USB device disconnected:', event.device);
+        if (event.device.vendorId === PICO_VID && 
+            event.device.productId === PICO_PID) {
+            console.log('Pico Boot Device disconnected!');
+            
+            // Clear device detected flag
+            deviceDetected = false;
+
+            let enableOptions =
+            {
+                enableDropdown: false,
+                enableBootloader: false,
+                enableDownload: false,
+                enableEasy: false,
+                enableCancel: false
+            };
+
+            enableFwUpdateMessage(enableOptions, undefined, undefined);
+        }
+    });
 
     // Optional async handlers for connection/disconnection
     connectButton.setOnHandler(async () => {
