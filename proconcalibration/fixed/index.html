@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switch Controller Calibration Viewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Fixed Switch Controller Calibration Viewer</h1>
+        
+        <div class="controls">
+            <button id="connectBtn">Connect Controller</button>
+            <button id="disconnectBtn" disabled>Disconnect</button>
+            <div class="toggle-container">
+                <span>Factory</span>
+                <div class="toggle" id="calibrationToggle">
+                    <div class="toggle-slider"></div>
+                </div>
+                <span>User</span>
+            </div>
+        </div>
+
+        <div class="status" id="status">
+            Click "Connect Controller" to begin. Make sure your Switch controller is in pairing mode.
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot raw-dot"></div>
+                <span>Raw Input</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot calibrated-dot"></div>
+                <span>Calibrated Input</span>
+            </div>
+        </div>
+
+        <div class="joystick-container">
+            <div class="joystick-panel">
+                <div class="joystick-title">Left Stick</div>
+                <div class="joystick-display" id="leftStick">
+                    <div class="center-line-h"></div>
+                    <div class="center-line-v"></div>
+                    <div class="joystick-dot raw-dot" id="leftRawDot"></div>
+                    <div class="joystick-dot calibrated-dot" id="leftCalibratedDot"></div>
+                </div>
+                <div class="values-display">
+                    <div class="value-group">
+                        <div class="value-label">Raw Values</div>
+                        <div>X: <span id="leftRawX">0</span></div>
+                        <div>Y: <span id="leftRawY">0</span></div>
+                    </div>
+                    <div class="value-group">
+                        <div class="value-label">Calibrated Values</div>
+                        <div>X: <span id="leftCalX">0.00</span></div>
+                        <div>Y: <span id="leftCalY">0.00</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="joystick-panel">
+                <div class="joystick-title">Right Stick</div>
+                <div class="joystick-display" id="rightStick">
+                    <div class="center-line-h"></div>
+                    <div class="center-line-v"></div>
+                    <div class="joystick-dot raw-dot" id="rightRawDot"></div>
+                    <div class="joystick-dot calibrated-dot" id="rightCalibratedDot"></div>
+                </div>
+                <div class="values-display">
+                    <div class="value-group">
+                        <div class="value-label">Raw Values</div>
+                        <div>X: <span id="rightRawX">0</span></div>
+                        <div>Y: <span id="rightRawY">0</span></div>
+                    </div>
+                    <div class="value-group">
+                        <div class="value-label">Calibrated Values</div>
+                        <div>X: <span id="rightCalX">0.00</span></div>
+                        <div>Y: <span id="rightCalY">0.00</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="calibration-info">
+            <div class="calibration-title">Calibration Parameters (<span id="calibrationType">Factory</span>)</div>
+            <div class="calibration-grid">
+                <div class="calibration-stick">
+                    <div class="stick-title">Left Stick X</div>
+                    <div>Center: <span id="leftXCenter">0</span></div>
+                    <div>Max+: <span id="leftXMax">0</span></div>
+                    <div>Min-: <span id="leftXMin">0</span></div>
+                </div>
+                <div class="calibration-stick">
+                    <div class="stick-title">Left Stick Y</div>
+                    <div>Center: <span id="leftYCenter">0</span></div>
+                    <div>Max+: <span id="leftYMax">0</span></div>
+                    <div>Min-: <span id="leftYMin">0</span></div>
+                </div>
+                <div class="calibration-stick">
+                    <div class="stick-title">Right Stick X</div>
+                    <div>Center: <span id="rightXCenter">0</span></div>
+                    <div>Max+: <span id="rightXMax">0</span></div>
+                    <div>Min-: <span id="rightXMin">0</span></div>
+                </div>
+                <div class="calibration-stick">
+                    <div class="stick-title">Right Stick Y</div>
+                    <div>Center: <span id="rightYCenter">0</span></div>
+                    <div>Max+: <span id="rightYMax">0</span></div>
+                    <div>Min-: <span id="rightYMin">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
