@@ -171,15 +171,14 @@ class SwitchController {
             console.log('Parsed factory left stick calibration:', this.factoryCalibration.leftStick);
         } else if (leftRight === 'right') {
 
-            // Max and center are swapped here as well.
             this.factoryCalibration.rightStick.x.center = ((spiData[1] << 8) & 0xF00) | spiData[0];
             this.factoryCalibration.rightStick.y.center = (spiData[2] << 4) | (spiData[1] >> 4);
 
-            this.factoryCalibration.rightStick.x.max = ((spiData[4] << 8) & 0xF00) | spiData[3];
-            this.factoryCalibration.rightStick.y.max = (spiData[5] << 4) | (spiData[4] >> 4);
+            this.factoryCalibration.rightStick.x.min = ((spiData[4] << 8) & 0xF00) | spiData[3];
+            this.factoryCalibration.rightStick.y.min = (spiData[5] << 4) | (spiData[4] >> 4);
 
-            this.factoryCalibration.rightStick.x.min = ((spiData[7] << 8) & 0xF00) | spiData[6];
-            this.factoryCalibration.rightStick.y.min = (spiData[8] << 4) | (spiData[7] >> 4);
+            this.factoryCalibration.rightStick.x.max = ((spiData[7] << 8) & 0xF00) | spiData[6];
+            this.factoryCalibration.rightStick.y.max = (spiData[8] << 4) | (spiData[7] >> 4);
 
             console.log('Parsed factory right stick calibration:', this.factoryCalibration.rightStick);
         } else {
@@ -215,12 +214,11 @@ class SwitchController {
                 this.userCalibration.rightStick.x.center = ((spiData[1+2] << 8) & 0xF00) | spiData[0+2];
                 this.userCalibration.rightStick.y.center = (spiData[2+2] << 4) | (spiData[1+2] >> 4);
 
-                // Max and center are swapped for the right stick! This was incorrect previously.
-                this.userCalibration.rightStick.x.max = ((spiData[4+2] << 8) & 0xF00) | spiData[3+2];
-                this.userCalibration.rightStick.y.max = (spiData[5+2] << 4) | (spiData[4+2] >> 4);
+                this.userCalibration.rightStick.x.min = ((spiData[4+2] << 8) & 0xF00) | spiData[3+2];
+                this.userCalibration.rightStick.y.min = (spiData[5+2] << 4) | (spiData[4+2] >> 4);
 
-                this.userCalibration.rightStick.x.min = ((spiData[7+2] << 8) & 0xF00) | spiData[6+2];
-                this.userCalibration.rightStick.y.min = (spiData[8+2] << 4) | (spiData[7+2] >> 4);
+                this.userCalibration.rightStick.x.max = ((spiData[7+2] << 8) & 0xF00) | spiData[6+2];
+                this.userCalibration.rightStick.y.max = (spiData[8+2] << 4) | (spiData[7+2] >> 4);
 
                 console.log('Parsed user right stick calibration:', this.userCalibration.rightStick);
             }
