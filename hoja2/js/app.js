@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 enableDropdown: true,
                 enableBootloader: true,
                 enableDownload: true,
-                enableEasy: false,
+                enableEasy: true,
                 enableCancel: false
             }
 
@@ -700,8 +700,6 @@ document.addEventListener('DOMContentLoaded', () => {
             enableDownload: false,
             enableEasy: false
         };
-
-        enableFwUpdateMessage(enableOptions, undefined, undefined);
 
         return true;
     }
