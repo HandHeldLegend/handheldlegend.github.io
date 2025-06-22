@@ -15,7 +15,7 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1400px;
     width: 100%;
     padding: 20px;
 }
@@ -56,6 +56,14 @@ button:disabled {
     background: #666;
     cursor: not-allowed;
     transform: none;
+}
+
+button.write-btn {
+    background: linear-gradient(145deg, #4CAF50, #45a049);
+}
+
+button.verify-btn {
+    background: linear-gradient(145deg, #2196F3, #1976D2);
 }
 
 .toggle-container {
@@ -195,11 +203,12 @@ button:disabled {
     color: #ffd700;
 }
 
-.calibration-info {
+.calibration-editor {
     background: rgba(255,255,255,0.1);
     border-radius: 15px;
     padding: 20px;
     backdrop-filter: blur(10px);
+    margin-bottom: 30px;
 }
 
 .calibration-title {
@@ -211,7 +220,7 @@ button:disabled {
 
 .calibration-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 15px;
 }
 
@@ -225,6 +234,41 @@ button:disabled {
     font-weight: bold;
     margin-bottom: 10px;
     color: #ffd700;
+}
+
+.calibration-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.calibration-row label {
+    min-width: 60px;
+    font-size: 0.9rem;
+}
+
+.calibration-row input {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-family: 'Courier New', monospace;
+}
+
+.calibration-row input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: rgba(0,0,0,0.5);
+}
+
+.write-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
 }
 
 .legend {
@@ -246,6 +290,24 @@ button:disabled {
     border-radius: 50%;
 }
 
+.verification-status {
+    text-align: center;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.verification-status.success {
+    background: rgba(76, 175, 80, 0.3);
+    border: 1px solid #4CAF50;
+}
+
+.verification-status.error {
+    background: rgba(244, 67, 54, 0.3);
+    border: 1px solid #f44336;
+}
+
 @media (max-width: 768px) {
     .joystick-container {
         grid-template-columns: 1fr;
@@ -254,5 +316,9 @@ button:disabled {
     .controls {
         flex-direction: column;
         align-items: center;
+    }
+
+    .calibration-grid {
+        grid-template-columns: 1fr;
     }
 }

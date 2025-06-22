@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Switch Controller Calibration Viewer</title>
+    <title>Switch Controller Calibration Editor</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Fixed Switch Controller Calibration Viewer</h1>
+        <h1>Switch Controller Calibration Editor</h1>
         
         <div class="controls">
             <button id="connectBtn">Connect Controller</button>
@@ -83,35 +83,76 @@
             </div>
         </div>
 
-        <div class="calibration-info">
-            <div class="calibration-title">Calibration Parameters (<span id="calibrationType">Factory</span>)</div>
+        <div class="calibration-editor">
+            <div class="calibration-title">Edit User Calibration Values</div>
             <div class="calibration-grid">
                 <div class="calibration-stick">
                     <div class="stick-title">Left Stick X</div>
-                    <div>Center: <span id="leftXCenter">0</span></div>
-                    <div>Max+: <span id="leftXMax">0</span></div>
-                    <div>Min-: <span id="leftXMin">0</span></div>
+                    <div class="calibration-row">
+                        <label>Center:</label>
+                        <input type="number" id="editLeftXCenter" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Max+:</label>
+                        <input type="number" id="editLeftXMax" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Min-:</label>
+                        <input type="number" id="editLeftXMin" min="0" max="4095">
+                    </div>
                 </div>
                 <div class="calibration-stick">
                     <div class="stick-title">Left Stick Y</div>
-                    <div>Center: <span id="leftYCenter">0</span></div>
-                    <div>Max+: <span id="leftYMax">0</span></div>
-                    <div>Min-: <span id="leftYMin">0</span></div>
+                    <div class="calibration-row">
+                        <label>Center:</label>
+                        <input type="number" id="editLeftYCenter" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Max+:</label>
+                        <input type="number" id="editLeftYMax" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Min-:</label>
+                        <input type="number" id="editLeftYMin" min="0" max="4095">
+                    </div>
                 </div>
                 <div class="calibration-stick">
                     <div class="stick-title">Right Stick X</div>
-                    <div>Center: <span id="rightXCenter">0</span></div>
-                    <div>Max+: <span id="rightXMax">0</span></div>
-                    <div>Min-: <span id="rightXMin">0</span></div>
+                    <div class="calibration-row">
+                        <label>Center:</label>
+                        <input type="number" id="editRightXCenter" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Max+:</label>
+                        <input type="number" id="editRightXMax" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Min-:</label>
+                        <input type="number" id="editRightXMin" min="0" max="4095">
+                    </div>
                 </div>
                 <div class="calibration-stick">
                     <div class="stick-title">Right Stick Y</div>
-                    <div>Center: <span id="rightYCenter">0</span></div>
-                    <div>Max+: <span id="rightYMax">0</span></div>
-                    <div>Min-: <span id="rightYMin">0</span></div>
+                    <div class="calibration-row">
+                        <label>Center:</label>
+                        <input type="number" id="editRightYCenter" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Max+:</label>
+                        <input type="number" id="editRightYMax" min="0" max="4095">
+                    </div>
+                    <div class="calibration-row">
+                        <label>Min-:</label>
+                        <input type="number" id="editRightYMin" min="0" max="4095">
+                    </div>
                 </div>
             </div>
+            <div class="write-controls">
+                <button id="loadCurrentBtn">Load Current Values</button>
+                <button id="writeCalibrationBtn" class="write-btn" disabled>Write User Calibration</button>
+            </div>
         </div>
+
     </div>
 
     <script src="script.js"></script>
