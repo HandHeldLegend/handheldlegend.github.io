@@ -67,7 +67,7 @@ export function render(container) {
             </div>
             <multi-position-button 
                 id="default-mode-selector" 
-                labels="SWITCH, XINPUT, GCUSB, GC, N64, SNES"
+                labels="NS, Xinput, GCUSB, GC, N64, SNES, SInput"
                 default-selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
             ></multi-position-button>
             </h2>

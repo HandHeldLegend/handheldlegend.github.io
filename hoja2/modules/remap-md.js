@@ -91,6 +91,16 @@ const gamecubeMapCodes = [
     "Start", "~", "~", "~"
 ];
 
+const steamMapCodes = [
+    "D-Pad Up",
+    "D-Pad Down",
+    "D-Pad Left",
+    "D-Pad Right",
+    "A", "B", "X", "Y",
+    "L", "ZL", "R", "ZR",
+    "Plus", "Minus", "SL", "SR"
+];
+
 class ButtonListener {
     constructor() {
         this.resolveButtonPress = null;
@@ -412,6 +422,10 @@ function getCurrentMapCodeText(code) {
         case 4:
             codes = gamecubeMapCodes;
             break;
+
+        case 5:
+            codes = steamMapCodes;
+            break;
     }
 
     return codes[code];
@@ -484,6 +498,10 @@ async function newRenderRemaps(inputMode) {
 
         case 4:
             codes = gamecubeMapCodes;
+            break;
+
+        case 5:
+            codes = steamMapCodes;
             break;
     }
 
