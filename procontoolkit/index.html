@@ -2,12 +2,12 @@
 <html>
 
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
   <script src="js/procon_toolkit.js"></script>
+  
   <link rel="stylesheet" href="/css/style.css" type="text/css">
   <link rel="stylesheet" href="/css/slideThree.css" type="text/css">
   <link rel="stylesheet" href="/css/inputGrid.css" type="text/css">
-  <link rel="stylesheet" href="/css/slider.css" type="text/css">
-  <link rel="stylesheet" href="/css/radioSora.css" type="text/css">
   <link rel="stylesheet" href="/css/containers.css" type="text/css">
   <link rel="stylesheet" href="resources/pc_img.css">
 </head>
@@ -42,6 +42,23 @@
     </div>
 
     <div class="box">
+      Mode 0:
+      <div id="mode-0">0</div>
+
+      <br>
+
+      Mode 1:
+      <div id="mode-1">0</div>
+      <br>
+      Mode 2:
+      <div id="mode-2">0</div>
+    </div>
+
+    <div class="box" id="renderbox" style="height: 200px; width: 200px">
+
+    </div>
+
+    <div class="box">
 
       <div class="invisigrid">
         <button type="button" id="connect_button" onclick="doConnect()">Connect Device</button>
@@ -51,152 +68,42 @@
 
       <!-- COLOR SETTINGS -->
       <!-- --------------- -->
-      <div class="collapsible">
+      <div class="full-width">
 
-        <input id="color-collapsible" class="toggle" type="checkbox" disabled >
-
-        <label for="color-collapsible" id="color-collapsible-toggle" class="lbl-toggle" disabled="true" >Color Settings</label>
-
-        <div class="dropdown">
-
-          <div class="full-width">
-
-            <div class="procon-container">
-              <div class="procon-body" id="body-mask" style></div>
-              <div class="procon-buttons" id="buttons-mask" style></div>
-              <div class ="procon-l-grip" id="l-grip-mask" style></div>
-              <div class ="procon-r-grip" id="r-grip-mask" style></div>
-              <div class ="procon-shadow"></div>
-            </div>
-
-            <br>
-            
-            <div>
-            <label for="pc-body">Body</label>
-            <br>
-            <input type="color" id="pc_body" name="pc-body" value="#e66465" onchange='setColorData(0, this.value)'>
-            <br>
-            <label for="pc-buttons">Buttons</label>
-            <br>
-            <input type="color" id="pc_buttons" name="pc-buttons" value="#e66465" onchange='setColorData(1, this.value)'>
-            <br>
-            <label for="pc-body">Left Grip</label>
-            <br>
-            <input type="color" id="pc_grip_l" name="pc-body" value="#e66465" onchange='setColorData(2, this.value)'>
-            <br>
-            <label for="pc-body">Right Grip</label>
-            <br>
-            <input type="color" id="pc_grip_r" name="pc-body" value="#e66465" onchange='setColorData(3, this.value)'>
-            <br>
-            </div>
-            
-          </div>
-
-          <div class="row">
-            <button type="button" id="save_color_button" onclick="doSaveColor()">Save Color</button>
-          </div>
-
+        <div class="procon-container">
+          <div class="procon-body" id="body-mask" style></div>
+          <div class="procon-buttons" id="buttons-mask" style></div>
+          <div class ="procon-l-grip" id="l-grip-mask" style></div>
+          <div class ="procon-r-grip" id="r-grip-mask" style></div>
+          <div class ="procon-shadow"></div>
         </div>
-      </div>
 
-
-
-      <!-- <p>To calibrate your sticks, swirl both sticks</p>
-      <p>around in a full circle 6-10 times.</p>
-      <p>Release both sticks so they are centered.</p>
-      <p>Click the button below to save the calibration data.</p>
-
-      <div class="wrap-collapsible">
-
-        <input id="calibration-collapsible" class="toggle" type="checkbox"  >
-
-        <label for="calibration-collapsible" id="calibration-collapsible-toggle" class="lbl-toggle"  >Calibration Data</label>
-        <div class="collapsible-content">
-
-          <div class="content-inner">
-
-            <h3>Left Stick Calibration</h3>
-            <div class="input-container">
-              <div class="grid-item">X Max Distance</div>
-              <div class="grid-item" id="lx_max">0</div>
-
-              <div class="grid-item">X Center</div>
-              <div class="grid-item" id="lx_center">0</div>
-
-              <div class="grid-item">X Min Distance</div>
-              <div class="grid-item" id="lx_min">0</div>
-
-              <div class="grid-item">Y Max Distance</div>
-              <div class="grid-item" id="ly_max">0</div>
-
-              <div class="grid-item">Y Center</div>
-              <div class="grid-item" id="ly_center">0</div>
-
-              <div class="grid-item">Y Min Distance</div>
-              <div class="grid-item" id="ly_min">0</div>
-            </div>
-
-            <h3>Right Stick Calibration</h3>
-            <div class="input-container">
-              <div class="grid-item">X Max Distance</div>
-              <div class="grid-item" id="rx_max">0</div>
-
-              <div class="grid-item">X Center</div>
-              <div class="grid-item" id="rx_center">0</div>
-
-              <div class="grid-item">X Min Distance</div>
-              <div class="grid-item" id="rx_min">0</div>
-
-              <div class="grid-item">Y Max Distance</div>
-              <div class="grid-item" id="ry_max">0</div>
-
-              <div class="grid-item">Y Center</div>
-              <div class="grid-item" id="ry_center">0</div>
-
-              <div class="grid-item">Y Min Distance</div>
-              <div class="grid-item" id="ry_min">0</div>
-            </div>
-
-          </div>
-
+        <br>
+        
+        <div>
+        <label for="pc-body">Body</label>
+        <br>
+        <input type="color" id="pc_body" name="pc-body" value="#e66465" onchange='setColorData(0, this.value)'>
+        <br>
+        <label for="pc-buttons">Buttons</label>
+        <br>
+        <input type="color" id="pc_buttons" name="pc-buttons" value="#e66465" onchange='setColorData(1, this.value)'>
+        <br>
+        <label for="pc-body">Left Grip</label>
+        <br>
+        <input type="color" id="pc_grip_l" name="pc-body" value="#e66465" onchange='setColorData(2, this.value)'>
+        <br>
+        <label for="pc-body">Right Grip</label>
+        <br>
+        <input type="color" id="pc_grip_r" name="pc-body" value="#e66465" onchange='setColorData(3, this.value)'>
+        <br>
         </div>
-      </div>
-      
-      <button type="button" id="save_button" onclick="doSaveStickSettings()" disabled>Save Calibration</button>
-
-      <div class="line"></div>
-
-      <h3>Scaled Stick Output</h3>
-      <div class="input-container">
-        <div class="grid-item">X Axis</div>
-        <div class="grid-item" id="x_axis">0</div>
-
-        <div class="grid-item">Y Axis</div>
-        <div class="grid-item" id="y_axis">0</div>
-
-        <div class="grid-item">CX Axis</div>
-        <div class="grid-item" id="cx_axis">0</div>
-
-        <div class="grid-item">CY Axis</div>
-        <div class="grid-item" id="cy_axis">0</div>
+        
       </div>
 
-      <div class="line"></div>
-
-      <h3>Raw Stick Output</h3>
-      <div class="input-container">
-        <div class="grid-item">X Axis</div>
-        <div class="grid-item" id="x_axis_raw">0</div>
-
-        <div class="grid-item">Y Axis</div>
-        <div class="grid-item" id="y_axis_raw">0</div>
-
-        <div class="grid-item">CX Axis</div>
-        <div class="grid-item" id="cx_axis_raw">0</div>
-
-        <div class="grid-item">CY Axis</div>
-        <div class="grid-item" id="cy_axis_raw">0</div>
-      </div> -->
+      <div class="row">
+        <button type="button" id="save_color_button" onclick="doSaveColor()">Save Color</button>
+      </div>
 
   </div>
 </div>

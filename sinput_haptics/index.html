@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Haptic Streaming Demo</title>
+</head>
+<body>
+    <h1>Haptic Streaming Demo</h1>
+    <p>
+        <input type="file" id="fileInput" accept=".wav">
+        <button id="connectButton">Connect Haptic Device</button>
+        <button id="startButton" disabled>Start Streaming</button>
+    </p>
+    <script>
+    // === Configuration ===
+    const VENDOR_ID  = 0x2E8A;
+    const PRODUCT_ID = 0x10C6;
+    const REPORT_ID  = 0x02;      // HID output report ID for PCM data
+    const INPUT_ID   = 0x01;      // HID input report ID
+    const CHUNK_MS   = 6;         // each packet ≈6ms of audio
+    const SAMPLE_RATE = 16000;    // target sample rate
+    const CHANNELS    = 1;        // mono
+    const SAMPLE_SIZE = 2;        // bytes per sample (16-bit)
+    const INTERVAL_MS = 4;        // send every 4ms
+    const SAMPLES_PER_CHUNK = Math.ceil(SAMPLE_RATE * CHUNK_MS / 1000); // ≈96
+
+    // ADPCM tables (IMA-ADPCM)
+    const stepSizeTable = [
+         7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
+         19,21,23,25,28,31,34,37,41,45,
+         50,55,60,66,73,80,88,97,107,118,
+         130,143,157,173,190,209,230,253,279,307,
+         337,371,408,449,494,544,598,658,724,796,
+         876,963,1060,1166,1282,1411,1552,1707,1878,2066,
+         2272,2499,2749,3024,3327,3660,4026,4428,4871,5358,
+         5894,6484,7132,7845,8630,9493,10442,11487,12635,13899,
+         15289,16818,18500,20350,22385,24623,27086,29794,32767
+    ];
+    const indexTable = [
+        -1, -1, -1, -1, 2, 4, 6, 8,
+        -1, -1, -1, -1, 2, 4, 6, 8
+    ];
+
+    // State
+    let hidDevice     = null;
+    let allowSend     = true;
+    let adpcmBlocks   = [];
+    let sendIndex     = 0;
+    let sendTimer     = null;
+
+    // === UI elements ===
+    const fileInput     = document.getElementById('fileInput');
+    const connectButton = document.getElementById('connectButton');
+    const startButton   = document.getElementById('startButton');
+
+    // === File handling ===
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        adpcmBlocks = [];
+
+        // 1. Decode & normalize to mono float32 @ 16kHz
+        const int16Data = await processWav(file);
+        // 2. Chunk into 6ms pieces and ADPCM‐encode each
+        for (let i = 0; i < int16Data.length; i += SAMPLES_PER_CHUNK) {
+            let slice = int16Data.subarray(i, i + SAMPLES_PER_CHUNK);
+            if (slice.length < SAMPLES_PER_CHUNK) {
+                // pad with zeros
+                const padded = new Int16Array(SAMPLES_PER_CHUNK);
+                padded.set(slice);
+                slice = padded;
+            }
+            adpcmBlocks.push(adpcmEncode(slice));
+        }
+        alert(`Prepared ${adpcmBlocks.length} blocks for streaming.`);
+        if (hidDevice && hidDevice.opened) {
+            startButton.disabled = false;
+        }
+    });
+
+    // === WebHID connection ===
+    connectButton.addEventListener('click', async () => {
+        try {
+            const devices = await navigator.hid.requestDevice({
+                filters: [{ vendorId: VENDOR_ID, productId: PRODUCT_ID }]
+            });
+            if (!devices.length) {
+                alert('No device selected.');
+                return;
+            }
+            hidDevice = devices[0];
+            await hidDevice.open();
+            hidDevice.addEventListener('inputreport', onInputReport);
+            alert('Device connected.');
+            if (adpcmBlocks.length) {
+                startButton.disabled = false;
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Failed to connect: ' + e);
+        }
+    });
+
+    // === Start streaming ===
+    startButton.addEventListener('click', () => {
+        if (!hidDevice || !hidDevice.opened || !adpcmBlocks.length) {
+            alert('Load a WAV and connect device first.');
+            return;
+        }
+        sendIndex = 0;
+        allowSend = true;
+        if (sendTimer) clearInterval(sendTimer);
+        sendTimer = setInterval(() => {
+            if (!allowSend) return;
+            if (sendIndex >= adpcmBlocks.length) {
+                clearInterval(sendTimer);
+                console.log('Done streaming all blocks.');
+                return;
+            }
+            sendBlock(sendIndex++);
+        }, INTERVAL_MS);
+    });
+
+    // === Input report handler ===
+    function onInputReport(event) {
+        if (event.reportId !== INPUT_ID) return;
+        const status = event.data.getUint8(32);  // byte 33
+        allowSend = (status === 0x00);
+    }
+
+    // === Send one block ===
+    async function sendBlock(idx) {
+        const cmd = adpcmBlocks[idx];
+        // Payload: [ type, length, ...adpcm_data ]
+        const payload = new Uint8Array(2 + cmd.length);
+        payload[0] = 0x00;           // type=0 for PCM
+        payload[1] = cmd.length;     // ADPCM length
+        payload.set(cmd, 2);
+        try {
+            await hidDevice.sendReport(REPORT_ID, payload);
+        } catch (e) {
+            console.error('sendReport failed:', e);
+        }
+    }
+
+    // === WAV → Int16Array processing ===
+    async function processWav(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const decoded  = await audioCtx.decodeAudioData(arrayBuffer);
+        // Mix to mono if needed
+        let monoData;
+        if (decoded.numberOfChannels === 1) {
+            monoData = decoded.getChannelData(0);
+        } else {
+            const len = decoded.length;
+            monoData = new Float32Array(len);
+            for (let i = 0; i < len; i++) {
+                let sum = 0;
+                for (let ch = 0; ch < decoded.numberOfChannels; ch++) {
+                    sum += decoded.getChannelData(ch)[i];
+                }
+                monoData[i] = sum / decoded.numberOfChannels;
+            }
+        }
+        // Resample to 16kHz
+        const resampled = resample(monoData, decoded.sampleRate, SAMPLE_RATE);
+        // Convert float32 → 16-bit PCM
+        const int16 = new Int16Array(resampled.length);
+        for (let i = 0; i < resampled.length; i++) {
+            const s = Math.max(-1, Math.min(1, resampled[i]));
+            int16[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        }
+        return int16;
+    }
+
+    // === Linear interpolation resampler ===
+    function resample(data, inRate, outRate) {
+        const outLen = Math.floor(data.length * outRate / inRate);
+        const out    = new Float32Array(outLen);
+        const ratio  = inRate / outRate;
+        for (let i = 0; i < outLen; i++) {
+            const t = i * ratio;
+            const i0 = Math.floor(t);
+            const i1 = Math.min(i0 + 1, data.length - 1);
+            const frac = t - i0;
+            out[i] = data[i0] * (1 - frac) + data[i1] * frac;
+        }
+        return out;
+    }
+
+    // === IMA ADPCM encoder for one block ===
+    function adpcmEncode(samples) {
+        let predictor = samples[0];
+        let index     = 0;
+        let step      = stepSizeTable[index];
+        const outBuf  = [];
+        // Header: predictor (LE), index, reserved
+        outBuf.push(predictor & 0xFF, (predictor >> 8) & 0xFF, index, 0);
+        let nibbleBuf = 0, haveHigh = false;
+        for (let i = 1; i < samples.length; i++) {
+            let diff = samples[i] - predictor;
+            let sign = diff < 0 ? 8 : 0;
+            diff = Math.abs(diff);
+            let delta = 0;
+            let temp  = step;
+            if (diff >= temp) { delta = 4; diff -= temp; }
+            temp >>= 1;
+            if (diff >= temp) { delta |= 2; diff -= temp; }
+            temp >>= 1;
+            if (diff >= temp) { delta |= 1; }
+            delta |= sign;
+            // update predictor
+            let diffq = step >> 3;
+            if (delta & 4) diffq += step;
+            if (delta & 2) diffq += step >> 1;
+            if (delta & 1) diffq += step >> 2;
+            predictor += (sign ? -diffq : diffq);
+            predictor = Math.max(-32768, Math.min(32767, predictor));
+            // update index & step
+            index += indexTable[delta & 0xF];
+            index = Math.max(0, Math.min(88, index));
+            step = stepSizeTable[index];
+            // pack nibble
+            if (!haveHigh) {
+                nibbleBuf = delta & 0xF;
+                haveHigh = true;
+            } else {
+                outBuf.push(((delta & 0xF) << 4) | nibbleBuf);
+                haveHigh = false;
+            }
+        }
+        if (haveHigh) {
+            outBuf.push(nibbleBuf);
+        }
+        return new Uint8Array(outBuf);
+    }
+    </script>
+</body>
+</html>

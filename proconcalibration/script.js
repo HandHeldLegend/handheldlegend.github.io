@@ -315,21 +315,21 @@ class SwitchController {
             this.updateStatus('Writing user calibration...');
             
             // Get values from input fields
-            const leftXCenter = parseInt(document.getElementById('editLeftXCenter').value) || 2048;
-            const leftXMax = parseInt(document.getElementById('editLeftXMax').value) || 1700;
-            const leftXMin = parseInt(document.getElementById('editLeftXMin').value) || 1700;
+            const leftXCenter = parseInt(document.getElementById('editLeftXCenter').value);
+            const leftXMax = parseInt(document.getElementById('editLeftXMax').value);
+            const leftXMin = parseInt(document.getElementById('editLeftXMin').value);
             
-            const leftYCenter = parseInt(document.getElementById('editLeftYCenter').value) || 2048;
-            const leftYMax = parseInt(document.getElementById('editLeftYMax').value) || 1700;
-            const leftYMin = parseInt(document.getElementById('editLeftYMin').value) || 1700;
+            const leftYCenter = parseInt(document.getElementById('editLeftYCenter').value);
+            const leftYMax = parseInt(document.getElementById('editLeftYMax').value);
+            const leftYMin = parseInt(document.getElementById('editLeftYMin').value);
             
-            const rightXCenter = parseInt(document.getElementById('editRightXCenter').value) || 2048;
-            const rightXMax = parseInt(document.getElementById('editRightXMax').value) || 1700;
-            const rightXMin = parseInt(document.getElementById('editRightXMin').value) || 1700;
+            const rightXCenter = parseInt(document.getElementById('editRightXCenter').value);
+            const rightXMax = parseInt(document.getElementById('editRightXMax').value);
+            const rightXMin = parseInt(document.getElementById('editRightXMin').value);
             
-            const rightYCenter = parseInt(document.getElementById('editRightYCenter').value) || 2048;
-            const rightYMax = parseInt(document.getElementById('editRightYMax').value) || 1700;
-            const rightYMin = parseInt(document.getElementById('editRightYMin').value) || 1700;
+            const rightYCenter = parseInt(document.getElementById('editRightYCenter').value);
+            const rightYMax = parseInt(document.getElementById('editRightYMax').value);
+            const rightYMin = parseInt(document.getElementById('editRightYMin').value);
             
             // Validate values are within range
             const values = [leftXCenter, leftXMax, leftXMin, leftYCenter, leftYMax, leftYMin,
