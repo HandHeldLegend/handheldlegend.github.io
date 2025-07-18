@@ -158,6 +158,12 @@ export function render(container) {
             tmpAddress[i] = parseInt(macArray[i], 16);
         }
 
+        // Do not allow LSB to be 1
+        if(tmpAddress[0] & 0x01)
+        {
+            tmpAddress[0] -= 1;
+        }
+
         gamepad.gamepad_cfg.switch_mac_address = tmpAddress;
 
         await writeGamepadMemBlock();
