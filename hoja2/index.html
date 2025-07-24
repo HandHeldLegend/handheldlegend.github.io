@@ -15,14 +15,22 @@
         <div class="app-header-container">
             <div class="app-header">
                 <div class="center-buttons">
+
+                    
+
                     <tristate-button id="connect-button" off-text="Connect" on-text="Disconnect"
                         off-to-on-text="Connecting..."
                         on-to-off-text="Disconnect"
                     ></tristate-button>
+
+                    <span class="connect-hint">
+                        Hold A while connecting!
+                    </span>
             
                     <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
                         pending-text="Saving..."
                     ></single-shot-button>
+
                 </div>
 
                 <button visible="false" id="app-install-button" class="install-button">

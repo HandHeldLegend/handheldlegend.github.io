@@ -17,6 +17,7 @@
     --color-text-primary: #cfcfcf;
     --color-text-secondary: #c7c7c7;
     --color-text-tertiary: #aaaaaa;
+    --color-background-warning: #f5a732e1;
 
     --color-button-disabled: rgb(136, 136, 136);
     --color-button-neutral: rgb(69, 84, 219);
@@ -50,7 +51,7 @@
 
     /* Typography */
     --font-family-primary: Arial, sans-serif;
-    --font-size-sm: 12px;
+    --font-size-sm: 11px;
     --font-size-md: 16px;
     --font-size-lg: 20px;
 
@@ -108,6 +109,7 @@ body {
     width: fit-content;
     gap: 10px;
     margin-left: 40px;
+    align-items: center;
 }
 
 .install-button {
@@ -136,6 +138,26 @@ body {
 
 .install-button:hover {
     background-color: var(--color-button-neutral-hover);
+}
+
+.connect-hint {
+    color: black;
+    display: inline-block;
+    vertical-align: middle;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: var(--transition-quick);
+    font-weight: bold;
+    width: 85px;
+    height: var(--config-box-height);
+    text-align: center;
+    align-content: center;
+    margin: 0em;
+
+    font-size: var(--font-size-sm);
+
+    background-color: var(--color-background-warning);
 }
 
 .header-msg-box {

@@ -554,6 +554,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('save-button');
     const appTitleHeader = document.getElementById('app-title');
 
+    if(!navigator.usb) {
+        console.error("USB API not supported in this browser.");
+        enableNotifMessage("USB API not supported. Please use a Chromium based browser.");
+    }
+
     window.configApp = new ConfigApp(appTitleHeader);
 
     saveButton.setOnClick(sendSaveCommand);
