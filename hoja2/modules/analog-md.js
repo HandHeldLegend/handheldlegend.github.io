@@ -693,7 +693,12 @@ export function render(container) {
 
     const scaleModeButton = container.querySelector('multi-position-button[id="scale-mode-selector"]');
     scaleModeButton.addEventListener('change', (e) => {
-        gamepad.analog_cfg.l_scaler_type = e.detail.selectedIndex;
+        if(!selectedAxis) {
+            gamepad.analog_cfg.l_scaler_type = e.detail.selectedIndex;
+        }
+        else {
+            gamepad.analog_cfg.r_scaler_type = e.detail.selectedIndex;
+        }
         console.log("Scale Mode Change");
         writeAngleMemBlock();
     });
