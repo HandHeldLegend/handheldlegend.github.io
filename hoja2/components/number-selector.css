@@ -52,5 +52,5 @@
     user-select: none;
     min-width: 2rem;
     text-align: center;
-    color: var(--color-text-secondary);
+    color: var(--color-text-tertiary);
 }

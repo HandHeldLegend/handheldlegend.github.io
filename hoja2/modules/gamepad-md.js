@@ -72,9 +72,8 @@ export function render(container) {
             ></multi-position-button>
             </h2>
 
-            <h2>Switch USB Mac Address
-                <div class="header-tooltip" tooltip="This is the MAC address only used for 
-                Switch mode when connected via USB.">?</div>
+            <h2>MAC Address Base
+                <div class="header-tooltip" tooltip="This is the MAC that is used for USB and Bluetooth modes. Each mode increments the address.">?</div>
             </h2>
             <mac-address-selector 
                 default-value="${hexDefault}"

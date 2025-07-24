@@ -132,7 +132,7 @@
 
 .value-in:read-only,
 .value-out:read-only {
-    color: #333;
+    color: var(--color-text-tertiary);
 }
 
 .value-in:focus, 

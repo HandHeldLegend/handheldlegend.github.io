@@ -92,6 +92,7 @@
 .angle-in,
 .angle-out,
 .distance {
+    color: var(--color-text-tertiary);
     padding-left: 10px;
     box-sizing: border-box;
     background: var(--color-background-light);

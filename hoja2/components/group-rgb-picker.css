@@ -21,7 +21,7 @@
 .pound {
     user-select: none;
     font-size: 1.2rem;
-    color: rgb(66, 66, 66);
+    color: var(--color-text-tertiary);
     display: flex;
     height: inherit;
     align-items: center;
@@ -36,7 +36,7 @@
     background: var(--color-background-light);
     
     width: 5rem;
-    color: rgb(66, 66, 66);
+    color: var(--color-text-tertiary);
     padding: 0.5rem;
     font-style: italic;
     text-align: left;

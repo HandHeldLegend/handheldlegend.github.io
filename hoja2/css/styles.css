@@ -1,31 +1,48 @@
 :root {
-
-    --background-lowest: #11081b;
-    --background-low: #1f0f3b;
-    --background-mid: #311750;
-    --background-high: #4f2d7f;
-    --background-highest: #6b4aa5;
+    /* Background gradient (deep → slightly lighter) */
+    --background-lowest: #110f14;
+    --background-low: #221F2F;
+    --background-mid: #393546;
+    /* panel/card */
+    --background-high: #4c4157;
+    --background-highest: #6a5d79;
 
     --blur-amt: 5px;
 
-    /* Color Palette */
-    --color-primary: #4CAF50;
-    --color-secondary: #2196F3;
-    --color-background-light: #0181ac;
-    --color-background-light-hover: #0195c7;
-    --color-background-dark: #b4b4b4af;
-    --color-text-primary: #cfcfcf;
-    --color-text-secondary: #c7c7c7;
-    --color-text-tertiary: #aaaaaa;
-    --color-background-warning: #f5a732e1;
+    /* Accent & Semantic Colors */
+    --color-accent-primary: #4FB0C6;
+    /* blue‑teal for primary buttons, sliders */
+    --color-accent-secondary: #F29E4C;
+    /* warm orange for secondary actions */
+    --color-success: #6ECE9A;
+    /* on‑state, “enabled” */
+    --color-danger: #E75A7C;
+    /* disconnect, errors */
 
-    --color-button-disabled: rgb(136, 136, 136);
-    --color-button-neutral: rgb(69, 84, 219);
-    --color-button-neutral-hover: rgb(105, 117, 224);
-    --color-button-off: rgb(170, 0, 0);
-    --color-button-off-hover: rgb(194, 45, 45);
-    --color-button-on: rgb(0, 168, 50);
-    --color-button-on-hover: rgb(34, 201, 84);
+    /* Text & Borders */
+    --color-text-primary: #F4F3F4;
+    /* main copy & icons */
+    --color-text-secondary: #5A555F;
+    /* subtle labels, dividers */
+    --color-text-tertiary: #A09DA7;
+    /* very muted captions */
+
+    /* Legacy aliases (mapped to new semantics) */
+    --color-primary: var(--color-accent-primary);
+    --color-secondary: var(--color-accent-secondary);
+    --color-background-light: var(--background-mid);
+    --color-background-light-hover: #3A3541;
+    --color-background-dark: var(--background-lowest);
+    --color-background-warning: rgba(242, 158, 76, 0.88);
+
+    /* Buttons */
+    --color-button-disabled: #5A555F;
+    --color-button-neutral: var(--color-accent-primary);
+    --color-button-neutral-hover: #5AC3D1;
+    --color-button-off: var(--color-danger);
+    --color-button-off-hover: #F08BA1;
+    --color-button-on: var(--color-success);
+    --color-button-on-hover: #7FDBAC;
 
     /* Config Box Elements */
     --config-box-height: 40px;
@@ -80,7 +97,8 @@ body {
     flex-direction: column;
 
     max-width: 800px;
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
+    /* Full viewport height */
 }
 
 .app-header-container {
@@ -90,7 +108,8 @@ body {
     max-width: inherit;
     position: sticky;
     top: 0;
-    z-index: 10; /* Ensure it stays on top */
+    z-index: 10;
+    /* Ensure it stays on top */
 }
 
 .app-header {
@@ -122,7 +141,8 @@ body {
     font-weight: bold;
     min-width: 90px;
     height: var(--config-box-height);
-    margin-left: auto; /* This will push it to the right */
+    margin-left: auto;
+    /* This will push it to the right */
     margin-right: 40px;
 
     /* Prevent text selection */
@@ -165,8 +185,9 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--background-high);
-    max-width: inherit; 
-    max-height: 0; /* Start with 0 height */
+    max-width: inherit;
+    max-height: 0;
+    /* Start with 0 height */
     overflow: hidden;
     transition: all 0.3s ease-in-out;
     box-shadow: var(--box-shadow-open);
@@ -179,7 +200,8 @@ body {
 .header-msg-box[visible=true] {
     align-items: center;
     text-align: center;
-    max-height: 550px; /* Adjust as needed */
+    max-height: 550px;
+    /* Adjust as needed */
     padding-bottom: 8px;
     padding-top: 8px;
 }
@@ -195,7 +217,8 @@ body {
 
 .swap-space {
     flex-grow: 1;
-    overflow-y: auto; /* Allow scrolling of main content */
+    overflow-y: auto;
+    /* Allow scrolling of main content */
 }
 
 /* Utility Classes */
@@ -229,16 +252,21 @@ body {
 /* Module container styles */
 #module-container {
     display: flex;
-    flex-direction: column; /* Stack header and content vertically */
+    flex-direction: column;
+    /* Stack header and content vertically */
     position: absolute;
     top: 0;
-    left: 0; /* Start off-screen */
+    left: 0;
+    /* Start off-screen */
     width: 100%;
-    height: 100%; /* Fill the viewport */
-    background-color: var(--background-high); /* Example background */
+    height: 100%;
+    /* Fill the viewport */
+    background-color: var(--background-high);
+    /* Example background */
     transition: transform 0.5s ease;
     transform: translateX(100%);
-    overflow: hidden; /* Prevent scrollbars on the container itself */
+    overflow: hidden;
+    /* Prevent scrollbars on the container itself */
 }
 
 /* Module header stays fixed at the top */
@@ -246,14 +274,18 @@ body {
     box-shadow: 0;
     background-color: var(--background-mid);
     display: flex;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
+    /* Prevent shrinking */
     align-items: center;
-    justify-content: space-between; /* Distribute header elements */
+    justify-content: space-between;
+    /* Distribute header elements */
     height: 50px;
     width: 100%;
     margin: 0;
-    padding: 0 10px; /* Optional: add padding inside the header */
-    z-index: 1; /* Ensure it stays above the scrolling content */
+    padding: 0 10px;
+    /* Optional: add padding inside the header */
+    z-index: 1;
+    /* Ensure it stays above the scrolling content */
     transition: box-shadow 0.25s ease;
 }
 
@@ -295,10 +327,14 @@ p {
 
 /* Module content becomes scrollable */
 #module-content-container {
-    box-sizing: border-box; /* Ensure padding doesn't affect scrollable area */
-    overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    padding: 10px; /* Optional: spacing inside the scrollable area */
+    box-sizing: border-box;
+    /* Ensure padding doesn't affect scrollable area */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
+    padding: 10px;
+    /* Optional: spacing inside the scrollable area */
     width: 100%;
     height: 100%;
 }
@@ -315,11 +351,14 @@ p {
 
 /* Visible state for module container */
 #module-container[visible="false"] {
-    transform: translateX(0); /* Bring into view */
+    transform: translateX(0);
+    /* Bring into view */
     opacity: 1;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     margin: 0;
     position: relative;
     cursor: inherit;
@@ -332,22 +371,32 @@ h1, h2, h3 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px; /* Adjust size */
-    height: 18px; /* Adjust size */
-    background-color: #7afff8b7; /* Circle background */
-    color: rgb(0, 0, 0); /* Text color */
-    font-size: 12px; /* Adjust font size */
+    width: 18px;
+    /* Adjust size */
+    height: 18px;
+    /* Adjust size */
+    background-color: #7afff8b7;
+    /* Circle background */
+    color: rgb(0, 0, 0);
+    /* Text color */
+    font-size: 12px;
+    /* Adjust font size */
     font-weight: bold;
-    border-radius: 50%; /* Makes it circular */
+    border-radius: 50%;
+    /* Makes it circular */
     position: absolute;
-    top: -5px; /* Adjust for top-right corner */
-    right: -23px; /* Adjust for spacing */
-    cursor: pointer; /* Indicates interactivity */
+    top: -5px;
+    /* Adjust for top-right corner */
+    right: -23px;
+    /* Adjust for spacing */
+    cursor: pointer;
+    /* Indicates interactivity */
     transition: all 0.2s;
 }
 
 .header-tooltip:hover {
-    background-color: #2832358a; /* Circle background */
+    background-color: #2832358a;
+    /* Circle background */
 }
 
 /* Hidden state for app grid */
@@ -375,7 +424,7 @@ h1, h2, h3 {
 .module-icon {
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
 }
 
 .svg-icon-container {
@@ -395,7 +444,8 @@ h1, h2, h3 {
     position: absolute;
     top: -6px;
     right: -6px;
-    background-color: #ff4444;  /* Red color for the badge */
+    background-color: #ff4444;
+    /* Red color for the badge */
     color: white;
     width: 32px;
     height: 32px;
@@ -405,10 +455,13 @@ h1, h2, h3 {
     justify-content: center;
     font-size: 24px;
     font-weight: bold;
-    border: 2px solid white;  /* White border to make it stand out */
+    border: 2px solid white;
+    /* White border to make it stand out */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    opacity: 0;              /* Hidden by default */
-    transform: scale(0);     /* Start scaled down */
+    opacity: 0;
+    /* Hidden by default */
+    transform: scale(0);
+    /* Start scaled down */
     transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
@@ -442,14 +495,14 @@ h1, h2, h3 {
     transform: scale(1);
 }
 
-.module-icon .icon[enabled="true"]{
+.module-icon .icon[enabled="true"] {
     transform: scale(0.9);
     -webkit-filter: saturate(1);
     cursor: pointer;
 }
 
-.module-icon span{
-    margin:0;
+.module-icon span {
+    margin: 0;
     width: 100%;
     text-align: center;
     font-size: var(--font-size-md);
@@ -511,7 +564,7 @@ h1, h2, h3 {
     overflow: hidden;
     margin-top: 0px;
     margin-bottom: 16px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .progress-bar {
@@ -565,4 +618,3 @@ remap-selector-container {
 remap-selector-container[hidden="true"] {
     opacity: 0;
 }
-
