@@ -1,4 +1,14 @@
-<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" type="image/x-icon" href="images/favicon.ico"><meta http-equiv="X-UA-Compatible" content="ie=edge"><link rel="stylesheet" href="/css/style.css"><title>HOJA Baseband Updater</title><style>#terminal {
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="/css/style.css">
+  <title>HOJA Baseband Updater</title>
+  <style>
+    #terminal {
       background: rgba(46, 7, 0, 0.514);
       color: rgb(147, 250, 147);
       margin-top: 1rem;
@@ -100,4 +110,30 @@
       position: absolute;
       right: 1rem;
       top: 0.5rem;
-    }</style><script defer="defer" src="bundle.js"></script></head><body><div class="context"><h1>HOJA Baseband Updater</h1></div><div class="box"><div class="toggle-switch"><label class="switch-label" for="toggle-checkbox">Serial</label> <input type="checkbox" id="toggle-checkbox" class="toggle-checkbox"> <label class="switch" for="toggle-checkbox"><span class="slider"></span></label> <label class="switch-label" for="toggle-checkbox">WebUSB</label></div><p id="updatedtime">Updated 8.21.2024</p><p id="chromemsg"></p><h2>Steps to update:</h2><p>1. Click connect and select the USB Serial device.</p><p>2. Click `Erase` and wait for the confirmation.</p><p>3. Click `Flash` and the installation will proceed.</p><div class="row"><button id="connectBtn">Connect</button> <button id="eraseBtn">Erase</button> <button id="flashBtn">Flash</button></div><div id="terminal"></div></div></body></html>
+    }
+  </style>
+  <script defer="defer" src="bundle.js"></script>
+</head>
+
+<body>
+  <div class="context">
+    <h1>HOJA Baseband Updater</h1>
+  </div>
+  <div class="box">
+    <div class="toggle-switch"><label class="switch-label" for="toggle-checkbox">Serial</label> <input type="checkbox"
+        id="toggle-checkbox" class="toggle-checkbox"> <label class="switch" for="toggle-checkbox"><span
+          class="slider"></span></label> <label class="switch-label" for="toggle-checkbox">WebUSB</label></div>
+    <p id="updatedtime">Updated 7.25.2024</p>
+    <p id="chromemsg"></p>
+    <h2>Steps to update:</h2>
+    <p>1. Click connect and select the USB Serial device.</p>
+    <p>2. Click `Erase` and wait for the confirmation.</p>
+    <p>3. Click `Flash` and the installation will proceed.</p>
+    <p>4. Windows connection issues? <br> <a href="https://github.com/HandHeldLegend/handheldlegend.github.io/raw/refs/heads/master/hoja_esptool/hoja-local-updater-win.zip" target="_blank" rel="noopener noreferrer">Download the local updater</a>. <br> Unzip and run the .bat file</p>
+    <div class="row"><button id="connectBtn">Connect</button> <button id="eraseBtn">Erase</button> <button
+        id="flashBtn">Flash</button></div>
+    <div id="terminal"></div>
+  </div>
+</body>
+
+</html>
