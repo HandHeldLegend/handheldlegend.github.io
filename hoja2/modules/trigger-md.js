@@ -22,8 +22,8 @@ const triggerCfgBlockNumber = 4;
 let analogTriggerBar = null;
 
 function triggerReportHook(data) {
-    const lt = data.getUint8(12) << 8 | data.getUint8(13);
-    const rt = data.getUint8(14) << 8 | data.getUint8(15);
+    const lt = data.getUint8(13) << 8 | data.getUint8(14);
+    const rt = data.getUint8(15) << 8 | data.getUint8(16);
 
     if(analogTriggerBar) {
         analogTriggerBar.setValues(lt, rt);
@@ -35,8 +35,6 @@ async function writeTriggerMemBlock() {
 }
 
 export function render(container) {
-
-    let gamecubeEnabled = gamepad.device_static.joybus_supported;
     let analogTriggersEnabled = (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt);
 
     /*
@@ -95,7 +93,7 @@ export function render(container) {
     if(!analogTriggersEnabled) leftAnalogSectionHTML = "";
 
     let leftAnalogSectionGameCubeHTML = `
-    <h3>Split Press Value<div class="header-tooltip" tooltip="The analog value which will be used for split modes (GameCube Only).">?</div></h3>
+    <h3>Digital to Analog Value<div class="header-tooltip" tooltip="The analog value which will be used for digital buttons mapped to this analog trigger.">?</div></h3>
     <number-selector 
         id="l-static-number"
         type="integer" 
@@ -105,7 +103,6 @@ export function render(container) {
         default-value="${gamepad.trigger_cfg.left_static_output_value}"
     ></number-selector>
     `;
-    if(!gamecubeEnabled) leftAnalogSectionGameCubeHTML = "";
 
     let rightAnalogSectionHTML = `
     <h3 class="header-detailed">Analog Mode<div class="header-tooltip" tooltip="Which analog mode the right trigger will use.">?</div></h3>
@@ -138,7 +135,7 @@ export function render(container) {
     if(!analogTriggersEnabled) rightAnalogSectionHTML = "";
 
     let rightAnalogSectionGameCubeHTML = `
-    <h3>Split Press Value<div class="header-tooltip" tooltip="The analog value which will be used for split modes (GameCube Only).">?</div></h3>
+    <h3>Digital to Analog Value<div class="header-tooltip" tooltip="The analog value which will be used for digital buttons mapped to this analog trigger.">?</div></h3>
     <number-selector 
         id="r-static-number"
         type="integer" 
@@ -148,19 +145,6 @@ export function render(container) {
         default-value="${gamepad.trigger_cfg.right_static_output_value}"
     ></number-selector>
     `;
-    if(!gamecubeEnabled) rightAnalogSectionGameCubeHTML = "";
-
-    let gameCubeOnlySectionHTML = `
-    <h2>GameCube Setting
-        <div class="header-tooltip" tooltip="Split modes will bind the 'SP' button to perform a light analog press for a given mode.">?</div>
-    </h2>
-    <multi-position-button 
-        id="gamecube-trigger-mode" 
-        labels="Default, L Split, R Split, Dual Z"
-        default-selected="${gamepad.trigger_cfg.trigger_mode_gamecube}"
-    ></multi-position-button>
-    `;
-    if(!gamecubeEnabled) gameCubeOnlySectionHTML = "";
 
     container.innerHTML = `
             ${enabledOnlyAnalogSectionHTML}
@@ -173,42 +157,31 @@ export function render(container) {
             <h2 title="Test">Right Trigger</h2>
             ${rightAnalogSectionHTML}
             ${rightAnalogSectionGameCubeHTML}
-
-            ${gameCubeOnlySectionHTML}
     `;
 
-    if(gamecubeEnabled) {
-        const rightSplitEl = container.querySelector('number-selector[id="r-static-number"]');
-        rightSplitEl.addEventListener('change', (e) => {
-            console.log(`Right static/split changed to: ${e.detail.value}`);
-            let pinVal = e.detail.value;
-            pinVal = (pinVal > 4095) ? 4095 : pinVal;
-            pinVal = (pinVal < 0) ? 0 : pinVal;
+    const rightSplitEl = container.querySelector('number-selector[id="r-static-number"]');
+    rightSplitEl.addEventListener('change', (e) => {
+        console.log(`Right static/split changed to: ${e.detail.value}`);
+        let pinVal = e.detail.value;
+        pinVal = (pinVal > 4095) ? 4095 : pinVal;
+        pinVal = (pinVal < 0) ? 0 : pinVal;
 
-            gamepad.trigger_cfg.right_static_output_value = pinVal;
-    
-            writeTriggerMemBlock();
-        });
+        gamepad.trigger_cfg.right_static_output_value = pinVal;
 
-        const leftSplitEl = container.querySelector('number-selector[id="l-static-number"]');
-        leftSplitEl.addEventListener('change', (e) => {
-            console.log(`Left static/split changed to: ${e.detail.value}`);
-            let pinVal = e.detail.value;
-            pinVal = (pinVal > 4095) ? 4095 : pinVal;
-            pinVal = (pinVal < 0) ? 0 : pinVal;
+        writeTriggerMemBlock();
+    });
 
-            gamepad.trigger_cfg.left_static_output_value = pinVal;
-    
-            writeTriggerMemBlock();
-        });
+    const leftSplitEl = container.querySelector('number-selector[id="l-static-number"]');
+    leftSplitEl.addEventListener('change', (e) => {
+        console.log(`Left static/split changed to: ${e.detail.value}`);
+        let pinVal = e.detail.value;
+        pinVal = (pinVal > 4095) ? 4095 : pinVal;
+        pinVal = (pinVal < 0) ? 0 : pinVal;
 
-        const gcModeSelector = container.querySelector('multi-position-button[id="gamecube-trigger-mode"]');
-        gcModeSelector.addEventListener('change', (e) => {
-            console.log("GC trigger mode change");
-            gamepad.trigger_cfg.trigger_mode_gamecube = e.detail.selectedIndex;
-            writeTriggerMemBlock();
-        });
-    }
+        gamepad.trigger_cfg.left_static_output_value = pinVal;
+
+        writeTriggerMemBlock();
+    });
 
     if(analogTriggersEnabled) {
         analogTriggerBar = container.querySelector('dual-analog-trigger');

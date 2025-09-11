@@ -808,8 +808,8 @@ export function render(container) {
         x -= 2048;
         y -= 2048;
 
-        let x_scaled = (data.getUint8(28 + offset) << 8) | (data.getUint8(29 + offset));
-        let y_scaled = 4096 - ( (data.getUint8(30 + offset) << 8) | (data.getUint8(31 + offset)) );
+        let x_scaled = (data.getUint8(29 + offset) << 8) | (data.getUint8(30 + offset));
+        let y_scaled = 4096 - ( (data.getUint8(31 + offset) << 8) | (data.getUint8(32 + offset)) );
         x_scaled -= 2048;
         y_scaled -= 2048;
 

@@ -134,9 +134,19 @@ export default class Analogconfig {
 		return this.#_getUint16(667);
 	}
 
+	/** @type {Uint16} */
+	get l_threshold() {
+		return this.#_getUint16(669);
+	}
+
+	/** @type {Uint16} */
+	get r_threshold() {
+		return this.#_getUint16(671);
+	}
+
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(669, 355);
+		return this.#_getUint8Array(673, 351);
 	}
 
 
@@ -270,9 +280,19 @@ export default class Analogconfig {
 		this.#_setUint16(667, value);
 	}
 
+	/** @param {Uint16} value */
+	set l_threshold(value) {
+		this.#_setUint16(669, value);
+	}
+
+	/** @param {Uint16} value */
+	set r_threshold(value) {
+		this.#_setUint16(671, value);
+	}
+
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(669, value);
+		this.#_setUint8Array(673, value);
 	}
 
 

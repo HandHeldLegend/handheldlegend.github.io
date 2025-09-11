@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCM Output Visualizer - Accurate Implementation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #4a5568;
+            font-size: 2.5em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .control-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-group h3 {
+            margin: 0 0 15px 0;
+            color: #2d3748;
+            font-size: 1.2em;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        input[type="number"],
+        input[type="range"] {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        input[type="range"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="range"] {
+            height: 6px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            border-radius: 3px;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        canvas {
+            width: 100%;
+            height: 400px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .info-panel {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .info-panel h3 {
+            color: #0369a1;
+            margin-top: 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .debug-info {
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎵 PCM Output Visualizer (Accurate)</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>High Frequency Channel</h3>
+                <div class="input-group">
+                    <label for="hiFreq">Frequency (Hz):</label>
+                    <input type="number" id="hiFreq" value="170" min="10" max="1000" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="hiAmp">Amplitude (0-1):</label>
+                    <input type="range" id="hiAmp" min="0" max="1" step="0.01" value="0.35">
+                    <span id="hiAmpValue">0.35</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Low Frequency Channel</h3>
+                <div class="input-group">
+                    <label for="loFreq">Frequency (Hz):</label>
+                    <input type="number" id="loFreq" value="85" min="10" max="1000" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="loAmp">Amplitude (0-1):</label>
+                    <input type="range" id="loAmp" min="0" max="1" step="0.01" value="0.85">
+                    <span id="loAmpValue">0.85</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>System Parameters</h3>
+                <div class="input-group">
+                    <label for="intensity">Intensity (0-255):</label>
+                    <input type="range" id="intensity" min="0" max="255" step="1" value="200">
+                    <span id="intensityValue">200</span>
+                </div>
+                <div class="input-group">
+                    <label for="sampleRate">Sample Rate (Hz):</label>
+                    <input type="number" id="sampleRate" value="8000" min="8000" max="96000" step="1000">
+                </div>
+                <div class="input-group">
+                    <label for="pcmParamMinHi">Hi Min Param:</label>
+                    <input type="range" id="pcmParamMinHi" min="0" max="1" step="0.01" value="0.15">
+                    <span id="pcmParamMinHiValue">0.15</span>
+                </div>
+                <div class="input-group">
+                    <label for="pcmParamMinLo">Lo Min Param:</label>
+                    <input type="range" id="pcmParamMinLo" min="0" max="1" step="0.01" value="0.15">
+                    <span id="pcmParamMinLoValue">0.15</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Visualization</h3>
+                <div class="input-group">
+                    <label for="timeScale">Time Scale (ms):</label>
+                    <input type="range" id="timeScale" min="10" max="1000" step="10" value="50">
+                    <span id="timeScaleValue">50ms</span>
+                </div>
+                <button onclick="generateAndVisualize()">🔄 Generate PCM</button>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="waveformCanvas"></canvas>
+        </div>
+
+        <div class="info-panel">
+            <h3>📊 Signal Statistics</h3>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Peak Amplitude</div>
+                    <div class="stat-value" id="peakAmp">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">RMS Value</div>
+                    <div class="stat-value" id="rmsValue">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Samples Generated</div>
+                    <div class="stat-value" id="sampleCount">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Clipping Events</div>
+                    <div class="stat-value" id="clippingStatus">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Waveform Destructions</div>
+                    <div class="stat-value" id="destructionCount">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-info" id="debugInfo">
+            Debug info will appear here...
+        </div>
+    </div>
+
+    <script>
+        // Constants from your C code - EXACT VALUES
+        const PCM_SINE_TABLE_SIZE = 256;
+        const PCM_WRAP_VAL = 32767;
+        const PCM_AMPLITUDE_SHIFT_FIXED = 1024;
+        const PCM_FREQUENCY_SHIFT_FIXED = 1024;
+        const PCM_FREQUENCY_SHIFT_BITS = 10;
+        const PCM_AMPLITUDE_BIT_SCALE = 10;
+        const PCM_MAX_SAFE_RATIO = 0.9;
+        const PCM_SINE_WRAPAROUND = PCM_SINE_TABLE_SIZE * PCM_FREQUENCY_SHIFT_FIXED;
+
+        // Global variables
+        let sineTable = [];
+        let pcmData = [];
+        let debugInfo = {};
+
+        // 32-bit integer simulation for JavaScript
+        function toInt32(value) {
+            return value | 0;
+        }
+
+        function toUint32(value) {
+            return value >>> 0;
+        }
+
+        function toInt16(value) {
+            return ((value & 0xFFFF) ^ 0x8000) - 0x8000;
+        }
+
+        function toUint16(value) {
+            return value & 0xFFFF;
+        }
+
+        // Initialize sine table - EXACT implementation from your C code
+        function generateSineTable() {
+            sineTable = [];
+            const TWO_PI = 2.0 * Math.PI;
+            const inc = TWO_PI / PCM_SINE_TABLE_SIZE;
+            let fi = 0;
+
+            for (let i = 0; i < PCM_SINE_TABLE_SIZE; i++) {
+                const sample = Math.sin(fi);
+                sineTable[i] = toInt16(Math.floor(sample * PCM_WRAP_VAL));
+                fi += inc;
+                fi = fi % TWO_PI; // Using fmod equivalent
+            }
+        }
+
+        // Convert frequency to fixed point increment - EXACT
+        function pcmFrequencyToFixedpointIncrement(frequency, sampleRate) {
+            const increment = (frequency * PCM_SINE_TABLE_SIZE) / sampleRate;
+            return toUint16(Math.floor(increment * PCM_FREQUENCY_SHIFT_FIXED + 0.5));
+        }
+
+        // Convert amplitude to fixed point - EXACT
+        function pcmAmplitudeToFixedpoint(input) {
+            let tmp = toUint16(Math.floor(input * PCM_AMPLITUDE_SHIFT_FIXED));
+            if (input > 0 && tmp === 0) tmp = 1;
+            return tmp;
+        }
+
+        // Calculate amplitude scalers - EXACT implementation from pcm_init
+        function calculateScalers(intensity, pcmParamMinLo, pcmParamMinHi) {
+            if (intensity === 0) {
+                return {
+                    loAmpScaler: 0,
+                    hiAmpScaler: 0,
+                    loAmpScalerMin: 0,
+                    hiAmpScalerMin: 0,
+                    ampScalerMaxSafe: 0
+                };
+            }
+
+            // The scaler based on our user config setting with logarithmic scaling
+            // Maps 0-255 input to 0.0-1.0 output on a logarithmic curve
+            let inputNormalized = intensity / 255.0;
+            let scaler;
+
+            // Our actual target range is 165 units (starting at 90)
+            inputNormalized = (inputNormalized * 0.65) + 0.35; // Scale to 0.35 - 1.0
+            scaler = Math.pow(inputNormalized, 2.0);
+
+            // Calculate the scaled maximum wrap value. We also factor in the user config scaler and board config
+            const maxScaledWrap = PCM_WRAP_VAL * scaler * PCM_MAX_SAFE_RATIO;
+
+            // Calculate the fixed point maximum wrap value scaler
+            const maxSafeScaler = scaler * PCM_MAX_SAFE_RATIO;
+            const ampScalerMaxSafe = toUint32(maxSafeScaler * PCM_AMPLITUDE_SHIFT_FIXED);
+
+            // Calculate the exact wrap value that our min amplitudes rest at
+            // This should always be calculated using the full PCM_WRAP_VAL because
+            // the sine table is generated using the full range
+            const pcmWrapMinimumLo = PCM_WRAP_VAL * pcmParamMinLo;
+            const pcmWrapMinimumHi = PCM_WRAP_VAL * pcmParamMinHi;
+
+            // Calculate remainder of range 
+            const remainingHi = maxScaledWrap - pcmWrapMinimumHi;
+            const remainingLo = maxScaledWrap - pcmWrapMinimumLo;
+
+            // Calculate scalers for the remaining ranges for our sine table
+            const loScale = remainingLo / PCM_WRAP_VAL;
+            const hiScale = remainingHi / PCM_WRAP_VAL;
+
+            // Calculate the fixed point scalers for our lo and hi amplitudes
+            const loAmpScaler = toUint32(loScale * PCM_AMPLITUDE_SHIFT_FIXED);
+            const hiAmpScaler = toUint32(hiScale * PCM_AMPLITUDE_SHIFT_FIXED);
+
+            const tmpMinLoScaler = pcmWrapMinimumLo / PCM_WRAP_VAL;
+            const tmpMinHiScaler = pcmWrapMinimumHi / PCM_WRAP_VAL;
+
+            // Calculate the fixed point minimums for our lo and hi amplitudes
+            const loAmpScalerMin = toUint32(tmpMinLoScaler * PCM_AMPLITUDE_SHIFT_FIXED);
+            const hiAmpScalerMin = toUint32(tmpMinHiScaler * PCM_AMPLITUDE_SHIFT_FIXED);
+
+            return {
+                loAmpScaler,
+                hiAmpScaler,
+                loAmpScalerMin,
+                hiAmpScalerMin,
+                ampScalerMaxSafe,
+                maxScaledWrap,
+                pcmWrapMinimumLo,
+                pcmWrapMinimumHi
+            };
+        }
+
+        // Main PCM generation function - EXACT implementation from pcm_generate_buffer
+        function generatePCM(hiFreq, loFreq, hiAmp, loAmp, intensity, sampleRate, duration, pcmParamMinLo, pcmParamMinHi) {
+            const samples = Math.floor(sampleRate * duration / 1000);
+            pcmData = [];
+
+            const scalers = calculateScalers(intensity, pcmParamMinLo, pcmParamMinHi);
+            debugInfo.scalers = scalers;
+
+            // Static variables equivalent
+            let phaseHi = 0;
+            let phaseLo = 0;
+
+            let hiAmpScaler = 0;
+            let loAmpScaler = 0;
+            let hiAmpPeak = 0;
+            let loAmpPeak = 0;
+
+            const hiFrequencyIncrement = pcmFrequencyToFixedpointIncrement(hiFreq, sampleRate);
+            const loFrequencyIncrement = pcmFrequencyToFixedpointIncrement(loFreq, sampleRate);
+            const hiAmplitudeFixed = pcmAmplitudeToFixedpoint(hiAmp);
+            const loAmplitudeFixed = pcmAmplitudeToFixedpoint(loAmp);
+
+            let clippingEvents = 0;
+            let destructionEvents = 0;
+
+            if (hiAmplitudeFixed === 0) {
+                hiAmpScaler = 0;
+                lastHiAmp = 0;
+                hiAmpPeak = 0;
+            } else {
+                hiAmpScaler = (hiAmplitudeFixed * scalers.hiAmpScaler) >> PCM_AMPLITUDE_BIT_SCALE;
+                hiAmpScaler += scalers.hiAmpScalerMin;
+                lastHiAmp = hiAmplitudeFixed;
+                hiAmpPeak = (hiAmpScaler * PCM_WRAP_VAL) >> PCM_AMPLITUDE_BIT_SCALE;
+            }
+
+            if (loAmplitudeFixed === 0) {
+                loAmpScaler = 0;
+                lastLoAmp = 0;
+                loAmpPeak = 0;
+            } else {
+                loAmpScaler = (loAmplitudeFixed * scalers.loAmpScaler) >> PCM_AMPLITUDE_BIT_SCALE;
+                loAmpScaler += scalers.loAmpScalerMin;
+                lastLoAmp = loAmplitudeFixed;
+                loAmpPeak = (loAmpScaler * PCM_WRAP_VAL) >> PCM_AMPLITUDE_BIT_SCALE;
+            }
+
+            let thisHiScaler = hiAmpScaler;
+            let thisLoScaler = loAmpScaler;
+
+            // Both signs are the same, we can check if we need to perform scaling to prevent clipping
+            const combinedAmp = toUint32(thisHiScaler + thisLoScaler);
+            if (combinedAmp > scalers.ampScalerMaxSafe) {
+                // Compute the scaling factor as a fixed-point ratio
+                if (combinedAmp === 0) {
+                    // If both scalers are zero, we can skip scaling
+                    thisHiScaler = 0;
+                    thisLoScaler = 0;
+                } else {
+                    // Scale down to the maximum safe scaler
+                    const newRatio = toUint32((scalers.ampScalerMaxSafe << PCM_AMPLITUDE_BIT_SCALE) / combinedAmp);
+                    // Scale the components proportionally
+                    thisHiScaler = toUint32((thisHiScaler * newRatio) >> PCM_AMPLITUDE_BIT_SCALE);
+                    thisLoScaler = toUint32((thisLoScaler * newRatio) >> PCM_AMPLITUDE_BIT_SCALE);
+                    clippingEvents++;
+                }
+            }
+
+            for (let i = 0; i < samples; i++) {
+                const idxHi = Math.floor(phaseHi >> PCM_FREQUENCY_SHIFT_BITS) % PCM_SINE_TABLE_SIZE;
+                const idxLo = Math.floor(phaseLo >> PCM_FREQUENCY_SHIFT_BITS) % PCM_SINE_TABLE_SIZE;
+
+
+
+                let sineHi = sineTable[idxHi];
+                let sineLo = sineTable[idxLo];
+
+                const hiSign = sineHi >= 0;
+                const loSign = sineLo >= 0;
+
+
+                let scaledHi = toInt32((sineHi * thisHiScaler) >> PCM_AMPLITUDE_BIT_SCALE);
+                let scaledLo = toInt32((sineLo * thisLoScaler) >> PCM_AMPLITUDE_BIT_SCALE);
+
+
+
+                // Reapply signs
+                if (!hiSign) scaledHi = -scaledHi;
+                if (!loSign) scaledLo = -scaledLo;
+
+                // Mix the two channels
+                let mixed = toInt32(scaledHi + scaledLo);
+                if (mixed < 0) mixed = 0;
+
+                pcmData.push(mixed);
+
+                phaseHi = toUint32((phaseHi + hiFrequencyIncrement) % PCM_SINE_WRAPAROUND);
+                phaseLo = toUint32((phaseLo + loFrequencyIncrement) % PCM_SINE_WRAPAROUND);
+            }
+
+            debugInfo.clippingEvents = clippingEvents;
+            debugInfo.destructionEvents = destructionEvents;
+            debugInfo.hiAmpPeak = hiAmpPeak;
+            debugInfo.loAmpPeak = loAmpPeak;
+            debugInfo.hiAmpScaler = hiAmpScaler;
+            debugInfo.loAmpScaler = loAmpScaler;
+
+            return pcmData;
+        }
+
+        // Visualization function
+        function visualizePCM(canvas, data) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Clear canvas
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, width, height);
+
+            if (data.length === 0) return;
+
+            const maxVal = Math.max(...data);
+            const minVal = Math.min(...data);
+            const range = maxVal - minVal || 1;
+
+            // Draw grid
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 10; i++) {
+                const y = (height / 10) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw waveform
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            for (let i = 0; i < data.length; i++) {
+                const x = (i / data.length) * width;
+                const y = height - ((data[i] - minVal) / range) * height;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+
+            // Draw zero line if data crosses zero
+            if (minVal < 0 && maxVal > 0) {
+                const zeroY = height - ((-minVal) / range) * height;
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(0, zeroY);
+                ctx.lineTo(width, zeroY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+
+        // Calculate statistics
+        function calculateStats(data) {
+            if (data.length === 0) return { peak: 0, rms: 0, clipping: false };
+
+            const peak = Math.max(...data.map(Math.abs));
+            const rms = Math.sqrt(data.reduce((sum, val) => sum + val * val, 0) / data.length);
+            const clipping = data.some(val => Math.abs(val) >= PCM_WRAP_VAL * 0.95);
+
+            return { peak, rms, clipping };
+        }
+
+        // Update display values
+        function updateDisplayValues() {
+            document.getElementById('hiAmpValue').textContent = document.getElementById('hiAmp').value;
+            document.getElementById('loAmpValue').textContent = document.getElementById('loAmp').value;
+            document.getElementById('intensityValue').textContent = document.getElementById('intensity').value;
+            document.getElementById('timeScaleValue').textContent = document.getElementById('timeScale').value + 'ms';
+            document.getElementById('pcmParamMinHiValue').textContent = document.getElementById('pcmParamMinHi').value;
+            document.getElementById('pcmParamMinLoValue').textContent = document.getElementById('pcmParamMinLo').value;
+        }
+
+        // Update debug info display
+        function updateDebugInfo() {
+            const debugElement = document.getElementById('debugInfo');
+            debugElement.innerHTML = `
+                <strong>Debug Information:</strong><br>
+                Lo Amp Scaler: ${debugInfo.loAmpScaler || 0} (Min: ${debugInfo.scalers?.loAmpScalerMin || 0})<br>
+                Hi Amp Scaler: ${debugInfo.hiAmpScaler || 0} (Min: ${debugInfo.scalers?.hiAmpScalerMin || 0})<br>
+                Lo Amp Peak: ${debugInfo.loAmpPeak || 0}<br>
+                Hi Amp Peak: ${debugInfo.hiAmpPeak || 0}<br>
+                Max Safe Scaler: ${debugInfo.scalers?.ampScalerMaxSafe || 0}<br>
+                Max Scaled Wrap: ${Math.floor(debugInfo.scalers?.maxScaledWrap || 0)}<br>
+                PCM Wrap Min Lo: ${Math.floor(debugInfo.scalers?.pcmWrapMinimumLo || 0)}<br>
+                PCM Wrap Min Hi: ${Math.floor(debugInfo.scalers?.pcmWrapMinimumHi || 0)}
+            `;
+        }
+
+        // Main generation and visualization function
+        function generateAndVisualize() {
+            const hiFreq = parseFloat(document.getElementById('hiFreq').value);
+            const loFreq = parseFloat(document.getElementById('loFreq').value);
+            const hiAmp = parseFloat(document.getElementById('hiAmp').value);
+            const loAmp = parseFloat(document.getElementById('loAmp').value);
+            const intensity = parseInt(document.getElementById('intensity').value);
+            const sampleRate = parseInt(document.getElementById('sampleRate').value);
+            const duration = parseInt(document.getElementById('timeScale').value);
+            const pcmParamMinHi = parseFloat(document.getElementById('pcmParamMinHi').value);
+            const pcmParamMinLo = parseFloat(document.getElementById('pcmParamMinLo').value);
+
+            const data = generatePCM(hiFreq, loFreq, hiAmp, loAmp, intensity, sampleRate, duration, pcmParamMinLo, pcmParamMinHi);
+
+            const canvas = document.getElementById('waveformCanvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            visualizePCM(canvas, data);
+
+            const stats = calculateStats(data);
+            document.getElementById('peakAmp').textContent = Math.round(stats.peak);
+            document.getElementById('rmsValue').textContent = Math.round(stats.rms);
+            document.getElementById('sampleCount').textContent = data.length;
+            document.getElementById('clippingStatus').textContent = debugInfo.clippingEvents || 0;
+            document.getElementById('destructionCount').textContent = debugInfo.destructionEvents || 0;
+
+            updateDebugInfo();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function () {
+            generateSineTable();
+
+            // Update display values on slider change
+            ['hiAmp', 'loAmp', 'intensity', 'timeScale', 'pcmParamMinHi', 'pcmParamMinLo'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateDisplayValues);
+            });
+
+            // Auto-generate on any input change
+            ['hiFreq', 'loFreq', 'hiAmp', 'loAmp', 'intensity', 'sampleRate', 'timeScale', 'pcmParamMinHi', 'pcmParamMinLo'].forEach(id => {
+                document.getElementById(id).addEventListener('input', generateAndVisualize);
+            });
+
+            updateDisplayValues();
+            generateAndVisualize();
+        });
+
+        // Handle canvas resize
+        window.addEventListener('resize', function () {
+            const canvas = document.getElementById('waveformCanvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            if (pcmData.length > 0) {
+                visualizePCM(canvas, pcmData);
+            }
+        });
+    </script>

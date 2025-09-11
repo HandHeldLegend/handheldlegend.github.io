@@ -2,29 +2,19 @@
 
 export default class Buttoninfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(3);
+    this.buffer = buffer || new Uint8Array(4);
   }
 
-  	/** @type {Uint16} */
-	get main_buttons() {
-		return this.#_getUint16(0);
-	}
-
-	/** @type {Uint8} */
-	get system_buttons() {
-		return this.#_getUint8(2);
+  	/** @type {Uint32} */
+	get remap_mask() {
+		return this.#_getUint32(0);
 	}
 
 
 
-  	/** @param {Uint16} value */
-	set main_buttons(value) {
-		this.#_setUint16(0, value);
-	}
-
-	/** @param {Uint8} value */
-	set system_buttons(value) {
-		this.#_setUint8(2, value);
+  	/** @param {Uint32} value */
+	set remap_mask(value) {
+		this.#_setUint32(0, value);
 	}
 
 

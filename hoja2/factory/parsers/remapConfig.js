@@ -1,4 +1,3 @@
-import Buttonremap from './buttonRemap.js';
 
 
 export default class Remapconfig {
@@ -11,19 +10,34 @@ export default class Remapconfig {
 		return this.#_getUint8(0);
 	}
 
-	/** @type {Buttonremap[]} */
-	get profiles() {
-		let tmpArr = [];
-		for(let i = 0; i < 12; i++) {
-			const tmp = this.#_getUint8Array(1+(16*i), 16);
-			tmpArr.push(new Buttonremap(tmp));
-		}
-		return tmpArr;
+	/** @type {Int8Array} */
+	get remap_profile_switch() {
+		return this.#_getInt8Array(1, 36);
+	}
+
+	/** @type {Int8Array} */
+	get remap_profile_xinput() {
+		return this.#_getInt8Array(37, 36);
+	}
+
+	/** @type {Int8Array} */
+	get remap_profile_snes() {
+		return this.#_getInt8Array(73, 36);
+	}
+
+	/** @type {Int8Array} */
+	get remap_profile_n64() {
+		return this.#_getInt8Array(109, 36);
+	}
+
+	/** @type {Int8Array} */
+	get remap_profile_gamecube() {
+		return this.#_getInt8Array(145, 36);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(193, 63);
+		return this.#_getUint8Array(181, 75);
 	}
 
 
@@ -33,16 +47,34 @@ export default class Remapconfig {
 		this.#_setUint8(0, value);
 	}
 
-	/** @param {Buttonremap[]} value */
-	set profiles(value) {
-		for (const [index, obj] of value.entries()) {
-			this.#_setUint8Array(1+(16*index), obj.buffer)
-		}
+	/** @param {Int8Array} value */
+	set remap_profile_switch(value) {
+		this.#_setInt8Array(1, value);
+	}
+
+	/** @param {Int8Array} value */
+	set remap_profile_xinput(value) {
+		this.#_setInt8Array(37, value);
+	}
+
+	/** @param {Int8Array} value */
+	set remap_profile_snes(value) {
+		this.#_setInt8Array(73, value);
+	}
+
+	/** @param {Int8Array} value */
+	set remap_profile_n64(value) {
+		this.#_setInt8Array(109, value);
+	}
+
+	/** @param {Int8Array} value */
+	set remap_profile_gamecube(value) {
+		this.#_setInt8Array(145, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(193, value);
+		this.#_setUint8Array(181, value);
 	}
 
 
