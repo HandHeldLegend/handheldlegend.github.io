@@ -561,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveButton.setOnClick(sendSaveCommand);
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         // Debug module

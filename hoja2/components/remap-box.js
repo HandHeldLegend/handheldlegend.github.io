@@ -6,9 +6,11 @@ class RemapBox extends HTMLElement {
         this.attachShadow({ mode: 'open' });
 
         this._inputs = [];
+        this._inputMask = 0;
         this._outputs = [];
         this._inputValues = [];
         this._isAnalog = [];
+        this._analogRange = [];
         this._outputMappings = [];
         this._popupVisible = false;
         this._currentInputIndex = -1;
@@ -40,7 +42,7 @@ class RemapBox extends HTMLElement {
 
     initializeInputs() {
         this._inputValues = new Array(this._inputs.length).fill(0);
-        this._isAnalog = new Array(this._inputs.length).fill(false);
+        //this._isAnalog = new Array(this._inputs.length).fill(false);
         this._outputMappings = new Array(this._inputs.length).fill(-1);
     }
 
@@ -48,6 +50,18 @@ class RemapBox extends HTMLElement {
         if (!css) return;
 
         const gridItems = this._inputs.map((input, index) => {
+
+            if(  ((1 << index) & this._inputMask) == 0 ) 
+                return ``;
+
+            // Set all at 22 and beyond to analog
+            if(index>=22) {
+                this._isAnalog[index] = true;
+                this._analogRange[index] = 4095
+            }
+
+            if(index>=24) this._analogRange[index] = 2048;
+
             const outputLabel = this._outputMappings[index] === -1 ? 'Disabled' : 
                                this._outputs[this._outputMappings[index]] || 'None';
             
@@ -62,7 +76,6 @@ class RemapBox extends HTMLElement {
                         ${statusIndicator}
                     </div>
                     <div class="mapping-display">
-                        <div class="mapping-arrow">→</div>
                         <span class="output-label">${outputLabel}</span>
                     </div>
                 </div>
@@ -88,8 +101,8 @@ class RemapBox extends HTMLElement {
         `;
     }
 
-    renderAnalogBar(value) {
-        const percentage = (value / 4095) * 100;
+    renderAnalogBar(value, range) {
+        const percentage = (value / range) * 100;
         return `
             <div class="analog-bar">
                 <div class="analog-fill" style="width: ${percentage}%"></div>
@@ -105,42 +118,73 @@ class RemapBox extends HTMLElement {
     }
 
     setupEventListeners() {
-        // Input box click handlers
+        //console.log('Setting up main event listeners');
+        
+        // Use event delegation on the shadow root for all clicks
         this.shadowRoot.addEventListener('click', (e) => {
+            //console.log('Click detected on:', e.target);
+            //console.log('Event target classes:', e.target.className);
+            //console.log('Closest input-box:', e.target.closest('.input-box'));
+            //console.log('Closest output-box:', e.target.closest('.output-box'));
+            
+            // Input box click handlers
             const inputBox = e.target.closest('.input-box');
             if (inputBox) {
+                //console.log('Input box clicked');
                 const index = parseInt(inputBox.dataset.index);
                 this.showOutputPopup(index);
                 this.emitInputClickEvent(index);
+                return; // Prevent other handlers from running
             }
 
-            // Popup close
-            if (e.target.matches('.popup-close') || e.target.matches('.popup-overlay')) {
+            // Popup close button
+            if (e.target.matches('.popup-close')) {
+                //console.log('Close button clicked');
                 this.hideOutputPopup();
+                return;
+            }
+
+            // Popup overlay (background) click
+            if (e.target.matches('.popup-overlay')) {
+                //console.log('Overlay clicked');
+                this.hideOutputPopup();
+                return;
             }
 
             // Output selection
             const outputBox = e.target.closest('.output-box');
             if (outputBox) {
+                //console.log('Output box clicked:', outputBox.dataset.index);
                 const outputIndex = parseInt(outputBox.dataset.index);
                 this.selectOutput(this._currentInputIndex, outputIndex);
                 this.hideOutputPopup();
+                return;
             }
         });
 
-        // Prevent popup close when clicking inside popup content
-        this.shadowRoot.querySelector('.popup-content').addEventListener('click', (e) => {
-            e.stopPropagation();
+        // Prevent popup close when clicking inside popup content (but not on buttons)
+        this.shadowRoot.addEventListener('click', (e) => {
+            const popupContent = e.target.closest('.popup-content');
+            if (popupContent && !e.target.closest('.popup-close') && !e.target.closest('.output-box')) {
+                //console.log('Click inside popup content, preventing propagation');
+                e.stopPropagation();
+            }
         });
     }
 
     showOutputPopup(inputIndex) {
+        //console.log('Showing popup for input:', inputIndex);
         this._currentInputIndex = inputIndex;
         this._popupVisible = true;
 
         const popup = this.shadowRoot.querySelector('.popup-overlay');
         const currentInputSpan = this.shadowRoot.querySelector('.current-input');
         const outputGrid = this.shadowRoot.querySelector('.output-grid');
+
+        if (!popup || !currentInputSpan || !outputGrid) {
+            console.error('Could not find popup elements');
+            return;
+        }
 
         currentInputSpan.textContent = this._inputs[inputIndex];
 
@@ -160,18 +204,24 @@ class RemapBox extends HTMLElement {
         outputGrid.innerHTML = disableOption + outputOptions;
         popup.style.display = 'flex';
 
+        //console.log('Popup shown, output options created:', outputGrid.children.length);
+
         // Re-enable tooltips for new content
         enableTooltips(this.shadowRoot);
     }
 
     hideOutputPopup() {
+        //console.log('Hiding popup');
         this._popupVisible = false;
         const popup = this.shadowRoot.querySelector('.popup-overlay');
-        popup.style.display = 'none';
+        if (popup) {
+            popup.style.display = 'none';
+        }
         this._currentInputIndex = -1;
     }
 
     selectOutput(inputIndex, outputIndex) {
+        //console.log('Selecting output:', outputIndex, 'for input:', inputIndex);
         this._outputMappings[inputIndex] = outputIndex;
         this.updateInputBox(inputIndex);
         this.emitMappingChangeEvent(inputIndex, outputIndex);
@@ -189,7 +239,8 @@ class RemapBox extends HTMLElement {
     }
 
     // Public API methods
-    setInputs(inputs) {
+    setInputs(inputs, mask=0) {
+        this._inputMask = mask;
         this._inputs = inputs;
         this.initializeInputs();
         this.render();
@@ -201,6 +252,8 @@ class RemapBox extends HTMLElement {
 
     setInputValue(index, value) {
         if (index >= 0 && index < this._inputValues.length) {
+            if((1<<index) & this._inputMask == 0) return;
+
             this._inputValues[index] = value;
             this.updateStatusIndicator(index);
         }
@@ -221,7 +274,7 @@ class RemapBox extends HTMLElement {
         const oldIndicator = statusContainer.querySelector('.analog-bar, .digital-indicator');
         
         const newIndicator = this._isAnalog[index] ? 
-            this.renderAnalogBar(this._inputValues[index]) : 
+            this.renderAnalogBar(this._inputValues[index], this._analogRange[index]) : 
             this.renderDigitalIndicator(this._inputValues[index] > 0);
 
         oldIndicator.outerHTML = newIndicator;

@@ -11,7 +11,7 @@
 
 .remap-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 12px;
     padding: 12px;
     width: 100%;
@@ -22,7 +22,7 @@
     border: 2px solid var(--color-border-light);
     border-radius: 8px;
     background: var(--background-high);
-    padding: 12px;
+    padding: 8px;
     cursor: pointer;
     transition: all var(--transition-quick);
     min-height: 80px;
@@ -72,7 +72,7 @@
 
 .analog-bar {
     position: relative;
-    width: 60px;
+    width: 46px;
     height: 12px;
     background: var(--color-button-off);
     border-radius: 6px;
@@ -92,18 +92,18 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 8px;
+    font-size: 12px;
     font-weight: bold;
-    color: var(--color-text-primary);
-    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+    color: var(--color-text-secondary);
     user-select: none;
 }
 
 .mapping-display {
     display: flex;
     align-items: center;
+    height: 100%;
     justify-content: center;
-    gap: 8px;
+    gap: 2px;
 }
 
 .mapping-arrow {
@@ -115,7 +115,7 @@
 .output-label {
     font-size: 14px;
     font-weight: bold;
-    color: var(--color-text-secondary);
+    color: var(--color-text-tertiary);
     user-select: none;
     text-align: center;
     flex: 1;
@@ -183,7 +183,7 @@
 
 .output-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 12px;
     padding: 16px;
 }
@@ -191,7 +191,7 @@
 .output-box {
     border: 2px solid var(--color-border-light);
     border-radius: 8px;
-    background: var(--color-background-light);
+    background: var(--background-high);
     padding: 16px;
     text-align: center;
     cursor: pointer;
@@ -236,7 +236,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .remap-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 8px;
         padding: 8px;
     }

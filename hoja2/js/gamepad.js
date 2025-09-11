@@ -400,9 +400,9 @@ class HojaGamepad {
           break;
       }
     } catch (error) {
-      console.error("Error parsing report:", error, "Buffer length:", data.buffer.byteLength);
+      //console.error("Error parsing report:", error, "Buffer length:", data.buffer.byteLength);
       // Optionally add more debug info about the buffer:
-      console.log("First few bytes:", [...new Uint8Array(data.buffer.slice(0, 4))]);
+      //console.log("First few bytes:", [...new Uint8Array(data.buffer.slice(0, 4))]);
     }
   }
 

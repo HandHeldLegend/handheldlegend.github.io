@@ -72,326 +72,230 @@ const gamecubeMapCodes = [
 const gamepad = HojaGamepad.getInstance();
 const remapCfgBlockNumber = 1;
 
+/** @type {RemapBox} */
+let remapBox = null;
 
-let buttonListener = null;
-let remapPickers = null;
-
-let remapSelectorContainer = null;
 let currentContainer = null;
-
-let currentProfileMode = 0;
+let currentMode = 0;
 
 async function writeRemapMemBlock() {
     await gamepad.sendBlock(remapCfgBlockNumber);
 }
 
-// Reload our remap values (not changing profiles only)
-function softReloadRemapValues() {
-    if (remapPickers) {
-        remapPickers.forEach((e) => {
-            let idxNum = parseInt(e.getAttribute("idx"));
-            let inputNum = getInputForOutput(idxNum);
+function inputReportHook(data) {
+    if(remapBox==null) return;
 
-            let writeValue = (inputNum < 0) ? "⊘" : inputMapCodes[inputNum];
+    const lt = data.getUint8(13) << 8 | data.getUint8(14);
+    const rt = data.getUint8(15) << 8 | data.getUint8(16);
+    let lx = (data.getUint8(29) << 8) | (data.getUint8(30));
+    let ly = ( (data.getUint8(31) << 8) | (data.getUint8(32)) );
+    lx -= 2048;
+    ly -= 2048;
 
-            // Update the input value
-            e.setInValue(writeValue);
-        });
+    let rx = (data.getUint8(33) << 8) | (data.getUint8(34));
+    let ry = ( (data.getUint8(35) << 8) | (data.getUint8(36)) );
+    rx -= 2048;
+    ry -= 2048;
+
+    if(lx > 0) {
+        remapBox.setInputValue(24, lx);
     }
+    else if (lx < 0) {
+        remapBox.setInputValue(25, -lx);
+    }
+    else {
+        remapBox.setInputValue(24, 0);
+        remapBox.setInputValue(25, 0);
+    }
+
+    if(ly > 0) {
+        remapBox.setInputValue(26, ly);
+    }
+    else if (ly < 0) {
+        remapBox.setInputValue(27, -ly);
+    }
+    else {
+        remapBox.setInputValue(26, 0);
+        remapBox.setInputValue(27, 0);
+    }
+
+    if(rx > 0) {
+        remapBox.setInputValue(28, rx);
+    }
+    else if (rx < 0) {
+        remapBox.setInputValue(29, -rx);
+    }
+    else {
+        remapBox.setInputValue(28, 0);
+        remapBox.setInputValue(29, 0);
+    }
+
+    if(ry > 0) {
+        remapBox.setInputValue(30, ry);
+    }
+    else if (ry < 0) {
+        remapBox.setInputValue(31, -ry);
+    }
+    else {
+        remapBox.setInputValue(30, 0);
+        remapBox.setInputValue(31, 0);
+    }
+
+    const buttons0 = data.getUint8(12);
+    const buttons1 = data.getUint8(11);
+    const buttons2 = data.getUint8(10);
+
+    // Buttons
+    for(let i = 0; i < 8; i++) {
+        remapBox.setInputValue(i, (1<<i)&buttons0);
+        remapBox.setInputValue(i+8, (1<<i)&buttons1);
+    }
+
+    remapBox.setInputValue(16, (1 & buttons2));
+    remapBox.setInputValue(17, (1<<1) & buttons2);
+    remapBox.setInputValue(18, (1<<2) & buttons2);
+    remapBox.setInputValue(19, (1<<3) & buttons2);
+
+    remapBox.setInputValue(22, lt);
+    remapBox.setInputValue(23, rt);
+
 }
 
-// Set the actual gamepad config data
-function setOutputForInput(inputNum, targetOutput) {
-    // Retrieve remapProfile copy for viewing data
-    /** @type {Buttonremap} */
-    let remapProfiles = gamepad.remap_cfg.profiles;
-    let remapProfile = remapProfiles[currentProfileMode];
+async function resetProfileToDefault() {
+    let {status, data} = await gamepad.sendConfigCommand(remapCfgBlockNumber, 1);
 
-    switch (inputNum) {
-        case 0:
-            remapProfile.dpad_up = targetOutput;
-            break;
-
-        case 1:
-            remapProfile.dpad_down = targetOutput;
-            break;
-
-        case 2:
-            remapProfile.dpad_left = targetOutput;
-            break;
-
-        case 3:
-            remapProfile.dpad_right = targetOutput;
-            break;
-
-        case 4:
-            remapProfile.button_a = targetOutput;
-            break;
-
-        case 5:
-            remapProfile.button_b = targetOutput;
-            break;
-
-        case 6:
-            remapProfile.button_x = targetOutput;
-            break;
-
-        case 7:
-            remapProfile.button_y = targetOutput;
-            break;
-
-        case 8:
-            remapProfile.trigger_l = targetOutput;
-            break;
-
-        case 9:
-            remapProfile.trigger_zl = targetOutput;
-            break;
-
-        case 10:
-            remapProfile.trigger_r = targetOutput;
-            break;
-
-        case 11:
-            remapProfile.trigger_zr = targetOutput;
-            break;
-
-        case 12:
-            remapProfile.button_plus = targetOutput;
-            break;
-
-        case 13:
-            remapProfile.button_minus = targetOutput;
-            break;
-
-        case 14:
-            remapProfile.button_stick_left = targetOutput;
-            break;
-
-        case 15:
-            remapProfile.button_stick_right = targetOutput;
-            break;
+    if(status) {
+        // reload blocks
+        await gamepad.requestBlock(remapCfgBlockNumber);
+        updateRemapBox(currentMode);
+        return true;
     }
 
-    remapProfiles[currentProfileMode] = remapProfile;
-    gamepad.remap_cfg.profiles = remapProfiles;
+    return false;
 }
 
-// The function we call to assign
-function assignInputToOutput(buttonInput, targetOutput) {
-    // First, we must unset any button that has the same output
-    // as our targetOutput
-    for (let i = 0; i < 16; i++) {
-        let outputValue = getOutputForInput(i);
-        if (outputValue == targetOutput) {
-            console.log("Unassigned a button.");
-            setOutputForInput(i, -1);
-        }
+async function updateRemapOutput(inputMode, input, output) {
+    let mappings = [];
+    switch(inputMode) {
+        default:
+        case 0: // Switch
+        mappings = gamepad.remap_cfg.remap_profile_switch;
+        mappings[input] = output;
+        gamepad.remap_cfg.remap_profile_switch = mappings;
+        break;
+
+        case 1: // XInput
+        mappings = gamepad.remap_cfg.remap_profile_xinput;
+        mappings[input] = output;
+        gamepad.remap_cfg.remap_profile_xinput = mappings;
+        break;
+
+        case 2: // SNES
+        mappings = gamepad.remap_cfg.remap_profile_snes;
+        mappings[input] = output;
+        gamepad.remap_cfg.remap_profile_snes = mappings;
+        break;
+
+        case 3: // N64
+        mappings = gamepad.remap_cfg.remap_profile_n64;
+        mappings[input] = output;
+        gamepad.remap_cfg.remap_profile_n64 = mappings;
+        break;
+
+        case 4: // GameCube
+        mappings = gamepad.remap_cfg.remap_profile_gamecube;
+        mappings[input] = output;
+        gamepad.remap_cfg.remap_profile_gamecube = mappings;
+        break;
     }
 
-    // FInally, set our output according to our input
-    setOutputForInput(buttonInput, targetOutput);
-
-    // We have ensured that we only have one button doing 
-    // the same output action!
+    await writeRemapMemBlock();
 }
 
-// In use, OK
-// Get input number assigned to this output.
-// -1 indicates nothing is mapped to this
-function getInputForOutput(outputNum) {
-    for (let i = 0; i < 16; i++) {
-        let outputVal = getOutputForInput(i);
-        if (outputVal == outputNum) return i;
+function updateRemapBox(inputMode) {
+    // Setup inputs based on gamepad
+    let mask = gamepad.button_static.remap_mask;
+    remapBox.setInputs(inputMapCodes, mask);
+
+    let mappings = [];
+
+    switch(inputMode) {
+        default:
+        case 0: // Switch
+        remapBox.setOutputs(switchMapCodes);
+        mappings = gamepad.remap_cfg.remap_profile_switch;
+        break;
+
+        case 1: // XInput
+        remapBox.setOutputs(xboxMapCodes);
+        mappings = gamepad.remap_cfg.remap_profile_xinput;
+        break;
+
+        case 2: // SNES
+        remapBox.setOutputs(snesMapCodes);
+        mappings = gamepad.remap_cfg.remap_profile_snes;
+        break;
+
+        case 3: // N64
+        remapBox.setOutputs(n64MapCodes);
+        mappings = gamepad.remap_cfg.remap_profile_n64;
+        break;
+
+        case 4: // GameCube
+        remapBox.setOutputs(gamecubeMapCodes);
+        mappings = gamepad.remap_cfg.remap_profile_gamecube;
+        break;
     }
 
-    return -1;
-}
-
-// In use, OK
-function getOutputForInput(inputNum) {
-    // Retrieve remapProfile copy for viewing data
-    /** @type {Buttonremap} */
-    let remapProfile = gamepad.remap_cfg.profiles[currentProfileMode];
-
-    switch (inputNum) {
-        case 0:
-            return remapProfile.dpad_up;
-            break;
-
-        case 1:
-            return remapProfile.dpad_down;
-            break;
-
-        case 2:
-            return remapProfile.dpad_left;
-            break;
-
-        case 3:
-            return remapProfile.dpad_right;
-            break;
-
-        case 4:
-            return remapProfile.button_a;
-            break;
-
-        case 5:
-            return remapProfile.button_b;
-            break;
-
-        case 6:
-            return remapProfile.button_x;
-            break;
-
-        case 7:
-            return remapProfile.button_y;
-            break;
-
-        case 8:
-            return remapProfile.trigger_l;
-            break;
-
-        case 9:
-            return remapProfile.trigger_zl;
-            break;
-
-        case 10:
-            return remapProfile.trigger_r;
-            break;
-
-        case 11:
-            return remapProfile.trigger_zr;
-            break;
-
-        case 12:
-            return remapProfile.button_plus;
-            break;
-
-        case 13:
-            return remapProfile.button_minus;
-            break;
-
-        case 14:
-            return remapProfile.button_stick_left;
-            break;
-
-        case 15:
-            return remapProfile.button_stick_right;
-            break;
-    }
-}
-
-function reportHook(data) {
-    let buttonsAll = (data.getUint8(9) << 8) | (data.getUint8(10));
-
-    if (buttonListener) {
-        if (buttonListener.isListening()) {
-            // Scan buttons
-            for (let i = 0; i < 16; i++) {
-                if (buttonsAll & (1 << i) ? true : false) {
-                    buttonListener.handleButtonPress(i);
-                    break;
-                }
-            }
-        }
+    for(let i = 0; i < inputMapCodes.length; i++) {
+        remapBox.selectOutput(i, mappings[i]);
     }
 
-    if (remapPickers) {
-        remapPickers.forEach((e) => {
-            let idx = parseInt(e.getAttribute('idx'));
-            let matchingInput = getInputForOutput(idx);
-            let masked = ((1 << matchingInput) & buttonsAll) ? true : false;
-            e.setPressed(masked);
-        });
-    }
-}
-
-// In use, OK
-function getCurrentMapCodeText(code) {
-    let codes = inputMapCodes;
-
-    switch (currentProfileMode) {
-        case 0:
-            codes = inputMapCodes;
-            break;
-
-        case 1:
-            codes = xboxMapCodes;
-            break;
-
-        case 2:
-            codes = snesMapCodes;
-            break;
-
-        case 3:
-            codes = n64MapCodes;
-            break;
-
-        case 4:
-            codes = gamecubeMapCodes;
-            break;
-
-        case 5:
-            codes = steamMapCodes;
-            break;
-    }
-
-    return codes[code];
-}
-
-async function startListening(remapButtonElement) {
-    // Initialize the singleton instance if it doesn't exist
-    if (!buttonListener) {
-        buttonListener = new ButtonListener();
-    }
-
-    if (remapPickers) {
-        remapPickers.forEach(element => {
-            let compidx = element.getAttribute('idx');
-            if (compidx === remapButtonElement.getAttribute('idx')) {
-                element.disableCaptureButton(true);
-            } else {
-                element.disableCaptureButton(false);
-            }
-        });
-    } else return;
-
-    try {
-        const idx = parseInt(remapButtonElement.getAttribute('idx'));
-        console.log(`Listening for press for ${getCurrentMapCodeText(idx)}`);
-
-        const buttonPressedValue = await buttonListener.startListening();
-        console.log(`Button pressed: ${inputMapCodes[buttonPressedValue]}`);
-
-        assignInputToOutput(buttonPressedValue, idx);
-        console.log(`Assigned to: ${getCurrentMapCodeText(idx)}`);
-
-        softReloadRemapValues();
-    } catch (error) {
-        console.warn('Button listening cancelled:', error);
-    } finally {
-        remapPickers.forEach(element => {
-            element.enableCaptureButton();
-        });
-    }
+    remapBox.render();
 }
 
 export function render(container) {
     currentContainer = container;
 
     container.innerHTML = `
+    <multi-position-button 
+        id="remap-mode" 
+        labels="SW, XI, SNES, N64, GC"
+        default-selected="0"
+    ></multi-position-button>
     <remap-box></remap-box> 
+    <single-shot-button 
+        tooltip="Reset all remaps to default."
+        id="remap-default-btn" 
+        state="ready"
+        ready-text="Reset" 
+        pending-text="Resetting..."
+    ></single-shot-button>
     `;
 
     /** @type {RemapBox} */
     const box = container.querySelector('remap-box');
+    remapBox = box;
 
-    box.setInputs(inputMapCodes);
-    box.setOutputs(snesMapCodes);
+    box.addEventListener('mapping-changed', async (e) => {
+            console.log("Changed output.");
+            await updateRemapOutput(currentMode, e.detail.inputIndex, e.detail.outputIndex);
+    });
 
-    box.setInputType(22, true);
-    box.setInputValue(22, 2000);
+    const resetButton = container.querySelector('single-shot-button[id="remap-default-btn"]');
+    resetButton.setOnClick(resetProfileToDefault);
 
-    const resetButton = container.querySelector('single-shot-button[id="reset-remap-button"]');
-    //resetButton.setOnClick(resetProfileToDefault);
+    const modeSwitch = container.querySelector('multi-position-button[id="remap-mode"]');
+
+    modeSwitch.addEventListener('change', (e) => {
+            console.log("Input profile change");
+            currentMode = e.detail.selectedIndex;
+            updateRemapBox(currentMode);
+        });
+
+    gamepad.setReportHook(inputReportHook);
+
+    updateRemapBox(0);
+
+    enableTooltips(container);
 } 

@@ -4,7 +4,6 @@ import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
-import RemapSelector from '../components/remap-selector.js';
 
 import DualAnalogTrigger from '../components/dual-analog-trigger.js';
 
@@ -70,11 +69,11 @@ export function render(container) {
         default-selected="${gamepad.trigger_cfg.left_disabled}"
     ></multi-position-button>
 
-    <h3>Digital Threshold<div class="header-tooltip" tooltip="The analog value which will trigger the equivalent digital press and full analog output. Setting to 0 disables this feature.">?</div></h3>
+    <h3>Digital Threshold<div class="header-tooltip" tooltip="The analog value which will trigger if mapped to a digital press.">?</div></h3>
     <number-selector 
         id="l-hairtrigger-number"
         type="integer" 
-        min="0" 
+        min="128" 
         max="4096" 
         step="128" 
         default-value="${gamepad.trigger_cfg.left_hairpin_value}"
@@ -97,7 +96,7 @@ export function render(container) {
     <number-selector 
         id="l-static-number"
         type="integer" 
-        min="0" 
+        min="128" 
         max="4096" 
         step="128" 
         default-value="${gamepad.trigger_cfg.left_static_output_value}"
@@ -112,11 +111,11 @@ export function render(container) {
         default-selected="${gamepad.trigger_cfg.right_disabled}"
     ></multi-position-button>
 
-    <h3>Digital Threshold<div class="header-tooltip" tooltip="The analog value which will trigger the equivalent digital press and full analog output. Setting to 0 disables this feature.">?</div></h3>
+    <h3>Digital Threshold<div class="header-tooltip" tooltip="The analog value which will trigger if mapped to a digital press.">?</div></h3>
     <number-selector 
         id="r-hairtrigger-number"
         type="integer" 
-        min="0" 
+        min="128" 
         max="4096" 
         step="128" 
         default-value="${gamepad.trigger_cfg.right_hairpin_value}"
@@ -139,7 +138,7 @@ export function render(container) {
     <number-selector 
         id="r-static-number"
         type="integer" 
-        min="0" 
+        min="128" 
         max="4096" 
         step="128" 
         default-value="${gamepad.trigger_cfg.right_static_output_value}"
