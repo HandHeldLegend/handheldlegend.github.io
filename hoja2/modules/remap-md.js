@@ -278,7 +278,7 @@ export function render(container) {
     remapBox = box;
 
     box.addEventListener('mapping-changed', async (e) => {
-            console.log("Changed output.");
+            console.log("Changed output. Input: " + e.detail.inputIndex + " Output: " + e.detail.outputIndex);
             await updateRemapOutput(currentMode, e.detail.inputIndex, e.detail.outputIndex);
     });
 
