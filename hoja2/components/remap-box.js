@@ -221,7 +221,7 @@ class RemapBox extends HTMLElement {
     }
 
     selectOutput(inputIndex, outputIndex) {
-        //console.log('Selecting output:', outputIndex, 'for input:', inputIndex);
+        console.log('Selecting output:', outputIndex, 'for input:', inputIndex);
         this._outputMappings[inputIndex] = outputIndex;
         this.updateInputBox(inputIndex);
         this.emitMappingChangeEvent(inputIndex, outputIndex);

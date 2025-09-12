@@ -12,7 +12,7 @@ import RemapBox from '../components/remap-box.js';
 
 const inputMapCodes = [
     "South", "East", "West", "North",
-    "Up", "Down", "Left", "Right",
+    "D-Up", "D-Down", "D-Left", "D-Right",
     "L1", "R1", "L2", "R2",
     "Start", "Select", "Home", "Capture",
     "L3", "R3",
@@ -25,7 +25,7 @@ const inputMapCodes = [
 
 const switchMapCodes = [
     "A", "B", "X", "Y",
-    "Up", "Down", "Left", "Right",
+    "D-Up", "D-Down", "D-Left", "D-Right",
     "L", "R", "ZL", "ZR",
     "Plus", "Minus", "Home", "Capture",
     "LS", "RS",
@@ -35,17 +35,18 @@ const switchMapCodes = [
 
 const snesMapCodes = [
     "A", "B", "X", "Y",
-    "Up", "Down", "Left", "Right",
+    "D-Up", "D-Down", "D-Left", "D-Right",
     "L", "R",
     "Start", "Select"
 ];
 
 const xboxMapCodes = [
     "A", "B", "X", "Y",
-    "Up", "Down", "Left", "Right",
+    "D-Up", "D-Down", "D-Left", "D-Right",
     "LB", "RB",
     "Start", "Back", "Guide",
     "LS", "RS",
+    "LT Full", "RT Full",
     "LT Analog", "RT Analog",
     "LX+", "LX-", "LY+", "LY-",
     "RX+", "RX-", "RY+", "RY-"
@@ -54,13 +55,14 @@ const xboxMapCodes = [
 const n64MapCodes = [
     "A", "B",
     "C-Up", "C-Down", "C-Left", "C-Right",
+    "D-Up", "D-Down", "D-Left", "D-Right",
     "L", "R", "Z",
     "Start", "X+", "X-", "Y+", "Y-"
 ];
 
 const gamecubeMapCodes = [
     "A", "B", "X", "Y",
-    "Up", "Down", "Left", "Right",
+    "D-Up", "D-Down", "D-Left", "D-Right",
     "Start",
     "Z", "L", "R",
     "L Analog", "R Analog",

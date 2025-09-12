@@ -15,6 +15,17 @@ let deviceDetected = false;
 let deviceFwUrl = undefined;
 let deviceFwChecksum = undefined;
 
+function isWindows() {
+  // Check the user agent string for Windows indicators
+  const userAgent = navigator.userAgent.toLowerCase();
+  
+  // Look for common Windows identifiers
+  return userAgent.includes('win32') || 
+         userAgent.includes('win64') || 
+         userAgent.includes('windows') || 
+         userAgent.includes('wow64');
+}
+
 async function isOnline() {
     try {
         const response = await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
@@ -568,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: '../modules/remap-md.js',
+                path: '../modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
@@ -645,6 +656,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 enableDownload: true,
                 enableEasy: true,
                 enableCancel: false
+            }
+
+            if(isWindows()) {
+                enableOptions.enableEasy = false;
             }
 
             // Enable FW update
