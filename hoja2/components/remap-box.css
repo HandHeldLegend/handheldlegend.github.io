@@ -5,13 +5,13 @@
     display: flex;
     align-items: center;
     width: 100%;
-    max-width: 100%;
+    max-width: 600px;
     overflow: hidden;
 }
 
 .remap-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
     gap: 12px;
     padding: 12px;
     width: 100%;
@@ -32,7 +32,7 @@
 }
 
 .input-box:hover {
-    background: var(--color-button-on-hover);
+    background: var(--background-highest);
     border-color: var(--color-border-medium);
     transform: translateY(-1px);
 }
@@ -57,12 +57,12 @@
 }
 
 .digital-indicator {
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: var(--color-button-off);
     border: 2px solid var(--color-border-medium);
-    transition: background-color var(--transition-quick);
+    transition: all var(--transition-steady);
 }
 
 .digital-indicator.active {
@@ -236,7 +236,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .remap-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
         gap: 8px;
         padding: 8px;
     }

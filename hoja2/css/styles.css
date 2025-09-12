@@ -75,6 +75,7 @@
     /* Transitions */
     --transition-quick: 0.2s ease;
     --transition-standard: 0.3s ease;
+    --transition-steady: 0.5s ease;
 
     color: var(--color-text-primary);
 }

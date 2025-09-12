@@ -70,7 +70,7 @@ class RemapBox extends HTMLElement {
                 this.renderDigitalIndicator(this._inputValues[index] > 0);
 
             return `
-                <div class="input-box" data-index="${index}" tooltip="Click to configure mapping">
+                <div class="input-box" data-index="${index}">
                     <div class="box-header">
                         <span class="input-label">${input}</span>
                         ${statusIndicator}
@@ -102,7 +102,8 @@ class RemapBox extends HTMLElement {
     }
 
     renderAnalogBar(value, range) {
-        const percentage = (value / range) * 100;
+        const percentage = (value && range) ? (value / range) * 100 : 0;
+
         return `
             <div class="analog-bar">
                 <div class="analog-fill" style="width: ${percentage}%"></div>
@@ -254,8 +255,10 @@ class RemapBox extends HTMLElement {
         if (index >= 0 && index < this._inputValues.length) {
             if((1<<index) & this._inputMask == 0) return;
 
-            this._inputValues[index] = value;
-            this.updateStatusIndicator(index);
+            if(value != this._inputValues[index]) {
+                this._inputValues[index] = value;
+                this.updateStatusIndicator(index);
+            }
         }
     }
 
