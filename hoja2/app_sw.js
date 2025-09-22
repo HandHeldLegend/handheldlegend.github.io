@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-  version: 'v0.002.025', // Increment this when you update files
+  version: 'v0.003.008', // Increment this when you update files
   folders: {
     '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
     '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js', 'pico_update.js'],
@@ -17,7 +17,7 @@ const CACHE_CONFIG = {
       'mac-address-selector.js', 'mac-address-selector.css',
       'multi-position-button.js', 'multi-position-button.css',
       'number-selector.js', 'number-selector.css',
-      'remap-selector.js', 'remap-selector.css',
+      'remap-box.js', 'remap-box.css',
       'sensor-visualization.js', 'sensor-visualization.css',
       'single-shot-button.js', 'single-shot-button.css',
       'text-entry.js', 'text-entry.css',
@@ -40,7 +40,7 @@ const CACHE_CONFIG = {
       'analogPackedDistances.js', 'angleMap.js',
       'batteryConfig.js', 'batteryInfoStatic.js',
       'bluetoothInfoStatic.js', 'buttonInfoStatic.js',
-      'buttonRemap.js', 'deviceInfoStatic.js',
+      'deviceInfoStatic.js',
       'gamepadConfig.js', 'hapticConfig.js',
       'hapticInfoStatic.js',
       'imuConfig.js', 'imuInfoStatic.js',

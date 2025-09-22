@@ -15,6 +15,17 @@ let deviceDetected = false;
 let deviceFwUrl = undefined;
 let deviceFwChecksum = undefined;
 
+function isWindows() {
+  // Check the user agent string for Windows indicators
+  const userAgent = navigator.userAgent.toLowerCase();
+  
+  // Look for common Windows identifiers
+  return userAgent.includes('win32') || 
+         userAgent.includes('win64') || 
+         userAgent.includes('windows') || 
+         userAgent.includes('wow64');
+}
+
 async function isOnline() {
     try {
         const response = await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
@@ -376,8 +387,6 @@ const parseBufferText = buffer => {
     return text === '~' ? false : text;
 };
 
-var debug = false;
-
 async function getManifestVersion(manifestUrl) {
 
     if(!isOnline()) return false;
@@ -563,12 +572,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveButton.setOnClick(sendSaveCommand);
 
+    var debug = false;
+
     if (debug) {
         // Debug module
         const debugModule = [
             {
                 name: 'Debug',
-                path: '../modules/rgb-md.js',
+                path: '../modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
@@ -600,10 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.configApp.enableIcon(2, analogEnable); // Analog
         window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0); // RGB
 
-        let triggerEnable = 
-        (gamepad.analog_static.axis_lt | gamepad.analog_static.axis_rt | 
-         gamepad.device_static.joybus_supported) ? true : false;
-        window.configApp.enableIcon(4, triggerEnable); // Triggers
+        window.configApp.enableIcon(4, true); // Triggers
 
         let imuEnable = (gamepad.imu_static.axis_gyro_a) ? true : false;
         window.configApp.enableIcon(5, imuEnable); // IMU
@@ -648,6 +656,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 enableDownload: true,
                 enableEasy: true,
                 enableCancel: false
+            }
+
+            if(isWindows()) {
+                enableOptions.enableEasy = false;
             }
 
             // Enable FW update

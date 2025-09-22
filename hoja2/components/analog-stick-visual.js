@@ -203,7 +203,7 @@ class AnalogStickVisual extends HTMLElement {
         const xyCoords = this.shadowRoot.querySelector('.xy-coords');
         const polarCoords = this.shadowRoot.querySelector('.polar-coords');
 
-        xyCoords.textContent = `X: ${this.state.x}, Y: ${this.state.y}`;
+        xyCoords.textContent = `X: ${this.state.x_scaled}, Y: ${this.state.y_scaled}`;
         polarCoords.textContent = `A: ${this.state.angle.toFixed(2)}°, D: ${this.state.distance.toFixed(2)}`;
     }
 
@@ -228,7 +228,7 @@ class AnalogStickVisual extends HTMLElement {
         this.state.distance /= 2048; // Normalize distance to [0, 1]
         this.state.distance_scaled /= 2048; // Normalize scaled distance to [0, 1]
 
-        this.state.angle = -Math.atan2(y, x) * 180 / Math.PI;
+        this.state.angle = -Math.atan2(y_scaled, x_scaled) * 180 / Math.PI;
         // Adjust angle to be in the range [0, 360]
         if (this.state.angle < 0) {
             this.state.angle += 360;
