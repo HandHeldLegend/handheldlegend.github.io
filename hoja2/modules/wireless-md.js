@@ -4,7 +4,6 @@ import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
 import AngleSelector from '../components/angle-selector.js';
-import RemapSelector from '../components/remap-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
