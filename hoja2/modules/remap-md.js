@@ -258,6 +258,7 @@ function updateRemapBox(inputMode) {
 
 export function render(container) {
     currentContainer = container;
+    currentMode = 0;
 
     container.innerHTML = `
     <multi-position-button 
