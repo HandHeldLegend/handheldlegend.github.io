@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"><title>Product Label Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        .form-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .preview-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #444;
+            font-size: 14px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .size-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #0b7dda;
+        }
+
+        .label-preview {
+            background: white;
+            border: 2px solid #333;
+            position: relative;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        #labelContent {
+            width: 100%;
+            height: 100%;
+            padding: 5%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: white;
+        }
+
+        .label-text-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 3%;
+        }
+
+        .label-logo {
+            width: 50%;
+            max-width: 185px;
+            height: auto;
+            margin-bottom: 3%;
+        }
+
+        .label-title {
+            font-weight: bold;
+            line-height: 1.2;
+            color: #000;
+        }
+
+        .label-subtitle {
+            font-weight: 300;
+            line-height: 1.2;
+            color: #333;
+        }
+
+        .label-description {
+            line-height: 1.3;
+            color: #444;
+            white-space: pre-wrap;
+        }
+
+        .label-sku {
+            font-weight: 600;
+            margin-top: 2%;
+            color: #000;
+        }
+
+        .label-divider {
+            border: none;
+            border-top: 2px solid #000;
+            margin: 3% 0;
+        }
+
+        .label-barcode-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2%;
+        }
+
+        .label-gtin {
+            font-weight: 600;
+            text-align: center;
+            color: #000;
+        }
+
+        #barcodeCanvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .logo-upload {
+            margin-top: 10px;
+        }
+
+        .logo-preview {
+            max-width: 100%;
+            max-height: 100px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-panel">
+            <h1>Label Generator</h1>
+
+            <div class="form-group">
+                <label>Label Size (mm)</label>
+                <div class="size-inputs">
+                    <div>
+                        <input type="number" id="labelWidth" value="100" min="50" max="300">
+                        <div class="info-text">Width</div>
+                    </div>
+                    <div>
+                        <input type="number" id="labelHeight" value="150" min="50" max="300">
+                        <div class="info-text">Height</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Main Title</label>
+                <input type="text" id="mainTitle" value="" placeholder="Enter main title">
+            </div>
+
+            <div class="form-group">
+                <label>Sub-Title</label>
+                <input type="text" id="subTitle" value="" placeholder="Enter sub-title">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="description" placeholder="Enter product description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>SKU</label>
+                <input type="text" id="sku" value="" placeholder="Enter SKU">
+            </div>
+
+            <div class="form-group">
+                <label>GTIN/UPC Code</label>
+                <input type="text" id="gtin" value="" placeholder="Enter GTIN or UPC">
+            </div>
+
+            <button class="btn btn-primary" onclick="updatePreview()">Update Preview</button>
+            <button class="btn btn-secondary" onclick="saveAsPNG()">Save as PNG</button>
+            <button class="btn btn-secondary" onclick="saveAsPDF()">Save as PDF</button>
+        </div>
+
+        <div class="preview-panel">
+            <h2>Label Preview</h2>
+            <div class="label-preview" id="labelPreview">
+                <div id="labelContent">
+                    <div class="label-text-section">
+                        <img src="" id="labelLogo" class="label-logo" style="display:none;">
+                        <div class="label-title" id="labelTitle">Product Name</div>
+                        <div class="label-subtitle" id="labelSubtitle">Premium Quality</div>
+                        <div class="label-description" id="labelDescription">High quality product with excellent
+                            features and durability.</div>
+                    </div>
+                    <div class="label-sku" id="labelSKU">SKU: SKU-12345</div>
+                    <hr class="label-divider">
+                    <div class="label-barcode-section">
+                        <div class="label-gtin" id="labelGTIN">123456789012</div>
+                        <svg id="barcodeCanvas"></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Font settings - easily swappable
+        const FONTS = {
+            title: 'Bebas Neue, sans-serif',
+            subtitle: 'Bebas Neue, sans-serif',
+            description: 'Fira Sans Condensed, sans-serif',
+            sku: 'Arial, sans-serif',
+            gtin: 'Courier New, monospace'
+        };
+
+        let logoDataUrl = 'logo.png';
+
+        // Logo upload handler
+        /*
+        document.getElementById('logoUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    logoDataUrl = event.target.result;
+                    document.getElementById('logoPreview').src = logoDataUrl;
+                    document.getElementById('logoPreview').style.display = 'block';
+                    updatePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        */
+
+        function updatePreview() {
+            const width = parseFloat(document.getElementById('labelWidth').value);
+            const height = parseFloat(document.getElementById('labelHeight').value);
+            const mainTitle = document.getElementById('mainTitle').value;
+            const subTitle = document.getElementById('subTitle').value;
+            const description = document.getElementById('description').value;
+            const sku = document.getElementById('sku').value;
+            const gtin = document.getElementById('gtin').value;
+
+            // Convert mm to pixels (assuming 96 DPI)
+            const mmToPx = 3.7795275591;
+            const widthPx = width * mmToPx;
+            const heightPx = height * mmToPx;
+
+            // Update label dimensions
+            const labelPreview = document.getElementById('labelPreview');
+            labelPreview.style.width = widthPx + 'px';
+            labelPreview.style.height = heightPx + 'px';
+
+            // Calculate font sizes based on label height
+            const baseFontSize = heightPx / 25; // Base scaling factor
+            const titleSize = baseFontSize * 1.8;
+            const subtitleSize = baseFontSize * 1.3;
+            const descSize = baseFontSize * 0.9;
+            const skuSize = baseFontSize * 0.85;
+            const gtinSize = baseFontSize * 0.95;
+
+            // Update text content
+            const labelTitle = document.getElementById('labelTitle');
+            const labelSubtitle = document.getElementById('labelSubtitle');
+            const labelDescription = document.getElementById('labelDescription');
+            const labelSKU = document.getElementById('labelSKU');
+            const labelGTIN = document.getElementById('labelGTIN');
+
+            labelTitle.textContent = mainTitle;
+            labelTitle.style.fontSize = titleSize + 'px';
+            labelTitle.style.fontFamily = FONTS.title;
+
+            labelSubtitle.textContent = subTitle;
+            labelSubtitle.style.fontSize = subtitleSize + 'px';
+            labelSubtitle.style.fontFamily = FONTS.subtitle;
+
+            labelDescription.textContent = description;
+            labelDescription.style.fontSize = descSize + 'px';
+            labelDescription.style.fontFamily = FONTS.description;
+
+            labelSKU.textContent = 'SKU: ' + sku;
+            labelSKU.style.fontSize = skuSize + 'px';
+            labelSKU.style.fontFamily = FONTS.sku;
+
+            labelGTIN.textContent = gtin;
+            labelGTIN.style.fontSize = gtinSize + 'px';
+            labelGTIN.style.fontFamily = FONTS.gtin;
+
+            // Update logo
+            const labelLogo = document.getElementById('labelLogo');
+            if (logoDataUrl) {
+                labelLogo.src = logoDataUrl;
+                labelLogo.style.display = 'block';
+            } else {
+                labelLogo.style.display = 'none';
+            }
+
+            // Generate barcode
+            try {
+                const minBarcodeHeight = 100; // Minimum height in pixels
+                const maxBarcodeHeight = 120; // Maximum height in pixels
+                const calculatedHeight = heightPx * 0.15;
+                const barcodeHeight = Math.min(Math.max(calculatedHeight, minBarcodeHeight), maxBarcodeHeight);
+                const contentWidth = widthPx * 0.9; // Account for 5% padding on each side
+                const barcodeWidth = contentWidth / (gtin.length * 13); // Adjust width calculation
+                JsBarcode("#barcodeCanvas", gtin, {
+                    format: "CODE39",
+                    width: barcodeWidth,
+                    height: barcodeHeight,
+                    displayValue: false,
+                    margin: 0,
+                    background: "#ffffff",
+                    lineColor: "#000000"
+                });
+            } catch (e) {
+                console.error("Barcode generation error:", e);
+            }
+        }
+
+        async function saveAsPNG() {
+            const labelContent = document.getElementById('labelContent');
+            const width = parseFloat(document.getElementById('labelWidth').value);
+            const height = parseFloat(document.getElementById('labelHeight').value);
+
+            // High resolution for print quality
+            const scale = 300 / 25.4; // 300 DPI
+
+            const canvas = await html2canvas(labelContent, {
+                scale: scale,
+                backgroundColor: '#ffffff',
+                logging: false,
+                width: labelContent.offsetWidth,
+                height: labelContent.offsetHeight
+            });
+
+            canvas.toBlob(function (blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'product-label.png';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        async function saveAsPDF() {
+            const { jsPDF } = window.jspdf;
+            const labelContent = document.getElementById('labelContent');
+            const width = parseFloat(document.getElementById('labelWidth').value);
+            const height = parseFloat(document.getElementById('labelHeight').value);
+
+            const canvas = await html2canvas(labelContent, {
+                scale: 3,
+                backgroundColor: '#ffffff',
+                logging: false,
+                width: labelContent.offsetWidth,
+                height: labelContent.offsetHeight
+            });
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: width > height ? 'landscape' : 'portrait',
+                unit: 'mm',
+                format: [width, height]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+            pdf.save('product-label.pdf');
+        }
+
+        // Initialize preview on load
+        updatePreview();
+
+        // Auto-update on input changes
+        document.getElementById('labelWidth').addEventListener('input', updatePreview);
+        document.getElementById('labelHeight').addEventListener('input', updatePreview);
+        document.getElementById('mainTitle').addEventListener('input', updatePreview);
+        document.getElementById('subTitle').addEventListener('input', updatePreview);
+        document.getElementById('description').addEventListener('input', updatePreview);
+        document.getElementById('sku').addEventListener('input', updatePreview);
+        document.getElementById('gtin').addEventListener('input', updatePreview);
+    </script>
+</body>
+
+</html>
