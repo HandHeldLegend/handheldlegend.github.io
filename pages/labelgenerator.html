@@ -7,7 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"><title>Product Label Generator</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Sans+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <title>Product Label Generator</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
@@ -416,6 +419,7 @@
             const labelContent = document.getElementById('labelContent');
             const width = parseFloat(document.getElementById('labelWidth').value);
             const height = parseFloat(document.getElementById('labelHeight').value);
+            const mainTitle = document.getElementById('mainTitle').value || 'product-label';
 
             // High resolution for print quality
             const scale = 300 / 25.4; // 300 DPI
@@ -432,7 +436,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'product-label.png';
+                a.download = mainTitle + '.png';
                 a.click();
                 URL.revokeObjectURL(url);
             });
@@ -443,6 +447,7 @@
             const labelContent = document.getElementById('labelContent');
             const width = parseFloat(document.getElementById('labelWidth').value);
             const height = parseFloat(document.getElementById('labelHeight').value);
+            const mainTitle = document.getElementById('mainTitle').value || 'product-label';
 
             const canvas = await html2canvas(labelContent, {
                 scale: 3,
@@ -460,7 +465,7 @@
             });
 
             pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-            pdf.save('product-label.pdf');
+            pdf.save(mainTitle + '.pdf');
         }
 
         // Initialize preview on load
