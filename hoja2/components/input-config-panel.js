@@ -235,7 +235,8 @@ class InputConfigPanel extends HTMLElement {
                         <input type="range" 
                                class="slider delta-slider" 
                                min="0" 
-                               max="4095" 
+                               max="4096" 
+                               step="128" 
                                value="${this._delta}"
                                ${deltaDisabled ? 'disabled' : ''}>
                         <div class="slider-value">${this._delta}</div>
@@ -249,7 +250,8 @@ class InputConfigPanel extends HTMLElement {
                         <input type="range" 
                                class="slider output-slider" 
                                min="0" 
-                               max="4095" 
+                               max="4096" 
+                               step="128"
                                value="${this._output}"
                                ${outputDisabled ? 'disabled' : ''}>
                         <div class="slider-value">${this._output}</div>

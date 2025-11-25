@@ -10,8 +10,8 @@ import { enableTooltips } from '../js/tooltips.js';
 const gamepad = HojaGamepad.getInstance();
 const gamepadCfgBlockNumber = 0;
 
-let overlayElement = null;
 let blurElement = null;
+let configPanelElement = null;
 let configPanelComponent = null;
 let remapPanelElement = null;
 let buttonGridComponent = null;
@@ -25,34 +25,64 @@ function stringToArray(input) {
     return input.split(',');
 }
 
-function closeOverlays() {
-    if(!overlayElement) return;
-    overlayElement.classList.add('hidden');
 
+
+function closeOverlays() {
     if(!remapPanelElement) return;
     remapPanelElement.classList.add('hidden');
+
+    if(!configPanelElement) return;
+    configPanelElement.classList.add('hidden');
 
     if(!blurElement) return;
     blurElement.classList.add('hidden');
 }
 
 function openRemapPanel() {
-    if(!remapPanelElement) return;
-    remapPanelElement.classList.remove('hidden');
 
     if(!blurElement) return;
     blurElement.classList.remove('hidden');
+
+    if(!remapPanelElement) return;
+    remapPanelElement.classList.remove('hidden');
+
+    
+}
+
+function remapClickHandler(event) {
+    console.log("Remap clicked:", event);
+    switch(event.index) {
+        case -2: // Cancel
+            closeRemapPanel();
+            return;
+        case -1: // Unmap
+            configPanelComponent.setOutputLabelAndType('Disabled', 'none');
+            closeRemapPanel();
+            break;  
+
+        default:
+            configPanelComponent.setOutputLabelAndType(event.label, 'analog');
+            closeRemapPanel();
+            break;
+    }
+}
+
+function closeRemapPanel() {
+    if(!remapPanelElement) return;
+    remapPanelElement.classList.add('hidden');
 }
 
 function inputMapClicked(event) { 
     console.log("Input mapping clicked:", event.inputLabel);
 
-    if(!overlayElement) return;
-
     configPanelComponent.setInputLabelAndType(event.inputLabel, 'analog');
     configPanelComponent.setOutputLabelAndType(event.outputLabel, 'analog');
 
-    overlayElement.classList.remove('hidden');
+    if(!configPanelElement) return;
+    configPanelElement.classList.remove('hidden');
+
+    if(!blurElement) return;
+    blurElement.classList.remove('hidden');
 }
 
 const inputList = [
@@ -62,27 +92,20 @@ const inputList = [
 export function render(container) {
 
     container.innerHTML = `
-            <h2>Default Mode</h2>
-            <div class="app-text-container">
-                <strong>WARNING</strong>
-                <br>
-                Changing the default mode will require you to hold A upon plugging in the controller to connect to this configuration app. 
-            </div>
-
-            <div id="panel_overlay" class="popup-overlay hidden" style="z-index: 100;">
-                
-
-                <div id="remap_panel" class="popup hidden" style="z-index: 200;">
-                <button-grid id="gamepad_grid"></button-grid>
-                </div>
-            </div>
+            <h2>Input Mode</h2>
+            
 
             <div id="panel_blur" class="popup-blur hidden" style="z-index: 199;"></div>
 
-            <div id="config_panel" class="popup" style="z-index: 100;">
+            <div id="config_panel" class="popup hidden" style="z-index: 200;">
                 <input-config-panel></input-config-panel>
             </div>
 
+            <div id="remap_panel" class="popup hidden" style="z-index: 201;">
+                <button-grid id="gamepad_grid"></button-grid>
+            </div>
+
+            <h2>Input Setup</h2>
             <div class="module-grid">
             <input-mapping-display input-label="B" output-label="X" value="200" pressed="true"></input-mapping-display>
             <input-mapping-display input-label="B" output-label="X" value="200" pressed="false"></input-mapping-display>
@@ -135,11 +158,12 @@ export function render(container) {
             </div>
     `;
 
-    overlayElement = container.querySelector('#panel_overlay');
     configPanelComponent = container.querySelector('input-config-panel');
 
     remapPanelElement = container.querySelector('#remap_panel');
     buttonGridComponent = container.querySelector('button-grid[id="gamepad_grid"]');
+
+    buttonGridComponent._onClick = remapClickHandler;
 
     blurElement = container.querySelector('#panel_blur');
 
@@ -148,10 +172,12 @@ export function render(container) {
         mapping._onClick = inputMapClicked;
     });
 
+    configPanelElement = container.querySelector('#config_panel');
+
     configPanelComponent._onClose = closeOverlays;
     
-    overlayElement.addEventListener('click', (e) => {
-        if(e.target === overlayElement) {
+    blurElement.addEventListener('click', (e) => {
+        if(e.target === blurElement) {
             closeOverlays();
         }   
     });

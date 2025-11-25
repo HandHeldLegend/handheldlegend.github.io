@@ -41,6 +41,7 @@ class ButtonGrid extends HTMLElement {
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
             <div class="button-grid-container">
+                <button class="grid-button cancel-button clickable hoverable" data-index="${-2}" data-label="Cancel">Cancel</button>
                 <button class="grid-button disable-button clickable hoverable" data-index="${-1}" data-label="Unmap">None</button>
                 ${this._buttons.map((label, index) => `
                     <button class="grid-button clickable hoverable" data-index="${index}" data-label="${label}">
