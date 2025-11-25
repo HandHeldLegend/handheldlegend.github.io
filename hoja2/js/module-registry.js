@@ -7,8 +7,8 @@ export async function registerSettingsModules() {
       color: '#4FB0C6'  // Teal (primary accent)
     },
     {
-      name: 'Remap',
-      path: '../modules/remap-md.js',
+      name: 'Input',
+      path: '../modules/input-md.js',
       icon: 'remap.svg',
       color: '#6E4EC8'  // Indigo
     },

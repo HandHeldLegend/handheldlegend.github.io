@@ -572,14 +572,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveButton.setOnClick(sendSaveCommand);
 
-    var debug = false;
+    var debug = true;
 
     if (debug) {
         // Debug module
         const debugModule = [
             {
                 name: 'Debug',
-                path: '../modules/analog-md.js',
+                path: '../modules/input-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];

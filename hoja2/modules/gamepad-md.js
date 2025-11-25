@@ -50,12 +50,22 @@ export function render(container) {
     let griprColor = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_grip_right);
 
     let hexDefault = '';
+    
+    let hostDefault = '';
+
     for(let i = 0; i < 6; i++)
     {
         let val = gamepad.gamepad_cfg.switch_mac_address[i].toString(16);
         hexDefault+=val;
         if(i != 5) hexDefault += ",";
+
+        let val2 = gamepad.gamepad_cfg.host_mac_switch[i].toString(16);
+        hostDefault+=val2;
+        if(i != 5) hostDefault += ",";
     }
+
+    console.log(hostDefault);
+
 
     container.innerHTML = `
             <h2>Default Mode</h2>

@@ -1,0 +1,123 @@
+/* Styles that are shared by modules can be placed here */
+
+.module-grid {
+    width: inherit;
+    max-width: 620px;
+    height: 100%;
+    align-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    
+    gap: 2px;
+    row-gap: 18px;
+}
+
+.module-panel {
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    background-color: var(--color-button-neutral);
+    min-width: 280px;
+    max-width: fit-content;
+    position: relative;
+    
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@media (hover: hover) {
+    .hoverable {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .hoverable:hover {
+        filter:brightness(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: all 0.1s ease-in-out;
+    }
+}
+
+.clickable:active {
+    filter:brightness(1.3);
+   
+}
+
+/* Overlay backdrop */
+.popup-overlay {
+  position: as;
+  height: 100%;
+  width: 100%;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;  
+}
+
+.popup-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  margin-right: 14px;
+  margin-top: -10px;
+  backdrop-filter: blur(5px);
+  background-color: #b8b8b802;
+  position:fixed;
+  height: 100%;
+  width: 100%;
+}
+
+.popup-blur.hidden {
+    display: none;
+}
+
+/* Popup window */
+.popup {
+  top: 55px;
+  position: fixed;
+  border-radius: var(--border-radius-lg);
+  border: 2px solid var(--color-p1-dark);
+  background-color: var(--color-p1);
+  width: fit-content;
+  height: fit-content;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Close button */
+.popup-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.popup-close:hover {
+  color: #000;
+}
+
+.hidden {
+    display: none;
+}
+
+.module-button {
+    justify-self: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 2px solid var(--background-high);
+    background-color: var(--background-highest);
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color-text-primary);
+    cursor: pointer;
+}

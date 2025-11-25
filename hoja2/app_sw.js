@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-  version: 'v0.003.012', // Increment this when you update files
+  version: 'v0.003.016', // Increment this when you update files
   folders: {
     '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
     '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js', 'pico_update.js'],
@@ -11,12 +11,15 @@ const CACHE_CONFIG = {
       'analog-stick-visual.js',
       'angle-selector.js', 'angle-selector.css',
       'axis-invert-selector.js', 'axis-invert-selector.css',
+      'button-grid.js', 'button-grid.css',
       'dual-analog-trigger.js', 'dual-analog-trigger.css',
       'group-rgb-picker.js', 'group-rgb-picker.css',
       'imu-data-display.js', 'imu-data-display.css',
       'mac-address-selector.js', 'mac-address-selector.css',
       'multi-position-button.js', 'multi-position-button.css',
       'number-selector.js', 'number-selector.css',
+      'input-mapping-display.js', 'input-mapping-display.css',
+      'input-config-panel.js', 'input-config-panel.css',
       'remap-box.js', 'remap-box.css',
       'sensor-visualization.js', 'sensor-visualization.css',
       'single-shot-button.js', 'single-shot-button.css',
@@ -29,7 +32,7 @@ const CACHE_CONFIG = {
       'gamepad-md.js',
       'haptic-md.js',
       'motion-md.js',
-      'remap-md.js',
+      'input-md.js',
       'rgb-md.js',
       'trigger-md.js',
       'user-md.js',

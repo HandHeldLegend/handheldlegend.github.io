@@ -4,7 +4,7 @@
     cursor: pointer;
     transition: var(--transition-quick);
     font-weight: bold;
-    min-width: 90px;
+    min-width: 55px;
     height: var(--config-box-height);
 
     /* Prevent text selection */

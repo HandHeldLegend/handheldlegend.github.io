@@ -1,16 +1,31 @@
 :root {
     /* Background gradient (deep → slightly lighter) */
-    --background-lowest: #110f14;
-    --background-low: #221F2F;
-    --background-mid: #393546;
-    /* panel/card */
-    --background-high: #4c4157;
-    --background-highest: #6a5d79;
+    --background-highest: #7e77bd;
+    --background-high: color-mix(in srgb, var(--background-highest) 80%, black);
+    --background-mid: color-mix(in srgb, var(--background-highest) 50%, black);
+    --background-low: color-mix(in srgb, var(--background-highest) 30%, black);
+    --background-lowest: color-mix(in srgb, var(--background-highest) 20%, black);
 
     --blur-amt: 5px;
 
+    --color-p1 : #39aec9;
+    --color-p1-dark: color-mix(in srgb, var(--color-p1) 80%, black);
+    --color-p1-light: color-mix(in srgb, var(--color-p1) 80%, white);
+
+    --color-p2 : #F29E4C;
+    --color-p2-dark: color-mix(in srgb, var(--color-p2) 80%, black);
+    --color-p2-light: color-mix(in srgb, var(--color-p2) 80%, white);
+
+    --color-p3 : #6ECE9A;
+    --color-p3-dark: color-mix(in srgb, var(--color-p3) 80%, black);
+    --color-p3-light: color-mix(in srgb, var(--color-p3) 80%, white);
+
+    --color-p4 : #E75A7C;
+    --color-p4-dark: color-mix(in srgb, var(--color-p4) 80%, black);
+    --color-p4-light: color-mix(in srgb, var(--color-p4) 80%, white);
+
     /* Accent & Semantic Colors */
-    --color-accent-primary: #4FB0C6;
+    --color-accent-primary: #39aec9;
     /* blue‑teal for primary buttons, sliders */
     --color-accent-secondary: #F29E4C;
     /* warm orange for secondary actions */
@@ -20,11 +35,11 @@
     /* disconnect, errors */
 
     /* Text & Borders */
-    --color-text-primary: #F4F3F4;
+    --color-text-primary: #f4f3f4c4;
     /* main copy & icons */
-    --color-text-secondary: #5A555F;
+    --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 80%, black);
     /* subtle labels, dividers */
-    --color-text-tertiary: #A09DA7;
+    --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 20%, black);
     /* very muted captions */
 
     /* Legacy aliases (mapped to new semantics) */
@@ -128,7 +143,7 @@ body {
     display: block;
     width: fit-content;
     gap: 10px;
-    margin-left: 40px;
+    margin-left: 10px;
     align-items: center;
 }
 
@@ -140,11 +155,10 @@ body {
     cursor: pointer;
     transition: var(--transition-quick);
     font-weight: bold;
-    min-width: 90px;
+    min-width: 55px;
     height: var(--config-box-height);
-    margin-left: auto;
     /* This will push it to the right */
-    margin-right: 40px;
+    margin-right: 10px;
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -619,3 +633,41 @@ remap-selector-container {
 remap-selector-container[hidden="true"] {
     opacity: 0;
 }
+
+.battery-status-container {
+    margin: 20px 0;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.status-label {
+    padding-right: 5px;
+    font-weight: bold;
+}
+
+.charging { color: #2196F3; }
+.charging-full {color: #4ab419; }
+.not-charging { color: #666; }
+
+.battery-visual {
+    width: 100%;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.battery-bar {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.battery-high { background-color: #4CAF50; }
+.battery-medium { background-color: #FFC107; }
+.battery-low { background-color: #F44336; }
+.battery-charging { background-color: #2196F3; }
