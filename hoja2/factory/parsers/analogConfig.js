@@ -1,5 +1,4 @@
-import Analogpackeddistances from './analogPackedDistances.js';
-import Anglemap from './angleMap.js';
+import Joyconfigslot from './joyConfigSlot.js';
 
 
 export default class Analogconfig {
@@ -12,141 +11,124 @@ export default class Analogconfig {
 		return this.#_getUint8(0);
 	}
 
+	/** @type {Uint8} */
+	get analog_calibration_set() {
+		return this.#_getUint8(1);
+	}
+
 	/** @type {Uint16} */
 	get lx_invert() {
-		return this.#_getBitfield(1, 2, 1, 0);
+		return this.#_getBitfield(2, 2, 1, 0);
 	}
 
 	/** @type {Uint16} */
 	get lx_center() {
-		return this.#_getBitfield(1, 2, 15, 1);
+		return this.#_getBitfield(2, 2, 15, 1);
 	}
 
 	/** @type {Uint16} */
 	get ly_invert() {
-		return this.#_getBitfield(3, 2, 1, 0);
+		return this.#_getBitfield(4, 2, 1, 0);
 	}
 
 	/** @type {Uint16} */
 	get ly_center() {
-		return this.#_getBitfield(3, 2, 15, 1);
+		return this.#_getBitfield(4, 2, 15, 1);
 	}
 
 	/** @type {Uint16} */
 	get rx_invert() {
-		return this.#_getBitfield(5, 2, 1, 0);
+		return this.#_getBitfield(6, 2, 1, 0);
 	}
 
 	/** @type {Uint16} */
 	get rx_center() {
-		return this.#_getBitfield(5, 2, 15, 1);
+		return this.#_getBitfield(6, 2, 15, 1);
 	}
 
 	/** @type {Uint16} */
 	get ry_invert() {
-		return this.#_getBitfield(7, 2, 1, 0);
+		return this.#_getBitfield(8, 2, 1, 0);
 	}
 
 	/** @type {Uint16} */
 	get ry_center() {
-		return this.#_getBitfield(7, 2, 15, 1);
+		return this.#_getBitfield(8, 2, 15, 1);
 	}
 
-	/** @type {Analogpackeddistances} */
-	get l_packed_distances() {
-		const tmp = this.#_getUint8Array(9, 130);
-		return new Analogpackeddistances(tmp);
-	}
-
-	/** @type {Analogpackeddistances} */
-	get r_packed_distances() {
-		const tmp = this.#_getUint8Array(139, 130);
-		return new Analogpackeddistances(tmp);
-	}
-
-	/** @type {Anglemap[]} */
-	get l_angle_maps() {
+	/** @type {Joyconfigslot[]} */
+	get joy_config_l() {
 		let tmpArr = [];
 		for(let i = 0; i < 16; i++) {
-			const tmp = this.#_getUint8Array(269+(12*i), 12);
-			tmpArr.push(new Anglemap(tmp));
+			const tmp = this.#_getUint8Array(10+(21*i), 21);
+			tmpArr.push(new Joyconfigslot(tmp));
 		}
 		return tmpArr;
 	}
 
-	/** @type {Anglemap[]} */
-	get r_angle_maps() {
+	/** @type {Joyconfigslot[]} */
+	get joy_config_r() {
 		let tmpArr = [];
 		for(let i = 0; i < 16; i++) {
-			const tmp = this.#_getUint8Array(461+(12*i), 12);
-			tmpArr.push(new Anglemap(tmp));
+			const tmp = this.#_getUint8Array(346+(21*i), 21);
+			tmpArr.push(new Joyconfigslot(tmp));
 		}
 		return tmpArr;
-	}
-
-	/** @type {Uint8} */
-	get l_scaler_type() {
-		return this.#_getUint8(653);
-	}
-
-	/** @type {Uint8} */
-	get r_scaler_type() {
-		return this.#_getUint8(654);
 	}
 
 	/** @type {Uint16} */
 	get l_deadzone() {
-		return this.#_getUint16(655);
+		return this.#_getUint16(682);
 	}
 
 	/** @type {Uint16} */
 	get r_deadzone() {
-		return this.#_getUint16(657);
+		return this.#_getUint16(684);
 	}
 
 	/** @type {Uint8} */
 	get l_snapback_type() {
-		return this.#_getUint8(659);
+		return this.#_getUint8(686);
 	}
 
 	/** @type {Uint8} */
 	get r_snapback_type() {
-		return this.#_getUint8(660);
+		return this.#_getUint8(687);
 	}
 
 	/** @type {Uint16} */
 	get l_deadzone_outer() {
-		return this.#_getUint16(661);
+		return this.#_getUint16(688);
 	}
 
 	/** @type {Uint16} */
 	get r_deadzone_outer() {
-		return this.#_getUint16(663);
+		return this.#_getUint16(690);
 	}
 
 	/** @type {Uint16} */
 	get l_snapback_intensity() {
-		return this.#_getUint16(665);
+		return this.#_getUint16(692);
 	}
 
 	/** @type {Uint16} */
 	get r_snapback_intensity() {
-		return this.#_getUint16(667);
+		return this.#_getUint16(694);
 	}
 
 	/** @type {Uint16} */
 	get l_threshold() {
-		return this.#_getUint16(669);
+		return this.#_getUint16(696);
 	}
 
 	/** @type {Uint16} */
 	get r_threshold() {
-		return this.#_getUint16(671);
+		return this.#_getUint16(698);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(673, 351);
+		return this.#_getUint8Array(700, 324);
 	}
 
 
@@ -156,143 +138,118 @@ export default class Analogconfig {
 		this.#_setUint8(0, value);
 	}
 
+	/** @param {Uint8} value */
+	set analog_calibration_set(value) {
+		this.#_setUint8(1, value);
+	}
+
 	/** @param {Uint16} value */
 	set lx_invert(value) {
-		this.#_setBitfield(1, 2, 1, 0, value);
+		this.#_setBitfield(2, 2, 1, 0, value);
 	}
 
 	/** @param {Uint16} value */
 	set lx_center(value) {
-		this.#_setBitfield(1, 2, 15, 1, value);
+		this.#_setBitfield(2, 2, 15, 1, value);
 	}
 
 	/** @param {Uint16} value */
 	set ly_invert(value) {
-		this.#_setBitfield(3, 2, 1, 0, value);
+		this.#_setBitfield(4, 2, 1, 0, value);
 	}
 
 	/** @param {Uint16} value */
 	set ly_center(value) {
-		this.#_setBitfield(3, 2, 15, 1, value);
+		this.#_setBitfield(4, 2, 15, 1, value);
 	}
 
 	/** @param {Uint16} value */
 	set rx_invert(value) {
-		this.#_setBitfield(5, 2, 1, 0, value);
+		this.#_setBitfield(6, 2, 1, 0, value);
 	}
 
 	/** @param {Uint16} value */
 	set rx_center(value) {
-		this.#_setBitfield(5, 2, 15, 1, value);
+		this.#_setBitfield(6, 2, 15, 1, value);
 	}
 
 	/** @param {Uint16} value */
 	set ry_invert(value) {
-		this.#_setBitfield(7, 2, 1, 0, value);
+		this.#_setBitfield(8, 2, 1, 0, value);
 	}
 
 	/** @param {Uint16} value */
 	set ry_center(value) {
-		this.#_setBitfield(7, 2, 15, 1, value);
+		this.#_setBitfield(8, 2, 15, 1, value);
 	}
 
-	/** @param {Analogpackeddistances} value */
-	set l_packed_distances(value) {
-		if (value instanceof Analogpackeddistances) {
-			this.#_setUint8Array(9, value.buffer);
-		}
-		else {
-			console.error('Must be type of Analogpackeddistances');
-		}
-	}
-
-	/** @param {Analogpackeddistances} value */
-	set r_packed_distances(value) {
-		if (value instanceof Analogpackeddistances) {
-			this.#_setUint8Array(139, value.buffer);
-		}
-		else {
-			console.error('Must be type of Analogpackeddistances');
-		}
-	}
-
-	/** @param {Anglemap[]} value */
-	set l_angle_maps(value) {
+	/** @param {Joyconfigslot[]} value */
+	set joy_config_l(value) {
 		for (const [index, obj] of value.entries()) {
-			this.#_setUint8Array(269+(12*index), obj.buffer)
+			this.#_setUint8Array(10+(21*index), obj.buffer)
 		}
 	}
 
-	/** @param {Anglemap[]} value */
-	set r_angle_maps(value) {
+	/** @param {Joyconfigslot[]} value */
+	set joy_config_r(value) {
 		for (const [index, obj] of value.entries()) {
-			this.#_setUint8Array(461+(12*index), obj.buffer)
+			this.#_setUint8Array(346+(21*index), obj.buffer)
 		}
-	}
-
-	/** @param {Uint8} value */
-	set l_scaler_type(value) {
-		this.#_setUint8(653, value);
-	}
-
-	/** @param {Uint8} value */
-	set r_scaler_type(value) {
-		this.#_setUint8(654, value);
 	}
 
 	/** @param {Uint16} value */
 	set l_deadzone(value) {
-		this.#_setUint16(655, value);
+		this.#_setUint16(682, value);
 	}
 
 	/** @param {Uint16} value */
 	set r_deadzone(value) {
-		this.#_setUint16(657, value);
+		this.#_setUint16(684, value);
 	}
 
 	/** @param {Uint8} value */
 	set l_snapback_type(value) {
-		this.#_setUint8(659, value);
+		this.#_setUint8(686, value);
 	}
 
 	/** @param {Uint8} value */
 	set r_snapback_type(value) {
-		this.#_setUint8(660, value);
+		this.#_setUint8(687, value);
 	}
 
 	/** @param {Uint16} value */
 	set l_deadzone_outer(value) {
-		this.#_setUint16(661, value);
+		this.#_setUint16(688, value);
 	}
 
 	/** @param {Uint16} value */
 	set r_deadzone_outer(value) {
-		this.#_setUint16(663, value);
+		this.#_setUint16(690, value);
 	}
 
 	/** @param {Uint16} value */
 	set l_snapback_intensity(value) {
-		this.#_setUint16(665, value);
+		this.#_setUint16(692, value);
 	}
 
 	/** @param {Uint16} value */
 	set r_snapback_intensity(value) {
-		this.#_setUint16(667, value);
+		this.#_setUint16(694, value);
 	}
 
 	/** @param {Uint16} value */
 	set l_threshold(value) {
-		this.#_setUint16(669, value);
+		this.#_setUint16(696, value);
 	}
 
 	/** @param {Uint16} value */
 	set r_threshold(value) {
-		this.#_setUint16(671, value);
+		this.#_setUint16(698, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(673, value);
+		this.#_setUint8Array(700, value);
 	}
 
 

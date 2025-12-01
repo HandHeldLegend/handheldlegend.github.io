@@ -2,29 +2,69 @@
 
 export default class Batteryinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(26);
+    this.buffer = buffer || new Uint8Array(76);
   }
 
   	/** @type {Uint16} */
-	get capacity_mah() {
+	get battery_capacity_mah() {
 		return this.#_getUint16(0);
 	}
 
 	/** @type {Uint8Array} */
-	get part_number() {
+	get battery_part_number() {
 		return this.#_getUint8Array(2, 24);
+	}
+
+	/** @type {Uint8} */
+	get pmic_status() {
+		return this.#_getUint8(26);
+	}
+
+	/** @type {Uint8Array} */
+	get pmic_part_number() {
+		return this.#_getUint8Array(27, 24);
+	}
+
+	/** @type {Uint8} */
+	get fuelgauge_status() {
+		return this.#_getUint8(51);
+	}
+
+	/** @type {Uint8Array} */
+	get fuelgauge_part_number() {
+		return this.#_getUint8Array(52, 24);
 	}
 
 
 
   	/** @param {Uint16} value */
-	set capacity_mah(value) {
+	set battery_capacity_mah(value) {
 		this.#_setUint16(0, value);
 	}
 
 	/** @param {Uint8Array} value */
-	set part_number(value) {
+	set battery_part_number(value) {
 		this.#_setUint8Array(2, value);
+	}
+
+	/** @param {Uint8} value */
+	set pmic_status(value) {
+		this.#_setUint8(26, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set pmic_part_number(value) {
+		this.#_setUint8Array(27, value);
+	}
+
+	/** @param {Uint8} value */
+	set fuelgauge_status(value) {
+		this.#_setUint8(51, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set fuelgauge_part_number(value) {
+		this.#_setUint8Array(52, value);
 	}
 
 

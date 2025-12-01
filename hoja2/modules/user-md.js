@@ -1,13 +1,6 @@
 import HojaGamepad from '../js/gamepad.js';
 
-import NumberSelector from '../components/number-selector.js';
-import MultiPositionButton from '../components/multi-position-button.js';
-import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
 import TextEntry from '../components/text-entry.js';
-
-import TristateButton from '../components/tristate-button.js';
-import SingleShotButton from '../components/single-shot-button.js';
 
 import { enableTooltips } from '../js/tooltips.js';
 
@@ -68,7 +61,7 @@ export function render(container) {
     else
     {
         userNameHTML = `
-        <text-entry id="username-entry" default-value="${userNameDecoded}"></text-entry>
+        <text-entry id="username-entry" value="${userNameDecoded}"></text-entry>
         `
     }
 

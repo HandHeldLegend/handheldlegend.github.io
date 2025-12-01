@@ -3,14 +3,14 @@ import Inputinfoslot from './inputInfoSlot.js';
 
 export default class Inputinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(468);
+    this.buffer = buffer || new Uint8Array(360);
   }
 
   	/** @type {Inputinfoslot[]} */
 	get input_info() {
 		let tmpArr = [];
 		for(let i = 0; i < 36; i++) {
-			const tmp = this.#_getUint8Array(0+(13*i), 13);
+			const tmp = this.#_getUint8Array(0+(10*i), 10);
 			tmpArr.push(new Inputinfoslot(tmp));
 		}
 		return tmpArr;
@@ -21,7 +21,7 @@ export default class Inputinfostatic {
   	/** @param {Inputinfoslot[]} value */
 	set input_info(value) {
 		for (const [index, obj] of value.entries()) {
-			this.#_setUint8Array(0+(13*index), obj.buffer)
+			this.#_setUint8Array(0+(10*index), obj.buffer)
 		}
 	}
 

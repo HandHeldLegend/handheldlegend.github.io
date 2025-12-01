@@ -1,6 +1,7 @@
 typedef struct 
 {
-        uint8_t     analog_config_version; // 0
+        uint8_t     analog_config_version; 
+        uint8_t     analog_calibration_set;
         uint16_t    lx_invert : 1; 
         uint16_t    lx_center : 15; 
         uint16_t    ly_invert : 1;
@@ -9,12 +10,8 @@ typedef struct
         uint16_t    rx_center : 15;
         uint16_t    ry_invert : 1;
         uint16_t    ry_center : 15; 
-        analogPackedDistances_s l_packed_distances; // SIZE=130
-        analogPackedDistances_s r_packed_distances; // SIZE=130
-        angleMap_s  l_angle_maps[16]; // SIZE=12
-        angleMap_s  r_angle_maps[16]; // SIZE=12
-        uint8_t     l_scaler_type; 
-        uint8_t     r_scaler_type; 
+        joyConfigSlot_s joy_config_l[16]; // SIZE=21
+        joyConfigSlot_s joy_config_r[16]; // SIZE=21
         uint16_t    l_deadzone; 
         uint16_t    r_deadzone; 
         uint8_t     l_snapback_type;
@@ -23,7 +20,7 @@ typedef struct
         uint16_t    r_deadzone_outer; 
         uint16_t    l_snapback_intensity; 
         uint16_t    r_snapback_intensity;
-        uint16_t    l_threshold;
-        uint16_t    r_threshold;
-        uint8_t     reserved[351];
+        uint16_t    l_threshold; // Analog->Digital threshold for left joystick
+        uint16_t    r_threshold; // Analog->Digital threshold for right joystick
+        uint8_t     reserved[324];
 } analogConfig_s;

@@ -1,4 +1,4 @@
 typedef struct
 {
-    inputInfoSlot_s input_info[36]; // SIZE=13 
+    inputInfoSlot_s input_info[36]; // SIZE=10 
 } inputInfoStatic_s;

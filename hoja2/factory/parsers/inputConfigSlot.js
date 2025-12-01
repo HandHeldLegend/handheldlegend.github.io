@@ -7,12 +7,12 @@ export default class Inputconfigslot {
 
   	/** @type {Uint16} */
 	get output_mode() {
-		return this.#_getBitfield(0, 2, 4, 0);
+		return this.#_getBitfield(0, 2, 3, 0);
 	}
 
 	/** @type {Uint16} */
 	get static_output() {
-		return this.#_getBitfield(0, 2, 12, 4);
+		return this.#_getBitfield(0, 2, 13, 3);
 	}
 
 	/** @type {Uint16} */
@@ -29,12 +29,12 @@ export default class Inputconfigslot {
 
   	/** @param {Uint16} value */
 	set output_mode(value) {
-		this.#_setBitfield(0, 2, 4, 0, value);
+		this.#_setBitfield(0, 2, 3, 0, value);
 	}
 
 	/** @param {Uint16} value */
 	set static_output(value) {
-		this.#_setBitfield(0, 2, 12, 4, value);
+		this.#_setBitfield(0, 2, 13, 3, value);
 	}
 
 	/** @param {Uint16} value */

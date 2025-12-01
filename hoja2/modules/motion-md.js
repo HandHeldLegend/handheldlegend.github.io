@@ -77,18 +77,18 @@ function motionReportHook(data) {
     const combinedView = new DataView(combinedBuffer);
     
     // Get gyroscope data and write to first 6 bytes
-    const gx = view.getInt16(23, true);
-    const gy = view.getInt16(25, true);
-    const gz = view.getInt16(27, true);
+    const gx = view.getInt16(9, true);
+    const gy = view.getInt16(11, true);
+    const gz = view.getInt16(13, true);
     
     combinedView.setInt16(0, gx, true); // X rotation
     combinedView.setInt16(2, gy, true); // Y rotation
     combinedView.setInt16(4, gz, true); // Z rotation
     
     // Get accelerometer data and write to next 6 bytes
-    const ax = view.getInt16(17, true);
-    const ay = view.getInt16(19, true);
-    const az = view.getInt16(21, true);
+    const ax = view.getInt16(3, true);
+    const ay = view.getInt16(5, true);
+    const az = view.getInt16(7, true);
     
     combinedView.setInt16(6, ax, true); // X acceleration
     combinedView.setInt16(8, ay, true); // Y acceleration
@@ -142,10 +142,11 @@ export function render(container) {
     let hexColorBody = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
 
     container.innerHTML = `
-        <h2>Primary Options</h2>
+        <h2>Motion Settings</h2>
         <div class="app-row">
             <single-shot-button 
                 id="calibrate-imu-button" 
+                width="60"
                 state="ready" 
                 ready-text="Calibrate" 
                 disabled-text="Calibrate"
@@ -156,11 +157,12 @@ export function render(container) {
             ></single-shot-button>
             <multi-position-button 
                 id="gyro-disable-select" 
-                labels="Enabled, Disabled"
-                default-selected="${gamepad.imu_cfg.imu_disabled}"
-                style="max-width: 350px"
+                options="Enabled, Disabled"
+                selected="${gamepad.imu_cfg.imu_disabled}"
+                width="150"
             ></multi-position-button>
         </div>
+        <div class="separator"></div>
         <h2>Visualizer</h2>
         <sensor-visualization
             model="./assets/3d/supergamepad.stl"
@@ -169,6 +171,7 @@ export function render(container) {
             color="#${hexColorBody}"
             reflectivity="0.16"
         ></sensor-visualization>
+        <div class="separator"></div>
         <imu-data-display></imu-data-display>
     `;
 

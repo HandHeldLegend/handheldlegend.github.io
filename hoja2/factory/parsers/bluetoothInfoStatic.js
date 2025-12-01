@@ -2,59 +2,79 @@
 
 export default class Bluetoothinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(5);
+    this.buffer = buffer || new Uint8Array(54);
   }
 
-  	/** @type {Uint16} */
-	get baseband_version() {
-		return this.#_getUint16(0);
+  	/** @type {Uint8Array} */
+	get part_number() {
+		return this.#_getUint8Array(0, 24);
+	}
+
+	/** @type {Uint8} */
+	get external_update_supported() {
+		return this.#_getUint8(24);
 	}
 
 	/** @type {Uint16} */
-	get baseband_type() {
-		return this.#_getUint16(2);
+	get external_version_number() {
+		return this.#_getUint16(25);
 	}
 
 	/** @type {Uint8} */
-	get bluetooth_bdr() {
-		return this.#_getBitfield(4, 1, 1, 0);
+	get bluetooth_bdr_supported() {
+		return this.#_getUint8(27);
 	}
 
 	/** @type {Uint8} */
-	get bluetooth_ble() {
-		return this.#_getBitfield(4, 1, 1, 1);
+	get bluetooth_ble_supported() {
+		return this.#_getUint8(28);
 	}
 
 	/** @type {Uint8} */
-	get reserved() {
-		return this.#_getBitfield(4, 1, 6, 2);
+	get bluetooth_status() {
+		return this.#_getUint8(29);
+	}
+
+	/** @type {Uint8Array} */
+	get fcc_id() {
+		return this.#_getUint8Array(30, 24);
 	}
 
 
 
-  	/** @param {Uint16} value */
-	set baseband_version(value) {
-		this.#_setUint16(0, value);
+  	/** @param {Uint8Array} value */
+	set part_number(value) {
+		this.#_setUint8Array(0, value);
+	}
+
+	/** @param {Uint8} value */
+	set external_update_supported(value) {
+		this.#_setUint8(24, value);
 	}
 
 	/** @param {Uint16} value */
-	set baseband_type(value) {
-		this.#_setUint16(2, value);
+	set external_version_number(value) {
+		this.#_setUint16(25, value);
 	}
 
 	/** @param {Uint8} value */
-	set bluetooth_bdr(value) {
-		this.#_setBitfield(4, 1, 1, 0, value);
+	set bluetooth_bdr_supported(value) {
+		this.#_setUint8(27, value);
 	}
 
 	/** @param {Uint8} value */
-	set bluetooth_ble(value) {
-		this.#_setBitfield(4, 1, 1, 1, value);
+	set bluetooth_ble_supported(value) {
+		this.#_setUint8(28, value);
 	}
 
 	/** @param {Uint8} value */
-	set reserved(value) {
-		this.#_setBitfield(4, 1, 6, 2, value);
+	set bluetooth_status(value) {
+		this.#_setUint8(29, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set fcc_id(value) {
+		this.#_setUint8Array(30, value);
 	}
 
 

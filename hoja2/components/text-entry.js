@@ -6,7 +6,7 @@ class TextEntry extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['default-value', 'placeholder', 'maxlength'];
+        return ['value', 'placeholder', 'maxlength'];
     }
 
     async connectedCallback() {
@@ -19,7 +19,7 @@ class TextEntry extends HTMLElement {
     }
 
     getDefaultValue() {
-        return this.getAttribute('default-value') || '';
+        return this.getAttribute('value') || '';
     }
 
     getPlaceholder() {
@@ -42,7 +42,7 @@ class TextEntry extends HTMLElement {
                     type="text" 
                     class="text-input"
                     value="${defaultValue}"
-                    placeholder="${placeholder}"
+                    placeholder="✎ ${placeholder}"
                     data-maxbytes="${this.getMaxLength() || ''}"
                 >
             </div>

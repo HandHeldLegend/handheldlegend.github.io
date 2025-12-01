@@ -2,7 +2,7 @@
 
 export default class Inputinfoslot {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(13);
+    this.buffer = buffer || new Uint8Array(10);
   }
 
   	/** @type {Uint8} */
@@ -15,9 +15,9 @@ export default class Inputinfoslot {
 		return this.#_getUint8Array(1, 8);
 	}
 
-	/** @type {Uint8Array} */
-	get rgb_assignments() {
-		return this.#_getUint8Array(9, 4);
+	/** @type {Uint8} */
+	get rgb_group() {
+		return this.#_getUint8(9);
 	}
 
 
@@ -32,9 +32,9 @@ export default class Inputinfoslot {
 		this.#_setUint8Array(1, value);
 	}
 
-	/** @param {Uint8Array} value */
-	set rgb_assignments(value) {
-		this.#_setUint8Array(9, value);
+	/** @param {Uint8} value */
+	set rgb_group(value) {
+		this.#_setUint8(9, value);
 	}
 
 

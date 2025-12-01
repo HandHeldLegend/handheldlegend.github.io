@@ -6,74 +6,53 @@
     --background-low: color-mix(in srgb, var(--background-highest) 30%, black);
     --background-lowest: color-mix(in srgb, var(--background-highest) 20%, black);
 
+    --background-grad: linear-gradient(150deg, var(--background-high) 0%, var(--background-mid) 100%);
+
     --blur-amt: 5px;
 
-    --color-p1 : #39aec9;
+    --color-p1 : #52dfffde;
     --color-p1-dark: color-mix(in srgb, var(--color-p1) 80%, black);
     --color-p1-light: color-mix(in srgb, var(--color-p1) 80%, white);
+    --color-p1-grad: linear-gradient(150deg, var(--color-p1) 0%, var(--color-p1-dark) 100%);
 
-    --color-p2 : #F29E4C;
+    --color-p2 : #ffb66cde;
     --color-p2-dark: color-mix(in srgb, var(--color-p2) 80%, black);
     --color-p2-light: color-mix(in srgb, var(--color-p2) 80%, white);
+    --color-p2-grad: linear-gradient(150deg, var(--color-p2) 0%, var(--color-p2-dark) 100%);
 
-    --color-p3 : #6ECE9A;
+    --color-p3 : #8dffc0dc;
     --color-p3-dark: color-mix(in srgb, var(--color-p3) 80%, black);
     --color-p3-light: color-mix(in srgb, var(--color-p3) 80%, white);
+    --color-p3-grad: linear-gradient(150deg, var(--color-p3) 0%, var(--color-p3-dark) 100%);
 
-    --color-p4 : #E75A7C;
+    --color-p4 : #f55e66e5;
     --color-p4-dark: color-mix(in srgb, var(--color-p4) 80%, black);
     --color-p4-light: color-mix(in srgb, var(--color-p4) 80%, white);
+    --color-p4-grad: linear-gradient(150deg, var(--color-p4) 0%, var(--color-p4-dark) 100%);
 
-    /* Accent & Semantic Colors */
-    --color-accent-primary: #39aec9;
-    /* blue‑teal for primary buttons, sliders */
-    --color-accent-secondary: #F29E4C;
-    /* warm orange for secondary actions */
-    --color-success: #6ECE9A;
-    /* on‑state, “enabled” */
-    --color-danger: #E75A7C;
-    /* disconnect, errors */
+    --color-p5 : #bbbbbbd8;
+    --color-p5-dark: color-mix(in srgb, var(--color-p5) 80%, black);
+    --color-p5-light: color-mix(in srgb, var(--color-p5) 70%, white);
+    --color-p5-grad: linear-gradient(150deg, var(--color-p5) 0%, var(--color-p5-dark) 100%);
 
-    /* Text & Borders */
-    --color-text-primary: #f4f3f4c4;
-    /* main copy & icons */
-    --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 80%, black);
-    /* subtle labels, dividers */
-    --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 20%, black);
-    /* very muted captions */
+    /* Button Height Vars */
+    --button-h: 38px;
+    --button-w: 75px;
 
-    /* Legacy aliases (mapped to new semantics) */
-    --color-primary: var(--color-accent-primary);
-    --color-secondary: var(--color-accent-secondary);
-    --color-background-light: var(--background-mid);
-    --color-background-light-hover: #3A3541;
-    --color-background-dark: var(--background-lowest);
-    --color-background-warning: rgba(242, 158, 76, 0.88);
+    --color-text-primary: #ffffffd0;
+    --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 50%, black);
+    --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 12%, black);
 
-    /* Buttons */
-    --color-button-disabled: #5A555F;
-    --color-button-neutral: var(--color-accent-primary);
-    --color-button-neutral-hover: #5AC3D1;
-    --color-button-off: var(--color-danger);
-    --color-button-off-hover: #F08BA1;
-    --color-button-on: var(--color-success);
-    --color-button-on-hover: #7FDBAC;
-
-    /* Config Box Elements */
-    --config-box-height: 40px;
-    --config-box-divider-color: #919191;
-    --config-box-width-min: 95%;
-    --config-box-width-max: 550px;
-
+    --box-shadow-outset: 0 4px 8px rgba(0, 0, 0, 0.2);
     --box-shadow-inset: inset 4px 4px 6px rgba(0, 0, 0, 0.192), inset -4px -4px 6px rgba(0, 0, 0, 0.192);
     --box-shadow-open: inset 0px 4px 6px rgba(0, 0, 0, 0.192), inset 0px -4px 6px rgba(0, 0, 0, 0.192);
 
     /* Spacing */
-    --spacing-xs: 5px;
-    --spacing-sm: 10px;
-    --spacing-md: 15px;
-    --spacing-lg: 20px;
-    --spacing-xl: 30px;
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 16px;
+    --spacing-xl: 32px;
 
     /* Border Radius */
     --border-radius-sm: 10px;
@@ -82,21 +61,40 @@
     --border-radius-round: 50%;
 
     /* Typography */
-    --font-family-primary: Arial, sans-serif;
-    --font-size-sm: 11px;
-    --font-size-md: 16px;
-    --font-size-lg: 20px;
+    --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-xs: 10px;
+    --font-size-sm: 12px;
+    --font-size-md: 14px;
+    --font-size-lg: 18px;
 
     /* Transitions */
     --transition-quick: 0.2s ease;
     --transition-standard: 0.3s ease;
     --transition-steady: 0.5s ease;
 
-    color: var(--color-text-primary);
+
+}
+
+.separator {
+    max-width: 350px;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-text-secondary);
+    margin: 6px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.vert-separator {
+    width: 1px;
+    height: 26px;
+
+    background-color: var(--color-text-secondary);
 }
 
 body {
     font-family: var(--font-family-primary);
+    color: var(--color-text-primary);
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -149,16 +147,31 @@ body {
 
 .install-button {
     display: block;
-    border: none;
-    background-color: var(--color-button-neutral);
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    transition: var(--transition-quick);
-    font-weight: bold;
-    min-width: 55px;
-    height: var(--config-box-height);
-    /* This will push it to the right */
+
+    
+
+    /* Default width that is overwritten */
+    width: 60px;
+
+    min-width: fit-content;
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+    align-content: center;
+    text-align: center;
+    margin:auto;
     margin-right: 10px;
+    cursor: pointer;
+
+    background: var(--color-p2-grad);
+    background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
+
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-md);
+
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -171,27 +184,46 @@ body {
     display: none;
 }
 
-.install-button:hover {
-    background-color: var(--color-button-neutral-hover);
+@media (hover: hover) {
+    .install-button:hover:not(:active) {
+        filter:brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all 0.1s ease-in-out;
+    }
 }
 
 .connect-hint {
-    color: black;
     display: inline-block;
     vertical-align: middle;
-    border: none;
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    transition: var(--transition-quick);
-    font-weight: bold;
-    width: 85px;
-    height: var(--config-box-height);
-    text-align: center;
+
+    /* Default width that is overwritten */
+    width: 64px;
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
     align-content: center;
+    text-align: center;
+    margin:auto;
+    cursor: default;
+    padding:0;
 
+    font-family: var(--font-family-primary);
     font-size: var(--font-size-sm);
+    font-weight: bold;
 
-    background-color: var(--color-background-warning);
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
+
+    background: var(--color-p2-grad);
+    background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .header-msg-box {
@@ -260,6 +292,7 @@ body {
 #app-grid-container {
     overflow-y: auto;
     flex: 1;
+    background: linear-gradient(150deg, var(--background-high) 0%, var(--background-mid) 100%);
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
 }
@@ -276,6 +309,8 @@ body {
     width: 100%;
     height: 100%;
     /* Fill the viewport */
+    
+    background: linear-gradient(135deg, var(--background-high) 0%, var(--background-mid) 100%);
     background-color: var(--background-high);
     /* Example background */
     transition: transform 0.5s ease;
@@ -324,20 +359,37 @@ p {
 
 /* Back button styling */
 #back-button {
-    background-color: var(--color-button-neutral);
-    color: var(--color-text-primary);
+    /* Button Border */
     border: none;
     border-radius: var(--border-radius-md);
+
     cursor: pointer;
+
+    /* Button Transition */
     transition: var(--transition-quick);
+
+    /* Button Font */
+    font-size: var(--font-size-md);
     font-weight: bold;
-    font-size: 16px;
-    min-width: 70px;
-    height: var(--config-box-height);
+    color: var(--color-text-tertiary);
+
+    /* Button Sizings */
+    min-width: var(--buton-w);
+    width: 45px;
+    height: var(--button-h);
+
+    background-color: var(--color-p1);
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 #back-button:hover {
-    background-color: var(--color-button-neutral-hover);
+    background-color: var(--color-p1-light);
 }
 
 /* Module content becomes scrollable */
@@ -374,10 +426,17 @@ p {
 h1,
 h2,
 h3 {
+    white-space: nowrap;
     margin: 0;
     position: relative;
     cursor: inherit;
     pointer-events: none;
+}
+
+.ht-container {
+    margin-right: 28px;
+    position: relative;
+    display: inline-block;
 }
 
 .header-tooltip {
@@ -430,6 +489,7 @@ h3 {
 }
 
 .app-row {
+    align-items: center;
     width: 100%;
     display: flex;
     gap: inherit;
@@ -503,7 +563,13 @@ h3 {
     justify-content: center;
     font-size: 3rem;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: -2px;
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .module-icon .icon[enabled="true"]:hover {
@@ -547,17 +613,16 @@ h3 {
 }
 
 .app-text-container {
-    background-color: var(--color-background-light);
-    text-align: center;
-    height: fit-content;
-    border-radius: var(--border-radius-md);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: var(--config-box-width-min);
-    max-width: var(--config-box-width-max);
-    overflow: hidden;
+    color: var(--color-text-tertiary);
     padding: 8px;
+    padding-top: 5px;
+    text-align: center;
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    width: 350px;
 }
 
 .app-text-container br {
@@ -612,62 +677,3 @@ h3 {
     font-size: 14px;
     color: #28ce80a9;
 }
-
-.separator {
-    width: 100%;
-    height: 1px;
-    background-color: #dddddda2;
-    margin: 20px 0;
-}
-
-remap-selector-container {
-    width: 100%;
-    align-items: center;
-    align-content: center;
-    display: flex;
-    flex-direction: column;
-    gap: inherit;
-    transition: opacity 0.3s ease-in-out;
-}
-
-remap-selector-container[hidden="true"] {
-    opacity: 0;
-}
-
-.battery-status-container {
-    margin: 20px 0;
-}
-
-.status-row {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-}
-
-.status-label {
-    padding-right: 5px;
-    font-weight: bold;
-}
-
-.charging { color: #2196F3; }
-.charging-full {color: #4ab419; }
-.not-charging { color: #666; }
-
-.battery-visual {
-    width: 100%;
-    height: 30px;
-    background: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    margin-top: 15px;
-}
-
-.battery-bar {
-    height: 100%;
-    transition: width 0.3s ease, background-color 0.3s ease;
-}
-
-.battery-high { background-color: #4CAF50; }
-.battery-medium { background-color: #FFC107; }
-.battery-low { background-color: #F44336; }
-.battery-charging { background-color: #2196F3; }

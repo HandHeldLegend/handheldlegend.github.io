@@ -1,59 +1,72 @@
-.group-rgb-picker {
-    background-color: var(--color-background-light);
-    height: var(--config-box-height);
-    border-radius: var(--border-radius-md);
-    max-width: var(--config-box-max-width-small);
-    overflow: hidden;
+.picker-container {
+    width: 300px;
     display: flex;
+
+    gap: 2px;
+
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+
+    background-color: var(--color-p1);
+    border: var(--spacing-xs) solid var(--color-p1-dark);
+    border-radius: var(--border-radius-md);
+
+    overflow: hidden;
+
     align-items: center;
-    font-family: Arial, sans-serif;
+    text-align: center;
 }
 
 .group-name {
     user-select: none;
     text-align: left;
-    margin-left: 1rem;
+    margin-left: 8px;
     flex: 1;
-    font-size: 1rem;
+    font-size: var(--font-size-md);
     font-weight: bold;
 }
 
 .pound {
     user-select: none;
-    font-size: 1.2rem;
+    font-size: var(--font-size-md);
     color: var(--color-text-tertiary);
     display: flex;
+    padding-left: 4px;
     height: inherit;
+    text-align: center;
     align-items: center;
     text-justify: auto;
-    border-left: 2px solid var(--color-background-dark);
-    padding: 0.5rem;
-    font-size: 1rem;
-    font-style: italic;
+    border-left: var(--spacing-xs) solid var(--color-p1-light);
+
+    font-size: var(--font-size-md);
 }
 
 .color-hex {
-    background: var(--color-background-light);
-    
-    width: 5rem;
+    background: var(--color-p1);
+    border-radius: var(--border-radius-sm);
+
+    width: 70px;
     color: var(--color-text-tertiary);
-    padding: 0.5rem;
-    font-style: italic;
-    text-align: left;
-    font-size: 1.2rem;
+    padding: 4px;
+    text-align: center;
+    font-size: var(--font-size-md);
     border: none;
 
-    transition: all 0.3s;
+    transition: all var(--transition-quick);
 }
 
 .color-hex:focus {
-    box-shadow: var(--box-shadow-inset);
     outline: none;
+    filter:  brightness(1.1);
+    box-shadow: var(--box-shadow-outset);
 }
 
 .color-hex:hover {
-    box-shadow: var(--box-shadow-inset);
-    background: var(--color-background-light-hover);
+    filter: brightness(1.1);
+}
+
+.color-hex::selection {
+    background-color: var(--color-p1-dark);
 }
 
 .color-wrapper {
@@ -65,9 +78,9 @@
     position: relative;
     background: rgb(241, 184, 184);
     border-radius: var(--border-radius-md);
-    width: var(--config-box-height);
-    height: var(--config-box-height);
-    transition: background 0.3s;
+    width: var(--button-h);
+    height: var(--button-h);
+    transition: all var(--transition-quick);
 }
 
 .color-picker {

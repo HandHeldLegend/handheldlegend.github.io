@@ -3,8 +3,6 @@ import HojaGamepad from '../js/gamepad.js';
 // Import the number selector (optional, as it's now globally defined)
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
-import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
@@ -30,16 +28,16 @@ export function render(container) {
 
     let hapticIntensity = Math.round((gamepad.haptic_cfg.haptic_strength/255) * 100);
 
-    let hapticTriggerBlock = `
+    let hapticTriggerBlock = ``; /*`
     <h2>Haptic Triggers</h2>
     <multi-position-button 
         id="haptic-trigger-mode" 
         labels="Off, On"
         default-selected="${gamepad.haptic_cfg.haptic_triggers}"
     ></multi-position-button>
-    `;
+    `;*/
 
-    let hapticTriggerEnable = true;
+    let hapticTriggerEnable = false;
 
     if(!gamepad.haptic_static.haptic_hd) {
         hapticTriggerBlock = "";
@@ -64,7 +62,7 @@ export function render(container) {
             min="0" 
             max="100" 
             step="1" 
-            default-value="${hapticIntensity}"
+            value="${hapticIntensity}"
         ></number-selector>
         
         ${hapticTriggerBlock}
