@@ -1,170 +1,58 @@
+import Hoverslot from './hoverSlot.js';
 
 
-export default class Buttonremap {
+export default class Hoverconfig {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(16);
+    this.buffer = buffer || new Uint8Array(257);
   }
 
-  	/** @type {Int8} */
-	get dpad_up() {
-		return this.#_getInt8(0);
+  	/** @type {Uint8} */
+	get hover_config_version() {
+		return this.#_getUint8(0);
 	}
 
-	/** @type {Int8} */
-	get dpad_down() {
-		return this.#_getInt8(1);
+	/** @type {Uint8} */
+	get hover_calibration_set() {
+		return this.#_getUint8(1);
 	}
 
-	/** @type {Int8} */
-	get dpad_left() {
-		return this.#_getInt8(2);
+	/** @type {Hoverslot[]} */
+	get config() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(2+(4*i), 4);
+			tmpArr.push(new Hoverslot(tmp));
+		}
+		return tmpArr;
 	}
 
-	/** @type {Int8} */
-	get dpad_right() {
-		return this.#_getInt8(3);
-	}
-
-	/** @type {Int8} */
-	get button_a() {
-		return this.#_getInt8(4);
-	}
-
-	/** @type {Int8} */
-	get button_b() {
-		return this.#_getInt8(5);
-	}
-
-	/** @type {Int8} */
-	get button_x() {
-		return this.#_getInt8(6);
-	}
-
-	/** @type {Int8} */
-	get button_y() {
-		return this.#_getInt8(7);
-	}
-
-	/** @type {Int8} */
-	get trigger_l() {
-		return this.#_getInt8(8);
-	}
-
-	/** @type {Int8} */
-	get trigger_zl() {
-		return this.#_getInt8(9);
-	}
-
-	/** @type {Int8} */
-	get trigger_r() {
-		return this.#_getInt8(10);
-	}
-
-	/** @type {Int8} */
-	get trigger_zr() {
-		return this.#_getInt8(11);
-	}
-
-	/** @type {Int8} */
-	get button_plus() {
-		return this.#_getInt8(12);
-	}
-
-	/** @type {Int8} */
-	get button_minus() {
-		return this.#_getInt8(13);
-	}
-
-	/** @type {Int8} */
-	get button_stick_left() {
-		return this.#_getInt8(14);
-	}
-
-	/** @type {Int8} */
-	get button_stick_right() {
-		return this.#_getInt8(15);
+	/** @type {Uint8Array} */
+	get reserved() {
+		return this.#_getUint8Array(146, 111);
 	}
 
 
 
-  	/** @param {Int8} value */
-	set dpad_up(value) {
-		this.#_setInt8(0, value);
+  	/** @param {Uint8} value */
+	set hover_config_version(value) {
+		this.#_setUint8(0, value);
 	}
 
-	/** @param {Int8} value */
-	set dpad_down(value) {
-		this.#_setInt8(1, value);
+	/** @param {Uint8} value */
+	set hover_calibration_set(value) {
+		this.#_setUint8(1, value);
 	}
 
-	/** @param {Int8} value */
-	set dpad_left(value) {
-		this.#_setInt8(2, value);
+	/** @param {Hoverslot[]} value */
+	set config(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(2+(4*index), obj.buffer)
+		}
 	}
 
-	/** @param {Int8} value */
-	set dpad_right(value) {
-		this.#_setInt8(3, value);
-	}
-
-	/** @param {Int8} value */
-	set button_a(value) {
-		this.#_setInt8(4, value);
-	}
-
-	/** @param {Int8} value */
-	set button_b(value) {
-		this.#_setInt8(5, value);
-	}
-
-	/** @param {Int8} value */
-	set button_x(value) {
-		this.#_setInt8(6, value);
-	}
-
-	/** @param {Int8} value */
-	set button_y(value) {
-		this.#_setInt8(7, value);
-	}
-
-	/** @param {Int8} value */
-	set trigger_l(value) {
-		this.#_setInt8(8, value);
-	}
-
-	/** @param {Int8} value */
-	set trigger_zl(value) {
-		this.#_setInt8(9, value);
-	}
-
-	/** @param {Int8} value */
-	set trigger_r(value) {
-		this.#_setInt8(10, value);
-	}
-
-	/** @param {Int8} value */
-	set trigger_zr(value) {
-		this.#_setInt8(11, value);
-	}
-
-	/** @param {Int8} value */
-	set button_plus(value) {
-		this.#_setInt8(12, value);
-	}
-
-	/** @param {Int8} value */
-	set button_minus(value) {
-		this.#_setInt8(13, value);
-	}
-
-	/** @param {Int8} value */
-	set button_stick_left(value) {
-		this.#_setInt8(14, value);
-	}
-
-	/** @param {Int8} value */
-	set button_stick_right(value) {
-		this.#_setInt8(15, value);
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(146, value);
 	}
 
 

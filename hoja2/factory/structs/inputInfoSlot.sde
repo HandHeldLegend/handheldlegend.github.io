@@ -1,0 +1,6 @@
+typedef struct 
+{
+    uint8_t input_type; // 0=unused, 1=digital, 2=hover, 3=joystick
+    uint8_t input_name[8]; // Char name of input
+    uint8_t rgb_assignments[4]; // Which RGB(s) are correlated with this input (Results are -1, 0 is unused)
+} inputInfoSlot_s;

@@ -56,8 +56,8 @@
 }
 
 .output-box {
-    border: 2px solid var(--background-highest);
-    background-color: var(--background-high);
+    border: 2px solid var(--color-p2-light);
+    background-color: var(--color-p2);
     cursor: pointer;
 }
 
@@ -82,7 +82,6 @@
 .value-bar-container {
     display: flex;
     align-items: center;
-    gap: 10px;
     margin-bottom: 16px;
 }
 

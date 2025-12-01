@@ -1,20 +1,40 @@
 
 
-export default class Triggerconfig {
+export default class Hoverslot {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(64);
+    this.buffer = buffer || new Uint8Array(4);
   }
 
-  	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(0, 64);
+  	/** @type {Uint16} */
+	get invert() {
+		return this.#_getBitfield(0, 2, 1, 0);
+	}
+
+	/** @type {Uint16} */
+	get min() {
+		return this.#_getBitfield(0, 2, 15, 1);
+	}
+
+	/** @type {Uint16} */
+	get max() {
+		return this.#_getUint16(2);
 	}
 
 
 
-  	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(0, value);
+  	/** @param {Uint16} value */
+	set invert(value) {
+		this.#_setBitfield(0, 2, 1, 0, value);
+	}
+
+	/** @param {Uint16} value */
+	set min(value) {
+		this.#_setBitfield(0, 2, 15, 1, value);
+	}
+
+	/** @param {Uint16} value */
+	set max(value) {
+		this.#_setUint16(2, value);
 	}
 
 

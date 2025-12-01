@@ -1,20 +1,150 @@
+import Inputconfigslot from './inputConfigSlot.js';
 
 
-export default class Triggerconfig {
+export default class Inputconfig {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(64);
+    this.buffer = buffer || new Uint8Array(2048);
   }
 
-  	/** @type {Uint8Array} */
+  	/** @type {Uint8} */
+	get input_config_version() {
+		return this.#_getUint8(0);
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_switch() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(1+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_xinput() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(181+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_snes() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(361+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_n64() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(541+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_gamecube() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(721+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_reserved_1() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(901+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Inputconfigslot[]} */
+	get input_profile_reserved_2() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(1081+(5*i), 5);
+			tmpArr.push(new Inputconfigslot(tmp));
+		}
+		return tmpArr;
+	}
+
+	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(0, 64);
+		return this.#_getUint8Array(1261, 787);
 	}
 
 
 
-  	/** @param {Uint8Array} value */
+  	/** @param {Uint8} value */
+	set input_config_version(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_switch(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(1+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_xinput(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(181+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_snes(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(361+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_n64(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(541+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_gamecube(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(721+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_reserved_1(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(901+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Inputconfigslot[]} value */
+	set input_profile_reserved_2(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(1081+(5*index), obj.buffer)
+		}
+	}
+
+	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(0, value);
+		this.#_setUint8Array(1261, value);
 	}
 
 

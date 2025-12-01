@@ -1,6 +1,0 @@
-typedef struct 
-{
-    uint8_t battery_config_version;
-    float   charge_level_percent;
-    uint8_t reserved[11];
-} batteryConfig_s;

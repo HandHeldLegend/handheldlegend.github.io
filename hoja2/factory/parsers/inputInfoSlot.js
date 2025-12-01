@@ -1,20 +1,40 @@
 
 
-export default class Triggerconfig {
+export default class Inputinfoslot {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(64);
+    this.buffer = buffer || new Uint8Array(13);
   }
 
-  	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(0, 64);
+  	/** @type {Uint8} */
+	get input_type() {
+		return this.#_getUint8(0);
+	}
+
+	/** @type {Uint8Array} */
+	get input_name() {
+		return this.#_getUint8Array(1, 8);
+	}
+
+	/** @type {Uint8Array} */
+	get rgb_assignments() {
+		return this.#_getUint8Array(9, 4);
 	}
 
 
 
-  	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(0, value);
+  	/** @param {Uint8} value */
+	set input_type(value) {
+		this.#_setUint8(0, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set input_name(value) {
+		this.#_setUint8Array(1, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set rgb_assignments(value) {
+		this.#_setUint8Array(9, value);
 	}
 
 

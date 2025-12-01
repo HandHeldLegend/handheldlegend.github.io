@@ -1,40 +1,28 @@
+import Inputinfoslot from './inputInfoSlot.js';
 
 
-export default class Batteryconfig {
+export default class Inputinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(16);
+    this.buffer = buffer || new Uint8Array(468);
   }
 
-  	/** @type {Uint8} */
-	get battery_config_version() {
-		return this.#_getUint8(0);
-	}
-
-	/** @type {Float32} */
-	get charge_level_percent() {
-		return this.#_getFloat32(1);
-	}
-
-	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(5, 11);
+  	/** @type {Inputinfoslot[]} */
+	get input_info() {
+		let tmpArr = [];
+		for(let i = 0; i < 36; i++) {
+			const tmp = this.#_getUint8Array(0+(13*i), 13);
+			tmpArr.push(new Inputinfoslot(tmp));
+		}
+		return tmpArr;
 	}
 
 
 
-  	/** @param {Uint8} value */
-	set battery_config_version(value) {
-		this.#_setUint8(0, value);
-	}
-
-	/** @param {Float32} value */
-	set charge_level_percent(value) {
-		this.#_setFloat32(1, value);
-	}
-
-	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(5, value);
+  	/** @param {Inputinfoslot[]} value */
+	set input_info(value) {
+		for (const [index, obj] of value.entries()) {
+			this.#_setUint8Array(0+(13*index), obj.buffer)
+		}
 	}
 
 

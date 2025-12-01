@@ -1,0 +1,6 @@
+typedef struct 
+{
+    uint16_t invert : 1;
+    uint16_t min : 15;
+    uint16_t max;
+} hoverSlot_s;

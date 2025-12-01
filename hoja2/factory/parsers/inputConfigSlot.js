@@ -1,80 +1,50 @@
 
 
-export default class Remapconfig {
+export default class Inputconfigslot {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(256);
+    this.buffer = buffer || new Uint8Array(5);
   }
 
-  	/** @type {Uint8} */
-	get remap_config_version() {
-		return this.#_getUint8(0);
+  	/** @type {Uint16} */
+	get output_mode() {
+		return this.#_getBitfield(0, 2, 4, 0);
 	}
 
-	/** @type {Int8Array} */
-	get remap_profile_switch() {
-		return this.#_getInt8Array(1, 36);
+	/** @type {Uint16} */
+	get static_output() {
+		return this.#_getBitfield(0, 2, 12, 4);
 	}
 
-	/** @type {Int8Array} */
-	get remap_profile_xinput() {
-		return this.#_getInt8Array(37, 36);
+	/** @type {Uint16} */
+	get threshold_delta() {
+		return this.#_getUint16(2);
 	}
 
-	/** @type {Int8Array} */
-	get remap_profile_snes() {
-		return this.#_getInt8Array(73, 36);
-	}
-
-	/** @type {Int8Array} */
-	get remap_profile_n64() {
-		return this.#_getInt8Array(109, 36);
-	}
-
-	/** @type {Int8Array} */
-	get remap_profile_gamecube() {
-		return this.#_getInt8Array(145, 36);
-	}
-
-	/** @type {Uint8Array} */
-	get reserved() {
-		return this.#_getUint8Array(181, 75);
+	/** @type {Int8} */
+	get output_code() {
+		return this.#_getInt8(4);
 	}
 
 
 
-  	/** @param {Uint8} value */
-	set remap_config_version(value) {
-		this.#_setUint8(0, value);
+  	/** @param {Uint16} value */
+	set output_mode(value) {
+		this.#_setBitfield(0, 2, 4, 0, value);
 	}
 
-	/** @param {Int8Array} value */
-	set remap_profile_switch(value) {
-		this.#_setInt8Array(1, value);
+	/** @param {Uint16} value */
+	set static_output(value) {
+		this.#_setBitfield(0, 2, 12, 4, value);
 	}
 
-	/** @param {Int8Array} value */
-	set remap_profile_xinput(value) {
-		this.#_setInt8Array(37, value);
+	/** @param {Uint16} value */
+	set threshold_delta(value) {
+		this.#_setUint16(2, value);
 	}
 
-	/** @param {Int8Array} value */
-	set remap_profile_snes(value) {
-		this.#_setInt8Array(73, value);
-	}
-
-	/** @param {Int8Array} value */
-	set remap_profile_n64(value) {
-		this.#_setInt8Array(109, value);
-	}
-
-	/** @param {Int8Array} value */
-	set remap_profile_gamecube(value) {
-		this.#_setInt8Array(145, value);
-	}
-
-	/** @param {Uint8Array} value */
-	set reserved(value) {
-		this.#_setUint8Array(181, value);
+	/** @param {Int8} value */
+	set output_code(value) {
+		this.#_setInt8(4, value);
 	}
 
 

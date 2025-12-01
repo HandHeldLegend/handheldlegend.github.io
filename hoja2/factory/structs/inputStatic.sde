@@ -1,0 +1,4 @@
+typedef struct
+{
+    inputInfoSlot_s input_info[36]; // SIZE=13 
+} inputInfoStatic_s;
