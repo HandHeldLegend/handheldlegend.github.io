@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-  version: 'v0.003.016', // Increment this when you update files
+  version: 'v0.003.017', // Increment this when you update files
   folders: {
     '/': ['', 'index.html', 'attributions.txt', 'manifest.json'],
     '/js/': ['app.js', 'module-registry.js', 'gamepad.js', 'tooltips.js', 'legacy.js', 'pico_update.js'],
@@ -41,14 +41,12 @@ const CACHE_CONFIG = {
     '/factory/parsers/': [
       'analogConfig.js', 'analogInfoStatic.js',
       'analogPackedDistances.js', 'angleMap.js',
-      'batteryConfig.js', 'batteryInfoStatic.js',
-      'bluetoothInfoStatic.js', 'buttonInfoStatic.js',
-      'buttonRemap.js',
-      'deviceInfoStatic.js',
+      'batteryInfoStatic.js',
+      'bluetoothInfoStatic.js', 'deviceInfoStatic.js',
       'gamepadConfig.js', 'hapticConfig.js',
-      'hapticInfoStatic.js',
-      'imuConfig.js', 'imuInfoStatic.js',
-      'remapConfig.js', 'rgbConfig.js',
+      'hapticInfoStatic.js', 'hoverConfig.js',
+      'imuConfig.js', 'imuInfoStatic.js', 'inputConfig.js',
+      'inputInfoStatic.js', 'rgbConfig.js',
       'rgbGroupName.js', 'rgbInfoStatic.js',
       'triggerConfig.js', 'userConfig.js'
     ],
