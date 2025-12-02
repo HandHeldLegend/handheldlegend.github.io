@@ -1,0 +1,12 @@
+folders: {
+    '/': ['attributions.txt', 'index.html', 'manifest.json', 'ping.json'],
+    '/assets/3d/': ['supergamepad.stl', 'supergamepadOLD.stl'],
+    '/assets/icons/': ['analog.svg', 'battery.svg', 'gamepad.svg', 'haptics.svg', 'motion.svg', 'remap.svg', 'rgb.svg', 'triggers.svg', 'user.svg', 'wireless.svg'],
+    '/components/': ['analog-stick-visual.js', 'angle-selector.css', 'angle-selector.js', 'axis-invert-selector.css', 'axis-invert-selector.js', 'button-grid.css', 'button-grid.js', 'components.css', 'components.js', 'dual-analog-trigger.css', 'dual-analog-trigger.js', 'group-rgb-picker.css', 'group-rgb-picker.js', 'host-template.css', 'imu-data-display.css', 'imu-data-display.js', 'input-config-panel.css', 'input-config-panel.js', 'input-mapping-display.css', 'input-mapping-display.js', 'mac-address-selector.css', 'mac-address-selector.js', 'multi-position-button.css', 'multi-position-button.js', 'number-selector.css', 'number-selector.js', 'remap-box.css', 'remap-box.js', 'sensor-visualization.css', 'sensor-visualization.js', 'single-shot-button.css', 'single-shot-button.js', 'text-entry.css', 'text-entry.js', 'tristate-button.css', 'tristate-button.js', 'waveform-display.css', 'waveform-display.js'],
+    '/css/': ['modules.css', 'styles.css'],
+    '/images/': ['favicon-16x16.png', 'favicon-32x32.png', 'favicon.ico', 'favicon.png', 'icon_full.png', 'icon_transparent.png'],
+    '/images/glyphs/': ['1.png', '2.png', 'a.png', 'b.png', 'back.png', 'capture.png', 'cx+.png', 'cx-.png', 'cy+.png', 'cy-.png', 'ddown.png', 'disabled.png', 'dleft.png', 'down.png', 'dright.png', 'dup.png', 'east.png', 'gl.png', 'gr.png', 'guide.png', 'home.png', 'l.png', 'lb.png', 'left.png', 'ls.png', 'lt.png', 'lx+.png', 'lx-.png', 'ly+.png', 'ly-.png', 'minus.png', 'north.png', 'plus.png', 'power.png', 'r.png', 'rb.png', 'right.png', 'rs.png', 'rt.png', 'rx+.png', 'rx-.png', 'ry+.png', 'ry-.png', 'sl.png', 'south.png', 'sr.png', 'start.png', 'up.png', 'west.png', 'x+.png', 'x-.png', 'x.png', 'y+.png', 'y-.png', 'y.png', 'z.png', 'zl.png', 'zr.png'],
+    '/js/': ['app.js', 'gamepad.js', 'legacy.js', 'module-registry.js', 'pico_update.js', 'tooltips.js'],
+    '/libs/': ['STLLoader.js', 'three.min.js'],
+    '/modules/': ['analog-md.js', 'battery-md.js', 'gamepad-md.js', 'haptic-md.js', 'input-md.js', 'motion-md.js', 'remap-md.js', 'rgb-md.js', 'trigger-md.js', 'user-md.js', 'wireless-md.js']
+  }
