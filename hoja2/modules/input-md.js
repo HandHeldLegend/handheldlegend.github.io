@@ -19,19 +19,82 @@ let configPanelElement = null;
 let configPanelComponent = null;
 let remapPanelElement = null;
 let buttonGridComponent = null;
+
 let currentRemapProfileIndex = 0;
 let inputInfoList = [];
+let outputInfoList = [];
+
+const switchOutputCodeNames = [
+    'A', 'B', 'X', 'Y',
+    'Up', 'Down', 'Left', 'Right',
+    'L', 'R', 'ZL', 'ZR',
+    'Plus', 'Minus', 'Home', 'Capture',
+    'LS', 'RS', 
+    'LX+', 'LX-', 'LY+', 'LY-',
+    'RX+', 'RX-', 'RY+', 'RY-'
+];
+
+const xinputOutputCodeNames = [
+    'A', 'B', 'X', 'Y',
+    'Up', 'Down', 'Left', 'Right',
+    'LB', 'RB', 'Start', 'Back',
+    'Guide', 'LS', 'RS',
+    'LT', 'RT',
+    'LX+', 'LX-', 'LY+', 'LY-',
+    'RX+', 'RX-', 'RY+', 'RY-'
+];
+
+const snesOutputCodeNames = [
+    'A', 'B', 'X', 'Y',
+    'Up', 'Down', 'Left', 'Right',
+    'L', 'R', 'Start', 'Select'
+];
+
+const n64OutputCodeNames = [
+    'A', 'B', 'C Up', 'C Down', 'C Left', 'C Right',
+    'Up', 'Down', 'Left', 'Right',
+    'L', 'R',  'Z', 'Start', 
+    'LX+', 'LX-', 'LY+', 'LY-'
+];
+
+const gamecubeOutputCodeNames = [
+    'A', 'B', 'X', 'Y',
+    'Up', 'Down', 'Left', 'Right',
+    'Start', 'Z', 'L', 'R',
+    'L+', 'R+', 
+    'LX+', 'LX-', 'LY+', 'LY-',
+    'RX+', 'RX-', 'RY+', 'RY-'
+];
 
 function inputReportHook(data) {
     for (let i = 16; i < (16 + 36); i++) {
         let idxOutput = i - 16;
         let inputType = inputInfoList[idxOutput].type;
         let mappingIdx = inputInfoList[idxOutput].mappingIndex;
+        let inputValue = data.getUint8(i);
 
-        if(inputType != 0) {
+        switch(inputType) {
+            case 1: // Button
+            if(inputValue > 0) {
+                inputMappingDisplays[mappingIdx].setValue(255);
+                inputMappingDisplays[mappingIdx].setPressed(true);
+            }
+            else {
+                inputMappingDisplays[mappingIdx].setValue(0);
+                inputMappingDisplays[mappingIdx].setPressed(false);
+            }
+            break;
 
-            let inputValue = data.getUint8(i);
+            case 2: // Hover
             inputMappingDisplays[mappingIdx].setValue(inputValue);
+            inputMappingDisplays[mappingIdx].setPressed(inputValue > 0);
+            break;
+
+            case 3: // Joystick
+            break;
+
+            default: // Unused
+            break;
         }
     }
 }
@@ -109,9 +172,63 @@ function inputMapClicked(event) {
     blurElement.classList.remove('hidden');
 }
 
-const inputList = [
-    "A", "B", "X", "Y",
-    "L", "R", "ZL", "ZR",];
+function populateOutputInfoList(profileIndex) {
+    outputInfoList = [];
+    
+    let tmpProfile;
+    let tmpNames;
+
+    switch(profileIndex) {
+        // Switch
+        default:
+        case 0:
+            tmpProfile = gamepad.input_cfg.input_profile_switch;
+            tmpNames = switchOutputCodeNames;
+            break;
+
+        // XInput
+        case 1:
+            tmpProfile = gamepad.input_cfg.input_profile_xinput;
+            tmpNames = xinputOutputCodeNames;
+            break;
+
+        // SNES
+        case 2:
+            tmpProfile = gamepad.input_cfg.input_profile_snes;
+            tmpNames = snesOutputCodeNames;
+            break;
+
+        // N64
+        case 3:
+            tmpProfile = gamepad.input_cfg.input_profile_n64;
+            tmpNames = n64OutputCodeNames;
+            break;
+        
+        // GameCube
+        case 4:
+            tmpProfile = gamepad.input_cfg.input_profile_gamecube;
+            tmpNames = gamecubeOutputCodeNames;
+            break;
+    }
+
+    tmpProfile.forEach((outputInfo, index) => {
+        let outputMode = outputInfo.output_mode;
+        let outputCode = outputInfo.output_code;
+        let outputName = tmpNames[outputCode] || `${outputCode}`;
+        let outputType = outputInfo.output_type;
+        let outputThresholdDelta = outputInfo.threshold_delta;
+        let outputStaticOutput = outputInfo.static_output;
+
+        outputInfoList.push({
+            name: outputName,
+            code: outputCode,
+            mode: outputMode,
+            type: outputType,
+            thresholdDelta: outputThresholdDelta,
+            staticOutput: outputStaticOutput
+        });
+    });
+}
 
 export function render(container) {
 
@@ -121,6 +238,11 @@ export function render(container) {
 
     // Clear inputInfoList
     inputInfoList = [];
+
+    // Load output info list from default profile (switch)
+    populateOutputInfoList(0);
+
+    console.log(outputInfoList);
 
     gamepad.input_static.input_info.forEach((inputInfo, index) => {
 
@@ -132,7 +254,7 @@ export function render(container) {
         {
             mappingIndex = mappingDisplayIndex;
             mappingDisplayIndex++;
-            moduleGridHTML += `<input-mapping-display input-label="${inputName}" output-label="Unmapped" value="0" pressed="false"></input-mapping-display>`;
+            moduleGridHTML += `<input-mapping-display input-label="${inputName}" output-label="${outputInfoList[index].name}" value="0" pressed="false"></input-mapping-display>`;
         }
 
         // Push info to list
@@ -195,7 +317,7 @@ export function render(container) {
     });
 
     // Populate the button grid with input labels
-    buttonGridComponent.setButtons(inputList);
+    //buttonGridComponent.setButtons(inputList);
 
     // Set report hook
     gamepad.setReportHook(inputReportHook);

@@ -50,7 +50,7 @@ class InputMappingDisplay extends HTMLElement {
     }
 
     render(css) {
-        const valuePercent = (this._value / 255) * 100;
+        const valuePercent = (this._value / 255) * 80;
         
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
@@ -66,7 +66,7 @@ class InputMappingDisplay extends HTMLElement {
                 </div>
                 <div class="value-bar-container">
                     <div class="value-bar">
-                        <div class="value-indicator ${this._pressed ? 'pressed' : ''}" style="left: ${valuePercent}%"></div>
+                        <div class="value-indicator ${this._pressed ? 'pressed' : ''}" style="left: ${valuePercent+10}%"></div>
                     </div>
                 </div>
             </div>
@@ -105,8 +105,8 @@ class InputMappingDisplay extends HTMLElement {
     updateValueBar() {
         const indicator = this.shadowRoot.querySelector('.value-indicator');
         if (indicator) {
-            const valuePercent = (this._value / 255) * 100;
-            indicator.style.left = `${valuePercent}%`;
+            const valuePercent = (this._value / 255) * 80;
+            indicator.style.left = `${valuePercent+10}%`;
         }
     }
 
