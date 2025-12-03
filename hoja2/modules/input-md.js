@@ -3,6 +3,7 @@ import HojaGamepad from '../js/gamepad.js';
 import InputMappingDisplay from '../components/input-mapping-display.js';
 import InputConfigPanel from '../components/input-config-panel.js';
 import ButtonGrid from '../components/button-grid.js';
+import MultiPositionButton from '../components/multi-position-button.js';
 
 import { enableTooltips } from '../js/tooltips.js';
 import Inputinfoslot from '../factory/parsers/inputInfoSlot.js';
@@ -25,6 +26,11 @@ let remapPanelElement = null;
 let buttonGridComponent = null;
 
 let currentRemapProfileIndex = 0;
+
+/** @type {MultiPositionButton} */
+let multiPositionButtonComponent = null;
+
+let containerElement = null;
 
 // Store the currently loaded remap info
 // for all 36 input/output slots
@@ -57,10 +63,10 @@ const snesOutputCodeNames = [
 ];
 
 const n64OutputCodeNames = [
-    'A', 'B', 'Up', 'Down', 'Left', 'Right',
+    'A', 'B', 'C Up', 'C Down', 'C Left', 'C Right',
     'D Up', 'D Down', 'D Left', 'D Right',
     'L', 'R',  'Z', 'Start', 
-    'LX+', 'LX-', 'LY+', 'LY-'
+    'X+', 'X-', 'Y+', 'Y-'
 ];
 
 const gamecubeOutputCodeNames = [
@@ -68,8 +74,8 @@ const gamecubeOutputCodeNames = [
     'D Up', 'D Down', 'D Left', 'D Right',
     'Start', 'Z', 'L', 'R',
     'LT', 'RT', 
-    'LX+', 'LX-', 'LY+', 'LY-',
-    'RX+', 'RX-', 'RY+', 'RY-'
+    'X+', 'X-', 'Y+', 'Y-',
+    'CX+', 'CX-', 'CY+', 'CY-'
 ];
 
 function getGlyphUrlByName(name) {
@@ -78,6 +84,11 @@ function getGlyphUrlByName(name) {
 }
 
 function inputReportHook(data) {
+
+    if(!inputMappingDisplays || inputMappingDisplays.length == 0) {
+        return;
+    }
+
     for (let i = 16; i < (16 + 36); i++) {
         let idxOutput = i - 16;
         let info = remapInfoList[idxOutput];
@@ -178,7 +189,7 @@ function inputMapClicked(event) {
     blurElement.classList.remove('hidden');
 }
 
-function populateRemapInfoList(profileIndex) {
+function populateRemapInfoList(profileIndex, container) {
     
     let tmpProfile;
     let tmpNames;
@@ -252,14 +263,7 @@ function populateRemapInfoList(profileIndex) {
         buttonGridComponent.setButtons(tmpNames);
     }
 
-}
-
-export function render(container) {
-
     let moduleGridHTML = '';
-
-    // Load output info list from default profile (switch)
-    populateRemapInfoList(1);
 
     remapInfoList.forEach((info, index) => {
         // Make sure input is used
@@ -271,9 +275,34 @@ export function render(container) {
         }
     });
 
+    if(container) {
+        // Replace div id 'module-grid-placeholder' with the generated HTML
+        const placeholderDiv = container.querySelector('#module-grid-placeholder');
+        if(placeholderDiv) {
+            placeholderDiv.innerHTML = moduleGridHTML;
+        }
+    }
+
+    if(buttonGridComponent) {
+        buttonGridComponent.setButtons(tmpNames);
+    }
+
+    inputMappingDisplays = container.querySelectorAll('input-mapping-display');
+    inputMappingDisplays.forEach((mapping) => {
+        mapping._onClick = inputMapClicked;
+    });
+}
+
+export function render(container) {
+    containerElement = container;
+
     container.innerHTML = `
             <h2>Input Mode</h2>
-            
+            <multi-position-button 
+                id="input-mode-select" 
+                labels="SW, XI, SNES, N64, GC"
+                default-selected="0"
+            ></multi-position-button>
             <div id="panel_blur" class="popup-blur hidden" style="z-index: 199;"></div>
 
             <div id="config_panel" class="popup hidden" style="z-index: 200;">
@@ -285,10 +314,20 @@ export function render(container) {
             </div>
 
             <h2>Input Setup</h2>
-            <div class="module-grid">
-            ${moduleGridHTML}
+            <div id="module-grid-placeholder" class="module-grid">
             </div>
     `;
+
+    // Load output info list from default profile (switch)
+    populateRemapInfoList(currentRemapProfileIndex, containerElement);
+
+    multiPositionButtonComponent = container.querySelector('multi-position-button[id="input-mode-select"]');
+    multiPositionButtonComponent.addEventListener('change', (e) => {
+        const selectedIndex = e.detail.selectedIndex;
+        console.log("Input mode changed to index:", selectedIndex);
+        currentRemapProfileIndex = selectedIndex;
+        populateRemapInfoList(currentRemapProfileIndex, containerElement);
+    });
 
     configPanelComponent = container.querySelector('input-config-panel');
 
@@ -297,16 +336,9 @@ export function render(container) {
 
     buttonGridComponent._onClick = remapClickHandler;
     // The default option set is the Switch profile
-    buttonGridComponent.setButtons(xinputOutputCodeNames);
+    buttonGridComponent.setButtons(switchOutputCodeNames);
 
     blurElement = container.querySelector('#panel_blur');
-
-    inputMappingDisplays = container.querySelectorAll('input-mapping-display');
-    inputMappingDisplays.forEach((mapping) => {
-        mapping._onClick = inputMapClicked;
-    });
-
-    console.log(inputMappingDisplays);
 
     configPanelElement = container.querySelector('#config_panel');
 
