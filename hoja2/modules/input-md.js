@@ -262,7 +262,6 @@ export function render(container) {
     populateRemapInfoList(1);
 
     remapInfoList.forEach((info, index) => {
-
         // Make sure input is used
         if(info.inputType != 0) 
         {
