@@ -44,44 +44,53 @@ class InputConfigPanel extends HTMLElement {
         switch(name) {
             case 'input-label':
                 this._inputLabel = newValue || 'NULL';
+                this.updateInputLabel();
                 break;
             case 'output-label':
                 this._outputLabel = newValue || 'NULL';
+                this.updateOutputLabel();
                 break;
             case 'input-type':
                 this._inputType = newValue || 'digital';
+                this.updateInputType();
                 break;
             case 'output-type':
                 this._outputType = newValue || 'analog';
+                this.updateOutputType();
                 break;
             case 'value':
                 this._value = Math.max(0, Math.min(4095, parseInt(newValue) || 0));
+                this.updateValueBar();
                 break;
             case 'pressed':
                 this._pressed = newValue === 'true' || newValue === '';
+                this.updatePressState();
                 break;
             case 'mode':
                 this._mode = newValue || 'default';
+                this.updateModeUI();
                 break;
             case 'delta':
                 this._delta = Math.max(0, Math.min(4095, parseInt(newValue) || 0));
+                this.updateDeltaDisplay();
                 break;
             case 'output':
                 this._output = Math.max(0, Math.min(4095, parseInt(newValue) || 0));
+                this.updateOutputDisplay();
                 break;
         }
-        
-        this.updateUI();
     }
 
     getTypeIcon(type) {
         switch(type) {
             case 'digital':
-                return '⊓⊔'; // Digital symbol
+                return '⊳'; // Digital symbol
             case 'analog':
                 return '∿'; // Analog wave symbol
             case 'joystick':
                 return '⊕'; // Joystick symbol
+            case 'dpad':
+                return '✛'; // D-pad symbol
             default:
                 return '';
         }
@@ -99,6 +108,11 @@ class InputConfigPanel extends HTMLElement {
         if (iType === 'digital' && (oType === 'analog' || oType === 'joystick')) {
             return [];
         }
+
+        // Digital In -> Dpad Out
+        if (iType === 'digital' && oType === 'dpad') {
+            return [];
+        }
         
         // Analog/Joystick In -> Digital Out
         if ((iType === 'analog' || iType === 'joystick') && oType === 'digital') {
@@ -110,6 +124,11 @@ class InputConfigPanel extends HTMLElement {
             (oType === 'analog' || oType === 'joystick')) {
             return ['passthrough', 'rapid', 'threshold'];
         }
+
+        // Analog/Joystick In -> Dpad Out
+        if ((iType === 'analog' || iType === 'joystick') && oType === 'dpad') {
+            return ['passthrough', 'rapid', 'threshold'];
+        }
         
         return [];
     }
@@ -117,14 +136,21 @@ class InputConfigPanel extends HTMLElement {
     shouldShowDelta() {
         const { _inputType: iType, _outputType: oType, _mode } = this;
         
-        // Analog/Joystick In -> Digital Out
+        // Analog/Joystick In -> Digital Out (always show delta for rapid or threshold)
         if ((iType === 'analog' || iType === 'joystick') && oType === 'digital') {
-            return true;
+            return _mode === 'rapid' || _mode === 'threshold';
         }
         
         // Analog/Joystick In -> Analog/Joystick Out with Rapid or Threshold
         if ((iType === 'analog' || iType === 'joystick') && 
             (oType === 'analog' || oType === 'joystick') &&
+            (_mode === 'rapid' || _mode === 'threshold')) {
+            return true;
+        }
+
+        // Analog/Joystick In -> Dpad Out with Rapid or Threshold
+        if ((iType === 'analog' || iType === 'joystick') && 
+            oType === 'dpad' &&
             (_mode === 'rapid' || _mode === 'threshold')) {
             return true;
         }
@@ -135,7 +161,7 @@ class InputConfigPanel extends HTMLElement {
     shouldShowOutput() {
         const { _inputType: iType, _outputType: oType, _mode } = this;
         
-        // Digital In -> Analog/Joystick Out
+        // Digital In -> Analog/Joystick Out (always show output)
         if (iType === 'digital' && (oType === 'analog' || oType === 'joystick')) {
             return true;
         }
@@ -153,23 +179,23 @@ class InputConfigPanel extends HTMLElement {
     shouldShowCalibrate() {
         const { _inputType: iType, _outputType: oType } = this;
         
-        // Show for Analog/Joystick In -> Any Out
-        return (iType === 'analog' || iType === 'joystick');
+        // Show for Analog In ONLY
+        return (iType === 'analog');
     }
 
     shouldShowReset() {
         const { _inputType: iType, _outputType: oType } = this;
         
         // Show for Analog/Joystick In -> Digital Out
-        return ((iType === 'analog' || iType === 'joystick') && oType === 'digital');
+        return ((iType === 'analog' || iType === 'joystick'));
     }
 
     isDeltaDisabled() {
-        return this._mode === 'passthrough';
+        return false; // Delta is never disabled, it's either shown or hidden
     }
 
     isOutputDisabled() {
-        return this._mode === 'passthrough';
+        return false; // Output is never disabled, it's either shown or hidden
     }
 
     getDeltaLabel() {
@@ -177,7 +203,7 @@ class InputConfigPanel extends HTMLElement {
     }
 
     render(css) {
-        const valuePercent = (this._value / 4095) * 100;
+        const valuePercent = (this._value / 4095) * 90;
         const modeOptions = this.getModeOptions();
         const showDelta = this.shouldShowDelta();
         const showOutput = this.shouldShowOutput();
@@ -207,7 +233,7 @@ class InputConfigPanel extends HTMLElement {
                 <div class="value-bar-container">
                     <div class="value-bar">
                         <div class="value-indicator ${this._pressed ? 'pressed' : ''}" 
-                             style="left: ${valuePercent}%"></div>
+                             style="left: ${5+valuePercent}%"></div>
                     </div>
                     <div class="value-label">${this._value}</div>
                 </div>
@@ -230,7 +256,7 @@ class InputConfigPanel extends HTMLElement {
 
                 ${showDelta ? `
                     <div class="divider"></div>
-                    <div class="section-title">${deltaLabel}</div>
+                    <div class="section-title delta-label">${deltaLabel}</div>
                     <div class="slider-container ${deltaDisabled ? 'disabled' : ''}">
                         <input type="range" 
                                class="slider delta-slider" 
@@ -239,7 +265,7 @@ class InputConfigPanel extends HTMLElement {
                                step="128" 
                                value="${this._delta}"
                                ${deltaDisabled ? 'disabled' : ''}>
-                        <div class="slider-value">${this._delta}</div>
+                        <div class="slider-value delta-value">${this._delta}</div>
                     </div>
                 ` : ''}
 
@@ -254,14 +280,14 @@ class InputConfigPanel extends HTMLElement {
                                step="128"
                                value="${this._output}"
                                ${outputDisabled ? 'disabled' : ''}>
-                        <div class="slider-value">${this._output}</div>
+                        <div class="slider-value output-value">${this._output}</div>
                     </div>
                 ` : ''}
 
                 ${(showReset || showCalibrate) ? `
                     <div class="divider"></div>
                     <div class="button-row">
-                        <button class="action-button reset-button hoverable clickable">Reset</button>
+                        ${showReset ? '<button class="action-button reset-button hoverable clickable">Reset</button>' : ''}
                         ${showCalibrate ? '<button class="action-button calibrate-button hoverable clickable">Calibrate</button>' : ''}
                     </div>
                 ` : ''}
@@ -285,7 +311,7 @@ class InputConfigPanel extends HTMLElement {
         radioButtons.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 this._mode = e.target.value;
-                this.updateUI();
+                this.updateModeUI();
             });
         });
 
@@ -294,7 +320,7 @@ class InputConfigPanel extends HTMLElement {
         if (deltaSlider) {
             deltaSlider.addEventListener('input', (e) => {
                 this._delta = parseInt(e.target.value);
-                const valueLabel = shadow.querySelector('.delta-slider + .slider-value');
+                const valueLabel = shadow.querySelector('.delta-value');
                 if (valueLabel) valueLabel.textContent = this._delta;
             });
         }
@@ -304,7 +330,7 @@ class InputConfigPanel extends HTMLElement {
         if (outputSlider) {
             outputSlider.addEventListener('input', (e) => {
                 this._output = parseInt(e.target.value);
-                const valueLabel = shadow.querySelector('.output-slider + .slider-value');
+                const valueLabel = shadow.querySelector('.output-value');
                 if (valueLabel) valueLabel.textContent = this._output;
             });
         }
@@ -336,7 +362,95 @@ class InputConfigPanel extends HTMLElement {
         }
     }
 
+    // Individual update methods that preserve animations
+    updateInputLabel() {
+        const label = this.shadowRoot.querySelector('.input-box .label');
+        if (label) {
+            label.textContent = this._inputLabel;
+        }
+    }
+
+    updateOutputLabel() {
+        const label = this.shadowRoot.querySelector('.output-box .label');
+        if (label) {
+            label.textContent = this._outputLabel;
+        }
+    }
+
+    updateInputType() {
+        // When input type changes, we need to re-render to show correct options
+        const css = this.shadowRoot.querySelector('style')?.textContent;
+        if (css) {
+            this.render(css);
+            this.setupEventListeners();
+        }
+    }
+
+    updateOutputType() {
+        // When output type changes, we need to re-render to show correct options
+        const css = this.shadowRoot.querySelector('style')?.textContent;
+        if (css) {
+            this.render(css);
+            this.setupEventListeners();
+        }
+    }
+
+    updateValueBar() {
+        const indicator = this.shadowRoot.querySelector('.value-indicator');
+        const valueLabel = this.shadowRoot.querySelector('.value-label');
+        if (indicator) {
+            const valuePercent = (this._value / 4095) * 90;
+            indicator.style.left = `${valuePercent+5}%`;
+        }
+        if (valueLabel) {
+            valueLabel.textContent = this._value;
+        }
+    }
+
+    updatePressState() {
+        const indicator = this.shadowRoot.querySelector('.value-indicator');
+        if (indicator) {
+            if (this._pressed) {
+                indicator.classList.add('pressed');
+            } else {
+                indicator.classList.remove('pressed');
+            }
+        }
+    }
+
+    updateModeUI() {
+        // When mode changes, we need to update which sections are visible
+        const css = this.shadowRoot.querySelector('style')?.textContent;
+        if (css) {
+            this.render(css);
+            this.setupEventListeners();
+        }
+    }
+
+    updateDeltaDisplay() {
+        const deltaSlider = this.shadowRoot.querySelector('.delta-slider');
+        const deltaValue = this.shadowRoot.querySelector('.delta-value');
+        if (deltaSlider) {
+            deltaSlider.value = this._delta;
+        }
+        if (deltaValue) {
+            deltaValue.textContent = this._delta;
+        }
+    }
+
+    updateOutputDisplay() {
+        const outputSlider = this.shadowRoot.querySelector('.output-slider');
+        const outputValue = this.shadowRoot.querySelector('.output-value');
+        if (outputSlider) {
+            outputSlider.value = this._output;
+        }
+        if (outputValue) {
+            outputValue.textContent = this._output;
+        }
+    }
+
     updateUI() {
+        // Full re-render only when structure needs to change (mode options visibility, etc.)
         const css = this.shadowRoot.querySelector('style').textContent;
         this.render(css);
         this.setupEventListeners();
@@ -358,6 +472,15 @@ class InputConfigPanel extends HTMLElement {
         this._inputType = type;
         this.setAttribute('input-label', label);
         this.setAttribute('input-type', type);
+        
+        // Reset mode to valid option for new input/output combination
+        const availableModes = this.getModeOptions();
+        if (availableModes.length === 0) {
+            this._mode = 'default';
+        } else if (!availableModes.includes(this._mode)) {
+            this._mode = availableModes[0];
+        }
+        this.setAttribute('mode', this._mode);
     }
 
     setOutputLabelAndType(label, type) {
@@ -365,6 +488,15 @@ class InputConfigPanel extends HTMLElement {
         this._outputType = type;
         this.setAttribute('output-label', label);
         this.setAttribute('output-type', type);
+        
+        // Reset mode to valid option for new input/output combination
+        const availableModes = this.getModeOptions();
+        if (availableModes.length === 0) {
+            this._mode = 'default';
+        } else if (!availableModes.includes(this._mode)) {
+            this._mode = availableModes[0];
+        }
+        this.setAttribute('mode', this._mode);
     }
 
     setOutputSelectorHandler(handler) {
@@ -372,8 +504,36 @@ class InputConfigPanel extends HTMLElement {
     }
 
     setMode(mode) {
-        this._mode = mode;
-        this.setAttribute('mode', mode);
+        const availableModes = this.getModeOptions();
+        
+        // If no modes are available, set to 'default'
+        if (availableModes.length === 0) {
+            this._mode = 'default';
+        } 
+        // If mode is a number, treat it as an index
+        else if (typeof mode === 'number') {
+            const index = Math.max(0, Math.min(availableModes.length - 1, mode));
+            this._mode = availableModes[index];
+        }
+        // If mode is a string index like "2"
+        else if (!isNaN(parseInt(mode)) && availableModes[parseInt(mode)]) {
+            this._mode = availableModes[parseInt(mode)];
+        }
+        // If the requested mode string is available, use it
+        else if (availableModes.includes(mode)) {
+            this._mode = mode;
+        }
+        // Otherwise, default to the first available mode
+        else {
+            this._mode = availableModes[0];
+        }
+        
+        this.setAttribute('mode', this._mode);
+        
+        // Force update if already connected
+        if (this.shadowRoot?.querySelector('.config-panel')) {
+            this.updateModeUI();
+        }
     }
 
     setDelta(delta) {

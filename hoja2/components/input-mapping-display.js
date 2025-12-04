@@ -4,6 +4,7 @@ class InputMappingDisplay extends HTMLElement {
         this.attachShadow({ mode: 'open' });
 
         // Component state
+        this._inputCode = 0;
         this._inputLabel = 'A';
         this._outputLabel = 'A';
         this._inputIcon = null; // URL to icon image
@@ -14,7 +15,7 @@ class InputMappingDisplay extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['input-label', 'output-label', 'input-icon', 'output-icon', 'value', 'pressed'];
+        return ['input-code', 'input-label', 'output-label', 'input-icon', 'output-icon', 'value', 'pressed'];
     }
 
     async connectedCallback() {
@@ -32,6 +33,9 @@ class InputMappingDisplay extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         switch(name) {
+            case 'input-code':
+                this._inputCode = parseInt(newValue) || 0;
+                break;
             case 'input-label':
                 this._inputLabel = newValue || 'A';
                 this.updateInputDisplay();
@@ -91,6 +95,7 @@ class InputMappingDisplay extends HTMLElement {
         container.addEventListener('click', () => {
             if (this._onClick) {
                 this._onClick({
+                    inputCode: this._inputCode,
                     inputLabel: this._inputLabel,
                     outputLabel: this._outputLabel,
                     inputIcon: this._inputIcon,

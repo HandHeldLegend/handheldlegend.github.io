@@ -255,6 +255,16 @@ class HojaGamepad {
     return status;
   }
 
+  async setInputMode(joysticks = false) {
+    console.log("Setting input mode to " + (joysticks ? "joystick" : "hover"));
+    await this.sendReport(0x05, new Uint8Array([0x00, joysticks ? 254 : 255]));
+  }
+
+  async setFocusedInput(inputCode) {
+    console.log("Setting focused input to " + inputCode);
+    await this.sendReport(0x05, new Uint8Array([0x01, inputCode]));
+  }
+
   // Internal polling method
   #pollDevice() {
     if (!this.#isConnected) {

@@ -12,6 +12,8 @@ import Inputinfoslot from '../factory/parsers/inputInfoSlot.js';
 const gamepad = HojaGamepad.getInstance();
 const gamepadCfgBlockNumber = 0;
 
+let currentFocusedInput = 0;
+
 /** @type {InputMappingDisplay[]} */
 let inputMappingDisplays = [];
 
@@ -46,6 +48,16 @@ const switchOutputCodeNames = [
     'RX+', 'RX-', 'RY+', 'RY-'
 ];
 
+const switchOutputTypes = [
+    1, 1, 1, 1,
+    4, 4, 4, 4,
+    1, 1, 1, 1,
+    1, 1, 1, 1,
+    1, 1,
+    3, 3, 3, 3,
+    3, 3, 3, 3
+];
+
 const xinputOutputCodeNames = [
     'A', 'B', 'X', 'Y',
     'D Up', 'D Down', 'D Left', 'D Right',
@@ -56,10 +68,26 @@ const xinputOutputCodeNames = [
     'RX+', 'RX-', 'RY+', 'RY-'
 ];
 
+const xinputOutputTypes = [
+    1, 1, 1, 1,
+    4, 4, 4, 4,
+    1, 1, 1, 1,
+    1, 1, 1,
+    2, 2,
+    3, 3, 3, 3,
+    3, 3, 3, 3
+];
+
 const snesOutputCodeNames = [
     'A', 'B', 'X', 'Y',
     'D Up', 'D Down', 'D Left', 'D Right',
     'L', 'R', 'Start', 'Select'
+];
+
+const snesOutputTypes = [
+    1, 1, 1, 1,
+    4, 4, 4, 4,
+    1, 1, 1, 1
 ];
 
 const n64OutputCodeNames = [
@@ -67,6 +95,13 @@ const n64OutputCodeNames = [
     'D Up', 'D Down', 'D Left', 'D Right',
     'L', 'R',  'Z', 'Start', 
     'X+', 'X-', 'Y+', 'Y-'
+];
+
+const n64OutputTypes = [
+    1, 1, 1, 1, 1, 1,
+    4, 4, 4, 4,
+    1, 1, 1, 1,
+    3, 3, 3, 3
 ];
 
 const gamecubeOutputCodeNames = [
@@ -78,6 +113,15 @@ const gamecubeOutputCodeNames = [
     'CX+', 'CX-', 'CY+', 'CY-'
 ];
 
+const gamecubeOutputTypes = [
+    1, 1, 1, 1,
+    4, 4, 4, 4,
+    1, 1, 1, 1,
+    2, 2,
+    3, 3, 3, 3,
+    3, 3, 3, 3
+];
+
 function getGlyphUrlByName(name) {
     const normalizedName = name.toLowerCase().replace(/\s+/g, '');
     return `./images/glyphs/${normalizedName}.png`;
@@ -87,6 +131,36 @@ function inputReportHook(data) {
 
     if(!inputMappingDisplays || inputMappingDisplays.length == 0) {
         return;
+    }
+
+    let focusedInput = (data.getUint8(14) << 8 | data.getUint8(15));
+
+    if(configPanelComponent) {
+        switch(remapInfoList[currentFocusedInput].inputType)  {
+            default:
+            case 0: // Unused
+            break;
+
+            case 1: // Button
+            if(focusedInput>0)
+            {
+                configPanelComponent.setPressed(true);
+                configPanelComponent.setValue(0xFFF);
+            }
+            else
+            {
+                configPanelComponent.setPressed(false);
+                configPanelComponent.setValue(0x000);
+            }
+            break;
+
+            case 2: // Hover
+            configPanelComponent.setValue(focusedInput);
+            break;
+
+            case 3: // Joystick
+            break;
+        }
     }
 
     for (let i = 16; i < (16 + 36); i++) {
@@ -119,6 +193,8 @@ function inputReportHook(data) {
             break;
         }
     }
+
+
 }
 
 async function writeGamepadMemBlock() {
@@ -153,8 +229,8 @@ function openRemapPanel() {
     remapPanelElement.classList.remove('hidden');
 }
 
-function remapClickHandler(event) {
-    console.log("Remap clicked:", event);
+function outputSelectionClicked(event) {
+    console.log("Output selection clicked:", event);
     switch (event.index) {
         case -2: // Cancel
             closeRemapPanel();
@@ -176,23 +252,46 @@ function closeRemapPanel() {
     remapPanelElement.classList.add('hidden');
 }
 
-function inputMapClicked(event) {
-    console.log("Input mapping clicked:", event.inputLabel);
+function inputTypeToString(inputType) {
+    switch(inputType) {
+        default:
+        case 0:
+            return 'none';
+        case 1:
+            return 'digital';
+        case 2:
+            return 'analog';
+        case 3:
+            return 'joystick';
+        case 4:
+            return 'dpad';
+    }
+}
 
-    configPanelComponent.setInputLabelAndType(event.inputLabel, 'analog');
-    configPanelComponent.setOutputLabelAndType(event.outputLabel, 'analog');
+function inputPanelOpened(event) {
+    console.log("Input Panel Opened:", event);
+
+    const selectedInfo = remapInfoList[event.inputCode];
 
     if (!configPanelElement) return;
+    configPanelComponent.setInputLabelAndType(event.inputLabel, inputTypeToString(selectedInfo.inputType));
+    configPanelComponent.setOutputLabelAndType(event.outputLabel, inputTypeToString(selectedInfo.outputType));
+    configPanelComponent.setMode(2);
+
     configPanelElement.classList.remove('hidden');
 
     if (!blurElement) return;
     blurElement.classList.remove('hidden');
+
+    currentFocusedInput = event.inputCode;
+    gamepad.setFocusedInput(event.inputCode);
 }
 
 function populateRemapInfoList(profileIndex, container) {
     
     let tmpProfile;
     let tmpNames;
+    let tmpOutputTypes;
 
     switch(profileIndex) {
         // Switch
@@ -200,30 +299,35 @@ function populateRemapInfoList(profileIndex, container) {
         case 0:
             tmpProfile = gamepad.input_cfg.input_profile_switch;
             tmpNames = switchOutputCodeNames;
+            tmpOutputTypes = switchOutputTypes;
             break;
 
         // XInput
         case 1:
             tmpProfile = gamepad.input_cfg.input_profile_xinput;
             tmpNames = xinputOutputCodeNames;
+            tmpOutputTypes = xinputOutputTypes;
             break;
 
         // SNES
         case 2:
             tmpProfile = gamepad.input_cfg.input_profile_snes;
             tmpNames = snesOutputCodeNames;
+            tmpOutputTypes = snesOutputTypes;
             break;
 
         // N64
         case 3:
             tmpProfile = gamepad.input_cfg.input_profile_n64;
             tmpNames = n64OutputCodeNames;
+            tmpOutputTypes = n64OutputTypes;
             break;
         
         // GameCube
         case 4:
             tmpProfile = gamepad.input_cfg.input_profile_gamecube;
             tmpNames = gamecubeOutputCodeNames;
+            tmpOutputTypes = gamecubeOutputTypes;
             break;
     }
 
@@ -236,16 +340,18 @@ function populateRemapInfoList(profileIndex, container) {
         let outputMode = outputInfo.output_mode;
         let outputCode = outputInfo.output_code;
         let outputName = tmpNames[outputCode] || `Disabled`;
-        let outputType = outputInfo.output_type;
+        let outputType = tmpOutputTypes[outputCode];
         let outputThresholdDelta = outputInfo.threshold_delta;
         let outputStaticOutput = outputInfo.static_output;
         let inputInfoList = gamepad.input_static.input_info;
         let inputMapIdx = mapIdx;
+
         if(inputInfoList[index].input_type != 0) {
             mapIdx++;
         }
 
         remapInfoList.push({
+            inputCode : index,
             inputName : decodeText(inputInfoList[index].input_name),
             inputType : inputInfoList[index].input_type,
             inputMappingIdx : inputMapIdx,
@@ -271,7 +377,7 @@ function populateRemapInfoList(profileIndex, container) {
         {
             const inputGlyphUrl = getGlyphUrlByName(info.inputName);
             const outputGlyphUrl = getGlyphUrlByName(info.outputName);
-            moduleGridHTML += `<input-mapping-display input-icon="${inputGlyphUrl}" input-label="${info.inputName}" output-icon="${outputGlyphUrl}" output-label="${info.outputName}" value="0" pressed="false"></input-mapping-display>`;
+            moduleGridHTML += `<input-mapping-display input-code="${info.inputCode}" input-icon="${inputGlyphUrl}" input-label="${info.inputName}" output-icon="${outputGlyphUrl}" output-label="${info.outputName}" value="0" pressed="false"></input-mapping-display>`;
         }
     });
 
@@ -289,7 +395,7 @@ function populateRemapInfoList(profileIndex, container) {
 
     inputMappingDisplays = container.querySelectorAll('input-mapping-display');
     inputMappingDisplays.forEach((mapping) => {
-        mapping._onClick = inputMapClicked;
+        mapping._onClick = inputPanelOpened;
     });
 }
 
@@ -334,7 +440,7 @@ export function render(container) {
     remapPanelElement = container.querySelector('#remap_panel');
     buttonGridComponent = container.querySelector('button-grid[id="gamepad_grid"]');
 
-    buttonGridComponent._onClick = remapClickHandler;
+    buttonGridComponent._onClick = outputSelectionClicked;
     // The default option set is the Switch profile
     buttonGridComponent.setButtons(switchOutputCodeNames);
 
