@@ -10,7 +10,7 @@ import Inputinfoslot from '../factory/parsers/inputInfoSlot.js';
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
-const gamepadCfgBlockNumber = 0;
+const inputCfgBlockNumber = 8;
 
 let currentFocusedInput = 0;
 
@@ -37,6 +37,12 @@ let containerElement = null;
 // Store the currently loaded remap info
 // for all 36 input/output slots
 let remapInfoList = [];
+
+const CHANGE_CMD_SWITCH = 8;
+const CHANGE_CMD_XINPUT = 9;
+const CHANGE_CMD_SNES = 10;
+const CHANGE_CMD_N64 = 11;
+const CHANGE_CMD_GAMECUBE = 12;
 
 const switchOutputCodeNames = [
     'A', 'B', 'X', 'Y',
@@ -133,65 +139,22 @@ function inputReportHook(data) {
         return;
     }
 
-    let focusedInput = (data.getUint8(14) << 8 | data.getUint8(15));
-
+    let focusedInputAnalog = (data.getUint8(14) << 8 | data.getUint8(15)) & 0x7FFF;
+    let focusedInputPress = ((data.getUint8(14) << 8 | data.getUint8(15)) & 0x8000) != 0;
     if(configPanelComponent) {
-        switch(remapInfoList[currentFocusedInput].inputType)  {
-            default:
-            case 0: // Unused
-            break;
-
-            case 1: // Button
-            if(focusedInput>0)
-            {
-                configPanelComponent.setPressed(true);
-                configPanelComponent.setValue(0xFFF);
-            }
-            else
-            {
-                configPanelComponent.setPressed(false);
-                configPanelComponent.setValue(0x000);
-            }
-            break;
-
-            case 2: // Hover
-            configPanelComponent.setValue(focusedInput);
-            break;
-
-            case 3: // Joystick
-            break;
-        }
+        configPanelComponent.setPressed(focusedInputPress);
+        configPanelComponent.setValue(focusedInputAnalog);
     }
 
     for (let i = 16; i < (16 + 36); i++) {
         let idxOutput = i - 16;
         let info = remapInfoList[idxOutput];
         let mappingDisplayIdx = info.inputMappingIdx;
-        let inputValue = data.getUint8(i);
+        let inputValueAnalog = data.getUint8(i) & 0x7F;
+        let inputValuePress = (data.getUint8(i) & 0x80) != 0;
 
-        switch(info.inputType) {
-            case 1: // Button
-            if(inputValue > 0) {
-                inputMappingDisplays[mappingDisplayIdx].setValue(255);
-                inputMappingDisplays[mappingDisplayIdx].setPressed(true);
-            }
-            else {
-                inputMappingDisplays[mappingDisplayIdx].setValue(0);
-                inputMappingDisplays[mappingDisplayIdx].setPressed(false);
-            }
-            break;
-
-            case 2: // Hover
-            inputMappingDisplays[mappingDisplayIdx].setValue(inputValue);
-            inputMappingDisplays[mappingDisplayIdx].setPressed(inputValue > 0);
-            break;
-
-            case 3: // Joystick
-            break;
-
-            default: // Unused
-            break;
-        }
+        inputMappingDisplays[mappingDisplayIdx].setValue(inputValueAnalog);
+        inputMappingDisplays[mappingDisplayIdx].setPressed(inputValuePress);
     }
 
 
@@ -287,11 +250,14 @@ function inputPanelOpened(event) {
     gamepad.setFocusedInput(event.inputCode);
 }
 
-function populateRemapInfoList(profileIndex, container) {
+async function populateRemapInfoList(profileIndex, container) {
     
     let tmpProfile;
     let tmpNames;
     let tmpOutputTypes;
+
+    const changeCmd = CHANGE_CMD_SWITCH + profileIndex;
+    await gamepad.sendConfigCommand(inputCfgBlockNumber, changeCmd);
 
     switch(profileIndex) {
         // Switch
