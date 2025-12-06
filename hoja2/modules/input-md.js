@@ -7,6 +7,7 @@ import MultiPositionButton from '../components/multi-position-button.js';
 
 import { enableTooltips } from '../js/tooltips.js';
 import Inputinfoslot from '../factory/parsers/inputInfoSlot.js';
+import Inputconfigslot from '../factory/parsers/inputConfigSlot.js';
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
@@ -34,9 +35,7 @@ let multiPositionButtonComponent = null;
 
 let containerElement = null;
 
-// Store the currently loaded remap info
-// for all 36 input/output slots
-let remapInfoList = [];
+let mappingDisplayIdx = [];
 
 const CHANGE_CMD_SWITCH = 8;
 const CHANGE_CMD_XINPUT = 9;
@@ -139,6 +138,8 @@ function inputReportHook(data) {
         return;
     }
 
+    if(!mappingDisplayIdx || !mappingDisplayIdx.length) return;
+
     let focusedInputAnalog = (data.getUint8(14) << 8 | data.getUint8(15)) & 0x7FFF;
     let focusedInputPress = ((data.getUint8(14) << 8 | data.getUint8(15)) & 0x8000) != 0;
     if(configPanelComponent) {
@@ -148,20 +149,89 @@ function inputReportHook(data) {
 
     for (let i = 16; i < (16 + 36); i++) {
         let idxOutput = i - 16;
-        let info = remapInfoList[idxOutput];
-        let mappingDisplayIdx = info.inputMappingIdx;
+        let mapDisplayIdx = mappingDisplayIdx[idxOutput];
         let inputValueAnalog = data.getUint8(i) & 0x7F;
         let inputValuePress = (data.getUint8(i) & 0x80) != 0;
 
-        inputMappingDisplays[mappingDisplayIdx].setValue(inputValueAnalog);
-        inputMappingDisplays[mappingDisplayIdx].setPressed(inputValuePress);
+        inputMappingDisplays[mapDisplayIdx].setValue(inputValueAnalog);
+        inputMappingDisplays[mapDisplayIdx].setPressed(inputValuePress);
     }
 
 
 }
 
-async function writeGamepadMemBlock() {
-    await gamepad.sendBlock(gamepadCfgBlockNumber);
+async function writeInputMemBlock() {
+    await gamepad.sendBlock(inputCfgBlockNumber);
+}
+
+async function writeMappingInfo(slotNum, outputCode, outputMode, thresholdDelta, staticOutput) {
+
+    let currentSlot;
+
+    switch(currentRemapProfileIndex)
+    {
+        default:
+        // Switch
+        case 0:
+            currentSlot = gamepad.input_cfg.input_profile_switch;
+            break;
+
+        // XInput
+        case 1:
+            currentSlot = gamepad.input_cfg.input_profile_xinput;
+            break;
+
+        // SNES
+        case 2:
+            currentSlot = gamepad.input_cfg.input_profile_snes;
+            break;
+
+        // N64
+        case 3:
+            currentSlot = gamepad.input_cfg.input_profile_n64;
+            break;
+
+        // GameCube
+        case 4:
+            currentSlot = gamepad.input_cfg.input_profile_gamecube;
+            break;
+    }
+
+    currentSlot[slotNum].output_code = outputCode;
+    currentSlot[slotNum].output_mode = outputMode;
+    currentSlot[slotNum].static_output = staticOutput;
+    currentSlot[slotNum].threshold_delta = thresholdDelta;
+
+    switch(currentRemapProfileIndex)
+    {
+        default:
+        // Switch
+        case 0:
+            gamepad.input_cfg.input_profile_switch.buffer = currentSlot.buffer;
+            break;
+
+        // XInput
+        case 1:
+            gamepad.input_cfg.input_profile_xinput.buffer = currentSlot.buffer;
+            break;
+
+        // SNES
+        case 2:
+            gamepad.input_cfg.input_profile_snes.buffer = currentSlot.buffer;
+            break;
+
+        // N64
+        case 3:
+            gamepad.input_cfg.input_profile_n64.buffer = currentSlot.buffer;
+            break;
+
+        // GameCube
+        case 4:
+            gamepad.input_cfg.input_profile_gamecube.buffer = currentSlot.buffer;
+            break;
+    }
+
+    await writeInputMemBlock();
 }
 
 function decodeText(buffer) {
@@ -231,82 +301,104 @@ function inputTypeToString(inputType) {
     }
 }
 
+function getCurrentProfileData() {
+    switch(currentRemapProfileIndex) {
+        // Switch
+        default:
+        case 0:
+            return {
+                outputConfig: gamepad.input_cfg.input_profile_switch,
+                outputNames: switchOutputCodeNames,
+                outputTypes: switchOutputTypes,
+            };
+
+        // XInput
+        case 1:
+            return {
+                outputConfig: gamepad.input_cfg.input_profile_xinput,
+                outputNames: xinputOutputCodeNames,
+                outputTypes: xinputOutputTypes,
+            };
+
+        // SNES
+        case 2:
+            return {
+                outputConfig: gamepad.input_cfg.input_profile_snes,
+                outputNames: snesOutputCodeNames,
+                outputTypes: snesOutputTypes,
+            };
+
+        // N64
+        case 3:
+            return {
+                outputConfig: gamepad.input_cfg.input_profile_n64,
+                outputNames: n64OutputCodeNames,
+                outputTypes: n64OutputTypes,
+            };
+        
+        // GameCube
+        case 4:
+            return {
+                outputConfig: gamepad.input_cfg.input_profile_gamecube,
+                outputNames: gamecubeOutputCodeNames,
+                outputTypes: gamecubeOutputTypes,
+            };
+    }
+}
+
 function inputPanelOpened(event) {
     console.log("Input Panel Opened:", event);
 
-    const selectedInfo = remapInfoList[event.inputCode];
+    let {outputConfig, outputNames, outputTypes} = getCurrentProfileData();
+
+    let inputCode = event.inputCode;
+    let inputType = gamepad.input_static.input_info[inputCode].input_type;
+    let outputCode = outputConfig[inputCode].output_code;
+    let outputType = outputTypes[outputCode];
+    let outputLabel = outputNames[outputCode];
+    let outputMode = outputConfig[inputCode].output_mode;
+    let thresholdDelta = outputConfig[inputCode].threshold_delta;
+    let staticOutput = outputConfig[inputCode].static_output;
 
     if (!configPanelElement) return;
-    configPanelComponent.setInputLabelAndType(event.inputLabel, inputTypeToString(selectedInfo.inputType));
-    configPanelComponent.setOutputLabelAndType(event.outputLabel, inputTypeToString(selectedInfo.outputType));
-    configPanelComponent.setMode(2);
+    configPanelComponent.setInputLabelAndType(event.inputLabel, inputTypeToString(inputType));
+    configPanelComponent.setOutputLabelAndType(outputLabel, inputTypeToString(outputType));
+    configPanelComponent.setMode(outputMode);
+    configPanelComponent.setDelta(thresholdDelta);
+    configPanelComponent.setOutput(staticOutput)
 
     configPanelElement.classList.remove('hidden');
 
     if (!blurElement) return;
     blurElement.classList.remove('hidden');
 
-    currentFocusedInput = event.inputCode;
-    gamepad.setFocusedInput(event.inputCode);
+    currentFocusedInput = inputCode;
+    gamepad.setFocusedInput(inputCode);
+}
+
+function inputPanelParamChanged(event) {
+    
 }
 
 async function populateRemapInfoList(profileIndex, container) {
-    
-    let tmpProfile;
-    let tmpNames;
-    let tmpOutputTypes;
-
     const changeCmd = CHANGE_CMD_SWITCH + profileIndex;
     await gamepad.sendConfigCommand(inputCfgBlockNumber, changeCmd);
 
-    switch(profileIndex) {
-        // Switch
-        default:
-        case 0:
-            tmpProfile = gamepad.input_cfg.input_profile_switch;
-            tmpNames = switchOutputCodeNames;
-            tmpOutputTypes = switchOutputTypes;
-            break;
-
-        // XInput
-        case 1:
-            tmpProfile = gamepad.input_cfg.input_profile_xinput;
-            tmpNames = xinputOutputCodeNames;
-            tmpOutputTypes = xinputOutputTypes;
-            break;
-
-        // SNES
-        case 2:
-            tmpProfile = gamepad.input_cfg.input_profile_snes;
-            tmpNames = snesOutputCodeNames;
-            tmpOutputTypes = snesOutputTypes;
-            break;
-
-        // N64
-        case 3:
-            tmpProfile = gamepad.input_cfg.input_profile_n64;
-            tmpNames = n64OutputCodeNames;
-            tmpOutputTypes = n64OutputTypes;
-            break;
-        
-        // GameCube
-        case 4:
-            tmpProfile = gamepad.input_cfg.input_profile_gamecube;
-            tmpNames = gamecubeOutputCodeNames;
-            tmpOutputTypes = gamecubeOutputTypes;
-            break;
-    }
-
+    let {outputConfig, outputNames, outputTypes} = getCurrentProfileData();
+    
     let mapIdx = 0;
 
     // Clear existing list
-    remapInfoList = [];
+    let remapInfoList = [];
+    mappingDisplayIdx = [];
 
-    tmpProfile.forEach((outputInfo, index) => {
+    console.log(outputConfig);
+
+    outputConfig.forEach((outputInfo, index) => {
         let outputMode = outputInfo.output_mode;
         let outputCode = outputInfo.output_code;
-        let outputName = tmpNames[outputCode] || `Disabled`;
-        let outputType = tmpOutputTypes[outputCode];
+        let outputName = outputNames[outputCode] || `Disabled`;
+        let outputType = outputTypes[outputCode];
         let outputThresholdDelta = outputInfo.threshold_delta;
         let outputStaticOutput = outputInfo.static_output;
         let inputInfoList = gamepad.input_static.input_info;
@@ -316,11 +408,12 @@ async function populateRemapInfoList(profileIndex, container) {
             mapIdx++;
         }
 
+        mappingDisplayIdx.push(inputMapIdx);
+
         remapInfoList.push({
             inputCode : index,
             inputName : decodeText(inputInfoList[index].input_name),
             inputType : inputInfoList[index].input_type,
-            inputMappingIdx : inputMapIdx,
             outputName: outputName,
             outputCode: outputCode,
             outputMode: outputMode,
@@ -332,7 +425,7 @@ async function populateRemapInfoList(profileIndex, container) {
 
     // Set input remap picker names
     if(buttonGridComponent) {
-        buttonGridComponent.setButtons(tmpNames);
+        buttonGridComponent.setButtons(outputNames);
     }
 
     let moduleGridHTML = '';
@@ -356,7 +449,7 @@ async function populateRemapInfoList(profileIndex, container) {
     }
 
     if(buttonGridComponent) {
-        buttonGridComponent.setButtons(tmpNames);
+        buttonGridComponent.setButtons(outputNames);
     }
 
     inputMappingDisplays = container.querySelectorAll('input-mapping-display');
@@ -415,6 +508,10 @@ export function render(container) {
     configPanelElement = container.querySelector('#config_panel');
 
     configPanelComponent._onClose = closeOverlays;
+
+    configPanelComponent.addEventListener('config-change', (e) => {
+        console.log('Input config change:', e.detail);
+    });
 
     blurElement.addEventListener('click', (e) => {
         if (e.target === blurElement) {

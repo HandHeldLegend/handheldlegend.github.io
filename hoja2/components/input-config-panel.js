@@ -8,15 +8,17 @@ class InputConfigPanel extends HTMLElement {
         this._outputLabel = 'RT';
         this._inputType = 'digital'; // 'digital', 'analog', 'joystick'
         this._outputType = 'analog'; // 'digital', 'analog', 'joystick', 'dpad'
-        this._value = 2001; // 0-4095 (12-bit)
+        this._value = 0; // 0-4096 (12-bit)
         this._pressed = false;
         this._mode = 'default'; // varies based on input/output types
-        this._delta = 209;
-        this._output = 209;
+        this._delta = 0;
+        this._output = 0;
         this._onClose = null;
         this._onReset = null;
         this._onCalibrate = null;
+        this._onCalibrateFinish = null;
         this._outputSelectorHandler = null;
+        this._isCalibrating = false;
     }
 
     static get observedAttributes() {
@@ -59,7 +61,7 @@ class InputConfigPanel extends HTMLElement {
                 this.updateOutputType();
                 break;
             case 'value':
-                this._value = Math.max(0, Math.min(4095, parseInt(newValue) || 0));
+                this._value = Math.max(0, Math.min(4096, parseInt(newValue) || 0));
                 this.updateValueBar();
                 break;
             case 'pressed':
@@ -71,14 +73,23 @@ class InputConfigPanel extends HTMLElement {
                 this.updateModeUI();
                 break;
             case 'delta':
-                this._delta = Math.max(0, Math.min(4095, parseInt(newValue) || 0));
+                this._delta = Math.max(0, Math.min(4096, parseInt(newValue) || 0));
                 this.updateDeltaDisplay();
                 break;
             case 'output':
-                this._output = Math.max(0, Math.min(4095, parseInt(newValue) || 0));
+                this._output = Math.max(0, Math.min(4096, parseInt(newValue) || 0));
                 this.updateOutputDisplay();
                 break;
         }
+    }
+
+    // Emit custom event for user interactions
+    emitConfigChange() {
+        this.dispatchEvent(new CustomEvent('config-change', {
+            bubbles: true,
+            composed: true,
+            detail: this.getState()
+        }));
     }
 
     getTypeIcon(type) {
@@ -90,7 +101,7 @@ class InputConfigPanel extends HTMLElement {
             case 'joystick':
                 return '⊕'; // Joystick symbol
             case 'dpad':
-                return '✛'; // D-pad symbol
+                return '✥'; // D-pad symbol
             default:
                 return '';
         }
@@ -203,7 +214,7 @@ class InputConfigPanel extends HTMLElement {
     }
 
     render(css) {
-        const valuePercent = (this._value / 4095) * 90;
+        const valuePercent = (this._value / 4096) * 90;
         const modeOptions = this.getModeOptions();
         const showDelta = this.shouldShowDelta();
         const showOutput = this.shouldShowOutput();
@@ -212,6 +223,10 @@ class InputConfigPanel extends HTMLElement {
         const deltaDisabled = this.isDeltaDisabled();
         const outputDisabled = this.isOutputDisabled();
         const deltaLabel = this.getDeltaLabel();
+        
+        // Ensure delta and output have valid values
+        const deltaValue = isNaN(this._delta) ? 0 : this._delta;
+        const outputValue = isNaN(this._output) ? 0 : this._output;
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
@@ -263,9 +278,9 @@ class InputConfigPanel extends HTMLElement {
                                min="0" 
                                max="4096" 
                                step="128" 
-                               value="${this._delta}"
+                               value="${deltaValue}"
                                ${deltaDisabled ? 'disabled' : ''}>
-                        <div class="slider-value delta-value">${this._delta}</div>
+                        <div class="slider-value delta-value">${deltaValue}</div>
                     </div>
                 ` : ''}
 
@@ -278,9 +293,9 @@ class InputConfigPanel extends HTMLElement {
                                min="0" 
                                max="4096" 
                                step="128"
-                               value="${this._output}"
+                               value="${outputValue}"
                                ${outputDisabled ? 'disabled' : ''}>
-                        <div class="slider-value output-value">${this._output}</div>
+                        <div class="slider-value output-value">${outputValue}</div>
                     </div>
                 ` : ''}
 
@@ -288,7 +303,7 @@ class InputConfigPanel extends HTMLElement {
                     <div class="divider"></div>
                     <div class="button-row">
                         ${showReset ? '<button class="action-button reset-button hoverable clickable">Reset</button>' : ''}
-                        ${showCalibrate ? '<button class="action-button calibrate-button hoverable clickable">Calibrate</button>' : ''}
+                        ${showCalibrate ? `<button class="action-button calibrate-button hoverable clickable">${this._isCalibrating ? 'Finish' : 'Calibrate'}</button>` : ''}
                     </div>
                 ` : ''}
             </div>
@@ -312,6 +327,9 @@ class InputConfigPanel extends HTMLElement {
             radio.addEventListener('change', (e) => {
                 this._mode = e.target.value;
                 this.updateModeUI();
+                
+                // Emit config change event with full state
+                this.emitConfigChange();
             });
         });
 
@@ -323,6 +341,11 @@ class InputConfigPanel extends HTMLElement {
                 const valueLabel = shadow.querySelector('.delta-value');
                 if (valueLabel) valueLabel.textContent = this._delta;
             });
+            
+            deltaSlider.addEventListener('change', (e) => {
+                // Emit config change event with full state when slider is released
+                this.emitConfigChange();
+            });
         }
 
         // Output slider
@@ -332,6 +355,11 @@ class InputConfigPanel extends HTMLElement {
                 this._output = parseInt(e.target.value);
                 const valueLabel = shadow.querySelector('.output-value');
                 if (valueLabel) valueLabel.textContent = this._output;
+            });
+            
+            outputSlider.addEventListener('change', (e) => {
+                // Emit config change event with full state when slider is released
+                this.emitConfigChange();
             });
         }
 
@@ -357,7 +385,17 @@ class InputConfigPanel extends HTMLElement {
         const calibrateBtn = shadow.querySelector('.calibrate-button');
         if (calibrateBtn) {
             calibrateBtn.addEventListener('click', () => {
-                if (this._onCalibrate) this._onCalibrate();
+                if (this._isCalibrating) {
+                    // Finishing calibration
+                    this._isCalibrating = false;
+                    this.updateCalibrateButton();
+                    if (this._onCalibrateFinish) this._onCalibrateFinish();
+                } else {
+                    // Starting calibration
+                    this._isCalibrating = true;
+                    this.updateCalibrateButton();
+                    if (this._onCalibrate) this._onCalibrate();
+                }
             });
         }
     }
@@ -399,7 +437,7 @@ class InputConfigPanel extends HTMLElement {
         const indicator = this.shadowRoot.querySelector('.value-indicator');
         const valueLabel = this.shadowRoot.querySelector('.value-label');
         if (indicator) {
-            const valuePercent = (this._value / 4095) * 90;
+            const valuePercent = (this._value / 4096) * 90;
             indicator.style.left = `${valuePercent+5}%`;
         }
         if (valueLabel) {
@@ -430,22 +468,31 @@ class InputConfigPanel extends HTMLElement {
     updateDeltaDisplay() {
         const deltaSlider = this.shadowRoot.querySelector('.delta-slider');
         const deltaValue = this.shadowRoot.querySelector('.delta-value');
+        const safeValue = isNaN(this._delta) ? 0 : this._delta;
         if (deltaSlider) {
-            deltaSlider.value = this._delta;
+            deltaSlider.value = safeValue;
         }
         if (deltaValue) {
-            deltaValue.textContent = this._delta;
+            deltaValue.textContent = safeValue;
         }
     }
 
     updateOutputDisplay() {
         const outputSlider = this.shadowRoot.querySelector('.output-slider');
         const outputValue = this.shadowRoot.querySelector('.output-value');
+        const safeValue = isNaN(this._output) ? 0 : this._output;
         if (outputSlider) {
-            outputSlider.value = this._output;
+            outputSlider.value = safeValue;
         }
         if (outputValue) {
-            outputValue.textContent = this._output;
+            outputValue.textContent = safeValue;
+        }
+    }
+
+    updateCalibrateButton() {
+        const calibrateBtn = this.shadowRoot.querySelector('.calibrate-button');
+        if (calibrateBtn) {
+            calibrateBtn.textContent = this._isCalibrating ? 'Finish' : 'Calibrate';
         }
     }
 
@@ -458,7 +505,7 @@ class InputConfigPanel extends HTMLElement {
 
     // Public API
     setValue(value) {
-        this._value = Math.max(0, Math.min(4095, value));
+        this._value = Math.max(0, Math.min(4096, value));
         this.setAttribute('value', this._value.toString());
     }
 
@@ -537,12 +584,12 @@ class InputConfigPanel extends HTMLElement {
     }
 
     setDelta(delta) {
-        this._delta = Math.max(0, Math.min(4095, delta));
+        this._delta = Math.max(0, Math.min(4096, delta));
         this.setAttribute('delta', this._delta.toString());
     }
 
     setOutput(output) {
-        this._output = Math.max(0, Math.min(4095, output));
+        this._output = Math.max(0, Math.min(4096, output));
         this.setAttribute('output', this._output.toString());
     }
 
@@ -558,7 +605,26 @@ class InputConfigPanel extends HTMLElement {
         this._onCalibrate = handler;
     }
 
+    setOnCalibrateFinish(handler) {
+        this._onCalibrateFinish = handler;
+    }
+
+    // Set calibration state
+    setCalibrating(isCalibrating) {
+        this._isCalibrating = isCalibrating;
+        this.updateCalibrateButton();
+    }
+
+    // Reset calibration state
+    resetCalibrationState() {
+        this._isCalibrating = false;
+        this.updateCalibrateButton();
+    }
+
     getState() {
+        const availableModes = this.getModeOptions();
+        const modeIndex = availableModes.indexOf(this._mode);
+        
         return {
             inputLabel: this._inputLabel,
             outputLabel: this._outputLabel,
@@ -566,9 +632,10 @@ class InputConfigPanel extends HTMLElement {
             outputType: this._outputType,
             value: this._value,
             pressed: this._pressed,
-            mode: this._mode,
+            mode: modeIndex >= 0 ? modeIndex : 0,
             delta: this._delta,
-            output: this._output
+            output: this._output,
+            isCalibrating: this._isCalibrating
         };
     }
 }
