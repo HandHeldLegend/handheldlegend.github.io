@@ -197,37 +197,46 @@ async function writeMappingInfo(slotNum, outputCode, outputMode, thresholdDelta,
             break;
     }
 
-    currentSlot[slotNum].output_code = outputCode;
-    currentSlot[slotNum].output_mode = outputMode;
-    currentSlot[slotNum].static_output = staticOutput;
-    currentSlot[slotNum].threshold_delta = thresholdDelta;
+    if(outputCode!=null)
+        currentSlot[slotNum].output_code = outputCode;
+
+    if(outputMode!=null)
+        currentSlot[slotNum].output_mode = outputMode;
+
+    if(staticOutput!=null)
+        currentSlot[slotNum].static_output = staticOutput;
+
+    if(thresholdDelta!=null)
+        currentSlot[slotNum].threshold_delta = thresholdDelta;
 
     switch(currentRemapProfileIndex)
     {
         default:
         // Switch
         case 0:
-            gamepad.input_cfg.input_profile_switch.buffer = currentSlot.buffer;
+            gamepad.input_cfg.input_profile_switch = currentSlot;
+
+            console.log(gamepad.input_cfg.input_profile_switch);
             break;
 
         // XInput
         case 1:
-            gamepad.input_cfg.input_profile_xinput.buffer = currentSlot.buffer;
+            gamepad.input_cfg.input_profile_xinput = currentSlot;
             break;
 
         // SNES
         case 2:
-            gamepad.input_cfg.input_profile_snes.buffer = currentSlot.buffer;
+            gamepad.input_cfg.input_profile_snes = currentSlot;
             break;
 
         // N64
         case 3:
-            gamepad.input_cfg.input_profile_n64.buffer = currentSlot.buffer;
+            gamepad.input_cfg.input_profile_n64 = currentSlot;
             break;
 
         // GameCube
         case 4:
-            gamepad.input_cfg.input_profile_gamecube.buffer = currentSlot.buffer;
+            gamepad.input_cfg.input_profile_gamecube = currentSlot;
             break;
     }
 
@@ -376,8 +385,9 @@ function inputPanelOpened(event) {
     gamepad.setFocusedInput(inputCode);
 }
 
-function inputPanelParamChanged(event) {
-    
+function inputPanelParamChanged(detail) {
+    console.log(detail);
+    writeMappingInfo(currentFocusedInput, null, detail.mode, detail.delta, detail.output);
 }
 
 async function populateRemapInfoList(profileIndex, container) {
@@ -391,8 +401,6 @@ async function populateRemapInfoList(profileIndex, container) {
     // Clear existing list
     let remapInfoList = [];
     mappingDisplayIdx = [];
-
-    console.log(outputConfig);
 
     outputConfig.forEach((outputInfo, index) => {
         let outputMode = outputInfo.output_mode;
@@ -510,7 +518,7 @@ export function render(container) {
     configPanelComponent._onClose = closeOverlays;
 
     configPanelComponent.addEventListener('config-change', (e) => {
-        console.log('Input config change:', e.detail);
+        inputPanelParamChanged(e.detail);
     });
 
     blurElement.addEventListener('click', (e) => {
