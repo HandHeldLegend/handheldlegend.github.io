@@ -251,8 +251,6 @@ async function writeMappingInfo(slotNum, outputCode, outputMode, thresholdDelta,
         // Switch
         case 0:
             gamepad.input_cfg.input_profile_switch = currentSlot;
-
-            console.log(gamepad.input_cfg.input_profile_switch);
             break;
 
         // XInput
@@ -320,11 +318,31 @@ function outputSelectionClicked(event) {
             return;
         case -1: // Unmap
             configPanelComponent.setOutputLabelAndType('Disabled', 'none');
+            // Update the mapping display
+            let mapDisplayIdxUnmap = mappingDisplayIdx[currentFocusedInput];
+            if (inputMappingDisplays[mapDisplayIdxUnmap]) {
+                const outputGlyphUrl = getGlyphUrlByName('Disabled');
+                inputMappingDisplays[mapDisplayIdxUnmap].setOutputIcon(outputGlyphUrl);
+            }
             closeRemapPanel();
             break;
 
         default:
-            configPanelComponent.setOutputLabelAndType(event.label, 'analog');
+            let {outputConfig, outputNames, outputTypes} = getCurrentProfileData();
+            let newOutputCode = event.index;
+            let newOutputType = outputTypes[newOutputCode];
+            let newOutputName = outputNames[newOutputCode];
+            const outputGlyphUrl = getGlyphUrlByName(newOutputName);
+
+            writeMappingInfo(currentFocusedInput, newOutputCode, null, null, null);
+            configPanelComponent.setOutputLabelAndType(newOutputName, inputTypeToString(newOutputType));
+            
+            // Update the mapping display
+            let mapDisplayIdx = mappingDisplayIdx[currentFocusedInput];
+            if (inputMappingDisplays[mapDisplayIdx]) {
+                inputMappingDisplays[mapDisplayIdx].setOutputIcon(outputGlyphUrl);
+            }
+            
             closeRemapPanel();
             break;
     }
