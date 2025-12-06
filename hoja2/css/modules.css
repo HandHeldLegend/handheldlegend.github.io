@@ -24,6 +24,10 @@
     }
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .clickable:active {
     filter:brightness(1.2);
    

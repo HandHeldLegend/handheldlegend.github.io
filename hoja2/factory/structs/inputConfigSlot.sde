@@ -1,7 +1,7 @@
 typedef struct
 {
-    uint16_t output_mode : 4; // 0=default, 1=rapid trigger, 2=threshold
-    uint16_t static_output : 12; // Output that is used when this input is pressed
+    uint16_t output_mode : 3; // 0=default, 1=rapid trigger, 2=threshold
+    uint16_t static_output : 13; // Output that is used when this input is pressed
     uint16_t threshold_delta; // Either a threshold for digital press or a delta for rapid trigger
     int8_t output_code; // Code for what this outputs or is assigned to
 } inputConfigSlot_s;

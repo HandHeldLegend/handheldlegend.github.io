@@ -62,7 +62,7 @@ export default class Inputconfig {
 	}
 
 	/** @type {Inputconfigslot[]} */
-	get input_profile_reserved_1() {
+	get input_profile_sinput() {
 		let tmpArr = [];
 		for(let i = 0; i < 36; i++) {
 			const tmp = this.#_getUint8Array(901+(5*i), 5);
@@ -129,7 +129,7 @@ export default class Inputconfig {
 	}
 
 	/** @param {Inputconfigslot[]} value */
-	set input_profile_reserved_1(value) {
+	set input_profile_sinput(value) {
 		for (const [index, obj] of value.entries()) {
 			this.#_setUint8Array(901+(5*index), obj.buffer)
 		}

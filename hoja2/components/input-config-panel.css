@@ -55,10 +55,9 @@
     min-width: 70px;
 }
 
-.output-box {
+.output-box:not(.unmappable) {
     border: 2px solid var(--color-p2-light);
     background-color: var(--color-p2);
-    cursor: pointer;
 }
 
 .type-icon {

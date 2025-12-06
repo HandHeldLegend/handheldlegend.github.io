@@ -43,6 +43,13 @@ const CHANGE_CMD_SNES = 10;
 const CHANGE_CMD_N64 = 11;
 const CHANGE_CMD_GAMECUBE = 12;
 
+const REMAP_PROFILE_SWITCH = 0;
+const REMAP_PROFILE_XINPUT = 1;
+const REMAP_PROFILE_SNES = 2;
+const REMAP_PROFILE_N64 = 3;
+const REMAP_PROFILE_GAMECUBE = 4;
+const REMAP_PROFILE_SINPUT = 5;
+
 const switchOutputCodeNames = [
     'A', 'B', 'X', 'Y',
     'D Up', 'D Down', 'D Left', 'D Right',
@@ -127,6 +134,30 @@ const gamecubeOutputTypes = [
     3, 3, 3, 3
 ];
 
+const sinputOutputCodeNames = [
+    'South', 'East', 'West', 'North',
+    'D Up', 'D Down', 'D Left', 'D Right',
+    'LS', 'RS', 'L1', 'R1',
+    'L2', 'R2', 'L4', 'R4',
+    'Start', 'Select', 'S Guide', 'Share', 'L5', 'R5',
+    'TPL', 'TPR', '3', '4', '5', '6',
+    'L2A', 'R2A', 
+    'LX+', 'LX-', 'LY+', 'LY-',
+    'RX+', 'RX-', 'RY+', 'RY-'
+];
+
+const sinputOutputTypes = [
+    1, 1, 1, 1,
+    4, 4, 4, 4,
+    1, 1, 1, 1,
+    1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1,
+    2, 2,
+    3, 3, 3, 3,
+    3, 3, 3, 3
+];
+
 function getGlyphUrlByName(name) {
     const normalizedName = name.toLowerCase().replace(/\s+/g, '');
     return `./images/glyphs/${normalizedName}.png`;
@@ -195,6 +226,11 @@ async function writeMappingInfo(slotNum, outputCode, outputMode, thresholdDelta,
         case 4:
             currentSlot = gamepad.input_cfg.input_profile_gamecube;
             break;
+
+        // SInput
+        case 5:
+            currentSlot = gamepad.input_cfg.input_profile_sinput;
+            break;
     }
 
     if(outputCode!=null)
@@ -237,6 +273,11 @@ async function writeMappingInfo(slotNum, outputCode, outputMode, thresholdDelta,
         // GameCube
         case 4:
             gamepad.input_cfg.input_profile_gamecube = currentSlot;
+            break;
+
+        // SInput
+        case 5:
+            gamepad.input_cfg.input_profile_sinput = currentSlot;
             break;
     }
 
@@ -352,6 +393,14 @@ function getCurrentProfileData() {
                 outputNames: gamecubeOutputCodeNames,
                 outputTypes: gamecubeOutputTypes,
             };
+
+        // SInput
+        case 5:
+            return {
+                outputConfig: gamepad.input_cfg.input_profile_sinput,
+                outputNames: sinputOutputCodeNames,
+                outputTypes: sinputOutputTypes,
+            };
     }
 }
 
@@ -375,6 +424,8 @@ function inputPanelOpened(event) {
     configPanelComponent.setMode(outputMode);
     configPanelComponent.setDelta(thresholdDelta);
     configPanelComponent.setOutput(staticOutput)
+
+    configPanelComponent.setRemapsDisabled(currentRemapProfileIndex==5);
 
     configPanelElement.classList.remove('hidden');
 
@@ -473,13 +524,13 @@ export function render(container) {
             <h2>Input Mode</h2>
             <multi-position-button 
                 id="input-mode-select" 
-                labels="SW, XI, SNES, N64, GC"
+                labels="SW, XI, SNES, N64, GC, SI"
                 default-selected="0"
             ></multi-position-button>
             <div id="panel_blur" class="popup-blur hidden" style="z-index: 199;"></div>
 
             <div id="config_panel" class="popup hidden" style="z-index: 200;">
-                <input-config-panel></input-config-panel>
+                <input-config-panel remaps-disabled="false"></input-config-panel>
             </div>
 
             <div id="remap_panel" class="popup hidden" style="z-index: 201;">

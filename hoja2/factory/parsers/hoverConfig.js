@@ -31,6 +31,8 @@ export default class Hoverconfig {
 		return this.#_getUint8Array(146, 111);
 	}
 
+
+
   	/** @param {Uint8} value */
 	set hover_config_version(value) {
 		this.#_setUint8(0, value);

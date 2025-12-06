@@ -19,12 +19,13 @@ class InputConfigPanel extends HTMLElement {
         this._onCalibrateFinish = null;
         this._outputSelectorHandler = null;
         this._isCalibrating = false;
+        this._remapsDisabled = false;
     }
 
     static get observedAttributes() {
         return [
             'input-label', 'output-label', 'input-type', 'output-type',
-            'value', 'pressed', 'mode', 'delta', 'output'
+            'value', 'pressed', 'mode', 'delta', 'output', 'remaps-disabled'
         ];
     }
 
@@ -42,8 +43,8 @@ class InputConfigPanel extends HTMLElement {
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue === newValue) return;
-        
-        switch(name) {
+
+        switch (name) {
             case 'input-label':
                 this._inputLabel = newValue || 'NULL';
                 this.updateInputLabel();
@@ -80,6 +81,10 @@ class InputConfigPanel extends HTMLElement {
                 this._output = Math.max(0, Math.min(4096, parseInt(newValue) || 0));
                 this.updateOutputDisplay();
                 break;
+            case 'remaps-disabled':
+                this._remapsDisabled = newValue === 'true' || newValue === '';
+                this.updateOutputBoxState();
+                break;
         }
     }
 
@@ -93,7 +98,7 @@ class InputConfigPanel extends HTMLElement {
     }
 
     getTypeIcon(type) {
-        switch(type) {
+        switch (type) {
             case 'digital':
                 return '⊳'; // Digital symbol
             case 'analog':
@@ -109,12 +114,12 @@ class InputConfigPanel extends HTMLElement {
 
     getModeOptions() {
         const { _inputType: iType, _outputType: oType } = this;
-        
+
         // Digital In -> Digital Out
         if (iType === 'digital' && oType === 'digital') {
             return [];
         }
-        
+
         // Digital In -> Analog/Joystick Out
         if (iType === 'digital' && (oType === 'analog' || oType === 'joystick')) {
             return [];
@@ -124,79 +129,74 @@ class InputConfigPanel extends HTMLElement {
         if (iType === 'digital' && oType === 'dpad') {
             return [];
         }
-        
+
         // Analog/Joystick In -> Digital Out
         if ((iType === 'analog' || iType === 'joystick') && oType === 'digital') {
             return ['rapid', 'threshold'];
         }
-        
-        // Analog/Joystick In -> Analog/Joystick Out
-        if ((iType === 'analog' || iType === 'joystick') && 
-            (oType === 'analog' || oType === 'joystick')) {
-            return ['passthrough', 'rapid', 'threshold'];
+
+        // Analog/Joystick In -> Analog/Joystick/Dpad Out
+        if ((iType === 'analog' || iType === 'joystick') &&
+            (oType === 'analog' || oType === 'joystick' || oType === 'dpad')) {
+            return ['rapid', 'threshold', 'passthrough'];
         }
 
-        // Analog/Joystick In -> Dpad Out
-        if ((iType === 'analog' || iType === 'joystick') && oType === 'dpad') {
-            return ['passthrough', 'rapid', 'threshold'];
-        }
-        
         return [];
     }
 
     shouldShowDelta() {
         const { _inputType: iType, _outputType: oType, _mode } = this;
-        
+
         // Analog/Joystick In -> Digital Out (always show delta for rapid or threshold)
         if ((iType === 'analog' || iType === 'joystick') && oType === 'digital') {
             return _mode === 'rapid' || _mode === 'threshold';
         }
-        
+
         // Analog/Joystick In -> Analog/Joystick Out with Rapid or Threshold
-        if ((iType === 'analog' || iType === 'joystick') && 
+        if ((iType === 'analog' || iType === 'joystick') &&
             (oType === 'analog' || oType === 'joystick') &&
             (_mode === 'rapid' || _mode === 'threshold')) {
             return true;
         }
 
         // Analog/Joystick In -> Dpad Out with Rapid or Threshold
-        if ((iType === 'analog' || iType === 'joystick') && 
+        if ((iType === 'analog' || iType === 'joystick') &&
             oType === 'dpad' &&
             (_mode === 'rapid' || _mode === 'threshold')) {
             return true;
         }
-        
+
         return false;
     }
 
     shouldShowOutput() {
         const { _inputType: iType, _outputType: oType, _mode } = this;
-        
+
         // Digital In -> Analog/Joystick Out (always show output)
         if (iType === 'digital' && (oType === 'analog' || oType === 'joystick')) {
             return true;
         }
-        
+
         // Analog/Joystick In -> Analog/Joystick Out with Rapid or Threshold
-        if ((iType === 'analog' || iType === 'joystick') && 
+        if ((iType === 'analog' || iType === 'joystick') &&
             (oType === 'analog' || oType === 'joystick') &&
             (_mode === 'rapid' || _mode === 'threshold')) {
             return true;
         }
-        
+
         return false;
     }
 
     shouldShowCalibrate() {
         const { _inputType: iType, _outputType: oType } = this;
-        
+
         // Show for Analog In ONLY
         return (iType === 'analog');
     }
 
     shouldShowReset() {
         const { _inputType: iType, _outputType: oType } = this;
-        
+
         // Show for Analog/Joystick In -> Digital Out
         return ((iType === 'analog' || iType === 'joystick'));
     }
@@ -223,7 +223,7 @@ class InputConfigPanel extends HTMLElement {
         const deltaDisabled = this.isDeltaDisabled();
         const outputDisabled = this.isOutputDisabled();
         const deltaLabel = this.getDeltaLabel();
-        
+
         // Ensure delta and output have valid values
         const deltaValue = isNaN(this._delta) ? 0 : this._delta;
         const outputValue = isNaN(this._output) ? 0 : this._output;
@@ -239,7 +239,7 @@ class InputConfigPanel extends HTMLElement {
                         <span class="label">${this._inputLabel}</span>
                     </div>
                     <div class="arrow">→</div>
-                    <div class="output-box hoverable clickable ${this._outputType}">
+                    <div class="output-box ${this._remapsDisabled ? 'unmappable' : 'hoverable clickable'} ${this._outputType}">
                         <span class="type-icon">${this.getTypeIcon(this._outputType)}</span>
                         <span class="label">${this._outputLabel}</span>
                     </div>
@@ -248,7 +248,7 @@ class InputConfigPanel extends HTMLElement {
                 <div class="value-bar-container">
                     <div class="value-bar">
                         <div class="value-indicator ${this._pressed ? 'pressed' : ''}" 
-                             style="left: ${5+valuePercent}%"></div>
+                             style="left: ${5 + valuePercent}%"></div>
                     </div>
                     <div class="value-label">${this._value}</div>
                 </div>
@@ -312,7 +312,7 @@ class InputConfigPanel extends HTMLElement {
 
     setupEventListeners() {
         const shadow = this.shadowRoot;
-        
+
         // Close button
         const closeBtn = shadow.querySelector('.close-button');
         if (closeBtn) {
@@ -327,7 +327,7 @@ class InputConfigPanel extends HTMLElement {
             radio.addEventListener('change', (e) => {
                 this._mode = e.target.value;
                 this.updateModeUI();
-                
+
                 // Emit config change event with full state
                 this.emitConfigChange();
             });
@@ -341,7 +341,7 @@ class InputConfigPanel extends HTMLElement {
                 const valueLabel = shadow.querySelector('.delta-value');
                 if (valueLabel) valueLabel.textContent = this._delta;
             });
-            
+
             deltaSlider.addEventListener('change', (e) => {
                 // Emit config change event with full state when slider is released
                 this.emitConfigChange();
@@ -356,7 +356,7 @@ class InputConfigPanel extends HTMLElement {
                 const valueLabel = shadow.querySelector('.output-value');
                 if (valueLabel) valueLabel.textContent = this._output;
             });
-            
+
             outputSlider.addEventListener('change', (e) => {
                 // Emit config change event with full state when slider is released
                 this.emitConfigChange();
@@ -367,7 +367,8 @@ class InputConfigPanel extends HTMLElement {
         const outputBox = shadow.querySelector('.output-box');
         if (outputBox) {
             outputBox.addEventListener('click', () => {
-                if (this._outputSelectorHandler) {
+                // Only trigger handler if remaps are not disabled
+                if (!this._remapsDisabled && this._outputSelectorHandler) {
                     this._outputSelectorHandler();
                 }
             });
@@ -438,7 +439,7 @@ class InputConfigPanel extends HTMLElement {
         const valueLabel = this.shadowRoot.querySelector('.value-label');
         if (indicator) {
             const valuePercent = (this._value / 4096) * 90;
-            indicator.style.left = `${valuePercent+5}%`;
+            indicator.style.left = `${valuePercent + 5}%`;
         }
         if (valueLabel) {
             valueLabel.textContent = this._value;
@@ -489,6 +490,19 @@ class InputConfigPanel extends HTMLElement {
         }
     }
 
+    updateOutputBoxState() {
+        const outputBox = this.shadowRoot.querySelector('.output-box');
+        if (outputBox) {
+            if (this._remapsDisabled) {
+                outputBox.classList.remove('hoverable', 'clickable');
+                outputBox.classList.add('unmappable');
+            } else {
+                outputBox.classList.add('hoverable', 'clickable');
+                outputBox.classList.remove('unmappable');
+            }
+        }
+    }
+
     updateCalibrateButton() {
         const calibrateBtn = this.shadowRoot.querySelector('.calibrate-button');
         if (calibrateBtn) {
@@ -519,7 +533,7 @@ class InputConfigPanel extends HTMLElement {
         this._inputType = type;
         this.setAttribute('input-label', label);
         this.setAttribute('input-type', type);
-        
+
         // Reset mode to valid option for new input/output combination
         const availableModes = this.getModeOptions();
         if (availableModes.length === 0) {
@@ -535,7 +549,7 @@ class InputConfigPanel extends HTMLElement {
         this._outputType = type;
         this.setAttribute('output-label', label);
         this.setAttribute('output-type', type);
-        
+
         // Reset mode to valid option for new input/output combination
         const availableModes = this.getModeOptions();
         if (availableModes.length === 0) {
@@ -552,11 +566,11 @@ class InputConfigPanel extends HTMLElement {
 
     setMode(mode) {
         const availableModes = this.getModeOptions();
-        
+
         // If no modes are available, set to 'default'
         if (availableModes.length === 0) {
             this._mode = 'default';
-        } 
+        }
         // If mode is a number, treat it as an index
         else if (typeof mode === 'number') {
             const index = Math.max(0, Math.min(availableModes.length - 1, mode));
@@ -574,9 +588,9 @@ class InputConfigPanel extends HTMLElement {
         else {
             this._mode = availableModes[0];
         }
-        
+
         this.setAttribute('mode', this._mode);
-        
+
         // Force update if already connected
         if (this.shadowRoot?.querySelector('.config-panel')) {
             this.updateModeUI();
@@ -615,6 +629,11 @@ class InputConfigPanel extends HTMLElement {
         this.updateCalibrateButton();
     }
 
+    setRemapsDisabled(disabled) {
+        this._remapsDisabled = disabled;
+        this.setAttribute('remaps-disabled', disabled.toString());
+    }
+
     // Reset calibration state
     resetCalibrationState() {
         this._isCalibrating = false;
@@ -624,7 +643,7 @@ class InputConfigPanel extends HTMLElement {
     getState() {
         const availableModes = this.getModeOptions();
         const modeIndex = availableModes.indexOf(this._mode);
-        
+
         return {
             inputLabel: this._inputLabel,
             outputLabel: this._outputLabel,
