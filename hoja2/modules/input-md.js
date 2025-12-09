@@ -536,6 +536,8 @@ async function populateRemapInfoList(profileIndex, container) {
 }
 
 export function render(container) {
+    currentRemapProfileIndex = 0;
+
     containerElement = container;
 
     container.innerHTML = `
