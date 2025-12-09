@@ -77,18 +77,18 @@ function motionReportHook(data) {
     const combinedView = new DataView(combinedBuffer);
     
     // Get gyroscope data and write to first 6 bytes
-    const gx = view.getInt16(23, true);
-    const gy = view.getInt16(25, true);
-    const gz = view.getInt16(27, true);
+    const gx = view.getInt16(9, true);
+    const gy = view.getInt16(11, true);
+    const gz = view.getInt16(13, true);
     
     combinedView.setInt16(0, gx, true); // X rotation
     combinedView.setInt16(2, gy, true); // Y rotation
     combinedView.setInt16(4, gz, true); // Z rotation
     
     // Get accelerometer data and write to next 6 bytes
-    const ax = view.getInt16(17, true);
-    const ay = view.getInt16(19, true);
-    const az = view.getInt16(21, true);
+    const ax = view.getInt16(3, true);
+    const ay = view.getInt16(5, true);
+    const az = view.getInt16(7, true);
     
     combinedView.setInt16(6, ax, true); // X acceleration
     combinedView.setInt16(8, ay, true); // Y acceleration

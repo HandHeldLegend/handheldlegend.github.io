@@ -377,6 +377,7 @@ class HojaGamepad {
           }
           break;
 
+        case 254: // WEBUSB_INPUT_JOYSTICKS
         case 255: // WEBUSB_INPUT_RAW
           if (this.#_inputReportHook) {
             try {

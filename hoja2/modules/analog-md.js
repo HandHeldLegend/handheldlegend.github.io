@@ -793,23 +793,31 @@ export function render(container) {
     /** @type {AnalogStickVisual} */
     const analogVisualizer = container.querySelector('analog-stick');
 
+    gamepad.setInputMode(true);
+
     // Set input loop hook to use the analog data
     gamepad.setReportHook((data) => {
+
+        if(data.getUint8(0) != 0xFE) return;
+
         let offset = 0;
+        let base = 15;
 
         if(selectedAxis==1)
         {
             offset = 4;
         }
 
-        let x = (data.getUint8(1 + offset) << 8) | (data.getUint8(2 + offset));
-        let y = 4096 - ( (data.getUint8(3 + offset) << 8) | (data.getUint8(4 + offset)) );
+        let x = (data.getUint8(offset+base) << 8) | (data.getUint8(1+offset+base));
+        let y = 4096 - ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
 
         x -= 2048;
         y -= 2048;
 
-        let x_scaled = (data.getUint8(29 + offset) << 8) | (data.getUint8(30 + offset));
-        let y_scaled = 4096 - ( (data.getUint8(31 + offset) << 8) | (data.getUint8(32 + offset)) );
+        base=23;
+
+        let x_scaled = (data.getUint8(offset+base) << 8) | (data.getUint8(1+offset+base));
+        let y_scaled = 4096 - ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
         x_scaled -= 2048;
         y_scaled -= 2048;
 

@@ -13,6 +13,12 @@ export async function registerSettingsModules() {
       color: '#6E4EC8'  // Indigo
     },
     {
+      name: 'DPad',
+      path: '../modules/dpad-md.js',
+      icon: 'dpad.svg',
+      color: '#D56E4E'  // Coral
+    },
+    {
       name: 'Joysticks',
       path: '../modules/analog-md.js',
       icon: 'analog.svg',
@@ -23,12 +29,6 @@ export async function registerSettingsModules() {
       path: '../modules/rgb-md.js',
       icon: 'rgb.svg',
       color: '#C84E6C'  // Raspberry
-    },
-    {
-      name: 'Triggers',
-      path: '../modules/trigger-md.js',
-      icon: 'triggers.svg',
-      color: '#D56E4E'  // Coral
     },
     {
       name: 'Motion',

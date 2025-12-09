@@ -171,15 +171,15 @@ function inputReportHook(data) {
 
     if(!mappingDisplayIdx || !mappingDisplayIdx.length) return;
 
-    let focusedInputAnalog = (data.getUint8(14) << 8 | data.getUint8(15)) & 0x7FFF;
-    let focusedInputPress = ((data.getUint8(14) << 8 | data.getUint8(15)) & 0x8000) != 0;
+    let focusedInputAnalog = (data.getUint8(15) << 8 | data.getUint8(16)) & 0x7FFF;
+    let focusedInputPress = ((data.getUint8(15) << 8 | data.getUint8(16)) & 0x8000) != 0;
     if(configPanelComponent) {
         configPanelComponent.setPressed(focusedInputPress);
         configPanelComponent.setValue(focusedInputAnalog);
     }
 
-    for (let i = 16; i < (16 + 36); i++) {
-        let idxOutput = i - 16;
+    for (let i = 17; i < (17 + 36); i++) {
+        let idxOutput = i - 17;
         let mapDisplayIdx = mappingDisplayIdx[idxOutput];
         let inputValueAnalog = data.getUint8(i) & 0x7F;
         let inputValuePress = (data.getUint8(i) & 0x80) != 0;
@@ -602,6 +602,9 @@ export function render(container) {
 
     // Populate the button grid with input labels
     //buttonGridComponent.setButtons(inputList);
+
+    // Set gamepad input mode
+    gamepad.setInputMode(false);
 
     // Set report hook
     gamepad.setReportHook(inputReportHook);
