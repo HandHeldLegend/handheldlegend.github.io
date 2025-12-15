@@ -1,11 +1,20 @@
 .tristate-button {
+    /* Button Border */
     border: none;
     border-radius: var(--border-radius-md);
+
     cursor: pointer;
+
+    /* Button Transition */
     transition: var(--transition-quick);
+
+    /* Button Font */
     font-weight: bold;
-    min-width: 55px;
-    height: var(--config-box-height);
+    color: var(--color-text-tertiary);
+
+    /* Button Sizings */
+    min-width: var(--buton-w);
+    height: var(--button-h);
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -16,40 +25,39 @@
 }
 
 .tristate-button.state-off {
-    background-color: var(--color-button-on);
+    background-color: var(--color-p3);
 }
 .tristate-button.state-off:hover {
-    background-color: var(--color-button-on);
+    background-color: var(--color-p3);
 }
 
 @media (hover: hover) {
     .tristate-button.state-off:hover {
-        background: var(--color-button-on-hover);
+        background: var(--color-p3-light);
     }
 }
 
-
 .tristate-button.state-off-to-on-transitioning,
 .tristate-button.state-on-to-off-transitioning {
-    background-color: var(--color-button-disabled);
-    color: black;
+    background-color: var(--color-p5);
+    
     cursor: wait;
 }
 
 .tristate-button.state-on {
-    background-color: var(--color-button-off);
+    background-color: var(--color-p4);
 }
 .tristate-button.state-on:hover {
-    background-color: var(--color-button-off);
+    background-color: var(--color-p4-light);
 }
 
 @media (hover: hover) {
     .tristate-button.state-on:hover {
-        background: var(--color-button-off-hover);
+        background: var(--color-p5-light);
     }
 }
 
 .tristate-button:disabled, .tristate-button:disabled:hover {
-    background-color: var(--color-button-disabled);
+    background-color: var(--color-p5);
     cursor: not-allowed;
 }

@@ -25,6 +25,12 @@ export async function registerSettingsModules() {
       color: '#C34EB8'  // Violet‑magenta
     },
     {
+      name: 'Snapback',
+      path: '../modules/snapback-md.js',
+      icon: 'snapback.svg',
+      color: '#52d88eff'
+    },
+    {
       name: 'RGB',
       path: '../modules/rgb-md.js',
       icon: 'rgb.svg',

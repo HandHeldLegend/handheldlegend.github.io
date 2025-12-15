@@ -12,7 +12,7 @@
     --color-p1-dark: color-mix(in srgb, var(--color-p1) 80%, black);
     --color-p1-light: color-mix(in srgb, var(--color-p1) 80%, white);
 
-    --color-p2 : #F29E4C;
+    --color-p2 : #ffad5b;
     --color-p2-dark: color-mix(in srgb, var(--color-p2) 80%, black);
     --color-p2-light: color-mix(in srgb, var(--color-p2) 80%, white);
 
@@ -20,50 +20,23 @@
     --color-p3-dark: color-mix(in srgb, var(--color-p3) 80%, black);
     --color-p3-light: color-mix(in srgb, var(--color-p3) 80%, white);
 
-    --color-p4 : #E75A7C;
+    --color-p4 : #e75e65;
     --color-p4-dark: color-mix(in srgb, var(--color-p4) 80%, black);
     --color-p4-light: color-mix(in srgb, var(--color-p4) 80%, white);
 
-    /* Accent & Semantic Colors */
-    --color-accent-primary: #39aec9;
-    /* blue‑teal for primary buttons, sliders */
-    --color-accent-secondary: #F29E4C;
-    /* warm orange for secondary actions */
-    --color-success: #6ECE9A;
-    /* on‑state, “enabled” */
-    --color-danger: #E75A7C;
-    /* disconnect, errors */
+    --color-p5 : #57d2e7;
+    --color-p5-dark: color-mix(in srgb, var(--color-p4) 80%, black);
+    --color-p5-light: color-mix(in srgb, var(--color-p4) 80%, white);
 
-    /* Text & Borders */
+    /* Button Height Vars */
+    --button-h: 40px;
+    --button-w: 75px;
+
     --color-text-primary: #f4f3f4c4;
-    /* main copy & icons */
     --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 80%, black);
-    /* subtle labels, dividers */
-    --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 20%, black);
-    /* very muted captions */
+    --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 12%, black);
 
-    /* Legacy aliases (mapped to new semantics) */
-    --color-primary: var(--color-accent-primary);
-    --color-secondary: var(--color-accent-secondary);
-    --color-background-light: var(--background-mid);
-    --color-background-light-hover: #3A3541;
-    --color-background-dark: var(--background-lowest);
-    --color-background-warning: rgba(242, 158, 76, 0.88);
-
-    /* Buttons */
-    --color-button-disabled: #5A555F;
-    --color-button-neutral: var(--color-accent-primary);
-    --color-button-neutral-hover: #5AC3D1;
-    --color-button-off: var(--color-danger);
-    --color-button-off-hover: #F08BA1;
-    --color-button-on: var(--color-success);
-    --color-button-on-hover: #7FDBAC;
-
-    /* Config Box Elements */
-    --config-box-height: 40px;
-    --config-box-divider-color: #919191;
-    --config-box-width-min: 95%;
-    --config-box-width-max: 550px;
+    
 
     --box-shadow-inset: inset 4px 4px 6px rgba(0, 0, 0, 0.192), inset -4px -4px 6px rgba(0, 0, 0, 0.192);
     --box-shadow-open: inset 0px 4px 6px rgba(0, 0, 0, 0.192), inset 0px -4px 6px rgba(0, 0, 0, 0.192);
@@ -92,7 +65,31 @@
     --transition-standard: 0.3s ease;
     --transition-steady: 0.5s ease;
 
-    color: var(--color-text-primary);
+    /* LEGACY CSS TO FIX LATER */
+    /* LEGACY CSS TO FIX LATER */
+    --color-accent-primary: var(--color-p1);
+    --color-accent-secondary: var(--color-p2);
+    --color-success: var(--color-p3);
+    --color-danger: var(--color-p4);
+    --color-primary: var(--color-accent-primary);
+    --color-secondary: var(--color-accent-secondary);
+    --color-background-light: var(--background-mid);
+    --color-background-light-hover: #3A3541;
+    --color-background-dark: var(--background-lowest);
+    --color-background-warning: var(--color-p4);
+    --color-button-disabled: var(--color-p5-dark);
+    --color-button-neutral: var(--color-p1);
+    --color-button-neutral-hover: var(--color-p1-light);
+    --color-button-off: var(--color-p2);
+    --color-button-off-hover: var(--color-p2-light);
+    --color-button-on: var(--color-p3);
+    --color-button-on-hover: var(--color-p3-light);
+
+    /* Config Box Elements */
+    --config-box-height: var(--button-h);
+    --config-box-divider-color: var(--color-p5);
+    --config-box-width-min: 95%;
+    --config-box-width-max: 550px;
 }
 
 body {
@@ -150,13 +147,18 @@ body {
 .install-button {
     display: block;
     border: none;
-    background-color: var(--color-button-neutral);
+
+    color: var(--color-text-tertiary);
+    background-color: var(--color-p2);
+
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: var(--transition-quick);
     font-weight: bold;
-    min-width: 55px;
-    height: var(--config-box-height);
+    
+    min-width: var(--buton-w);
+    height: var(--button-h);
+
     /* This will push it to the right */
     margin-right: 10px;
 
@@ -172,26 +174,35 @@ body {
 }
 
 .install-button:hover {
-    background-color: var(--color-button-neutral-hover);
+    background-color: var(--color-p2-light);
 }
 
 .connect-hint {
-    color: black;
     display: inline-block;
     vertical-align: middle;
-    border: none;
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    transition: var(--transition-quick);
-    font-weight: bold;
-    width: 85px;
-    height: var(--config-box-height);
-    text-align: center;
-    align-content: center;
 
     font-size: var(--font-size-sm);
 
-    background-color: var(--color-background-warning);
+    border: none;
+    border-radius: var(--border-radius-md);
+
+    cursor: default;
+
+    transition: var(--transition-quick);
+
+    /* Button Font */
+    font-weight: bold;
+    color: var(--color-text-tertiary);
+    
+    /* Button Sizings */
+    min-width: var(--buton-w);
+    max-width: 75px;
+    height: var(--button-h);
+
+    text-align: center;
+    align-content: center;
+
+    background-color: var(--color-p2);
 }
 
 .header-msg-box {
@@ -324,20 +335,36 @@ p {
 
 /* Back button styling */
 #back-button {
-    background-color: var(--color-button-neutral);
-    color: var(--color-text-primary);
+    /* Button Border */
     border: none;
     border-radius: var(--border-radius-md);
+
     cursor: pointer;
+
+    /* Button Transition */
     transition: var(--transition-quick);
+
+    /* Button Font */
     font-weight: bold;
-    font-size: 16px;
-    min-width: 70px;
-    height: var(--config-box-height);
+    color: var(--color-text-tertiary);
+
+    /* Button Sizings */
+    min-width: var(--buton-w);
+    width: 45px;
+    height: var(--button-h);
+
+    background-color: var(--color-p1);
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 #back-button:hover {
-    background-color: var(--color-button-neutral-hover);
+    background-color: var(--color-p1-light);
 }
 
 /* Module content becomes scrollable */
@@ -618,20 +645,6 @@ h3 {
     height: 1px;
     background-color: #dddddda2;
     margin: 20px 0;
-}
-
-remap-selector-container {
-    width: 100%;
-    align-items: center;
-    align-content: center;
-    display: flex;
-    flex-direction: column;
-    gap: inherit;
-    transition: opacity 0.3s ease-in-out;
-}
-
-remap-selector-container[hidden="true"] {
-    opacity: 0;
 }
 
 .battery-status-container {

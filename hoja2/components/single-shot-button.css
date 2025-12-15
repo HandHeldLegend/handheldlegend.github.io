@@ -1,11 +1,14 @@
 .single-shot-button {
     border: none;
+
+    color: var(--color-text-tertiary);
+    
     border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: var(--transition-quick);
     font-weight: bold;
-    min-width: 55px;
-    height: var(--config-box-height);
+    min-width: var(--button-w);
+    height: var(--button-h);
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -15,25 +18,25 @@
 }
 
 .single-shot-button.state-ready {
-    background-color: var(--color-button-on);
+    background-color: var(--color-p3);
 }
 .single-shot-button.state-ready:hover {
-    background-color: var(--color-button-on);
+    background-color: var(--color-p3);
 }
 
 @media (hover: hover) {
     .single-shot-button.state-ready:hover {
-        background-color: var(--color-button-on-hover);
+        background-color: var(--color-p3-light);
     }
 }
 
 .single-shot-button.state-pending {
-    background-color: var(--color-button-disabled);
+    background-color: var(--color-p5);
     color: black; 
     cursor: wait;
 }
 
 .single-shot-button.state-disabled {
-    background-color: var(--color-button-disabled);
+    background-color: var(--color-p5);
     cursor: not-allowed;
 }
