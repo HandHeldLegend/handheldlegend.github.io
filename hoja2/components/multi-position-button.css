@@ -6,9 +6,11 @@
     width: fit-content;
     align-content: space-between;
 
+    background: var(--color-p1-grad);
     background-color: var(--color-p1);
     border: var(--spacing-xs) solid var(--color-p1-dark);
 
+    box-sizing: border-box;
     border-radius: var(--border-radius-md);
 }
 
@@ -16,7 +18,11 @@
     /* Default width that is overwritten */
     width: 60px;
 
+    box-sizing: border-box;
+
+    font-family: var(--font-family-primary);
     font-size: var(--font-size-md);
+
     color: var(--color-text-tertiary);
     height: calc(var(--button-h) - var(--spacing-md));
     align-content: center;
@@ -25,6 +31,7 @@
     cursor: pointer;
 
     border-radius: var(--border-radius-md);
+
     background-color: inherit;
     border: var(--spacing-xs) solid transparent;
 
@@ -47,6 +54,8 @@
 .m-item.active {
     
     border-radius: var(--border-radius-md);
+
+    background: var(--color-p3-grad);
     background-color: var(--color-p3);
     border: var(--spacing-xs) solid var(--color-p3-dark);
 }

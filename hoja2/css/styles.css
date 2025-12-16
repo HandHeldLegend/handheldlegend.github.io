@@ -6,33 +6,40 @@
     --background-low: color-mix(in srgb, var(--background-highest) 30%, black);
     --background-lowest: color-mix(in srgb, var(--background-highest) 20%, black);
 
+    --background-grad: linear-gradient(150deg, var(--background-high) 0%, var(--background-mid) 100%);
+
     --blur-amt: 5px;
 
-    --color-p1 : #39aec9;
+    --color-p1 : #4cd7f7de;
     --color-p1-dark: color-mix(in srgb, var(--color-p1) 80%, black);
     --color-p1-light: color-mix(in srgb, var(--color-p1) 80%, white);
+    --color-p1-grad: linear-gradient(150deg, var(--color-p1) 0%, var(--color-p1-dark) 100%);
 
-    --color-p2 : #ffad5b;
+    --color-p2 : #ffb66cde;
     --color-p2-dark: color-mix(in srgb, var(--color-p2) 80%, black);
     --color-p2-light: color-mix(in srgb, var(--color-p2) 80%, white);
+    --color-p2-grad: linear-gradient(150deg, var(--color-p2) 0%, var(--color-p2-dark) 100%);
 
-    --color-p3 : #6ECE9A;
+    --color-p3 : #8dffc0dc;
     --color-p3-dark: color-mix(in srgb, var(--color-p3) 80%, black);
     --color-p3-light: color-mix(in srgb, var(--color-p3) 80%, white);
+    --color-p3-grad: linear-gradient(150deg, var(--color-p3) 0%, var(--color-p3-dark) 100%);
 
-    --color-p4 : #e75e65;
+    --color-p4 : #ff7d84e5;
     --color-p4-dark: color-mix(in srgb, var(--color-p4) 80%, black);
     --color-p4-light: color-mix(in srgb, var(--color-p4) 80%, white);
+    --color-p4-grad: linear-gradient(150deg, var(--color-p4) 0%, var(--color-p4-dark) 100%);
 
-    --color-p5 : #bbbbbb;
+    --color-p5 : #bbbbbbd8;
     --color-p5-dark: color-mix(in srgb, var(--color-p5) 70%, black);
     --color-p5-light: color-mix(in srgb, var(--color-p5) 70%, white);
+    --color-p5-grad: linear-gradient(150deg, var(--color-p5) 0%, var(--color-p5-dark) 100%);
 
     /* Button Height Vars */
     --button-h: 38px;
     --button-w: 75px;
 
-    --color-text-primary: #ffffffda;
+    --color-text-primary: #ffffffd0;
     --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 50%, black);
     --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 12%, black);
 
@@ -54,7 +61,7 @@
     --border-radius-round: 50%;
 
     /* Typography */
-    --font-family-primary: Arial, sans-serif;
+    --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     --font-size-sm: 11px;
     --font-size-md: 14px;
     --font-size-lg: 20px;
@@ -83,16 +90,23 @@
     --color-button-off-hover: var(--color-p2-light);
     --color-button-on: var(--color-p3);
     --color-button-on-hover: var(--color-p3-light);
-
-    /* Config Box Elements */
     --config-box-height: var(--button-h);
     --config-box-divider-color: var(--color-p5);
     --config-box-width-min: 95%;
     --config-box-width-max: 550px;
 }
 
+.separator {
+    max-width: 350px;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-text-secondary);
+    margin: var(--spacing-sm)
+}
+
 body {
     font-family: var(--font-family-primary);
+    color: var(--color-text-primary);
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -270,6 +284,7 @@ body {
 #app-grid-container {
     overflow-y: auto;
     flex: 1;
+    background: linear-gradient(150deg, var(--background-high) 0%, var(--background-mid) 100%);
     transition: transform 0.5s ease, opacity 0.5s ease;
     transform: translateX(0);
 }
@@ -286,6 +301,8 @@ body {
     width: 100%;
     height: 100%;
     /* Fill the viewport */
+    
+    background: linear-gradient(135deg, var(--background-high) 0%, var(--background-mid) 100%);
     background-color: var(--background-high);
     /* Example background */
     transition: transform 0.5s ease;
@@ -640,12 +657,7 @@ h3 {
     color: #28ce80a9;
 }
 
-.separator {
-    width: 100%;
-    height: 1px;
-    background-color: #dddddda2;
-    margin: 20px 0;
-}
+
 
 .battery-status-container {
     margin: 20px 0;

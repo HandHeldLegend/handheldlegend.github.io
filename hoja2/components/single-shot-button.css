@@ -10,8 +10,10 @@
     margin:auto;
     cursor: pointer;
 
+    font-family: var(--font-family-primary);
     font-size: var(--font-size-md);
 
+    box-sizing: border-box;
     border-radius: var(--border-radius-md);
     transition: all var(--transition-quick);
 
@@ -32,30 +34,35 @@
 }
 
 .single-shot-button.ready {
+    background: var(--color-p3-grad);
     background-color: var(--color-p3);
     border: var(--spacing-xs) solid var(--color-p3-dark);
 }
 
 .single-shot-button.success {
     cursor: default;
+    background: var(--color-p1-grad);
     background-color: var(--color-p1);
     border: var(--spacing-xs) solid var(--color-p1-dark);
 }
 
 .single-shot-button.pending {
     cursor: wait;
+    background: var(--color-p2-grad);
     background-color: var(--color-p2);
     border: var(--spacing-xs) solid var(--color-p2-dark);
 }
 
 .single-shot-button.disabled {
     cursor: not-allowed;
+    background: var(--color-p5-grad);
     background-color: var(--color-p5);
     border: var(--spacing-xs) solid var(--color-p5-dark);
 }
 
 .single-shot-button.failure {
     cursor: default;
+    background: var(--color-p4-grad);
     background-color: var(--color-p4);
     border: var(--spacing-xs) solid var(--color-p4-dark);
 }

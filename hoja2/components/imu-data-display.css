@@ -1,8 +1,10 @@
 :host {
     
     height: fit-content;
-
+    font-family: var(--font-family-primary);
+    
     border:  var(--spacing-xs) solid var(--color-p1-light);
+    background: var(--color-p1-grad);
     background-color: var(--color-p1);
     border-radius: var(--border-radius-md);
     

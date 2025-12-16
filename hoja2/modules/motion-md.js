@@ -162,6 +162,7 @@ export function render(container) {
                 width="150"
             ></multi-position-button>
         </div>
+        <div class="separator"></div>
         <h2>Visualizer</h2>
         <sensor-visualization
             model="./assets/3d/supergamepad.stl"
@@ -170,6 +171,7 @@ export function render(container) {
             color="#${hexColorBody}"
             reflectivity="0.16"
         ></sensor-visualization>
+        <div class="separator"></div>
         <imu-data-display></imu-data-display>
     `;
 
