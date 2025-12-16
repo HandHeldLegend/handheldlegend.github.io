@@ -142,10 +142,11 @@ export function render(container) {
     let hexColorBody = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
 
     container.innerHTML = `
-        <h2>Primary Options</h2>
+        <h2>Motion Settings</h2>
         <div class="app-row">
             <single-shot-button 
                 id="calibrate-imu-button" 
+                width="60"
                 state="ready" 
                 ready-text="Calibrate" 
                 disabled-text="Calibrate"
@@ -156,9 +157,9 @@ export function render(container) {
             ></single-shot-button>
             <multi-position-button 
                 id="gyro-disable-select" 
-                labels="Enabled, Disabled"
-                default-selected="${gamepad.imu_cfg.imu_disabled}"
-                style="max-width: 350px"
+                options="Enabled, Disabled"
+                selected="${gamepad.imu_cfg.imu_disabled}"
+                width="150"
             ></multi-position-button>
         </div>
         <h2>Visualizer</h2>

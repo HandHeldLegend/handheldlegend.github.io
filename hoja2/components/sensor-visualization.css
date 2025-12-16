@@ -1,11 +1,14 @@
 :host {
-    background-color: var(--color-background-light);
-    height: 225px;
+
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    background-color: var(--color-p1);
     border-radius: var(--border-radius-md);
+
+    height: 224px;
+    
     display: flex;
     align-items: center;
-    width: var(--config-box-width-min);
-    max-width: var(--config-box-width-max);
+    width: 340px;
     overflow: hidden;
 }
 
@@ -19,39 +22,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2),
-              inset 0 0 40px rgba(0, 0, 0, 0.15),
-              inset 0 0 60px rgba(0, 0, 0, 0.1),
-              inset 8px 8px 15px rgba(0, 0, 0, 0.3),
-              inset -8px -8px 15px rgba(0, 0, 0, 0.3);
 }
 
 .visualization-canvas {
     width: 100%;
     height: 100%;
     display: block;
-}
-
-.sensor-data {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.5;
-    z-index: 1;
-}
-
-.sensor-data div {
-    margin: 5px 0;
-}
-
-.x-value, .y-value, .z-value {
-    display: inline-block;
-    min-width: 60px;
-    text-align: right;
 }

@@ -1,11 +1,14 @@
 :host {
-    background-color: var(--color-background-light);
+    
     height: fit-content;
+
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    background-color: var(--color-p1);
     border-radius: var(--border-radius-md);
+    
     display: flex;
     align-items: center;
-    width: var(--config-box-width-min);
-    max-width: var(--config-box-width-max);
+    width: 340px;
     overflow: hidden;
 }
 
@@ -22,8 +25,8 @@
 
 .sensor-group h3 {
     margin: 0;
-    color: #333;
-    font-size: 16px;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-md);
 }
 
 .bar-container {
@@ -33,9 +36,9 @@
 }
 
 .axis-label {
-    width: 20px;
+    width: var(--font-size-lg);
     font-weight: bold;
-    color: #666;
+    color: var(--color-text-tertiary);
 }
 
 .bar-wrapper {
@@ -74,28 +77,28 @@
 
 /* Gyroscope colors */
 .gyro-x .bar-fill {
-    background-color: #ff4444;
+    background-color: var(--color-p2);
 }
 
 .gyro-y .bar-fill {
-    background-color: #44ff44;
+    background-color: var(--color-p3);
 }
 
 .gyro-z .bar-fill {
-    background-color: #4444ff;
+    background-color: var(--color-p4);
 }
 
 /* Accelerometer colors */
 .accel-x .bar-fill {
-    background-color: #ff8888;
+    background-color: var(--color-p2);
 }
 
 .accel-y .bar-fill {
-    background-color: #88ff88;
+    background-color: var(--color-p3);
 }
 
 .accel-z .bar-fill {
-    background-color: #8888ff;
+    background-color: var(--color-p4);
 }
 
 .center-line {
@@ -103,7 +106,7 @@
     left: 50%;
     height: 100%;
     width: 2px;
-    background-color: #999;
+    background-color: var(--color-p5-dark);
     z-index: 1;
 }
 
@@ -111,7 +114,7 @@
     min-width: 70px;
     text-align: right;
     font-family: monospace;
-    color: #333;
+    color: var(--color-text-tertiary);
 }
 
 .bar-scale {

@@ -30,17 +30,17 @@ export function render(container) {
     let snapbackIdxLeft = gamepad.analog_cfg.l_snapback_type;
     let snapbackIdxRight = gamepad.analog_cfg.r_snapback_type;
 
+    snapbackIdxLeft = 2;
+
     let snapbackCutoffLeft  = (gamepad.analog_cfg.l_snapback_intensity / 10);
     let snapbackCutoffRight = (gamepad.analog_cfg.r_snapback_intensity / 10);
 
     container.innerHTML = `
-            <h2>Snapback Filter</h2>
-
             <h3>Left Stick</h3>
             <multi-position-button 
                 id="snapback-mode-selector-left" 
-                labels="Auto, LPF, Off"
-                default-selected="${snapbackIdxLeft}"
+                options="LPF, Auto, Off"
+                selected="${snapbackIdxLeft}"
             ></multi-position-button>
 
             <p>Cutoff Frequency Hz</p>
@@ -50,14 +50,14 @@ export function render(container) {
                 min="30.0" 
                 max="150.0" 
                 step="0.5" 
-                default-value="${snapbackCutoffLeft}"
+                value="${snapbackCutoffLeft}"
             ></number-selector>
 
             <h3>Right Stick</h3>
             <multi-position-button 
                 id="snapback-mode-selector-right" 
-                labels="Auto, LPF, Off"
-                default-selected="${snapbackIdxRight}"
+                options="LPF, Auto, Off"
+                selected="${snapbackIdxRight}"
             ></multi-position-button>
 
             <p>Cutoff Frequency Hz</p>
@@ -67,10 +67,11 @@ export function render(container) {
                 min="30.0" 
                 max="150.0" 
                 step="0.5"  
-                default-value="${snapbackCutoffRight}"
+                value="${snapbackCutoffRight}"
             ></number-selector>
 
-            <waveform-display width="450" height="300"></waveform-display>
+            <h3>Analyzer</h3>
+            <waveform-display width="450" height="280"></waveform-display>
     `;
 
     enableTooltips(container);

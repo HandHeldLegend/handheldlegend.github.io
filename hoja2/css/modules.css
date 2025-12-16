@@ -1,5 +1,4 @@
 /* Styles that are shared by modules can be placed here */
-
 .module-grid {
     width: inherit;
     max-width: 620px;
@@ -20,6 +19,7 @@
     .hoverable:hover {
         filter:brightness(1.1);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translate(-1px, -1px);
         transition: all 0.1s ease-in-out;
     }
 }

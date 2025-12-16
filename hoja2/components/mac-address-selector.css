@@ -5,24 +5,43 @@
     flex-direction: row;
     margin-left: auto;
     margin-right: auto;
+
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: var(--border-radius-md);
+    height: var(--button-h);
+    background-color: var(--color-p1);
+    border: var(--spacing-xs) solid var(--color-p1-dark);
 }
 
 .mac-input {
+    background-color: var(--color-p1);
     display:flex;
     width: 24px;
     text-align: center;
     font-family: monospace;
-    padding: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 2px;
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    border-radius: var(--border-radius-sm);
     font-size: 16px;
     text-transform: uppercase;
+
+    transition: all var(--transition-quick);
+}
+
+.mac-input:hover {
+    filter: brightness(1.1);
+}
+
+
+.mac-input::selection {
+    background-color: var(--color-p1-dark);
 }
 
 .mac-input:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0,123,255,.25);
+    filter:  brightness(1.1);
+    box-shadow: var(--box-shadow-outset);
 }
 
 .separator {
@@ -30,6 +49,6 @@
     margin-right: 4px;
     font-size: 16px;
     font-weight: bold;
-    color: #666;
+    color: var(--color-text-tertiary);
     user-select: none;
 }

@@ -544,7 +544,8 @@ export function render(container) {
             <h2>Input Mode</h2>
             <multi-position-button 
                 id="input-mode-select" 
-                labels="SW, XI, SNES, N64, GC, SI"
+                options="SW, XI, SNES, N64, GC, SI"
+                width="300"
                 default-selected="0"
             ></multi-position-button>
             <div id="panel_blur" class="popup-blur hidden" style="z-index: 199;"></div>

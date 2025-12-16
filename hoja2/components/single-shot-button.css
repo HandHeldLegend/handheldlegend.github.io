@@ -1,14 +1,19 @@
 .single-shot-button {
-    border: none;
+    /* Default width that is overwritten */
+    width: 60px;
 
+    min-width: fit-content;
     color: var(--color-text-tertiary);
-    
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    transition: var(--transition-quick);
-    font-weight: bold;
-    min-width: var(--button-w);
     height: var(--button-h);
+    align-content: center;
+    text-align: center;
+    margin:auto;
+    cursor: pointer;
+
+    font-size: var(--font-size-md);
+
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -17,26 +22,40 @@
     user-select: none;
 }
 
-.single-shot-button.state-ready {
-    background-color: var(--color-p3);
-}
-.single-shot-button.state-ready:hover {
-    background-color: var(--color-p3);
-}
-
 @media (hover: hover) {
-    .single-shot-button.state-ready:hover {
-        background-color: var(--color-p3-light);
+    .single-shot-button.ready:hover {
+        filter:brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all 0.1s ease-in-out;
     }
 }
 
-.single-shot-button.state-pending {
-    background-color: var(--color-p5);
-    color: black; 
-    cursor: wait;
+.single-shot-button.ready {
+    background-color: var(--color-p3);
+    border: var(--spacing-xs) solid var(--color-p3-dark);
 }
 
-.single-shot-button.state-disabled {
-    background-color: var(--color-p5);
+.single-shot-button.success {
+    cursor: default;
+    background-color: var(--color-p1);
+    border: var(--spacing-xs) solid var(--color-p1-dark);
+}
+
+.single-shot-button.pending {
+    cursor: wait;
+    background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
+}
+
+.single-shot-button.disabled {
     cursor: not-allowed;
+    background-color: var(--color-p5);
+    border: var(--spacing-xs) solid var(--color-p5-dark);
+}
+
+.single-shot-button.failure {
+    cursor: default;
+    background-color: var(--color-p4);
+    border: var(--spacing-xs) solid var(--color-p4-dark);
 }

@@ -3,27 +3,47 @@ class SingleShotButton extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
 
-        // Default state configurations
-        this._states = {
-            ready: { 
-                text: 'Start', 
-                class: 'state-ready' 
+        this._currentState = 'ready';
+
+        this._defaults = {
+            ready: {
+                text: 'Ready',
             },
-            pending: { 
-                text: 'Loading...', 
-                class: 'state-pending' 
-            }, 
+            pending: {
+                text: '...',
+            },
             success: {
-                text: 'Success!',
-                class: 'state-success'
+                text: 'OK!',
             },
             failure: {
-                text: 'Failed!',
-                class: 'state-failure'
+                text: 'Error',
             },
             disabled: {
-                text: 'Disabled',
-                class: 'state-disabled'
+                text: 'N/A',
+            }
+        };
+
+        // Default state configurations
+        this._states = {
+            ready: {
+                class: 'ready',
+                text: 'Ready',
+            },
+            pending: {
+                class: 'pending',
+                text: '...',
+            },
+            success: {
+                class: 'success',
+                text: 'OK!',
+            },
+            failure: {
+                class: 'failure',
+                text: 'Error',
+            },
+            disabled: {
+                class: 'disabled',
+                text: 'N/A',
             }
         };
 
@@ -35,8 +55,9 @@ class SingleShotButton extends HTMLElement {
 
     static get observedAttributes() {
         return [
-            'state', 
-            'ready-text', 
+            'state',
+            'width',
+            'ready-text',
             'pending-text',
             'success-text',
             'failure-text',
@@ -53,29 +74,28 @@ class SingleShotButton extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        switch(name) {
+        switch (name) {
             case 'state':
                 this.updateButtonState(newValue);
                 break;
             case 'ready-text':
-                this._states.ready.text = newValue || 'Start';
-                this.updateButtonText();
+                this._states.ready.text = newValue || this._defaults.ready.text;
                 break;
             case 'pending-text':
-                this._states.pending.text = newValue || 'Loading...';
-                this.updateButtonText();
+                this._states.pending.text = newValue || this._defaults.pending.text;
+
                 break;
             case 'success-text':
-                this._states.success.text = newValue || 'Success!';
-                this.updateButtonText();
+                this._states.success.text = newValue || this._defaults.success.text;
+
                 break;
             case 'failure-text':
-                this._states.failure.text = newValue || 'Failed!';
-                this.updateButtonText();
+                this._states.failure.text = newValue || this._defaults.failure.text;
+
                 break;
             case 'disabled-text':
-                this._states.disabled.text = newValue || 'Disabled';
-                this.updateButtonText();
+                this._states.disabled.text = newValue || this._defaults.disabled.text;
+
                 break;
         }
     }
@@ -83,11 +103,13 @@ class SingleShotButton extends HTMLElement {
     render(css) {
         const currentState = this.getAttribute('state') || 'ready';
         const currentStateConfig = this._states[currentState];
+        const width = this.getAttribute('width') || 60;
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
             <button 
-                class="single-shot-button ${currentStateConfig.class}" 
+                class="single-shot-button ${currentStateConfig.class}"
+                style="width:${width}px;" 
             >
                 ${currentStateConfig.text}
             </button>
@@ -98,8 +120,9 @@ class SingleShotButton extends HTMLElement {
         const button = this.shadowRoot.querySelector('.single-shot-button');
 
         button.addEventListener('click', async () => {
+
             // Prevent multiple clicks while processing
-            if (this.getAttribute('state') !== 'ready') {
+            if (this._currentState !== 'ready') {
                 return;
             }
 
@@ -110,71 +133,67 @@ class SingleShotButton extends HTMLElement {
                 }
 
                 // Set to pending state
-                this.setAttribute('state', 'pending');
-                
-                // Disable button
-                button.disabled = true;
+                this.updateButtonState('pending');
+
 
                 // Call the onClick handler if provided
                 if (this._onClick != null) {
                     const result = await this._onClick();
-                    
+
                     // Set success or failure state based on result
                     const resultState = result ? 'success' : 'failure';
-                    this.setAttribute('state', resultState);
+                    this.updateButtonState(resultState);
 
                     // Set timer to return to ready state after 1 second
                     this._stateTimer = setTimeout(() => {
-                        this.setAttribute('state', 'ready');
-                        button.disabled = false;
-                    }, 1000);
+                        this.updateButtonState('ready');
+                    }, 500);
+
+                    return;
+                }
+                else {
+                    // Set default state
+                    this.updateButtonState('failure');
+
+                    // Set timer to return to ready state after 1 second
+                    this._stateTimer = setTimeout(() => {
+                        this.updateButtonState('ready');
+                    }, 500);
 
                     return;
                 }
 
+
             } catch (error) {
                 // Handle error and show failure state
                 console.error('Button action failed:', error);
-                this.setAttribute('state', 'failure');
-                
+                this.updateButtonState('failure');
+
                 // Set timer to return to ready state after 1 second
                 this._stateTimer = setTimeout(() => {
-                    this.setAttribute('state', 'ready');
+                    this.updateButtonState('ready');
                     button.disabled = false;
-                }, 1000);
+                }, 500);
             }
         });
     }
 
     updateButtonState(state) {
         const button = this.shadowRoot.querySelector('.single-shot-button');
-        
+
+        const stateToRemove = this._currentState;
+        this._currentState = state;
+
         try {
-            // Remove all state classes
-            Object.values(this._states).forEach(stateConfig => {
-                button.classList.remove(stateConfig.class);
-            });
-        
             // Add the new state class
             const currentStateConfig = this._states[state];
             if (currentStateConfig) {
+                button.classList.remove(stateToRemove);
                 button.classList.add(currentStateConfig.class);
+                button.textContent = this._states[state].text;
             }
-        
-            this.updateButtonText();
         }
-        catch(err) {
-            
-        }
-    }
-
-    updateButtonText() {
-        const button = this.shadowRoot.querySelector('.single-shot-button');
-        const currentState = this.getAttribute('state') || 'ready';
-        try {
-            button.textContent = this._states[currentState].text;
-        }
-        catch(err) {
+        catch (err) {
             
         }
     }
@@ -190,7 +209,7 @@ class SingleShotButton extends HTMLElement {
         if (this._stateTimer) {
             clearTimeout(this._stateTimer);
         }
-        
+
         const newState = enable ? 'ready' : 'disabled';
         this.setAttribute('state', newState);
         const button = this.shadowRoot.querySelector('.single-shot-button');

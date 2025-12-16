@@ -24,40 +24,39 @@
     --color-p4-dark: color-mix(in srgb, var(--color-p4) 80%, black);
     --color-p4-light: color-mix(in srgb, var(--color-p4) 80%, white);
 
-    --color-p5 : #57d2e7;
-    --color-p5-dark: color-mix(in srgb, var(--color-p4) 80%, black);
-    --color-p5-light: color-mix(in srgb, var(--color-p4) 80%, white);
+    --color-p5 : #bbbbbb;
+    --color-p5-dark: color-mix(in srgb, var(--color-p5) 70%, black);
+    --color-p5-light: color-mix(in srgb, var(--color-p5) 70%, white);
 
     /* Button Height Vars */
-    --button-h: 40px;
+    --button-h: 38px;
     --button-w: 75px;
 
-    --color-text-primary: #f4f3f4c4;
-    --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 80%, black);
+    --color-text-primary: #ffffffda;
+    --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 50%, black);
     --color-text-tertiary: color-mix(in srgb, var(--color-text-primary) 12%, black);
 
-    
-
+    --box-shadow-outset: 0 4px 8px rgba(0, 0, 0, 0.2);
     --box-shadow-inset: inset 4px 4px 6px rgba(0, 0, 0, 0.192), inset -4px -4px 6px rgba(0, 0, 0, 0.192);
     --box-shadow-open: inset 0px 4px 6px rgba(0, 0, 0, 0.192), inset 0px -4px 6px rgba(0, 0, 0, 0.192);
 
     /* Spacing */
-    --spacing-xs: 5px;
-    --spacing-sm: 10px;
-    --spacing-md: 15px;
-    --spacing-lg: 20px;
-    --spacing-xl: 30px;
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 16px;
+    --spacing-xl: 32px;
 
     /* Border Radius */
     --border-radius-sm: 10px;
-    --border-radius-md: 12px;
+    --border-radius-md: 13px;
     --border-radius-lg: 15px;
     --border-radius-round: 50%;
 
     /* Typography */
     --font-family-primary: Arial, sans-serif;
     --font-size-sm: 11px;
-    --font-size-md: 16px;
+    --font-size-md: 14px;
     --font-size-lg: 20px;
 
     /* Transitions */
@@ -345,6 +344,7 @@ p {
     transition: var(--transition-quick);
 
     /* Button Font */
+    font-size: var(--font-size-md);
     font-weight: bold;
     color: var(--color-text-tertiary);
 

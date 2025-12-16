@@ -1,16 +1,34 @@
-.button-item {
-    user-select: none;
-    flex: 1;
-    height: var(--config-box-height);
-    text-align: center;
-    align-content: center;
-    cursor: pointer;
-    background: var(--color-button-off);
-    transition: var(--transition-quick);
+.m-container {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    height: var(--button-h);
     width: fit-content;
-    padding-left: 8px;
-    padding-right: 8px;
-    min-width: 50px;
+    align-content: space-between;
+
+    background-color: var(--color-p1);
+    border: var(--spacing-xs) solid var(--color-p1-dark);
+
+    border-radius: var(--border-radius-md);
+}
+
+.m-item {
+    /* Default width that is overwritten */
+    width: 60px;
+
+    font-size: var(--font-size-md);
+    color: var(--color-text-tertiary);
+    height: calc(var(--button-h) - var(--spacing-md));
+    align-content: center;
+    text-align: center;
+    margin:auto;
+    cursor: pointer;
+
+    border-radius: var(--border-radius-md);
+    background-color: inherit;
+    border: var(--spacing-xs) solid transparent;
+
+    transition: all var(--transition-quick);
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -19,19 +37,16 @@
     user-select: none;
 }
 
-.button-item:hover {
-    background: var(--color-button-off);
-}
-
 @media (hover: hover) {
-    .button-item:hover {
-        background: var(--color-button-off-hover);
+    .m-item:hover:not(.active){
+        filter:brightness(1.1);
+        transition: all 0.1s ease-in-out;
     }
 }
 
-.button-item.active {
-    box-shadow: var(--box-shadow-inset);
-    background: var(--color-button-neutral);
-    color: var(--color-text-secondary);
-    font-weight: bold;
+.m-item.active {
+    
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-p3);
+    border: var(--spacing-xs) solid var(--color-p3-dark);
 }

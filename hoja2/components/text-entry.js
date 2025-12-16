@@ -42,7 +42,7 @@ class TextEntry extends HTMLElement {
                     type="text" 
                     class="text-input"
                     value="${defaultValue}"
-                    placeholder="${placeholder}"
+                    placeholder="✎ ${placeholder}"
                     data-maxbytes="${this.getMaxLength() || ''}"
                 >
             </div>

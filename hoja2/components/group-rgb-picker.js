@@ -14,10 +14,7 @@ class GroupRgbPicker extends HTMLElement {
     async connectedCallback() {
         // Load the component-specific CSS
         const csstext = await fetch('./components/group-rgb-picker.css');
-
-        const cssHostResponse = await fetch('./components/host-template.css');
-        const cssHost = await cssHostResponse.text();
-        const css = cssHost + await csstext.text();
+        const css = await csstext.text();
 
         this.render(css);
         this.setupEventListeners();
@@ -38,6 +35,7 @@ class GroupRgbPicker extends HTMLElement {
         const initialColor = this.getAttribute('color') || '000000';
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
+            <div class="picker-container">
                 <div class="group-name">${this.getAttribute('group-name') || 'Group'}</div>
                 <div class="pound">#</div>
                 <input 
@@ -56,6 +54,7 @@ class GroupRgbPicker extends HTMLElement {
                         value="#${initialColor}" 
                     />
                 </div>
+            </div>
         `;
     }
 

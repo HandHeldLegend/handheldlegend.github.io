@@ -13,22 +13,20 @@ class NumberSelector extends HTMLElement {
             min: 0,
             max: 100,
             step: 1,
-            defaultValue: 50,
+            defaultValue: 0,
             formatter: (value) => value.toString(),
         };
     }
 
     // Observed attributes for configuration
     static get observedAttributes() {
-        return ['type', 'min', 'max', 'step', 'default-value', 'label'];
+        return ['width', 'type', 'min', 'max', 'step', 'value', 'label'];
     }
 
     async connectedCallback() {
         // Load the component-specific CSS
         const csstext = await fetch('./components/number-selector.css');
-        const cssHostResponse = await fetch('./components/host-template.css');
-        const cssHost = await cssHostResponse.text();
-        const css = cssHost + await csstext.text();
+        const css = await csstext.text();
 
         // Render the component with loaded CSS
         this.render(css);
@@ -42,29 +40,32 @@ class NumberSelector extends HTMLElement {
             min: parseFloat(this.getAttribute('min') ?? NumberSelector.defaultConfig.min),
             max: parseFloat(this.getAttribute('max') ?? NumberSelector.defaultConfig.max),
             step: parseFloat(this.getAttribute('step') ?? NumberSelector.defaultConfig.step),
-            defaultValue: parseFloat(this.getAttribute('default-value') ?? NumberSelector.defaultConfig.defaultValue),
+            defaultValue: parseFloat(this.getAttribute('value') ?? parseFloat(this.getAttribute('min') ?? NumberSelector.defaultConfig.min)),
             label: this.getAttribute('label') || '',
         };
     }
 
     render(css) {
         const config = this.getConfig();
+        const width = parseInt(this.getAttribute('width') ?? 400);
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>
-            <button orientation="left" class="btn-control btn-decrease"><</button>
+            <div class="num-container" style="width:${width}px;">
+            <button orientation="left" class="btn-control btn-decrease">◀</button>
             <div class="slider-container">
                 <input 
                     type="range" 
                     class="slider" 
                     min="${config.min}" 
                     max="${config.max}" 
-                    value="${config.defaultValue}"
+                    value="${config.defaultValue.toFixed(config.type === 'float' ? 1 : 0)}"
                     step="${config.step}"
                 >
             </div>
-            <div class="value-display">${config.defaultValue}</div>
-            <button orientation="right" class="btn-control btn-increase">></button>
+            <div class="value-display">${config.defaultValue.toFixed(config.type === 'float' ? 1 : 0)}</div>
+            <button orientation="right" class="btn-control btn-increase">▶</button>
+            </div>
         `;
     }
 
@@ -93,7 +94,7 @@ class NumberSelector extends HTMLElement {
                 e.target.value = value;
             }
 
-            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 2 : 0);
+            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 1 : 0);
 
             if(!this._isInternalUpdate)
                 this.dispatchEvent(
@@ -113,7 +114,7 @@ class NumberSelector extends HTMLElement {
                 e.target.value = value;
             }
 
-            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 2 : 0);
+            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 1 : 0);
         });
 
         // Decrease button
@@ -146,7 +147,7 @@ class NumberSelector extends HTMLElement {
             label: config.label,
             type: config.type,
             formattedValue: config.type === 'float'
-                ? parseFloat(slider.value).toFixed(2)
+                ? parseFloat(slider.value).toFixed(1)
                 : parseInt(slider.value, 10),
         };
     }
@@ -163,7 +164,7 @@ class NumberSelector extends HTMLElement {
 
         // Update the slider and display
         slider.value = clampedValue;
-        valueDisplay.textContent = clampedValue.toFixed(config.type === 'float' ? 2 : 0);
+        valueDisplay.textContent = clampedValue.toFixed(config.type === 'float' ? 1 : 0);
         this._isInternalUpdate = false;
     }
 }

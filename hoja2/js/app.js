@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: '../modules/analog-md.js',
+                path: '../modules/motion-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
