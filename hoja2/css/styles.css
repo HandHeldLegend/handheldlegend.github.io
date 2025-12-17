@@ -10,7 +10,7 @@
 
     --blur-amt: 5px;
 
-    --color-p1 : #4cd7f7de;
+    --color-p1 : #52dfffde;
     --color-p1-dark: color-mix(in srgb, var(--color-p1) 80%, black);
     --color-p1-light: color-mix(in srgb, var(--color-p1) 80%, white);
     --color-p1-grad: linear-gradient(150deg, var(--color-p1) 0%, var(--color-p1-dark) 100%);
@@ -25,13 +25,13 @@
     --color-p3-light: color-mix(in srgb, var(--color-p3) 80%, white);
     --color-p3-grad: linear-gradient(150deg, var(--color-p3) 0%, var(--color-p3-dark) 100%);
 
-    --color-p4 : #ff7d84e5;
+    --color-p4 : #f55e66e5;
     --color-p4-dark: color-mix(in srgb, var(--color-p4) 80%, black);
     --color-p4-light: color-mix(in srgb, var(--color-p4) 80%, white);
     --color-p4-grad: linear-gradient(150deg, var(--color-p4) 0%, var(--color-p4-dark) 100%);
 
     --color-p5 : #bbbbbbd8;
-    --color-p5-dark: color-mix(in srgb, var(--color-p5) 70%, black);
+    --color-p5-dark: color-mix(in srgb, var(--color-p5) 80%, black);
     --color-p5-light: color-mix(in srgb, var(--color-p5) 70%, white);
     --color-p5-grad: linear-gradient(150deg, var(--color-p5) 0%, var(--color-p5-dark) 100%);
 
@@ -62,7 +62,7 @@
 
     /* Typography */
     --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    --font-size-sm: 11px;
+    --font-size-sm: 12px;
     --font-size-md: 14px;
     --font-size-lg: 20px;
 
@@ -101,7 +101,8 @@
     width: 100%;
     height: 1px;
     background-color: var(--color-text-secondary);
-    margin: var(--spacing-sm)
+    margin-left: auto;
+    margin-right: auto;
 }
 
 body {

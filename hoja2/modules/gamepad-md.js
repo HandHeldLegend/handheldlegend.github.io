@@ -3,7 +3,6 @@ import HojaGamepad from '../js/gamepad.js';
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
@@ -71,13 +70,13 @@ export function render(container) {
             <h2>Default Mode</h2>
             <div class="app-text-container">
                 <strong>WARNING</strong>
-                <br>
-                Changing the default mode will require you to hold A upon plugging in the controller to connect to this configuration app. 
+                Changing the default mode will require you to hold the 'A' button upon plugging in the controller to connect to this configuration app. 
             </div>
             <multi-position-button 
                 id="default-mode-selector" 
-                labels="NS, Xinput, GCUSB, GC, N64, SNES, SInput"
-                default-selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
+                width="364"
+                options="NS, Xinput, GCUSB, GC, N64, SNES, SInput"
+                selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
             ></multi-position-button>
             </h2>
 

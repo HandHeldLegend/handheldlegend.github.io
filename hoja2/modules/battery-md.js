@@ -1,111 +1,247 @@
 import HojaGamepad from '../js/gamepad.js';
 
-import NumberSelector from '../components/number-selector.js';
-import MultiPositionButton from '../components/multi-position-button.js';
-import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
-
-import TristateButton from '../components/tristate-button.js';
-import SingleShotButton from '../components/single-shot-button.js';
-
-import { enableTooltips } from '../js/tooltips.js';
-
-const parseBatteryBufferText = buffer => {
-    const text = new TextDecoder().decode(buffer).trim();
-    // Log each character code to see what's actually in there
-    //console.log('Character codes:', [...text].map(c => c.charCodeAt(0)));
-    
-    // Remove any null bytes or other whitespace and then check
-    const cleanText = text.replace(/\0+/g, '').trim();
-    return cleanText === '~' ? false : cleanText;
-};
-
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 
+let batteryConfig = {
+    battery: { model: "Unknown", capacity: "Unknown" },
+    status: { isCharging: false, isDone: false, percentage: false },
+    hardware: {
+        pmic: { model: "Unknown", present: false, active: false },
+        fuelGauge: { model: "Unknown", present: false, active: false }
+    }
+};
 
+function updateBatteryDisplay() {
+    const display = document.getElementById('battery-status-content');
+    if (!display) return;
 
-/**
- * Updates the battery status display
- * @param {boolean} isCharging - Whether the device is currently charging
- * @param {number} percentage - Battery percentage (0-100)
- */
-function updateBatteryStatus(isCharging, isDone, percentage) {
-    const chargingStatusEl = document.getElementById('charging-status');
-    const batteryPercentageEl = document.getElementById('battery-percentage');
-    const batteryBarEl = document.getElementById('battery-bar');
+    const { isCharging, isDone, percentage } = batteryConfig.status;
+    const hasFuelGauge = percentage !== false && percentage <= 100;
     
-    if (!chargingStatusEl || !batteryPercentageEl || !batteryBarEl) {
-        return;
+    let levelClass = '';
+    let iconClass = '';
+    const percent = hasFuelGauge ? Math.max(0, Math.min(100, percentage)) : 50;
+
+    if (hasFuelGauge) {
+        if (percent <= 20) { levelClass = 'low'; iconClass = 'low'; }
+        else if (percent <= 50) { levelClass = 'medium'; iconClass = 'medium'; }
+        else { iconClass = 'high'; }
     }
-    
-    // Update charging status
-    chargingStatusEl.textContent = isCharging ? 'Yes' : 'No';
-    chargingStatusEl.textContent = isDone ? 'Fully Charged' : chargingStatusEl.textContent;
-    chargingStatusEl.className = `status-value ${isCharging ? 'charging' : 'not-charging'}`;
-    chargingStatusEl.className = isDone ? 'charging-full' : chargingStatusEl.className;
-    
-    // Update percentage
-    const clampedPercentage = Math.max(0, Math.min(254, percentage));
-    if(percentage === false || percentage > 100) {
-        batteryPercentageEl.textContent = `N/A`;
+
+    if (isCharging && !isDone) {
+        levelClass += ' charging';
+        iconClass = 'charging';
+    } else if (isDone) {
+        iconClass = 'high';
     }
-    else
-    {
-        batteryPercentageEl.textContent = `${clampedPercentage}%`;
+
+    let statusText = 'Discharging';
+    let statusClass = 'discharging';
+
+    if (isDone) {
+        statusText = 'Fully Charged';
+        statusClass = 'full';
+    } else if (isCharging) {
+        statusText = 'Charging';
+        statusClass = 'charging';
     }
+
+    display.innerHTML = `
+        <div class="status-left">
+            <div class="battery-icon ${iconClass}">
+                <div class="battery-level ${levelClass}" style="width: ${isDone ? 100 : percent}%"></div>
+            </div>
+            <div class="battery-info">
+                <div class="battery-percent">
+                    ${hasFuelGauge ? `${percent}%` : '<span class="unavailable-badge">% N/A</span>'}
+                </div>
+                <div class="battery-status">
+                    <span class="status-indicator ${statusClass}"></span>
+                    ${statusText}
+                </div>
+            </div>
+        </div>
+        <div class="status-right">
+            <div class="panel-row">
+                <span class="info-label">Model</span>
+                <span class="info-value" id="battery-model">${batteryConfig.battery.model}</span>
+            </div>
+            <div class="battery-sep"></div>
+            <div class="panel-row">
+                <span class="info-label">Capacity</span>
+                <span class="info-value" id="battery-capacity">${batteryConfig.battery.capacity}</span>
+            </div>
+        </div>
+    `;
+}
+
+function updateHardwareUI() {
+    const pmicModel = document.getElementById('pmic-model');
+    const fuelModel = document.getElementById('fuel-gauge-model');
     
-    
-    // Update visual battery bar
-    batteryBarEl.style.width = `${clampedPercentage}%`;
-    
-    // Add color classes based on battery level
-    batteryBarEl.className = 'battery-bar';
-    if (isCharging) {
-        batteryBarEl.classList.add('battery-charging');
-    } else if (clampedPercentage <= 20) {
-        batteryBarEl.classList.add('battery-low');
-    } else if (clampedPercentage <= 50) {
-        batteryBarEl.classList.add('battery-medium');
+    if (pmicModel) pmicModel.textContent = batteryConfig.hardware.pmic.model;
+    if (fuelModel) fuelModel.textContent = batteryConfig.hardware.fuelGauge.model;
+
+    updateBadge('pmic-status', batteryConfig.hardware.pmic);
+    updateBadge('fuel-gauge-status', batteryConfig.hardware.fuelGauge);
+}
+
+function updateBadge(id, component) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!component.present) {
+        el.textContent = 'Not Present';
+        el.className = 'status-badge not-present';
+    } else if (component.active) {
+        el.textContent = 'Active';
+        el.className = 'status-badge active';
     } else {
-        batteryBarEl.classList.add('battery-high');
+        el.textContent = 'Inactive';
+        el.className = 'status-badge inactive';
     }
 }
 
 function batteryReportHook(data) {
-    var chargeVal = data.getUint8(37);
+    const chargeVal = data.getUint8(37);
+    batteryConfig.status.isCharging = (chargeVal & 0x01) !== 0;
+    batteryConfig.status.isDone = (chargeVal & 0x02) !== 0;
+    batteryConfig.hardware.pmic.active = (chargeVal & 0x04) !== 0; 
+    const fuelGaugeMissing = (chargeVal & 0x08) !== 0;
+    batteryConfig.hardware.fuelGauge.active = !fuelGaugeMissing;
+    batteryConfig.status.percentage = !fuelGaugeMissing ? data.getUint8(38) : false;
 
-    var isCharging = (chargeVal & 0x01) != 0;
-    var doneCharging = (chargeVal & 0x02) != 0;
-    var dischargeOnly = (chargeVal & 0x08) != 0;
-    var percent = !dischargeOnly ? data.getUint8(38) : false;
-
-    updateBatteryStatus(isCharging, doneCharging, percent);
+    updateBatteryDisplay();
+    updateHardwareUI();
 }
+
+const batteryStyle = `
+.battery-panel {
+    display: flex; width: 100%; max-width: 360px;
+    padding: var(--spacing-md); box-sizing: border-box; border-radius: var(--border-radius-md);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1); border: var(--spacing-xs) solid var(--color-p1-dark);
+    margin-bottom: var(--spacing-md);
+}
+
+.status-left { display: flex; align-items: center; gap: 16px; flex: 1.2; }
+.status-right { 
+    display: flex; flex-direction: column; justify-content: center; gap: 8px; 
+    flex: 1; padding-left: 16px; border-left: 1px solid var(--color-p1-dark); 
+}
+
+.panel-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.panel-column { display: flex; flex-direction: column; width: 100%; gap: 12px; }
+
+.battery-sep {
+    max-width: 350px;
+    width: 100%;
+    height: 1px;
+    background-color: var(--color-p1-dark);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.battery-icon {
+    position: relative; width: 60px; height: 28px; border: 3px solid var(--color-p5-dark);
+    background: var(--color-p5-grad); border-radius: 4px; padding: 2px; flex-shrink: 0;
+}
+.battery-icon::after {
+    content: ''; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+    width: 5px; height: 12px; background: var(--color-p5-grad); border-radius: 0 2px 2px 0;
+}
+.battery-level {
+    height: 100%; background: var(--color-p3-grad); border-radius: 2px;
+    transition: all var(--transition-steady);
+}
+.battery-level.low { background: var(--color-p4-grad); }
+.battery-level.medium { background: var(--color-p2-grad); }
+.battery-level.charging { background: var(--color-p1-grad); animation: pulse 2.3s ease-in-out infinite; }
+
+@keyframes pulse { 
+    0%, 100% { filter: brightness(1); } 
+    50% { filter: brightness(1.2); } 
+}
+
+.battery-info { flex: 1; }
+.battery-percent { font-size: var(--font-size-lg); font-weight: 700; color: var(--color-text-tertiary); line-height: 1; margin-bottom: 4px; }
+.battery-status { font-size: var(--font-size-sm); color: var(--color-text-secondary); display: flex; align-items: center; gap: 6px; }
+
+.status-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; transition: filter var(--transition-steady); }
+.status-indicator.charging { background: var(--color-p1-grad); animation: blink 2.5s ease-in-out infinite; }
+.status-indicator.full { background: var(--color-p3-grad); }
+.status-indicator.discharging { background: var(--color-text-secondary); }
+
+@keyframes blink { 
+    0%, 100% { filter: brightness(1); } 
+    50% { filter: brightness(1.8); box-shadow: 0 0 8px var(--color-p1); } 
+}
+
+.info-label, .hardware-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); font-weight: 500; }
+.info-value, .hardware-model { font-size: var(--font-size-md); color: var(--color-text-tertiary); font-weight: 600; }
+
+.status-badge { padding: 4px 10px; border-radius: 12px; font-size: var(--font-size-sm); font-weight: bold; text-transform: uppercase; }
+.status-badge.active { background: var(--color-p3-grad); color: var(--color-text-tertiary); }
+.status-badge.inactive { background: var(--color-p2-grad); color: var(--color-text-tertiary); }
+.status-badge.not-present { background: var(--color-p1-grad; color: var(--color-text-tertiary); }
+`;
 
 export function render(container) {
     container.innerHTML = `
-    <h2>Battery Information</h2>
-    <h3>Battery Model</h3>
-    <div class="app-text-container">
-        ${parseBatteryBufferText(gamepad.battery_static.part_number)}
-    </div>
+    <style>${batteryStyle}</style>
     
-    <h3>Battery Status</h3>
-    <div class="battery-status-container">
-        <div class="status-row">
-            <span class="status-label">Charging: </span>
-            <span id="charging-status" class="status-value">Unknown</span>
-        </div>
-        <div class="status-row">
-            <span class="status-label">Battery Level:</span>
-            <span id="battery-percentage" class="status-value">--</span>
-        </div>
-        <div class="battery-visual">
-            <div id="battery-bar" class="battery-bar" style="width: 0%"></div>
+    <h3>Battery Status & Info</h3>
+    <div class="battery-panel" id="battery-status-content"></div>
+    
+    <div class="separator"></div>
+
+    <h3>Hardware Components</h3>
+    <div class="battery-panel">
+        <div class="panel-column">
+            <div class="panel-row">
+                <div class="hardware-name">
+                    <div class="hardware-label">PMIC</div>
+                    <div class="hardware-model" id="pmic-model">-</div>
+                </div>
+                <span class="status-badge" id="pmic-status">Unknown</span>
+            </div>
+            <div class="battery-sep"></div>
+            <div class="panel-row">
+                <div class="hardware-name">
+                    <div class="hardware-label">Fuel Gauge</div>
+                    <div class="hardware-model" id="fuel-gauge-model">-</div>
+                </div>
+                <span class="status-badge" id="fuel-gauge-status">Unknown</span>
+            </div>
         </div>
     </div>
     `;
 
     gamepad.setReportHook(batteryReportHook);
+
+    setHardwareConfig({
+        battery: { model: "LP503562", capacity: "1200 mAh" },
+        hardware: {
+            pmic: { model: "BQ24072", present: true, active: false },
+            fuelGauge: { model: "MAX17048", present: true, active: false }
+        }
+    });
+
+    // Debug
+    batteryConfig.status.isCharging = false;
+    batteryConfig.status.isDone = false;
+    batteryConfig.hardware.pmic.active = true;
+    batteryConfig.hardware.fuelGauge.active = true;
+    batteryConfig.status.percentage = 20;
+    updateBatteryDisplay();
+    updateHardwareUI();
+}
+
+export function setHardwareConfig(config) {
+    if (config.battery) Object.assign(batteryConfig.battery, config.battery);
+    if (config.hardware?.pmic) Object.assign(batteryConfig.hardware.pmic, config.hardware.pmic);
+    if (config.hardware?.fuelGauge) Object.assign(batteryConfig.hardware.fuelGauge, config.hardware.fuelGauge);
+    
+    updateBatteryDisplay();
+    updateHardwareUI();
 }

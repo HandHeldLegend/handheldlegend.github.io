@@ -60,7 +60,7 @@ class MultiPositionButton extends HTMLElement {
 
     getWidth() {
         const size = parseInt(this.getAttribute('width'));
-        return size ? size : 200;
+        return size ? size : 350;
     }
 
     getLabel() {

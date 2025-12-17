@@ -125,7 +125,7 @@ export function render(container) {
                 min="0" 
                 max="100" 
                 step="1" 
-                default-value="${startBrightness}"
+                value="${startBrightness}"
             ></number-selector>
 
             <h2>Animation Time (ms)</h2>
@@ -135,14 +135,14 @@ export function render(container) {
                 min="300" 
                 max="5000" 
                 step="25" 
-                default-value="${animationTime}"
+                value="${animationTime}"
             ></number-selector>
 
             <h2>Mode</h2>
             <multi-position-button 
                 id="rgb-mode-select" 
-                labels="User, Rainbow, React, Fairy"
-                default-selected="${rgbMode}"
+                options="User, Rainbow, React, Fairy"
+                selected="${rgbMode}"
             ></multi-position-button>
 
             <h2>Bulk Options</h2>
