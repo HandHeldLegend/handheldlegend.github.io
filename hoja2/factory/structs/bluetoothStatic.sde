@@ -1,8 +1,8 @@
 typedef struct 
 {
-    uint16_t    baseband_version;
-    uint16_t    baseband_type; // 0 is onboard
-    uint8_t     bluetooth_bdr : 1;
-    uint8_t     bluetooth_ble : 1;
-    uint8_t reserved      : 6;
+    uint8_t     part_number[24];
+    uint8_t     external_update_supported;
+    uint16_t    external_version_number;
+    uint8_t     bluetooth_bdr_supported;
+    uint8_t     bluetooth_ble_supported;
 } bluetoothInfoStatic_s;

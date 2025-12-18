@@ -12,12 +12,12 @@ export async function registerSettingsModules() {
       icon: 'remap.svg',
       color: '#6E4EC8'  // Indigo
     },
-    {
-      name: 'DPad',
-      path: '../modules/dpad-md.js',
-      icon: 'dpad.svg',
-      color: '#D56E4E'  // Coral
-    },
+    //{
+    //  name: 'DPad',
+    //  path: '../modules/dpad-md.js',
+    //  icon: 'dpad.svg',
+    //  color: '#D56E4E'  // Coral
+    //},
     {
       name: 'Joysticks',
       path: '../modules/analog-md.js',

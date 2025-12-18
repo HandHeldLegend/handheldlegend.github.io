@@ -609,7 +609,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         let analogEnable = (gamepad.analog_static.axis_rx | gamepad.analog_static.axis_lx) ? true : false;
         window.configApp.enableIcon(2, analogEnable); // Analog
+        if (!gamepad.analog_cfg.analog_calibration_set) {
+            window.configApp.setNotificationBadge(2, true);
+        }
+        else window.configApp.setNotificationBadge(2, false);
+
         window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0); // RGB
+        // Set badge if needed
+        
 
         window.configApp.enableIcon(4, true); // Triggers
 
@@ -621,10 +628,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.configApp.enableIcon(7, true); // User
 
-        let batteryEnable = (gamepad.battery_static.part_number != "" && gamepad.battery_static.part_number != "N/A") ? true : false;
+        let batteryEnable = (gamepad.battery_static.battery_capacity_mah > 0) ? true : false;
         window.configApp.enableIcon(8, batteryEnable); // Battery
 
-        let wirelessEnable = (gamepad.bluetooth_static.bluetooth_bdr | gamepad.bluetooth_static.bluetooth_ble) ? true : false;
+        let wirelessEnable = (gamepad.bluetooth_static.bluetooth_bdr_supported | gamepad.bluetooth_static.bluetooth_ble_supported) ? true : false;
         window.configApp.enableIcon(9, wirelessEnable); // Battery
 
         // Enable Save
@@ -636,11 +643,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
 
-        console.log("Newest version: " + parseInt(fwVersion.version));
-        console.log("Checksum: " + fwVersion.checksum);
-        console.log("This version: " + parseInt(gamepad.device_static.fw_version));
-
-        console.log("Paired host:");
         console.log(gamepad.gamepad_cfg.host_mac_switch);
         
         if(fwVersion == false)
@@ -679,17 +681,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }       
         
 
-        // Check Baseband Version
-        let currentBasebandVersion = await getCurrentBasebandVersion();
+        // Check Baseband Version if we have external updates
+        if(gamepad.bluetooth_static.external_update_supported) {
+            let currentBasebandVersion = await getCurrentBasebandVersion();
 
-        console.log(currentBasebandVersion);
-        console.log(gamepad.bluetooth_static.baseband_version);
+            //console.log(currentBasebandVersion);
+            //console.log(gamepad.bluetooth_static.external_version_number);
 
-        if(gamepad.bluetooth_static.baseband_version < currentBasebandVersion) {
-            window.configApp.setNotificationBadge(9, true);
+            if(gamepad.bluetooth_static.external_version_number < currentBasebandVersion) {
+                window.configApp.setNotificationBadge(9, true);
+            }
+            else window.configApp.setNotificationBadge(9, false);
+            // End Baseband Version Check
         }
-        else window.configApp.setNotificationBadge(9, false);
-        // End Baseband Version Check
+        
 
         
     }

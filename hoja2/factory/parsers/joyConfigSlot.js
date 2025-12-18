@@ -1,60 +1,70 @@
 
 
-export default class Bluetoothinfostatic {
+export default class Joyconfigslot {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(29);
+    this.buffer = buffer || new Uint8Array(21);
   }
 
-  	/** @type {Uint8Array} */
-	get part_number() {
-		return this.#_getUint8Array(0, 24);
+  	/** @type {Float32} */
+	get in_angle() {
+		return this.#_getFloat32(0);
+	}
+
+	/** @type {Float32} */
+	get out_angle() {
+		return this.#_getFloat32(4);
+	}
+
+	/** @type {Float32} */
+	get deadzone() {
+		return this.#_getFloat32(8);
+	}
+
+	/** @type {Float32} */
+	get in_distance() {
+		return this.#_getFloat32(12);
+	}
+
+	/** @type {Float32} */
+	get out_distance() {
+		return this.#_getFloat32(16);
 	}
 
 	/** @type {Uint8} */
-	get external_update_supported() {
-		return this.#_getUint8(24);
-	}
-
-	/** @type {Uint16} */
-	get external_version_number() {
-		return this.#_getUint16(25);
-	}
-
-	/** @type {Uint8} */
-	get bluetooth_bdr_supported() {
-		return this.#_getUint8(27);
-	}
-
-	/** @type {Uint8} */
-	get bluetooth_ble_supported() {
-		return this.#_getUint8(28);
+	get enabled() {
+		return this.#_getUint8(20);
 	}
 
 
 
-  	/** @param {Uint8Array} value */
-	set part_number(value) {
-		this.#_setUint8Array(0, value);
+  	/** @param {Float32} value */
+	set in_angle(value) {
+		this.#_setFloat32(0, value);
 	}
 
-	/** @param {Uint8} value */
-	set external_update_supported(value) {
-		this.#_setUint8(24, value);
+	/** @param {Float32} value */
+	set out_angle(value) {
+		this.#_setFloat32(4, value);
 	}
 
-	/** @param {Uint16} value */
-	set external_version_number(value) {
-		this.#_setUint16(25, value);
+	/** @param {Float32} value */
+	set deadzone(value) {
+		this.#_setFloat32(8, value);
+	}
+
+	/** @param {Float32} value */
+	set in_distance(value) {
+		this.#_setFloat32(12, value);
+	}
+
+	/** @param {Float32} value */
+	set out_distance(value) {
+		this.#_setFloat32(16, value);
 	}
 
 	/** @param {Uint8} value */
-	set bluetooth_bdr_supported(value) {
-		this.#_setUint8(27, value);
-	}
-
-	/** @param {Uint8} value */
-	set bluetooth_ble_supported(value) {
-		this.#_setUint8(28, value);
+	set enabled(value) {
+		this.#_setUint8(20, value);
 	}
 
 

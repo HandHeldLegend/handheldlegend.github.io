@@ -1,6 +1,0 @@
-typedef struct
-{
-  float input;    // Input Angle
-  float output;   // Output Angle
-  int distance; // Distance to this input angle maximum for hard polygonal shape stick gates
-} angleMap_s;

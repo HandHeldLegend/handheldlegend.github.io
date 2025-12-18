@@ -128,6 +128,8 @@ export function render(container) {
                 value="${startBrightness}"
             ></number-selector>
 
+            <div class="separator"></div>
+
             <h2>Animation Time (ms)</h2>
             <number-selector 
                 id="speed-slider" 
@@ -138,6 +140,8 @@ export function render(container) {
                 value="${animationTime}"
             ></number-selector>
 
+            <div class="separator"></div>
+
             <h2>Mode</h2>
             <multi-position-button 
                 id="rgb-mode-select" 
@@ -145,7 +149,10 @@ export function render(container) {
                 selected="${rgbMode}"
             ></multi-position-button>
 
-            <h2>Bulk Options</h2>
+            <div class="separator"></div>
+
+            <h2>Colors</h2>
+            ${rgbPickersHTML}
             <single-shot-button 
                 id="color-paste-button" 
                 state="ready" 
@@ -155,9 +162,6 @@ export function render(container) {
                 success-text="Complete!"
                 failure-text="Failure..."
             ></single-shot-button>
-
-            <h2>Colors</h2>
-            ${rgbPickersHTML}
     `;
 
     updateRgbPickerTexts(rgbMode == 3 ? "fairy" : "normal");

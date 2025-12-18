@@ -63,13 +63,34 @@ const wirelessStyle = `
     50% { filter: brightness(1.1); box-shadow: 0 0 5px var(--color-p3); } 
 }
 
-.button-group { display: flex; gap: 8px; width: 100%; margin-top: 4px; }
+.button-group { display: flex; gap: 8px; width: 250px; margin-top: 4px; margin-left: auto; margin-right: auto}
 
 .btn-wireless {
-    flex: 1; padding: 8px; border-radius: var(--border-radius-md); border: 1px solid var(--color-p1-dark);
-    background: var(--color-p5-grad); color: var(--color-text-tertiary);
-    font-size: var(--font-size-sm); font-weight: 600; cursor: pointer;
-    transition: transform 0.1s;
+    flex: 1;
+
+    height: var(--button-h);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-md);
+
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    
+    background: var(--color-p3-grad);
+    background-color: var(--color-p3);
+    border: var(--spacing-xs) solid var(--color-p3-dark);
+
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+@media (hover: hover) {
+    .btn-wireless:hover {
+        filter:brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all 0.1s ease-in-out;
+    }
 }
 
 .btn-wireless:active { transform: scale(0.98); }

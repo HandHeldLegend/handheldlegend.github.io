@@ -102,7 +102,17 @@ function updateBadge(id, component) {
     }
 }
 
+function decodeText(buffer) {
+    const decoder = new TextDecoder('utf-8');
+    const str = decoder.decode(buffer);
+    
+    // Remove any null characters (0x00) from the string
+    return str.replace(/\x00/g, '');
+}
+
 function batteryReportHook(data) {
+    return;
+
     const chargeVal = data.getUint8(37);
     batteryConfig.status.isCharging = (chargeVal & 0x01) !== 0;
     batteryConfig.status.isDone = (chargeVal & 0x02) !== 0;
@@ -183,7 +193,7 @@ const batteryStyle = `
 .status-badge { padding: 4px 10px; border-radius: 12px; font-size: var(--font-size-sm); font-weight: bold; text-transform: uppercase; }
 .status-badge.active { background: var(--color-p3-grad); color: var(--color-text-tertiary); }
 .status-badge.inactive { background: var(--color-p2-grad); color: var(--color-text-tertiary); }
-.status-badge.not-present { background: var(--color-p1-grad; color: var(--color-text-tertiary); }
+.status-badge.not-present { background: var(--color-p5-grad); color: var(--color-text-tertiary); }
 `;
 
 export function render(container) {
@@ -219,20 +229,27 @@ export function render(container) {
 
     gamepad.setReportHook(batteryReportHook);
 
+    let bModel = decodeText(gamepad.battery_static.battery_part_number.buffer);
+    let bCapacity = gamepad.battery_static.battery_capacity_mah;
+    let pActive = gamepad.battery_static.pmic_status == 2 ? true : false;
+    let pModel = decodeText(gamepad.battery_static.pmic_part_number);
+    let fPresent = gamepad.battery_static.fuelgauge_status == 0 ? false : true;
+    let fActive = gamepad.battery_static.fuelgauge_status == 2 ? true : false;
+    let fModel = decodeText(gamepad.battery_static.fuelgauge_part_number);
+
     setHardwareConfig({
-        battery: { model: "LP503562", capacity: "1200 mAh" },
+        battery: { model: bModel, capacity: bCapacity + " mAh" },
         hardware: {
-            pmic: { model: "BQ24072", present: true, active: false },
-            fuelGauge: { model: "MAX17048", present: true, active: false }
+            pmic: { model: pModel, present: true, active: pActive },
+            fuelGauge: { model: fModel, present: fPresent, active: fActive }
         }
     });
 
     // Debug
-    batteryConfig.status.isCharging = false;
+    batteryConfig.status.isCharging = true;
     batteryConfig.status.isDone = false;
-    batteryConfig.hardware.pmic.active = true;
-    batteryConfig.hardware.fuelGauge.active = true;
-    batteryConfig.status.percentage = 20;
+    batteryConfig.status.percentage = fPresent ? 20 : false;
+
     updateBatteryDisplay();
     updateHardwareUI();
 }

@@ -1,5 +1,0 @@
-typedef struct 
-{
-    int first_distance;
-    int16_t offsets[63];
-} analogPackedDistances_s;
