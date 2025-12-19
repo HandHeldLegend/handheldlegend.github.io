@@ -174,6 +174,16 @@ export function render(container) {
             </div>
 
             <h2>Options</h2>
+            <div class="app-row">
+                <h3>Axis</h3>
+                <div class="vert-separator"></div>
+                <multi-position-button 
+                        id="joystick-selector" 
+                        options="Left, Right"
+                        selected="0"
+                        width="100"
+                ></multi-position-button>
+            </div>
 
             <div class="app-row">
                 <tristate-button 
@@ -195,24 +205,31 @@ export function render(container) {
                     failure-text="Set Error"
                     tooltip="Quickly capture an angle and it will be assigned to the most similar angle."
                 ></single-shot-button>
-
-                <multi-position-button 
-                id="joystick-selector" 
-                options="Left, Right"
-                selected="0"
-                width="140"
-            ></multi-position-button>
             </div>
 
             <div class="separator"></div>
 
-                <h2>Visualizer</h2>
+                
+                <h2>Visualizer</h2> 
+
+                <div class="app-row">
+                <h3>Trace</h3>
+                <div class="vert-separator"></div>
+                <multi-position-button 
+                    id="trace-enable" 
+                    options="Off, On"
+                    selected="0"
+                    width="100"
+                ></multi-position-button>
+                </div>
+
                 <joystick-visualizer id="joystick"></joystick-visualizer>
 
                 <div class="separator"></div>
 
             <div class="app-row">
                 <h2>Angles</h2>
+                <div class="vert-separator"></div>
                 <div class="angle-btn" id="add-angle">+</div>
             </div>
 

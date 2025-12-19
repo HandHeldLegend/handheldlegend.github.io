@@ -85,6 +85,12 @@
     margin-right: auto;
 }
 
+.vert-separator {
+    width: 1px;
+    height: 26px;
+    background-color: var(--color-text-secondary);
+}
+
 body {
     font-family: var(--font-family-primary);
     color: var(--color-text-primary);
@@ -455,6 +461,7 @@ h3 {
 }
 
 .app-row {
+    align-items: center;
     width: 100%;
     display: flex;
     gap: inherit;

@@ -13,10 +13,10 @@
     border: var(--spacing-xs) solid var(--color-p1-light);
     border-radius: var(--border-radius-md);
 
-    padding: 12px;
+    padding: 4px;
     display: flex;
     flex-direction: column;
-    width: 385px;
+    max-width: 380px;
 
     /* Animation Logic */
     overflow: hidden;
@@ -52,7 +52,7 @@
 .in-data-grid {
     display: grid;
     /* Increased first column width (60px) to ensure "IN ANGLE" fits on one line */
-    grid-template-columns: 60px 1fr; 
+    grid-template-columns: 28px 1fr; 
     grid-template-rows: 1fr 1fr;
     flex: 1.2; /* Give slightly more weight to the IN section */
     padding: 0 4px;
@@ -133,7 +133,7 @@
     appearance: none;
     border: none;
     cursor: pointer;
-    width: 48px; /* Maintain 1:1 ratio with new row height */
+    width: 30px; /* Maintain 1:1 ratio with new row height */
     display: flex;
     align-items: center;
     justify-content: center;
