@@ -8,6 +8,7 @@ import WaveformDisplay from '../components/waveform-display.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
+import AngleModifier from '../components/angle-modifier.js';
 
 let capturedAngles = {
     left: 0,
@@ -18,6 +19,9 @@ let selectedAxis = 0;
 
 /** @type {JoystickVisualizer} */
 let joystickVisual;
+
+/** @type {AngleModifier} */
+let angleMods;
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
@@ -32,7 +36,7 @@ function resetAllAnglesDefault() {
 function mapsToStyleString(maps) {
     let output = "";
     maps.forEach(value => {
-        if(value.distance>1000)
+        if (value.distance > 1000)
             output += `${value.output},${value.distance};`
     });
 
@@ -66,15 +70,15 @@ function writeToClipboard(text) {
 async function captureAngleHandler() {
     // CFG_BLOCK_ANALOG 2
     // ANALOG_CMD_CAPTURE_ANGLE 3
-    let {status, data} = await gamepad.sendConfigCommand(analogCfgBlockNumber, 3);
+    let { status, data } = await gamepad.sendConfigCommand(analogCfgBlockNumber, 3);
 
-    if(status && data) {
+    if (status && data) {
         // Create DataView from your Uint8Array
         const view = new DataView(data.buffer);
-        capturedAngles.left     = view.getFloat32(0, true);
-        capturedAngles.right    = view.getFloat32(4, true);
+        capturedAngles.left = view.getFloat32(0, true);
+        capturedAngles.right = view.getFloat32(4, true);
 
-        if(selectedAxis==0) {
+        if (selectedAxis == 0) {
             return capturedAngles.left;
         }
         else {
@@ -154,7 +158,7 @@ export function render(container) {
     let snapbackIdxLeft = gamepad.analog_cfg.l_snapback_type;
     let snapbackIdxRight = gamepad.analog_cfg.r_snapback_type;
 
-    let snapbackCutoffLeft  = (gamepad.analog_cfg.l_snapback_intensity / 10);
+    let snapbackCutoffLeft = (gamepad.analog_cfg.l_snapback_intensity / 10);
     let snapbackCutoffRight = (gamepad.analog_cfg.r_snapback_intensity / 10);
 
     container.innerHTML = `
@@ -202,15 +206,17 @@ export function render(container) {
 
             <div class="separator"></div>
 
-            <h2>Visualizer</h2>
-            <joystick-visualizer id="joystick"></joystick-visualizer>
+                <h2>Visualizer</h2>
+                <joystick-visualizer id="joystick"></joystick-visualizer>
 
-            <div class="separator"></div>
+                <div class="separator"></div>
 
             <div class="app-row">
                 <h2>Angles</h2>
                 <div class="angle-btn" id="add-angle">+</div>
-            </div
+            </div>
+
+            <angle-modifier></angle-modifier>
     `;
 
     // Global angle capture
@@ -218,28 +224,52 @@ export function render(container) {
     globalCaptureButton.setOnClick(async function () {
         let angle = await captureAngleHandler();
 
-        if(angle) {
+        if (angle) {
             await populateNearestAngle(angle);
             return true;
         }
         else return false;
     });
 
+
+    angleMods = container.querySelector('angle-modifier');
+
+    const increment = 45;
+    const defaultDistance = 2048;
+    const defaultDeadzone = 2.00; // Match the new parameter requirement
+    let defaultPoints = [];
+
+    for (let angle = 0; angle < 360; angle += increment) {
+        defaultPoints.push({
+            inAngle: angle,
+            inDist: defaultDistance,
+            outAngle: angle,
+            outDist: defaultDistance,
+            deadzone: defaultDeadzone // Added to support the new UI column
+        });
+    }
+
+    // Assign the array to the component's internal points reference
+    angleMods.points = defaultPoints;
+
+    // Trigger the render process
+    angleMods.refresh();
+
     // Set calibration command handlers 
     const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
 
     calibrateButton.setOnHandler(async () => {
 
-        if(joystickVisual) joystickVisual.resetTrace();
+        if (joystickVisual) joystickVisual.resetTrace();
 
         // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_START
-        let {status, data} = await gamepad.sendConfigCommand(2, 1);
+        let { status, data } = await gamepad.sendConfigCommand(2, 1);
         return status;
     });
 
     calibrateButton.setOffHandler(async () => {
         // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_STOP
-        let {status, data} = await gamepad.sendConfigCommand(2, 2);
+        let { status, data } = await gamepad.sendConfigCommand(2, 2);
 
         // Reload our mem block
         await gamepad.requestBlock(analogCfgBlockNumber);
@@ -251,15 +281,15 @@ export function render(container) {
 
     joystickVisual = container.querySelector('joystick-visualizer');
 
-    if(joystickVisual) {
-        let deadzoneInner = selectedAxis===0 ? gamepad.analog_cfg.l_deadzone : gamepad.analog_cfg.r_deadzone;
-        let deadzoneOuter = selectedAxis===0 ? gamepad.analog_cfg.l_deadzone_outer : gamepad.analog_cfg.r_deadzone_outer;
-        
+    if (joystickVisual) {
+        let deadzoneInner = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone : gamepad.analog_cfg.r_deadzone;
+        let deadzoneOuter = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone_outer : gamepad.analog_cfg.r_deadzone_outer;
+
         console.log(deadzoneInner);
         console.log(deadzoneOuter);
-        
+
         joystickVisual.setDeadzones(
-            deadzoneInner, 
+            deadzoneInner,
             deadzoneOuter
         );
 
@@ -271,30 +301,29 @@ export function render(container) {
     // Set input loop hook to use the analog data
     gamepad.setReportHook((data) => {
 
-        if(data.getUint8(0) != 0xFE) return;
+        if (data.getUint8(0) != 0xFE) return;
 
         let offset = 0;
         let base = 15;
 
-        if(selectedAxis==1)
-        {
+        if (selectedAxis == 1) {
             offset = 4;
         }
 
-        let x = (data.getUint8(offset+base) << 8) | (data.getUint8(1+offset+base));
-        let y = ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
+        let x = (data.getUint8(offset + base) << 8) | (data.getUint8(1 + offset + base));
+        let y = ((data.getUint8(2 + offset + base) << 8) | (data.getUint8(3 + offset + base)));
 
         //x -= 2048;
         //y -= 2048;
 
-        base=23;
+        base = 23;
 
-        let x_scaled = (data.getUint8(offset+base) << 8) | (data.getUint8(1+offset+base));
-        let y_scaled = ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
+        let x_scaled = (data.getUint8(offset + base) << 8) | (data.getUint8(1 + offset + base));
+        let y_scaled = ((data.getUint8(2 + offset + base) << 8) | (data.getUint8(3 + offset + base)));
         //x_scaled -= 2048;
         //y_scaled -= 2048;
 
-        if(joystickVisual) {
+        if (joystickVisual) {
             joystickVisual.setInput(x, y, x_scaled, y_scaled);
         }
         //analogVisualizer.setAnalogInput(x, y, x_scaled, y_scaled);

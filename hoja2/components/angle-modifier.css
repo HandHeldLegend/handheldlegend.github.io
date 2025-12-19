@@ -1,0 +1,150 @@
+:host {
+    display: block;
+    width: 100%;
+
+    color: var(--color-text-tertiary);
+}
+
+.panel-container {
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+    border: var(--spacing-xs) solid var(--color-p1-light);
+    border-radius: var(--border-radius-md);
+
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    width: 385px;
+
+    /* Animation Logic */
+    overflow: hidden;
+    /* 16 rows * (48px height + 8px margin) + padding ≈ 920px */
+    max-height: 1000px; 
+}
+
+.rows-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.angle-row {
+    display: flex;
+    align-items: stretch;
+    height: 48px;
+
+    background: var(--color-p5-grad);
+    border-radius: var(--border-radius-md);
+    border: var(--spacing-xs) solid var(--color-p5-light);
+
+    margin-bottom: 8px;
+    overflow: hidden; /* Clips content as requested */
+    flex-shrink: 0;
+}
+
+
+.angle-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Updated In-Data Grid to prevent label wrapping */
+.in-data-grid {
+    display: grid;
+    /* Increased first column width (60px) to ensure "IN ANGLE" fits on one line */
+    grid-template-columns: 60px 1fr; 
+    grid-template-rows: 1fr 1fr;
+    flex: 1.2; /* Give slightly more weight to the IN section */
+    padding: 0 4px;
+    align-content: center;
+    font-size: var(--font-size-sm);
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.label-micro {
+    text-transform: uppercase;
+
+    font-weight: bold;
+    align-self: center;
+    white-space: nowrap; /* Forces text to stay on one line */
+}
+
+.val-micro {
+    font-family: monospace;
+    font-size: var(--font-size-sm);
+    text-align: right;
+    align-self: center;
+}
+
+.input-col {
+    width: 68px; /* Slightly wider to accommodate labels */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    padding: 0 4px;
+}
+
+.input-label {
+    font-size: var(--border-radius-sm);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+
+    white-space: nowrap;
+}
+
+.edit-input {
+    width: 100%;
+    background-color: var(--color-p5);
+    border: none;
+    color: var(--color-text-tertiary);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-md);
+    text-align: center;
+    padding: 3px 0;
+    height: 50%;
+
+    -webkit-appearance: none;
+
+    transition: all var(--transition-quick);
+}
+
+.edit-input:focus {
+    outline: none;
+    filter:  brightness(1.1);
+    box-shadow: var(--box-shadow-outset);
+}
+
+.edit-input:hover {
+    filter: brightness(1.1);
+}
+
+.edit-input::selection {
+    background-color: var(--color-p5-dark);
+}
+
+.edit-input::-webkit-inner-spin-button, .edit-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;  
+}
+
+.btn-action {
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    width: 48px; /* Maintain 1:1 ratio with new row height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    font-size: 1.8rem;
+    transition: all var(--transition-quick);
+}
+
+.btn-action:hover:not(:active) {
+    filter: brightness(1.1);
+}
+
+.btn-cap { background: #3a4bb3; }
+.btn-delete { background: #b33a3a; }

@@ -56,15 +56,16 @@
 
     /* Border Radius */
     --border-radius-sm: 10px;
-    --border-radius-md: 13px;
+    --border-radius-md: 12px;
     --border-radius-lg: 15px;
     --border-radius-round: 50%;
 
     /* Typography */
     --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-xs: 10px;
     --font-size-sm: 12px;
     --font-size-md: 14px;
-    --font-size-lg: 20px;
+    --font-size-lg: 18px;
 
     /* Transitions */
     --transition-quick: 0.2s ease;
