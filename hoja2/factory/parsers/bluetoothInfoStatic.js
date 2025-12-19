@@ -2,7 +2,7 @@
 
 export default class Bluetoothinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(29);
+    this.buffer = buffer || new Uint8Array(54);
   }
 
   	/** @type {Uint8Array} */
@@ -30,6 +30,16 @@ export default class Bluetoothinfostatic {
 		return this.#_getUint8(28);
 	}
 
+	/** @type {Uint8} */
+	get bluetooth_status() {
+		return this.#_getUint8(29);
+	}
+
+	/** @type {Uint8Array} */
+	get fcc_id() {
+		return this.#_getUint8Array(30, 24);
+	}
+
 
 
   	/** @param {Uint8Array} value */
@@ -55,6 +65,16 @@ export default class Bluetoothinfostatic {
 	/** @param {Uint8} value */
 	set bluetooth_ble_supported(value) {
 		this.#_setUint8(28, value);
+	}
+
+	/** @param {Uint8} value */
+	set bluetooth_status(value) {
+		this.#_setUint8(29, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set fcc_id(value) {
+		this.#_setUint8Array(30, value);
 	}
 
 

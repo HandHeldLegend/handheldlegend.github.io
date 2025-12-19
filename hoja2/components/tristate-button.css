@@ -23,12 +23,12 @@
 }
 
 @media (hover: hover) {
-    .tristate-button.off:hover,
-    .tristate-button.on:hover {
+    .tristate-button.off:hover:not(:active),
+    .tristate-button.on:hover:not(:active) {
         filter: brightness(1.1);
         box-shadow: var(--box-shadow-outset);
         transform: translate(-1px, -1px);
-        transition: all 0.1s ease-in-out;
+        transition: all var(--transition-quick);
     }
 }
 

@@ -10,9 +10,8 @@ class JoystickVisualizer extends HTMLElement {
             angle: 0,
             distance: 0,
             scaledDistance: 0,
-            tracePoints: [],
+            tracePoints: {}, // Object with index keys (0 to 359)
             isTracing: false,
-            activeDropdown: null,
             // New state for deadzones
             deadzoneInner: 0.2, // 0.0 to 1.0
             deadzoneOuter: 0.2  // 0.0 to 1.0
@@ -22,9 +21,7 @@ class JoystickVisualizer extends HTMLElement {
     async connectedCallback() {
         // Load the component-specific CSS
         const csstext = await fetch('./components/joystick-visual.css');
-        const cssHostResponse = await fetch('./components/host-template.css');
-        const cssHost = await cssHostResponse.text();
-        const css = cssHost + await csstext.text();
+        const css = await csstext.text();
 
         // Render the component with loaded CSS
         this.render(css);
@@ -48,65 +45,22 @@ class JoystickVisualizer extends HTMLElement {
                     </div>
                     <canvas class="joystick-canvas"></canvas>
                 </div>
-                
-                <div class="controls-section">
-                    <div class="dropdown-container">
-                        <button class="dropdown-toggle" data-dropdown="angles">
-                            <span class="dropdown-label">Angles</span>
-                            <span class="dropdown-arrow">▼</span>
-                        </button>
-                        <div class="dropdown-content" data-dropdown="angles"></div>
-                    </div>
-                    
-                    <div class="dropdown-container">
-                        <button class="dropdown-toggle" data-dropdown="settings">
-                            <span class="dropdown-label">Settings</span>
-                            <span class="dropdown-arrow">▼</span>
-                        </button>
-                        <div class="dropdown-content" data-dropdown="settings"></div>
-                    </div>
-                </div>
             </div>
         `;
     }
 
     setupEventListeners() {
-        const toggleButtons = this.shadowRoot.querySelectorAll('.dropdown-toggle');
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                const dropdownType = button.getAttribute('data-dropdown');
-                this.toggleDropdown(dropdownType);
-            });
-        });
-    }
 
-    toggleDropdown(dropdownType) {
-        const allContents = this.shadowRoot.querySelectorAll('.dropdown-content');
-        const allToggles = this.shadowRoot.querySelectorAll('.dropdown-toggle');
-        const targetContent = this.shadowRoot.querySelector(`.dropdown-content[data-dropdown="${dropdownType}"]`);
-        const targetToggle = this.shadowRoot.querySelector(`.dropdown-toggle[data-dropdown="${dropdownType}"]`);
-
-        if (this.state.activeDropdown === dropdownType) {
-            targetContent.classList.remove('open');
-            targetToggle.classList.remove('active');
-            this.state.activeDropdown = null;
-        } else {
-            allContents.forEach(content => content.classList.remove('open'));
-            allToggles.forEach(toggle => toggle.classList.remove('active'));
-            targetContent.classList.add('open');
-            targetToggle.classList.add('active');
-            this.state.activeDropdown = dropdownType;
-        }
     }
 
     drawJoystick() {
         try {
             const canvas = this.shadowRoot.querySelector('.joystick-canvas');
             if (!canvas) return;
-            
+
             const ctx = canvas.getContext('2d');
-            const width = canvas.width = 275;
-            const height = canvas.height = 275;
+            const width = canvas.width = 330;
+            const height = canvas.height = 330;
             const centerX = width / 2;
             const centerY = height / 2;
             const maxRadius = Math.min(centerX, centerY) - 20;
@@ -122,6 +76,11 @@ class JoystickVisualizer extends HTMLElement {
             ctx.fillStyle = 'rgba(240, 240, 240, 0.5)';
             ctx.fill();
 
+            // Draw traced polygon
+            if (Object.keys(this.state.tracePoints).length > 2) {
+                this.drawTracedPolygon(ctx, centerX, centerY, maxRadius);
+            }
+
             // Draw Deadzones (New Function Call)
             this.drawDeadzones(ctx, centerX, centerY, maxRadius);
 
@@ -135,14 +94,11 @@ class JoystickVisualizer extends HTMLElement {
             ctx.lineTo(centerX, centerY + 10);
             ctx.stroke();
 
-            // Draw traced polygon
-            if (this.state.tracePoints.length > 2) {
-                this.drawTracedPolygon(ctx, centerX, centerY, maxRadius);
-            }
+
 
             // Draw positions
-            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.rawX, this.state.rawY, 'rgba(255, 51, 40, 0.79)', 8);
-            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.scaledX, this.state.scaledY, 'rgba(74, 40, 255, 0.79)', 8);
+            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.rawX, this.state.rawY, 'rgba(255, 51, 40, 0.79)', 6);
+            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.scaledX, this.state.scaledY, 'rgba(74, 40, 255, 0.79)', 6);
 
             this.updateDisplays();
         } catch (err) {
@@ -167,13 +123,13 @@ class JoystickVisualizer extends HTMLElement {
         // Outer Deadzone
         if (this.state.deadzoneOuter > 0) {
             const outerStartRadius = maxRadius * (1 - this.state.deadzoneOuter);
-            
+
             ctx.beginPath();
             ctx.arc(centerX, centerY, maxRadius, 0, 2 * Math.PI); // Outer edge
             ctx.arc(centerX, centerY, outerStartRadius, 0, 2 * Math.PI, true); // Inner edge (anticlockwise to create hole)
             ctx.fillStyle = 'rgba(200, 50, 50, 0.15)'; // Light red shade
             ctx.fill();
-            
+
             // Optional: Stroke the inner boundary of the outer deadzone
             ctx.beginPath();
             ctx.arc(centerX, centerY, outerStartRadius, 0, 2 * Math.PI);
@@ -193,22 +149,27 @@ class JoystickVisualizer extends HTMLElement {
         ctx.arc(posX, posY, size, 0, 2 * Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
-        ctx.strokeStyle = 'white';
+        ctx.strokeStyle = 'none';
         ctx.lineWidth = 2;
         ctx.stroke();
     }
 
     drawTracedPolygon(ctx, centerX, centerY, maxRadius) {
-        if (this.state.tracePoints.length < 3) return;
+        const indices = Object.keys(this.state.tracePoints).map(k => parseInt(k));
+        if (indices.length < 3) return;
+
+        // Sort indices numerically
+        const sortedIndices = indices.sort((a, b) => a - b);
 
         ctx.beginPath();
-        this.state.tracePoints.forEach((point, index) => {
+        sortedIndices.forEach((index, i) => {
+            const point = this.state.tracePoints[index];
             const normalizedX = (point.x - 2048) / 2048;
             const normalizedY = (point.y - 2048) / 2048;
             const posX = centerX + normalizedX * maxRadius;
             const posY = centerY - normalizedY * maxRadius;
 
-            if (index === 0) {
+            if (i === 0) {
                 ctx.moveTo(posX, posY);
             } else {
                 ctx.lineTo(posX, posY);
@@ -216,9 +177,12 @@ class JoystickVisualizer extends HTMLElement {
         });
         ctx.closePath();
 
+        // Fill the polygon
         ctx.fillStyle = 'rgba(100, 200, 100, 0.3)';
         ctx.fill();
-        ctx.strokeStyle = 'rgba(50, 150, 50, 0.8)';
+
+        // Stroke the outer perimeter only
+        ctx.strokeStyle = 'rgba(100, 200, 100, 0.8)';
         ctx.lineWidth = 2;
         ctx.stroke();
     }
@@ -228,7 +192,7 @@ class JoystickVisualizer extends HTMLElement {
         const polarCoords = this.shadowRoot.querySelector('.polar-coords');
 
         if (rawCoords) {
-            rawCoords.textContent = `X: ${this.state.rawX}, Y: ${this.state.rawY}`;
+            rawCoords.textContent = `X: ${this.state.scaledX}, Y: ${this.state.scaledY}`;
         }
         if (polarCoords) {
             polarCoords.textContent = `∠: ${this.state.angle.toFixed(2)}°, D: ${this.state.scaledDistance.toFixed(2)}`;
@@ -260,30 +224,40 @@ class JoystickVisualizer extends HTMLElement {
 
     // New Public Method to Set Deadzones
     setDeadzones(inner, outer) {
+        // Scale deadzones from 
+        let inZone = inner / 2048.0;
+        let outZone = outer / 2048.0;
+
         // Clamp values between 0 and 1
-        this.state.deadzoneInner = Math.max(0, Math.min(1, inner));
-        this.state.deadzoneOuter = Math.max(0, Math.min(1, outer));
+        this.state.deadzoneInner = Math.max(0, Math.min(1, inZone));
+        this.state.deadzoneOuter = Math.max(0, Math.min(1, outZone));
         this.drawJoystick();
     }
 
     addTracePoint(x, y) {
-        const newPoint = { x, y };
-        
-        if (this.state.tracePoints.length > 0) {
-            const lastPoint = this.state.tracePoints[this.state.tracePoints.length - 1];
-            const distance = Math.sqrt(
-                Math.pow(x - lastPoint.x, 2) + Math.pow(y - lastPoint.y, 2)
-            );
-            
-            if (distance < 50) return;
-        }
+        const dx = x - 2048;
+        const dy = y - 2048;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-        this.state.tracePoints.push(newPoint);
+        // Calculate angle (0 to 359.99...)
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle < 0) angle += 360;
+
+        // FIX: Map 360 degrees into 180 buckets (0-179)
+        // We divide by 2 FIRST, then floor it.
+        const normalizedIndex = Math.floor(angle / 2);
+
+        const existingPoint = this.state.tracePoints[normalizedIndex];
+
+        // Only update if the new point is further out than the current recorded point
+        if (!existingPoint || distance > existingPoint.distance) {
+            this.state.tracePoints[normalizedIndex] = { x, y, distance };
+        }
     }
 
     startTracing() {
         this.state.isTracing = true;
-        this.state.tracePoints = [];
+        this.state.tracePoints = {};
     }
 
     stopTracing() {
@@ -291,24 +265,13 @@ class JoystickVisualizer extends HTMLElement {
     }
 
     resetTrace() {
-        this.state.tracePoints = [];
+        this.state.tracePoints = {};
         this.drawJoystick();
     }
 
-    setDropdownContent(dropdownType, content) {
-        const dropdown = this.shadowRoot.querySelector(`.dropdown-content[data-dropdown="${dropdownType}"]`);
-        if (dropdown) {
-            if (typeof content === 'string') {
-                dropdown.innerHTML = content;
-            } else if (content instanceof HTMLElement) {
-                dropdown.innerHTML = '';
-                dropdown.appendChild(content);
-            }
-        }
-    }
-
-    getDropdownContent(dropdownType) {
-        return this.shadowRoot.querySelector(`.dropdown-content[data-dropdown="${dropdownType}"]`);
+    // Get the number of unique angles tracked
+    getTracePointCount() {
+        return Object.keys(this.state.tracePoints).length;
     }
 }
 

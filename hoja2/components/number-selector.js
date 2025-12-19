@@ -47,7 +47,7 @@ class NumberSelector extends HTMLElement {
 
     render(css) {
         const config = this.getConfig();
-        const width = parseInt(this.getAttribute('width') ?? 400);
+        const width = parseInt(this.getAttribute('width') ?? 300);
 
         this.shadowRoot.innerHTML = `
             <style>${css}</style>

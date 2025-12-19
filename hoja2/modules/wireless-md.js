@@ -18,6 +18,14 @@ let wirelessConfig = {
     }
 };
 
+function decodeText(buffer) {
+    const decoder = new TextDecoder('utf-8');
+    const str = decoder.decode(buffer);
+    
+    // Remove any null characters (0x00) from the string
+    return str.replace(/\x00/g, '');
+}
+
 function updateWirelessUI() {
     const chipModel = document.getElementById('wireless-chip-model');
     const chipStatus = document.getElementById('wireless-chip-status');
@@ -111,6 +119,25 @@ const wirelessStyle = `
 `;
 
 export function render(container) {
+
+    wirelessConfig = {
+    hardware: {
+        chip: { 
+            model: decodeText(gamepad.bluetooth_static.part_number), 
+            present: true, 
+            active: gamepad.bluetooth_static.bluetooth_status > 0 
+        }
+    },
+    options: {
+        showUpdateTools: gamepad.bluetooth_static.external_update_supported > 0,
+        showFccInfo: decodeText(gamepad.bluetooth_static.fcc_id.buffer) != "",
+        updateAvailable: false // New Flag
+    },
+    fcc: {
+        id: decodeText(gamepad.bluetooth_static.fcc_id.buffer),
+        text: "This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received."
+    }};
+
     container.innerHTML = `
     <style>${wirelessStyle}</style>
     <div class="wireless-panel">

@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const debugModule = [
             {
                 name: 'Debug',
-                path: '../modules/wireless-md.js',
+                path: '../modules/analog-md.js',
                 icon: '🌐',
                 color: '#3498db'
             }];
@@ -694,9 +694,6 @@ document.addEventListener('DOMContentLoaded', () => {
             else window.configApp.setNotificationBadge(9, false);
             // End Baseband Version Check
         }
-        
-
-        
     }
 
     function disconnectHandle() {
@@ -713,6 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for(let i = 0; i < 10; i++)
         {
             window.configApp.enableIcon(i, false);
+            window.configApp.setNotificationBadge(i, false);
         }
 
         let enableOptions =

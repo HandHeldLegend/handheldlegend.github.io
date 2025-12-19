@@ -14,6 +14,11 @@ let capturedAngles = {
     right: 0
 };
 
+let selectedAxis = 0;
+
+/** @type {JoystickVisualizer} */
+let joystickVisual;
+
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 const analogCfgBlockNumber = 2;
@@ -87,6 +92,63 @@ async function writeAngleMemBlock() {
     await gamepad.sendBlock(analogCfgBlockNumber);
 }
 
+const acss = `
+.analog-container {
+    color: var(--color-text-tertiary);
+    padding: 8px;
+    padding-top: 5px;
+    text-align: center;
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    width: 350px;
+}
+
+.angle-btn {
+    cursor: pointer;
+    padding-bottom: 4px;
+
+    align-content: center;
+    text-align: center;
+
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+    width: var(--button-h);
+
+    font-weight: bold;
+    font-size: var(--font-size-lg);
+
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+    border: var(--spacing-xs) solid var(--color-p1-dark);
+    border-radius: var(--border-radius-md);
+
+    overflow: hidden;
+    box-sizing: border-box;
+
+    align-items: center;
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    transition: all var(--transition-quick);
+}
+
+@media (hover: hover) {
+    .angle-btn:hover:not(:active){
+        filter:brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all var(--transition-quick);
+    }
+}
+`
+
 // Render the analog settings page
 export function render(container) {
     let snapbackIdxLeft = gamepad.analog_cfg.l_snapback_type;
@@ -96,18 +158,18 @@ export function render(container) {
     let snapbackCutoffRight = (gamepad.analog_cfg.r_snapback_intensity / 10);
 
     container.innerHTML = `
-            <multi-position-button 
-                id="joystick-selector" 
-                labels="Left, Right"
-                default-selected="0"
-            ></multi-position-button>
-            
-            <h2>Calibrate</h2>
-            <div class="app-text-container">
-            To calibrate both sticks, press Calibrate. Move both analog sticks in a full circle slowly. Press Stop. 
-            Verify the output of your analog sticks and that they both reach the full output range. Click Save to retain your new calibration settings.
-            <strong>You must calibrate both analog sticks at once.</strong>
+            <style>${acss}</style>    
+            <div class="analog-container">
+                To calibrate both sticks, press <strong>Calibrate</strong>.<br>
+                Move both analog sticks in a full circle slowly.<br><br>
+                Press <strong>Stop</strong> once you have rotated both sticks several times.
+                <br><br>
+                Verify the output of your analog sticks and that they both reach the full output range. Click <strong>Save</strong>!
+                <br><br>
+                <strong>You must calibrate both analog sticks at once.</strong>
             </div>
+
+            <h2>Options</h2>
 
             <div class="app-row">
                 <tristate-button 
@@ -116,6 +178,7 @@ export function render(container) {
                     on-text="Stop"
                     off-to-on-text="Calibrate"
                     on-to-off-text="Stop"
+                    width="70"
                 ></tristate-button>
 
                 <single-shot-button 
@@ -128,11 +191,26 @@ export function render(container) {
                     failure-text="Set Error"
                     tooltip="Quickly capture an angle and it will be assigned to the most similar angle."
                 ></single-shot-button>
+
+                <multi-position-button 
+                id="joystick-selector" 
+                options="Left, Right"
+                selected="0"
+                width="140"
+            ></multi-position-button>
             </div>
 
-            <div class="app-row">
+            <div class="separator"></div>
+
+            <h2>Visualizer</h2>
             <joystick-visualizer id="joystick"></joystick-visualizer>
-            </div>
+
+            <div class="separator"></div>
+
+            <div class="app-row">
+                <h2>Angles</h2>
+                <div class="angle-btn" id="add-angle">+</div>
+            </div
     `;
 
     // Global angle capture
@@ -151,6 +229,9 @@ export function render(container) {
     const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
 
     calibrateButton.setOnHandler(async () => {
+
+        if(joystickVisual) joystickVisual.resetTrace();
+
         // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_START
         let {status, data} = await gamepad.sendConfigCommand(2, 1);
         return status;
@@ -168,6 +249,22 @@ export function render(container) {
 
     enableTooltips(container);
 
+    joystickVisual = container.querySelector('joystick-visualizer');
+
+    if(joystickVisual) {
+        let deadzoneInner = selectedAxis===0 ? gamepad.analog_cfg.l_deadzone : gamepad.analog_cfg.r_deadzone;
+        let deadzoneOuter = selectedAxis===0 ? gamepad.analog_cfg.l_deadzone_outer : gamepad.analog_cfg.r_deadzone_outer;
+        
+        console.log(deadzoneInner);
+        console.log(deadzoneOuter);
+        
+        joystickVisual.setDeadzones(
+            deadzoneInner, 
+            deadzoneOuter
+        );
+
+        joystickVisual.startTracing();
+    }
 
     gamepad.setInputMode(true);
 
@@ -185,18 +282,21 @@ export function render(container) {
         }
 
         let x = (data.getUint8(offset+base) << 8) | (data.getUint8(1+offset+base));
-        let y = 4096 - ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
+        let y = ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
 
-        x -= 2048;
-        y -= 2048;
+        //x -= 2048;
+        //y -= 2048;
 
         base=23;
 
         let x_scaled = (data.getUint8(offset+base) << 8) | (data.getUint8(1+offset+base));
-        let y_scaled = 4096 - ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
-        x_scaled -= 2048;
-        y_scaled -= 2048;
+        let y_scaled = ( (data.getUint8(2+offset+base) << 8) | (data.getUint8(3+offset+base)) );
+        //x_scaled -= 2048;
+        //y_scaled -= 2048;
 
+        if(joystickVisual) {
+            joystickVisual.setInput(x, y, x_scaled, y_scaled);
+        }
         //analogVisualizer.setAnalogInput(x, y, x_scaled, y_scaled);
     });
 }

@@ -126,6 +126,7 @@ export function render(container) {
                 max="100" 
                 step="1" 
                 value="${startBrightness}"
+                width="300"
             ></number-selector>
 
             <div class="separator"></div>
@@ -138,6 +139,7 @@ export function render(container) {
                 max="5000" 
                 step="25" 
                 value="${animationTime}"
+                width="300"
             ></number-selector>
 
             <div class="separator"></div>
@@ -147,6 +149,7 @@ export function render(container) {
                 id="rgb-mode-select" 
                 options="User, Rainbow, React, Fairy"
                 selected="${rgbMode}"
+                width="300"
             ></multi-position-button>
 
             <div class="separator"></div>
