@@ -147,21 +147,31 @@ body {
 
 .install-button {
     display: block;
-    border: none;
 
-    color: var(--color-text-tertiary);
-    background-color: var(--color-p2);
-
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    transition: var(--transition-quick);
-    font-weight: bold;
     
-    min-width: var(--buton-w);
-    height: var(--button-h);
 
-    /* This will push it to the right */
+    /* Default width that is overwritten */
+    width: 60px;
+
+    min-width: fit-content;
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+    align-content: center;
+    text-align: center;
+    margin:auto;
     margin-right: 10px;
+    cursor: pointer;
+
+    background: var(--color-p2-grad);
+    background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
+
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-md);
+
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
 
     /* Prevent text selection */
     -webkit-user-select: none;
@@ -174,36 +184,46 @@ body {
     display: none;
 }
 
-.install-button:hover {
-    background-color: var(--color-p2-light);
+@media (hover: hover) {
+    .install-button:hover:not(:active) {
+        filter:brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all 0.1s ease-in-out;
+    }
 }
 
 .connect-hint {
     display: inline-block;
     vertical-align: middle;
 
-    font-size: var(--font-size-sm);
-
-    border: none;
-    border-radius: var(--border-radius-md);
-
-    cursor: default;
-
-    transition: var(--transition-quick);
-
-    /* Button Font */
-    font-weight: bold;
+    /* Default width that is overwritten */
+    width: 64px;
     color: var(--color-text-tertiary);
-    
-    /* Button Sizings */
-    min-width: var(--buton-w);
-    max-width: 75px;
     height: var(--button-h);
-
-    text-align: center;
     align-content: center;
+    text-align: center;
+    margin:auto;
+    cursor: default;
+    padding:0;
 
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
+
+    background: var(--color-p2-grad);
     background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
+
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .header-msg-box {
@@ -413,6 +433,12 @@ h3 {
     pointer-events: none;
 }
 
+.ht-container {
+    margin-right: 28px;
+    position: relative;
+    display: inline-block;
+}
+
 .header-tooltip {
     pointer-events: all;
     content: "?";
@@ -587,17 +613,16 @@ h3 {
 }
 
 .app-text-container {
-    background-color: var(--color-background-light);
-    text-align: center;
-    height: fit-content;
-    border-radius: var(--border-radius-md);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: var(--config-box-width-min);
-    max-width: var(--config-box-width-max);
-    overflow: hidden;
+    color: var(--color-text-tertiary);
     padding: 8px;
+    padding-top: 5px;
+    text-align: center;
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+    border-radius: var(--border-radius-md);
+    font-size: var(--font-size-sm);
+    width: 350px;
 }
 
 .app-text-container br {

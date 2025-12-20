@@ -194,19 +194,6 @@ async function populateUIElements(refresh = false) {
 }
 
 const acss = `
-.analog-container {
-    color: var(--color-text-tertiary);
-    padding: 8px;
-    padding-top: 5px;
-    text-align: center;
-    border:  var(--spacing-xs) solid var(--color-p1-light);
-    background: var(--color-p1-grad);
-    background-color: var(--color-p1);
-    border-radius: var(--border-radius-md);
-    font-size: var(--font-size-sm);
-    width: 350px;
-}
-
 .angle-btn {
     cursor: pointer;
     padding-bottom: 4px;
@@ -382,7 +369,7 @@ export function render(container) {
 
     container.innerHTML = `
             <style>${acss}</style>    
-            <div class="analog-container">
+            <div class="app-text-container">
                 To calibrate both sticks, press <strong>Calibrate</strong>.<br>
                 Move both analog sticks in a full circle slowly.<br><br>
                 Press <strong>Stop</strong> once you have rotated both sticks several times.

@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveButton.setOnClick(sendSaveCommand);
 
-    var debug = true;
+    var debug = false;
 
     if (debug) {
         // Debug module
@@ -587,7 +587,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.configApp.openmoduleView(debugModule[0], "Debug");
     }
 
-    enableTooltips();
+    enableTooltips(document);
+    console.log("enableTooltips called");
 
     async function getCurrentBasebandVersion() {
         if(!isOnline()) return false;

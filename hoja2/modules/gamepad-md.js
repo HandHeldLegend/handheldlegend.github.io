@@ -63,14 +63,14 @@ export function render(container) {
         if(i != 5) hostDefault += ",";
     }
 
-    console.log(hostDefault);
+    console.log(gamepad.gamepad_cfg.webusb_enable_popup);
 
 
     container.innerHTML = `
             <h2>Default Mode</h2>
             <div class="app-text-container">
                 <strong>WARNING</strong>
-                Changing the default mode will require you to hold the 'A' button upon plugging in the controller to connect to this configuration app. 
+                Changing the default mode will require you to hold the <strong>A or South</strong> button upon plugging in the controller to connect to this configuration app. 
             </div>
             <multi-position-button 
                 id="default-mode-selector" 
@@ -80,12 +80,16 @@ export function render(container) {
             ></multi-position-button>
             </h2>
 
+            <div class="separator"></div>
+
             <h2>MAC Address Base
                 <div class="header-tooltip" tooltip="This is the MAC that is used for USB and Bluetooth modes. Each mode increments the address.">?</div>
             </h2>
             <mac-address-selector 
                 default-value="${hexDefault}"
             ></mac-address-selector>
+
+            <div class="separator"></div>
 
             <h2>Switch Device Colors
             <div class="header-tooltip" tooltip="Colors which determine how the Switch
@@ -114,6 +118,20 @@ export function render(container) {
                 group-name="Right Grip" 
                 color="${griprColor}"
             ></group-rgb-picker>
+
+            <div class="separator"></div>
+
+            <h2>WebUSB Popup
+            <div class="header-tooltip" tooltip="Enable or disable the WebUSB popup when connecting the controller.">?</div>
+            </h2>
+            <multi-position-button 
+                id="webusb-popup-selector" 
+                width="100"
+                options="Off, On"
+                selected="${gamepad.gamepad_cfg.webusb_enable_popup}"
+            ></multi-position-button>
+
+            <div class="separator"></div>
 
             <h3 class="devinfo">Build: ${String(gamepad.device_static.fw_version)}</h3>
     `;
@@ -173,6 +191,14 @@ export function render(container) {
 
         gamepad.gamepad_cfg.switch_mac_address = tmpAddress;
 
+        await writeGamepadMemBlock();
+    });
+
+    // WebUSB Popup
+    const webusbPopupSelector = container.querySelector('multi-position-button[id="webusb-popup-selector"]');
+    webusbPopupSelector.addEventListener('change', async (e) => {
+        console.log("WebUSB Popup change");
+        gamepad.gamepad_cfg.webusb_enable_popup = e.detail.selectedIndex;
         await writeGamepadMemBlock();
     });
 

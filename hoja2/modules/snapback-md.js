@@ -30,15 +30,13 @@ export function render(container) {
     let snapbackIdxLeft = gamepad.analog_cfg.l_snapback_type;
     let snapbackIdxRight = gamepad.analog_cfg.r_snapback_type;
 
-    snapbackIdxLeft = 2;
-
     let snapbackCutoffLeft  = (gamepad.analog_cfg.l_snapback_intensity / 10);
     let snapbackCutoffRight = (gamepad.analog_cfg.r_snapback_intensity / 10);
 
     container.innerHTML = `
             <h3>Left Stick</h3>
             <multi-position-button 
-                width="300"
+                width="200"
                 id="snapback-mode-selector-left" 
                 options="LPF, Auto, Off"
                 selected="${snapbackIdxLeft}"
@@ -46,7 +44,6 @@ export function render(container) {
 
             <p>Cutoff Frequency Hz</p>
             <number-selector 
-                
                 id="snapback-cutoff-left" 
                 type="float" 
                 min="30.0" 
@@ -57,7 +54,7 @@ export function render(container) {
 
             <h3>Right Stick</h3>
             <multi-position-button 
-                width="300"
+                width="200"
                 id="snapback-mode-selector-right" 
                 options="LPF, Auto, Off"
                 selected="${snapbackIdxRight}"

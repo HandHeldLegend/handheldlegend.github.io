@@ -17,19 +17,18 @@
             <div class="app-header">
                 <div class="center-buttons">
 
-                    <tristate-button 
-                        id="connect-button" 
-                        width="74"
-                        off-text="Connect" 
-                        on-text="Disconnect"
-                        off-to-on-text="..."
-                        on-to-off-text="Disconnect"
-                    ></tristate-button>
+                    <div class="ht-container">
+                        <tristate-button 
+                            id="connect-button" 
+                            width="74"
+                            off-text="Connect" 
+                            on-text="Disconnect"
+                            off-to-on-text="..."
+                            on-to-off-text="Disconnect"
+                        ></tristate-button>
+                        <div class="header-tooltip" tooltip="If you have trouble connecting, try holding A or South button during plug-in.">?</div>
+                    </div>
 
-                    <span class="connect-hint">
-                        Hold A then plug in USB!
-                    </span>
-            
                     <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
                         pending-text="Saving..."
                     ></single-shot-button>
@@ -109,6 +108,7 @@
     </div>
 
     <script>
+
         const moduleContent = document.getElementById('module-content-container');
         const moduleHeader = document.getElementById('module-header');
 
@@ -122,6 +122,7 @@
     </script>
 
     <script src="./js/app.js" type="module"></script>
+    
 </body>
 
 </html>
