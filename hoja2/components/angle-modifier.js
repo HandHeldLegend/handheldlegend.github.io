@@ -92,8 +92,6 @@ class AngleModifier extends HTMLElement {
             };
             
             row.querySelector('.btn-delete').onclick = () => {
-                this.points.splice(i, 1);
-                this.refresh();
                 this.dispatchEvent(new CustomEvent('delete', { detail: { index: i } }));
             };
 

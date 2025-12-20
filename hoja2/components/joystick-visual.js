@@ -194,8 +194,12 @@ class JoystickVisualizer extends HTMLElement {
         if (rawCoords) {
             rawCoords.textContent = `X: ${this.state.scaledX}, Y: ${this.state.scaledY}`;
         }
+
+        let angle = this.state.angle.toFixed(1);
+        if (angle === '360.0') angle = '0.0'; // Snaps 360 back to 0
+
         if (polarCoords) {
-            polarCoords.textContent = `∠: ${this.state.angle.toFixed(2)}°, D: ${this.state.scaledDistance.toFixed(2)}`;
+            polarCoords.textContent = `∠: ${angle}°, D: ${this.state.scaledDistance.toFixed(2)}`;
         }
     }
 
@@ -210,10 +214,11 @@ class JoystickVisualizer extends HTMLElement {
         this.state.distance = Math.sqrt(dx * dx + dy * dy);
         this.state.scaledDistance = this.state.distance / 2048;
 
-        this.state.angle = Math.atan2(dy, dx) * 180 / Math.PI;
-        if (this.state.angle < 0) {
-            this.state.angle += 360;
-        }
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle < 0) angle += 360;
+        
+        // Snaps 360 back to 0
+        this.state.angle = angle % 360;
 
         if (this.state.isTracing) {
             this.addTracePoint(scaledX, scaledY);

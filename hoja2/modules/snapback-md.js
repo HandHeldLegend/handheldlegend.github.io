@@ -38,6 +38,7 @@ export function render(container) {
     container.innerHTML = `
             <h3>Left Stick</h3>
             <multi-position-button 
+                width="300"
                 id="snapback-mode-selector-left" 
                 options="LPF, Auto, Off"
                 selected="${snapbackIdxLeft}"
@@ -45,6 +46,7 @@ export function render(container) {
 
             <p>Cutoff Frequency Hz</p>
             <number-selector 
+                
                 id="snapback-cutoff-left" 
                 type="float" 
                 min="30.0" 
@@ -55,6 +57,7 @@ export function render(container) {
 
             <h3>Right Stick</h3>
             <multi-position-button 
+                width="300"
                 id="snapback-mode-selector-right" 
                 options="LPF, Auto, Off"
                 selected="${snapbackIdxRight}"
@@ -75,6 +78,38 @@ export function render(container) {
     `;
 
     enableTooltips(container);
+
+    // Set our snapback mode selectors
+    const snapbackModeSelectorLeft = container.querySelector('#snapback-mode-selector-left');
+    const snapbackModeSelectorRight = container.querySelector('#snapback-mode-selector-right');
+
+    snapbackModeSelectorLeft.addEventListener('change', (event) => {
+        const snapbackType = event.detail.selectedIndex;
+        gamepad.analog_cfg.l_snapback_type = snapbackType;
+        writeAngleMemBlock();
+    });
+
+    snapbackModeSelectorRight.addEventListener('change', (event) => {
+        const snapbackType = event.detail.selectedIndex;
+        gamepad.analog_cfg.r_snapback_type = snapbackType;
+        writeAngleMemBlock();
+    });
+
+    // Set our snapback cutoff selectors
+    const snapbackCutoffLeftSlider = container.querySelector('#snapback-cutoff-left');
+    const snapbackCutoffRightSlider = container.querySelector('#snapback-cutoff-right');
+
+    snapbackCutoffLeftSlider.addEventListener('change', (event) => {
+        const cutoff = event.detail.value;
+        gamepad.analog_cfg.l_snapback_intensity = cutoff * 10;
+        writeAngleMemBlock();
+    });
+
+    snapbackCutoffRightSlider.addEventListener('change', (event) => {
+        const cutoff = event.detail.value;
+        gamepad.analog_cfg.r_snapback_intensity = cutoff * 10;
+        writeAngleMemBlock();
+    });
 
     // Set our waveform display
     /** @type {WaveformDisplay} */

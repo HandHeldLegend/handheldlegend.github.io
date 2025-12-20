@@ -40,12 +40,6 @@ let dzOuterPicker;
 /** @type {AngleModifier} */
 let angleMods;
 
-function resetAllAnglesDefault() {
-
-    writeAngleMemBlock();
-    return true;
-}
-
 async function populateNearestAngle(capturedData) {
     // Find the nearest angle in the current configuration
     let nearestAngleIndex = 0;
@@ -139,6 +133,8 @@ async function writeAngleMemBlock() {
         gamepad.analog_cfg.r_deadzone = innerDeadzone;
         gamepad.analog_cfg.r_deadzone_outer = outerDeadzone;
     }
+
+    gamepad.analog_cfg.analog_calibration_set = 1;
 
     await gamepad.sendBlock(analogCfgBlockNumber);
 }
@@ -262,18 +258,77 @@ function deadzoneOuterAdjustHandler(detail) {
     console.log(detail);
 }
 
-function addAngleNew() {
-    if(angleMods) {
-        angleMods.addPoint(0, 2048);
+async function addAngleNew() {
+     let command = selectedAxis == 0 ? 3 : 4;
+
+    let { status, data } = await gamepad.sendConfigCommand(analogCfgBlockNumber, command);
+
+    if (status && data) {
+        // Create DataView from your Uint8Array
+        const view = new DataView(data.buffer);
+        capturedData.angle = view.getFloat32(0, true);
+        capturedData.distance = view.getFloat32(4, true);
+
+        // Get the first disabled slot
+        let newSlot = currentConfigSlots.find(slot => !slot.enabled);
+        if (newSlot) {
+            newSlot.in_angle = capturedData.angle;
+            newSlot.in_distance = capturedData.distance;
+            newSlot.out_angle = capturedData.angle;
+            newSlot.out_distance = 2048;
+            newSlot.deadzone = 2;
+            newSlot.enabled = true;
+        }
+
+        currentConfigSlots[newSlot.index] = newSlot;
+
+        // Write the updated configuration back to the gamepad
+        await writeAngleMemBlock();
+        populateUIElements(true);
     }
 }
 
-function angleDeleteHandler(detail) {
-    console.log(detail);
+async function angleDeleteHandler(detail) {
+    let index = detail.index;
+    
+    // Reset slot to default
+    currentConfigSlots[index].deadzone = 2;
+    currentConfigSlots[index].in_angle = 0;
+    currentConfigSlots[index].in_distance = 2048;
+    currentConfigSlots[index].out_angle = 0;
+    currentConfigSlots[index].out_distance = 2048;
+    currentConfigSlots[index].deadzone = 2;
+    currentConfigSlots[index].enabled = false;
+
+    // Write the updated configuration back to the gamepad
+    await writeAngleMemBlock();
+    populateUIElements(true);
 }
 
-function angleCaptureHandler(detail) {
-    console.log(detail);
+async function angleCaptureHandler(detail) {
+    
+    let idx = detail.index;
+
+    let command = selectedAxis == 0 ? 3 : 4;
+
+    let { status, data } = await gamepad.sendConfigCommand(analogCfgBlockNumber, command);
+
+    if (status && data) {
+        // Create DataView from your Uint8Array
+        const view = new DataView(data.buffer);
+        capturedData.angle = view.getFloat32(0, true);
+        capturedData.distance = view.getFloat32(4, true);
+
+        console.log('Captured angle:', capturedData.angle);
+        console.log('Captured distance:', capturedData.distance);
+
+        currentConfigSlots[idx].in_angle = capturedData.angle;
+        currentConfigSlots[idx].in_distance = capturedData.distance;
+
+        // Write the updated configuration back to the gamepad
+        await writeAngleMemBlock();
+        populateUIElements(true);
+    }
 }
 
 async function angleChangeHandler(detail) {
@@ -289,6 +344,32 @@ async function angleChangeHandler(detail) {
     currentConfigSlots[detail.index] = slot;
 
     console.log('Angle changed:', currentConfigSlots[detail.index]);
+
+    await writeAngleMemBlock();
+    populateUIElements(true);
+}
+
+async function angleResetHandler() {
+    
+    for (let i = 0; i < 8; i++) {
+        currentConfigSlots[i].deadzone = 2;
+        currentConfigSlots[i].in_angle = i*45;
+        currentConfigSlots[i].in_distance = 1028;
+        currentConfigSlots[i].out_angle = i*45;
+        currentConfigSlots[i].out_distance = 2048;
+        currentConfigSlots[i].enabled = true;
+    }
+
+    // Remaining should be disabled
+    for (let i = 8; i < 16; i++) {
+        currentConfigSlots[i].deadzone = 2;
+        currentConfigSlots[i].in_angle = 0;
+        currentConfigSlots[i].in_distance = 2048;
+        currentConfigSlots[i].out_angle = 0;
+        currentConfigSlots[i].out_distance = 2048;
+        currentConfigSlots[i].deadzone = 2;
+        currentConfigSlots[i].enabled = false;
+    }
 
     await writeAngleMemBlock();
     populateUIElements(true);
@@ -396,10 +477,23 @@ export function render(container) {
             <div class="app-row">
                 <h2>Angles</h2>
                 <div class="vert-separator"></div>
-                <div class="angle-btn" id="add-angle">+</div>
+                <div class="angle-btn" id="add-angle"
+                tooltip="Hold your joystick to the desired angle, then click the button to add a new angle to the list."
+                >+</div>
             </div>
 
             <angle-modifier></angle-modifier>
+
+            <single-shot-button 
+                id="angles-reset-button" 
+                state="ready"
+                ready-text="Reset Angles" 
+                disabled-text="Reset Angles"
+                pending-text="Resetting..."
+                success-text="Reset Success"
+                failure-text="Reset Error"
+                tooltip="This resets all angles to the default values."
+            ></single-shot-button>
     `;
 
     // JOYSTICK VISUALIZER
@@ -458,6 +552,13 @@ export function render(container) {
     });
 
     angleMods.addEventListener('delete', (e) => {
+
+        // Check to ensure we have at least 8 angles before allowing deletion
+        if(currentConfigSlots.filter(slot => slot.enabled).length <= 8) {
+            console.log("Cannot delete angle, must have at least 8 angles.");
+            return;
+        }
+
         angleDeleteHandler(e.detail);
     });
     // -----------------------------
@@ -505,6 +606,14 @@ export function render(container) {
         outerDeadzone = e.detail.value;
         await writeAngleMemBlock();
         populateUIElements();
+    });
+    // -----------------------------
+
+    // ANGLE RESET BUTTON HANDLERS
+    const angleResetButton = container.querySelector('single-shot-button[id="angles-reset-button"]');
+    angleResetButton.setOnClick(async function () {
+        await angleResetHandler();
+        return true;
     });
     // -----------------------------
 
