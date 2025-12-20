@@ -2,8 +2,10 @@ class NumberSelector extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-
+        this._value = 0;
         this._isInternalUpdate = false;
+        this._isRendered = false;
+        this._pendingValue = null;
     }
 
     // Default configuration if not specified
@@ -13,7 +15,7 @@ class NumberSelector extends HTMLElement {
             min: 0,
             max: 100,
             step: 1,
-            defaultValue: 0,
+            value: 0,
             formatter: (value) => value.toString(),
         };
     }
@@ -31,6 +33,13 @@ class NumberSelector extends HTMLElement {
         // Render the component with loaded CSS
         this.render(css);
         this.setupEventListeners();
+        this._isRendered = true;
+
+        // Apply any pending value that was set before rendering
+        if (this._pendingValue !== null) {
+            this.setState(this._pendingValue);
+            this._pendingValue = null;
+        }
     }
 
     // Parse configuration from attributes
@@ -40,7 +49,7 @@ class NumberSelector extends HTMLElement {
             min: parseFloat(this.getAttribute('min') ?? NumberSelector.defaultConfig.min),
             max: parseFloat(this.getAttribute('max') ?? NumberSelector.defaultConfig.max),
             step: parseFloat(this.getAttribute('step') ?? NumberSelector.defaultConfig.step),
-            defaultValue: parseFloat(this.getAttribute('value') ?? parseFloat(this.getAttribute('min') ?? NumberSelector.defaultConfig.min)),
+            value: parseFloat(this.getAttribute('value') ?? this._value ?? parseFloat(this.getAttribute('min') ?? NumberSelector.defaultConfig.min)),
             label: this.getAttribute('label') || '',
         };
     }
@@ -59,11 +68,11 @@ class NumberSelector extends HTMLElement {
                     class="slider" 
                     min="${config.min}" 
                     max="${config.max}" 
-                    value="${config.defaultValue.toFixed(config.type === 'float' ? 1 : 0)}"
+                    value="${config.value.toFixed(config.type === 'float' ? 1 : 0)}"
                     step="${config.step}"
                 >
             </div>
-            <div class="value-display">${config.defaultValue.toFixed(config.type === 'float' ? 1 : 0)}</div>
+            <div class="value-display">${config.value.toFixed(config.type === 'float' ? 1 : 0)}</div>
             <button orientation="right" class="btn-control btn-increase">▶</button>
             </div>
         `;
@@ -96,7 +105,7 @@ class NumberSelector extends HTMLElement {
 
             valueDisplay.textContent = value.toFixed(config.type === 'float' ? 1 : 0);
 
-            if(!this._isInternalUpdate)
+            if (!this._isInternalUpdate)
                 this.dispatchEvent(
                     new CustomEvent('change', {
                         detail: { value },
@@ -154,10 +163,25 @@ class NumberSelector extends HTMLElement {
 
     // Set the state of the selector
     setState(value) {
+        // If not rendered yet, store the value and return
+        if (!this._isRendered) {
+            this._pendingValue = value;
+            this._value = value;
+            return;
+        }
+
         this._isInternalUpdate = true;
+        this._value = value;
         const slider = this.shadowRoot.querySelector('.slider');
         const valueDisplay = this.shadowRoot.querySelector('.value-display');
         const config = this.getConfig();
+
+        // Check if slider and valueDisplay exist
+        if (!slider || !valueDisplay) {
+            console.error('Slider or value display not found in shadow DOM.');
+            this._isInternalUpdate = false;
+            return; // Exit if elements are not found
+        }
 
         // Ensure the value is within bounds
         const clampedValue = Math.min(config.max, Math.max(config.min, value));
@@ -165,6 +189,7 @@ class NumberSelector extends HTMLElement {
         // Update the slider and display
         slider.value = clampedValue;
         valueDisplay.textContent = clampedValue.toFixed(config.type === 'float' ? 1 : 0);
+
         this._isInternalUpdate = false;
     }
 }

@@ -88,6 +88,7 @@
 .vert-separator {
     width: 1px;
     height: 26px;
+
     background-color: var(--color-text-secondary);
 }
 
@@ -405,6 +406,7 @@ p {
 h1,
 h2,
 h3 {
+    white-space: nowrap;
     margin: 0;
     position: relative;
     cursor: inherit;

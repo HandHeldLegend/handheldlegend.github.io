@@ -9,10 +9,12 @@ import MultiPositionButton from '../components/multi-position-button.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 import AngleModifier from '../components/angle-modifier.js';
+import Analogconfig from '../factory/parsers/analogConfig.js';
+import Joyconfigslot from '../factory/parsers/joyConfigSlot.js';
 
-let capturedAngles = {
-    left: 0,
-    right: 0
+let capturedData = {
+    angle: 0,
+    distance: 0
 };
 
 let selectedAxis = 0;
@@ -20,12 +22,23 @@ let selectedAxis = 0;
 /** @type {JoystickVisualizer} */
 let joystickVisual;
 
-/** @type {AngleModifier} */
-let angleMods;
-
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 const analogCfgBlockNumber = 2;
+
+/** @type {Joyconfigslot[]} */
+let currentConfigSlots;
+
+let innerDeadzone = 0;
+let outerDeadzone = 0;
+
+let analogModuleContainer;
+
+let dzInnerPicker;
+let dzOuterPicker;
+
+/** @type {AngleModifier} */
+let angleMods;
 
 function resetAllAnglesDefault() {
 
@@ -33,16 +46,34 @@ function resetAllAnglesDefault() {
     return true;
 }
 
-function mapsToStyleString(maps) {
-    let output = "";
-    maps.forEach(value => {
-        if (value.distance > 1000)
-            output += `${value.output},${value.distance};`
-    });
+async function populateNearestAngle(capturedData) {
+    // Find the nearest angle in the current configuration
+    let nearestAngleIndex = 0;
+    let minDistance = Infinity;
 
-    output.slice(0, -1);
-    return output;
+    for (let i = 0; i < currentConfigSlots.length; i++) {
+        if (currentConfigSlots[i].enabled) {
+            let dist = angleDistance(capturedData.angle, currentConfigSlots[i].in_angle);
+            if (dist < minDistance) {
+                minDistance = dist;
+                nearestAngleIndex = i;
+            }
+
+        }
+    }
+
+    // Set the captured data to the nearest angle
+    currentConfigSlots[nearestAngleIndex].in_angle = capturedData.angle;
+    currentConfigSlots[nearestAngleIndex].in_distance = capturedData.distance;
+
+    // Write the updated configuration back to the gamepad
+    await writeAngleMemBlock();
+
+    // Refresh the UI to reflect the changes
+    populateUIElements(true);
+    return true;
 }
+
 
 function angleDistance(angle1, angle2) {
     // Normalize angles to be within 0-360
@@ -69,31 +100,101 @@ function writeToClipboard(text) {
 
 async function captureAngleHandler() {
     // CFG_BLOCK_ANALOG 2
-    // ANALOG_CMD_CAPTURE_ANGLE 3
-    let { status, data } = await gamepad.sendConfigCommand(analogCfgBlockNumber, 3);
+    // ANALOG_CMD_CAPTURE_JOYSTICK_L 3
+    // ANALOG_CMD_CAPTURE_JOYSTICK_R 4
+
+    let command = selectedAxis == 0 ? 3 : 4;
+
+    let { status, data } = await gamepad.sendConfigCommand(analogCfgBlockNumber, command);
 
     if (status && data) {
         // Create DataView from your Uint8Array
         const view = new DataView(data.buffer);
-        capturedAngles.left = view.getFloat32(0, true);
-        capturedAngles.right = view.getFloat32(4, true);
+        capturedData.angle = view.getFloat32(0, true);
+        capturedData.distance = view.getFloat32(4, true);
 
-        if (selectedAxis == 0) {
-            return capturedAngles.left;
-        }
-        else {
-            return capturedAngles.right;
-        }
+        console.log('Captured angle:', capturedData.angle);
+        console.log('Captured distance:', capturedData.distance);
+
+        return capturedData;
     }
 
     return null;
 }
 
+async function readAngleMemBlock() {
+    await gamepad.requestBlock(analogCfgBlockNumber);
+}
+
 // Grab all the current config option values
-// and write them to our controller memory
+// and write them to our controller memory 
 async function writeAngleMemBlock() {
+    // Write current config block to gamepad
+    if(selectedAxis == 0) {
+        gamepad.analog_cfg.joy_config_l = currentConfigSlots;
+        gamepad.analog_cfg.l_deadzone = innerDeadzone;
+        gamepad.analog_cfg.l_deadzone_outer = outerDeadzone;
+    } else if (selectedAxis == 1) {
+        gamepad.analog_cfg.joy_config_r = currentConfigSlots;
+        gamepad.analog_cfg.r_deadzone = innerDeadzone;
+        gamepad.analog_cfg.r_deadzone_outer = outerDeadzone;
+    }
 
     await gamepad.sendBlock(analogCfgBlockNumber);
+}
+
+async function populateUIElements(refresh = false) {
+    if(refresh===true)
+        // Get the current config block from the gamepad
+        await readAngleMemBlock();
+
+    // Get selected config
+    /** @type {Joyconfigslot[]} */
+    currentConfigSlots = selectedAxis === 0 ? gamepad.analog_cfg.joy_config_l : gamepad.analog_cfg.joy_config_r;
+
+    innerDeadzone = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone : gamepad.analog_cfg.r_deadzone;
+    outerDeadzone = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone_outer : gamepad.analog_cfg.r_deadzone_outer;
+
+    if(analogModuleContainer) {
+
+        // Set deadzone picker values
+        if(dzInnerPicker && dzOuterPicker) {
+            dzInnerPicker.setState(innerDeadzone);
+            dzOuterPicker.setState(outerDeadzone);
+        }
+        // --------------------------
+
+        // Set joystick visualizer deadzones
+        if(joystickVisual) {
+            joystickVisual.setDeadzones(
+                innerDeadzone,
+                outerDeadzone
+            );
+        }
+        // --------------------------
+
+        // Set angle modifier values
+        if(angleMods) {
+            let defaultPoints = [];
+            for (let angle = 0; angle < 16; angle++) {
+                if (currentConfigSlots[angle].enabled) {
+                    defaultPoints.push({
+                        inAngle:    currentConfigSlots[angle].in_angle,
+                        inDist:     currentConfigSlots[angle].in_distance,
+                        outAngle:   currentConfigSlots[angle].out_angle,
+                        outDist:    currentConfigSlots[angle].out_distance,
+                        deadzone:   currentConfigSlots[angle].deadzone
+                    });
+                }
+            }
+
+            // Assign the array to the component's internal points reference
+            angleMods.points = defaultPoints;
+
+            angleMods.refresh();
+        }
+        // --------------------------
+    }
 }
 
 const acss = `
@@ -153,13 +254,50 @@ const acss = `
 }
 `
 
+function deadzoneInnerAdjustHandler(detail) {
+    console.log(detail);
+}
+
+function deadzoneOuterAdjustHandler(detail) {
+    console.log(detail);
+}
+
+function addAngleNew() {
+    if(angleMods) {
+        angleMods.addPoint(0, 2048);
+    }
+}
+
+function angleDeleteHandler(detail) {
+    console.log(detail);
+}
+
+function angleCaptureHandler(detail) {
+    console.log(detail);
+}
+
+async function angleChangeHandler(detail) {
+    console.log(detail);
+
+    let slot = currentConfigSlots[detail.index];
+
+    slot.in_angle = parseFloat(detail.data.inAngle);
+    slot.in_distance = parseFloat(detail.data.inDist);
+    slot.out_angle = parseFloat(detail.data.outAngle);
+    slot.out_distance = parseFloat(detail.data.outDist);
+    slot.deadzone = parseFloat(detail.data.deadzone);
+    currentConfigSlots[detail.index] = slot;
+
+    console.log('Angle changed:', currentConfigSlots[detail.index]);
+
+    await writeAngleMemBlock();
+    populateUIElements(true);
+}
+
 // Render the analog settings page
 export function render(container) {
-    let snapbackIdxLeft = gamepad.analog_cfg.l_snapback_type;
-    let snapbackIdxRight = gamepad.analog_cfg.r_snapback_type;
-
-    let snapbackCutoffLeft = (gamepad.analog_cfg.l_snapback_intensity / 10);
-    let snapbackCutoffRight = (gamepad.analog_cfg.r_snapback_intensity / 10);
+    analogModuleContainer = container;
+    selectedAxis = 0;
 
     container.innerHTML = `
             <style>${acss}</style>    
@@ -183,6 +321,34 @@ export function render(container) {
                         selected="0"
                         width="100"
                 ></multi-position-button>
+            </div>
+
+            <div class="app-row">
+                <h3 style="width: 64px;">DZ In</h3>
+                <div class="vert-separator"></div>
+                <number-selector 
+                    id="inner-deadzone-picker" 
+                    type="int" 
+                    min="0" 
+                    max="1000" 
+                    step="24" 
+                    value="0"
+                    width="240"
+                ></number-selector>
+            </div>
+
+             <div class="app-row">
+                <h3 style="width: 64px;">DZ Out</h3>
+                <div class="vert-separator"></div>
+                <number-selector 
+                    id="outer-deadzone-picker" 
+                    type="int" 
+                    min="0" 
+                    max="1000" 
+                    step="24" 
+                    value="0"
+                    width="240"
+                ></number-selector>
             </div>
 
             <div class="app-row">
@@ -236,43 +402,75 @@ export function render(container) {
             <angle-modifier></angle-modifier>
     `;
 
-    // Global angle capture
+    // JOYSTICK VISUALIZER
+    joystickVisual = container.querySelector('joystick-visualizer');
+    joystickVisual.setDeadzones(0, 0);
+
+    // GLOBAL ANGLE CAPTURE HANDLER
     const globalCaptureButton = container.querySelector('single-shot-button[id="global-angle-button"]');
     globalCaptureButton.setOnClick(async function () {
-        let angle = await captureAngleHandler();
+        let capture = await captureAngleHandler();
 
-        if (angle) {
-            await populateNearestAngle(angle);
+        if (capture) {
+            await populateNearestAngle(capture);
             return true;
         }
         else return false;
     });
 
+    // TRACER ENABLE
+    const traceSelector = container.querySelector('multi-position-button[id="trace-enable"]');
+    traceSelector.addEventListener('change', (e) => {
+        if (joystickVisual) {
+            if(e.detail.selectedIndex == 0) {
+                joystickVisual.resetTrace();
+                joystickVisual.stopTracing();
+            }
+            else if(e.detail.selectedIndex == 1) {
+                joystickVisual.resetTrace();
+                joystickVisual.startTracing();
+            }
+        }
+    });
+    // -----------------------------
 
-    angleMods = container.querySelector('angle-modifier');
+    // AXIS SELECTOR
+    const joystickSelector = container.querySelector('multi-position-button[id="joystick-selector"]');
+    joystickSelector.addEventListener('change', (e) => {
+        selectedAxis = e.detail.selectedIndex;
+        if(joystickVisual) {
+            joystickVisual.resetTrace();
+        }
 
-    const increment = 45;
-    const defaultDistance = 2048;
-    const defaultDeadzone = 2.00; // Match the new parameter requirement
-    let defaultPoints = [];
+        populateUIElements();
+    });
+    // -----------------------------
 
-    for (let angle = 0; angle < 360; angle += increment) {
-        defaultPoints.push({
-            inAngle: angle,
-            inDist: defaultDistance,
-            outAngle: angle,
-            outDist: defaultDistance,
-            deadzone: defaultDeadzone // Added to support the new UI column
-        });
-    }
+    // ANGLE ADJUSTMENT HANDLERS
+    angleMods = analogModuleContainer.querySelector('angle-modifier');
 
-    // Assign the array to the component's internal points reference
-    angleMods.points = defaultPoints;
+    angleMods.addEventListener('change', (e) => {
+        angleChangeHandler(e.detail);
+    });
 
-    // Trigger the render process
-    angleMods.refresh();
+    angleMods.addEventListener('capture', (e) => {
+        angleCaptureHandler(e.detail);
+    });
 
-    // Set calibration command handlers 
+    angleMods.addEventListener('delete', (e) => {
+        angleDeleteHandler(e.detail);
+    });
+    // -----------------------------
+    
+
+    // ADD ANGLE HANDLER
+    const addAngleButton = container.querySelector('#add-angle');
+    addAngleButton.addEventListener('click', (e) => {
+        addAngleNew();
+    });
+    // -----------------------------
+
+    // CALIBRATE BUTTON HANDLERS
     const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
 
     calibrateButton.setOnHandler(async () => {
@@ -288,30 +486,32 @@ export function render(container) {
         // CFG_BLOCK_ANALOG, ANALOG_CMD_CALIBRATE_STOP
         let { status, data } = await gamepad.sendConfigCommand(2, 2);
 
-        // Reload our mem block
-        await gamepad.requestBlock(analogCfgBlockNumber);
+        populateUIElements(true);
         return status;
     });
+    // -----------------------------
+
+    // DEADZONE ADJUSTMENT HANDLERS
+    dzInnerPicker = container.querySelector('number-selector[id="inner-deadzone-picker"]');
+    dzOuterPicker = container.querySelector('number-selector[id="outer-deadzone-picker"]');
+
+    dzInnerPicker.addEventListener('change', async (e) => {
+        innerDeadzone = e.detail.value;
+        await writeAngleMemBlock();
+        populateUIElements();
+    });
+
+    dzOuterPicker.addEventListener('change', async (e) => {
+        outerDeadzone = e.detail.value;
+        await writeAngleMemBlock();
+        populateUIElements();
+    });
+    // -----------------------------
 
 
     enableTooltips(container);
 
-    joystickVisual = container.querySelector('joystick-visualizer');
-
-    if (joystickVisual) {
-        let deadzoneInner = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone : gamepad.analog_cfg.r_deadzone;
-        let deadzoneOuter = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone_outer : gamepad.analog_cfg.r_deadzone_outer;
-
-        console.log(deadzoneInner);
-        console.log(deadzoneOuter);
-
-        joystickVisual.setDeadzones(
-            deadzoneInner,
-            deadzoneOuter
-        );
-
-        joystickVisual.startTracing();
-    }
+    populateUIElements();
 
     gamepad.setInputMode(true);
 

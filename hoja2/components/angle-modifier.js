@@ -19,7 +19,7 @@ class AngleModifier extends HTMLElement {
             inAngle, 
             inDist, 
             outAngle: inAngle, 
-            outDist: inDist,
+            outDist: 2048,
             deadzone: 2.0 
         });
         this.refresh();
