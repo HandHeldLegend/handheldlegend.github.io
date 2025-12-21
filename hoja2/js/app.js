@@ -151,6 +151,7 @@ class ConfigApp {
         this.appGrid = document.getElementById('app-grid');
         this._appTitleHeader = appTitleHeader;
         this._currentAppTitle = -1;
+        this._closeCallback = null;
 
         // Contain our scrollable module content container
         this.moduleScrollable = document.getElementById('module-content-container');
@@ -166,6 +167,10 @@ class ConfigApp {
 
         this.registerKeyboardEvents();
         this.loadSettingsModules();
+    }
+
+    setCloseCallback(callback) {
+        this._closeCallback = callback;
     }
 
     setNotificationBadge(idx, show) {
@@ -378,6 +383,9 @@ class ConfigApp {
     }
 
     closemoduleView() {
+        if (this._closeCallback) {
+            this._closeCallback();
+        }
         this.setView(false);
     }
 }
@@ -556,6 +564,45 @@ async function sendSaveCommand() {
     }
 }
 
+async function badgeCheck() {
+    if(!gamepad.hover_cfg.hover_calibration_set) {
+            window.configApp.setNotificationBadge(1, true);
+    }
+    else window.configApp.setNotificationBadge(1, false);
+
+    if (!gamepad.analog_cfg.analog_calibration_set) {
+            window.configApp.setNotificationBadge(2, true);
+    }
+    else window.configApp.setNotificationBadge(2, false);
+
+    // Check Baseband Version if we have external updates
+    if(gamepad.bluetooth_static.external_update_supported) {
+        let currentBasebandVersion = await getCurrentBasebandVersion();
+
+        //console.log(currentBasebandVersion);
+        //console.log(gamepad.bluetooth_static.external_version_number);
+
+        if(gamepad.bluetooth_static.external_version_number < currentBasebandVersion) {
+            window.configApp.setNotificationBadge(9, true);
+        }
+        else window.configApp.setNotificationBadge(9, false);
+        // End Baseband Version Check
+    }
+}
+
+async function getCurrentBasebandVersion() {
+        if(!isOnline()) return false;
+
+        const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
+        let response = await fetch(btManifestUrl);
+    
+        if(response.ok) {
+            const data = await response.json();
+            if(data.fw_version) return data.fw_version;
+            else return false;
+        }
+    }
+
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -587,39 +634,26 @@ document.addEventListener('DOMContentLoaded', () => {
         window.configApp.openmoduleView(debugModule[0], "Debug");
     }
 
+    window.configApp.setCloseCallback(async () => {
+        await badgeCheck();
+    });
+
     enableTooltips(document);
-    console.log("enableTooltips called");
-
-    async function getCurrentBasebandVersion() {
-        if(!isOnline()) return false;
-
-        const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
-        let response = await fetch(btManifestUrl);
-    
-        if(response.ok) {
-            const data = await response.json();
-            if(data.fw_version) return data.fw_version;
-            else return false;
-        }
-    }
 
     async function connectHandle() {
         // Enable Icons
         window.configApp.enableIcon(0, true); // Gamepad
+
         window.configApp.enableIcon(1, true); // Remap
+        
         
         let analogEnable = (gamepad.analog_static.axis_rx | gamepad.analog_static.axis_lx) ? true : false;
         window.configApp.enableIcon(2, analogEnable); // Analog
-        if (!gamepad.analog_cfg.analog_calibration_set) {
-            window.configApp.setNotificationBadge(2, true);
-        }
-        else window.configApp.setNotificationBadge(2, false);
 
         window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0); // RGB
-        // Set badge if needed
-        
 
-        window.configApp.enableIcon(4, true); // Triggers
+        window.configApp.enableIcon(4, true); // RGB
+        
 
         let imuEnable = (gamepad.imu_static.axis_gyro_a) ? true : false;
         window.configApp.enableIcon(5, imuEnable); // IMU
@@ -635,6 +669,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let wirelessEnable = (gamepad.bluetooth_static.bluetooth_bdr_supported | gamepad.bluetooth_static.bluetooth_ble_supported) ? true : false;
         window.configApp.enableIcon(9, wirelessEnable); // Battery
 
+        await badgeCheck();
+
         // Enable Save
         saveButton.enableButton(true);
 
@@ -643,8 +679,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
-
-        console.log(gamepad.gamepad_cfg.host_mac_switch);
         
         if(fwVersion == false)
         {
@@ -680,21 +714,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Enable FW update
             enableFwUpdateMessage(enableOptions, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
         }       
-        
-
-        // Check Baseband Version if we have external updates
-        if(gamepad.bluetooth_static.external_update_supported) {
-            let currentBasebandVersion = await getCurrentBasebandVersion();
-
-            //console.log(currentBasebandVersion);
-            //console.log(gamepad.bluetooth_static.external_version_number);
-
-            if(gamepad.bluetooth_static.external_version_number < currentBasebandVersion) {
-                window.configApp.setNotificationBadge(9, true);
-            }
-            else window.configApp.setNotificationBadge(9, false);
-            // End Baseband Version Check
-        }
     }
 
     function disconnectHandle() {

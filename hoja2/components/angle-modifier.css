@@ -142,9 +142,13 @@
     transition: all var(--transition-quick);
 }
 
-.btn-action:hover:not(:active) {
+.btn-action:hover:not(:active):not(.disabled) {
     filter: brightness(1.1);
 }
 
-.btn-cap { background: #3a4bb3; }
-.btn-delete { background: #b33a3a; }
+.btn-cap { background: var(--color-p3-grad); }
+.btn-delete { background: var(--color-p4-grad); }
+.btn-delete.disabled { 
+    cursor: not-allowed;
+    background: var(--color-p5-grad); 
+}

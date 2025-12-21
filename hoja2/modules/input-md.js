@@ -561,6 +561,36 @@ export function render(container) {
             <h2>Input Setup</h2>
             <div id="module-grid-placeholder" class="module-grid">
             </div>
+
+            <div class="separator"></div>
+
+            <div class="app-row">
+                <h3>Calibrate All</h3>
+                <tristate-button 
+                    id="calibrate-button" 
+                    off-text="Start" 
+                    on-text="Stop"
+                    off-to-on-text="Start"
+                    on-to-off-text="Stop"
+                    width="70"
+                ></tristate-button>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="app-row">
+                <h3>Defaults</h3>
+                <single-shot-button 
+                    id="global-angle-button" 
+                    state="ready" 
+                    ready-text="Reset" 
+                    disabled-text="Reset"
+                    pending-text="Resetting..."
+                    success-text="Success"
+                    failure-text="Error"
+                    tooltip="Quickly reset this mode to its default."
+                ></single-shot-button>
+            </div>
     `;
 
     // Load output info list from default profile (switch)
@@ -611,4 +641,6 @@ export function render(container) {
 
     // Set report hook
     gamepad.setReportHook(inputReportHook);
+
+    enableTooltips(container);
 }

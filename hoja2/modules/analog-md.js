@@ -392,8 +392,8 @@ export function render(container) {
             </div>
 
             <div class="app-row">
-                <h3 style="width: 64px;">DZ In</h3>
-                <div class="vert-separator"></div>
+                <h3 style="width: 50px;">DZ In<div class="header-tooltip" tooltip="Inner deadzone (Center)">?</div></h3>
+                <div class="vert-separator" style="margin-left:35px"></div>
                 <number-selector 
                     id="inner-deadzone-picker" 
                     type="int" 
@@ -406,8 +406,8 @@ export function render(container) {
             </div>
 
              <div class="app-row">
-                <h3 style="width: 64px;">DZ Out</h3>
-                <div class="vert-separator"></div>
+                <h3 style="width: 64px;">DZ Out<div class="header-tooltip" tooltip="Outer deadzone (Edge)">?</div></h3>
+                <div class="vert-separator" style="margin-left:20px"></div>
                 <number-selector 
                     id="outer-deadzone-picker" 
                     type="int" 
@@ -479,7 +479,7 @@ export function render(container) {
                 pending-text="Resetting..."
                 success-text="Reset Success"
                 failure-text="Reset Error"
-                tooltip="This resets all angles to the default values."
+                tooltip="This resets all angles and calibration to the default values."
             ></single-shot-button>
     `;
 

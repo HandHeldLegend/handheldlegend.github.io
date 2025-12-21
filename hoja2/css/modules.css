@@ -54,6 +54,7 @@
   border-radius: var(--border-radius-lg);
   border: 2px solid var(--color-p1-dark);
   background-color: var(--color-p1);
+  background: var(--color-p1-grad);
   width: fit-content;
   height: fit-content;
   max-height: 68vh;

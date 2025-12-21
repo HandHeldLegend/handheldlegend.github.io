@@ -14,12 +14,14 @@ class InputConfigPanel extends HTMLElement {
         this._delta = 0;
         this._output = 0;
         this._onClose = null;
-        this._onReset = null;
         this._onCalibrate = null;
         this._onCalibrateFinish = null;
         this._outputSelectorHandler = null;
         this._isCalibrating = false;
         this._remapsDisabled = false;
+        
+        // JSON export/import header for validation
+        this._configHeader = 'INPUT_CONFIG_V1';
     }
 
     static get observedAttributes() {
@@ -194,10 +196,10 @@ class InputConfigPanel extends HTMLElement {
         return (iType === 'analog');
     }
 
-    shouldShowReset() {
+    shouldShowCopyPaste() {
         const { _inputType: iType, _outputType: oType } = this;
 
-        // Show for Analog/Joystick In -> Digital Out
+        // Show for Analog/Joystick In
         return ((iType === 'analog' || iType === 'joystick'));
     }
 
@@ -213,13 +215,76 @@ class InputConfigPanel extends HTMLElement {
         return this._mode === 'threshold' ? 'Threshold' : 'Delta';
     }
 
+    // Copy configuration to clipboard as JSON
+    async copyConfig() {
+        const config = {
+            header: this._configHeader,
+            mode: this._mode,
+            delta: this._delta,
+            output: this._output
+        };
+        
+        const jsonString = JSON.stringify(config, null, 2);
+        
+        try {
+            await navigator.clipboard.writeText(jsonString);
+            // Optional: Show feedback to user
+            console.log('Configuration copied to clipboard');
+        } catch (err) {
+            console.error('Failed to copy configuration:', err);
+        }
+    }
+
+    // Paste configuration from clipboard
+    async pasteConfig() {
+        try {
+            const text = await navigator.clipboard.readText();
+            const config = JSON.parse(text);
+            
+            // Validate header
+            if (config.header !== this._configHeader) {
+                console.error('Invalid configuration format');
+                return;
+            }
+            
+            // Apply configuration
+            if (config.mode !== undefined) {
+                const availableModes = this.getModeOptions();
+                if (availableModes.includes(config.mode) || config.mode === 'default') {
+                    this._mode = config.mode;
+                    this.setAttribute('mode', this._mode);
+                }
+            }
+            
+            if (config.delta !== undefined) {
+                this._delta = Math.max(0, Math.min(4096, parseInt(config.delta) || 0));
+                this.setAttribute('delta', this._delta.toString());
+            }
+            
+            if (config.output !== undefined) {
+                this._output = Math.max(0, Math.min(4096, parseInt(config.output) || 0));
+                this.setAttribute('output', this._output.toString());
+            }
+            
+            // Update UI
+            this.updateModeUI();
+            
+            // Emit config change event
+            this.emitConfigChange();
+            
+            console.log('Configuration pasted successfully');
+        } catch (err) {
+            console.error('Failed to paste configuration:', err);
+        }
+    }
+
     render(css) {
         const valuePercent = (this._value / 4096) * 90;
         const modeOptions = this.getModeOptions();
         const showDelta = this.shouldShowDelta();
         const showOutput = this.shouldShowOutput();
         const showCalibrate = this.shouldShowCalibrate();
-        const showReset = this.shouldShowReset();
+        const showCopyPaste = this.shouldShowCopyPaste();
         const deltaDisabled = this.isDeltaDisabled();
         const outputDisabled = this.isOutputDisabled();
         const deltaLabel = this.getDeltaLabel();
@@ -299,11 +364,12 @@ class InputConfigPanel extends HTMLElement {
                     </div>
                 ` : ''}
 
-                ${(showReset || showCalibrate) ? `
+                ${(showCopyPaste || showCalibrate) ? `
                     <div class="divider"></div>
                     <div class="button-row">
-                        ${showReset ? '<button class="action-button reset-button hoverable clickable">Reset</button>' : ''}
-                        ${showCalibrate ? `<button class="action-button calibrate-button hoverable clickable">${this._isCalibrating ? 'Finish' : 'Calibrate'}</button>` : ''}
+                        ${showCopyPaste ? '<button class="action-button copy-button hoverable clickable">Copy</button>' : ''}
+                        ${showCopyPaste ? '<button class="action-button paste-button hoverable clickable">Paste</button>' : ''}
+                        ${showCalibrate ? `<button class="action-button calibrate-button ${this._isCalibrating ? 'calibrating' : ''} hoverable clickable">${this._isCalibrating ? 'Stop' : 'Start'}</button>` : ''}
                     </div>
                 ` : ''}
             </div>
@@ -374,11 +440,19 @@ class InputConfigPanel extends HTMLElement {
             });
         }
 
-        // Reset button
-        const resetBtn = shadow.querySelector('.reset-button');
-        if (resetBtn) {
-            resetBtn.addEventListener('click', () => {
-                if (this._onReset) this._onReset();
+        // Copy button
+        const copyBtn = shadow.querySelector('.copy-button');
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                this.copyConfig();
+            });
+        }
+
+        // Paste button
+        const pasteBtn = shadow.querySelector('.paste-button');
+        if (pasteBtn) {
+            pasteBtn.addEventListener('click', () => {
+                this.pasteConfig();
             });
         }
 
@@ -506,7 +580,12 @@ class InputConfigPanel extends HTMLElement {
     updateCalibrateButton() {
         const calibrateBtn = this.shadowRoot.querySelector('.calibrate-button');
         if (calibrateBtn) {
-            calibrateBtn.textContent = this._isCalibrating ? 'Finish' : 'Calibrate';
+            calibrateBtn.textContent = this._isCalibrating ? 'Stop' : 'Start';
+            if (this._isCalibrating) {
+                calibrateBtn.classList.add('calibrating');
+            } else {
+                calibrateBtn.classList.remove('calibrating');
+            }
         }
     }
 
@@ -609,10 +688,6 @@ class InputConfigPanel extends HTMLElement {
 
     setOnClose(handler) {
         this._onClose = handler;
-    }
-
-    setOnReset(handler) {
-        this._onReset = handler;
     }
 
     setOnCalibrate(handler) {

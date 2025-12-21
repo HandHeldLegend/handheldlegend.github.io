@@ -3,7 +3,7 @@ class AngleModifier extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         // Data structure now includes deadzone
-        this.points = []; 
+        this.points = [];
     }
 
     async connectedCallback() {
@@ -15,17 +15,17 @@ class AngleModifier extends HTMLElement {
     // Public API to add a point from parent component
     addPoint(inAngle = 0, inDist = 0) {
         if (this.points.length >= 16) return; // Hard limit for safety
-        this.points.push({ 
-            inAngle, 
-            inDist, 
-            outAngle: inAngle, 
+        this.points.push({
+            inAngle,
+            inDist,
+            outAngle: inAngle,
             outDist: 2048,
-            deadzone: 2.0 
+            deadzone: 2.0
         });
         this.refresh();
         this.dispatchEvent(new CustomEvent('add', { detail: { index: this.points.length - 1 } }));
     }
-    
+
 
     // Public API to reset everything
     resetAll() {
@@ -76,7 +76,9 @@ class AngleModifier extends HTMLElement {
                     <input title="Angular Deadzone (Sticky Angles)" type="number" step="0.1" class="edit-input out-z" value="${p.deadzone.toFixed(2)}">
                 </div>
 
-                <button class="btn-action btn-delete" title="Remove">✕</button>
+                <button class="btn-action btn-delete ${this.points.length <= 8 ? 'disabled' : ''}" 
+                title="Remove" 
+                ${this.points.length <= 8 ? 'disabled' : ''}>✕</button>
             </div>
         `).join('');
 
@@ -86,11 +88,11 @@ class AngleModifier extends HTMLElement {
     bindEvents() {
         this.shadowRoot.querySelectorAll('.angle-row').forEach(row => {
             const i = parseInt(row.dataset.index);
-            
+
             row.querySelector('.btn-cap').onclick = () => {
                 this.dispatchEvent(new CustomEvent('capture', { detail: { index: i } }));
             };
-            
+
             row.querySelector('.btn-delete').onclick = () => {
                 this.dispatchEvent(new CustomEvent('delete', { detail: { index: i } }));
             };

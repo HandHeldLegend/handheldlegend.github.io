@@ -249,3 +249,31 @@
     cursor: pointer;
     transition: var(--transition-quick);
 }
+
+/* Copy/Paste buttons - smaller sizing */
+.copy-button,
+.paste-button {
+    flex: 0.5;
+    padding: 6px 8px;
+    font-size: 14px;
+    border: 2px solid var(--color-p1-light);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+}
+
+/* Calibrate button states with smooth transitions */
+.calibrate-button {
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.calibrate-button:not(.calibrating) {
+    border: 2px solid var(--color-p2-light);
+    background: var(--color-p2-grad);
+    background-color: var(--color-p2);
+}
+
+.calibrate-button.calibrating {
+    border: 2px solid var(--color-p4-light);
+    background-color: var(--color-p4);
+    background: var(--color-p4-grad);
+}
