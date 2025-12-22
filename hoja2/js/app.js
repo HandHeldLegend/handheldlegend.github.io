@@ -565,6 +565,14 @@ async function sendSaveCommand() {
 }
 
 async function badgeCheck() {
+
+    const analogCfgBlockNumber = 2;
+    const hoverCfgBlockNumber = 1;
+
+    // Re-read data
+    await gamepad.requestBlock(analogCfgBlockNumber);
+    await gamepad.requestBlock(hoverCfgBlockNumber);
+
     if(!gamepad.hover_cfg.hover_calibration_set) {
             window.configApp.setNotificationBadge(1, true);
     }
