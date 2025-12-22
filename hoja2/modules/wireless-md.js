@@ -2,6 +2,19 @@ import HojaGamepad from '../js/gamepad.js';
 
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
+const basebandCmd = 2;
+const gamepadCfgBlock = 0;
+
+const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
+async function getCurrentBasebandVersion() {
+    let response = await fetch(btManifestUrl);
+
+    if(response.ok) {
+        const data = await response.json();
+        if(data.fw_version) return data.fw_version;
+        else return false;
+    }
+}
 
 let wirelessConfig = {
     hardware: {
@@ -13,7 +26,7 @@ let wirelessConfig = {
         updateAvailable: false // New Flag
     },
     fcc: {
-        id: "2A4X4-HOJA01",
+        id: "N/A",
         text: "This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received."
     }
 };
@@ -71,7 +84,7 @@ const wirelessStyle = `
     50% { filter: brightness(1.1); box-shadow: 0 0 5px var(--color-p3); } 
 }
 
-.button-group { display: flex; gap: 8px; width: 250px; margin-top: 4px; margin-left: auto; margin-right: auto}
+.button-group { display: flex; gap: 8px; width: 320px; margin-top: 4px; margin-left: auto; margin-right: auto}
 
 .btn-wireless {
     flex: 1;
@@ -118,7 +131,10 @@ const wirelessStyle = `
 .hardware-model { font-size: var(--font-size-md); color: var(--color-text-tertiary); font-weight: 600; }
 `;
 
-export function render(container) {
+export async function render(container) {
+
+    const currentBasebandVersion = await getCurrentBasebandVersion();
+    const showBasebandUpdate = gamepad.bluetooth_static.baseband_version < currentBasebandVersion ? true : false;
 
     wirelessConfig = {
     hardware: {
@@ -131,7 +147,7 @@ export function render(container) {
     options: {
         showUpdateTools: gamepad.bluetooth_static.external_update_supported > 0,
         showFccInfo: decodeText(gamepad.bluetooth_static.fcc_id.buffer) != "",
-        updateAvailable: false // New Flag
+        updateAvailable: showBasebandUpdate
     },
     fcc: {
         id: decodeText(gamepad.bluetooth_static.fcc_id.buffer),
@@ -156,6 +172,7 @@ export function render(container) {
             <div class="button-group">
                 <button class="btn-wireless" onclick="window.enterWirelessUpdate()">Enter Update Mode</button>
                 <button class="btn-wireless" onclick="window.openUpdatePage()">Update Page</button>
+                <button class="btn-wireless" onclick="window.openHelpPage()">Help Page</button>
             </div>
         ` : ''}
 
@@ -171,11 +188,17 @@ export function render(container) {
     // Global hooks for button actions
     window.enterWirelessUpdate = () => {
         console.log("Entering wireless update mode...");
-        // Add gamepad logic here
+        if(gamepad) {
+            gamepad.sendConfigCommand(gamepadCfgBlock, basebandCmd);
+        }
     };
 
     window.openUpdatePage = () => {
-        window.open('https://update.hoja.io', '_blank');
+        window.open('https://handheldlegend.github.io/hoja_baseband/', '_blank');
+    };
+
+    window.openHelpPage = () => {
+        window.open('https://docs.handheldlegend.com/s/portal/doc/esp32-baseband-update-page-vhX2Im50kN', '_blank');
     };
 
     // Initial UI Sync
