@@ -457,6 +457,16 @@ export function render(container) {
                 ></multi-position-button>
                 </div>
 
+                <div class="app-row">
+                <multi-position-button 
+                    id="output-visualizer-type" 
+                    options="Full, GC, Melee, N64"
+                    selected="0"
+                    width="180"
+                ></multi-position-button>
+                <div class="header-tooltip" tooltip="Show the translated coordinates for a given gamepad mode.">?</div>
+                </div>
+
                 <joystick-visualizer id="joystick"></joystick-visualizer>
 
                 <div class="separator"></div>
@@ -511,6 +521,29 @@ export function render(container) {
                 joystickVisual.resetTrace();
                 joystickVisual.startTracing();
             }
+        }
+    });
+    // -----------------------------
+
+    // OUTPUT VISUALIZER TYPE SELECTOR
+    const outputVisualizerTypeSelector = container.querySelector('multi-position-button[id="output-visualizer-type"]');
+    outputVisualizerTypeSelector.addEventListener('change', (e) => {
+        joystickVisual.setMeleeMode(false);
+
+        if(e.detail.selectedIndex == 0) {
+            joystickVisual.setAxisOutputRoundingPoints(1);
+            joystickVisual.setAxisOutputScaler(1.0);
+        }
+        else if(e.detail.selectedIndex == 1) {
+            joystickVisual.setAxisOutputRoundingPoints(0);
+            joystickVisual.setAxisOutputScaler(0.0537109375);
+        }
+        else if (e.detail.selectedIndex == 2) {
+            joystickVisual.setMeleeMode(true);
+        }
+        else if(e.detail.selectedIndex == 3) {
+            joystickVisual.setAxisOutputRoundingPoints(0);
+            joystickVisual.setAxisOutputScaler(0.04150390625);
         }
     });
     // -----------------------------
