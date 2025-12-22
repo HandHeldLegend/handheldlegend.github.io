@@ -12,6 +12,7 @@ import Inputconfigslot from '../factory/parsers/inputConfigSlot.js';
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
 const inputCfgBlockNumber = 8;
+const hoverCfgBlockNumber = 1;
 
 let currentFocusedInput = 0;
 
@@ -158,6 +159,33 @@ const sinputOutputTypes = [
     3, 3, 3, 3
 ];
 
+async function startCalibration(channel) {
+    const instruction = 1;
+
+    let ch = 0;
+
+    if(channel == 0xFF) {
+        ch |= 0x3F;
+    }
+    else ch = channel;
+
+    let outData = (instruction<<6) | ch;
+    let { status, data } = await gamepad.sendConfigCommand(hoverCfgBlockNumber, outData);
+
+    return status;
+}
+
+async function stopCalibration() {
+    let { status, data } = await gamepad.sendConfigCommand(hoverCfgBlockNumber, 0);
+    return status;
+}
+
+async function resetInputConfig(mode) {
+    let command = mode + 2; // Switch is 2, XInput is 3, etc.
+    let { status, data } = await gamepad.sendConfigCommand(inputCfgBlockNumber, command);
+    return status;
+}
+
 function getGlyphUrlByName(name) {
     const normalizedName = name.toLowerCase().replace(/\s+/g, '');
     return `./images/glyphs/${normalizedName}.png`;
@@ -299,6 +327,9 @@ function closeOverlays() {
 
     if (!blurElement) return;
     blurElement.classList.add('hidden');
+
+    // Stop calibrations
+    stopCalibration();
 }
 
 function openRemapPanel() {
@@ -443,6 +474,18 @@ function inputPanelOpened(event) {
     configPanelComponent.setDelta(thresholdDelta);
     configPanelComponent.setOutput(staticOutput)
 
+    configPanelComponent.setCalibrating(false);
+
+    configPanelComponent.setOnCalibrate(async () => {
+        console.log("Calibrating input code:", inputCode);
+        await startCalibration(inputCode);
+    });
+
+    configPanelComponent.setOnCalibrateFinish(async () => {
+        console.log("Stopping calibration for input code:", inputCode);
+        await stopCalibration();
+    });
+
     configPanelComponent.setRemapsDisabled(currentRemapProfileIndex==5);
 
     configPanelElement.classList.remove('hidden');
@@ -564,6 +607,14 @@ export function render(container) {
 
             <div class="separator"></div>
 
+            <div class="app-text-container">
+                To calibrate analog inputs (including triggers), press <strong>Start</strong>.<br>
+                Fully press and release all analog inputs.<br><br>
+                Press <strong>Stop</strong> once you have done this 3 to 4 times.
+                <br><br>
+                Verify the output of your analog inputs and that they reach the full output range. Click <strong>Save</strong>!
+            </div>
+
             <div class="app-row">
                 <h3>Calibrate All</h3>
                 <tristate-button 
@@ -633,8 +684,29 @@ export function render(container) {
         openRemapPanel();
     });
 
-    // Populate the button grid with input labels
-    //buttonGridComponent.setButtons(inputList);
+    // Calibrate button
+    /** @type {TristateButton} */
+    const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
+    calibrateButton.setOnHandler(async (state) => {
+            return await startCalibration(0xFF);
+    });
+
+    calibrateButton.setOffHandler(async (state) => {
+        return await stopCalibration();
+    });
+
+    // Input Reset button
+    const resetButton = container.querySelector('single-shot-button[id="global-angle-button"]');
+    resetButton.setOnClick(async () => {
+        let result = await resetInputConfig(currentRemapProfileIndex);
+
+        if(!result) return false;
+
+        // Reload info from gamepad
+        await gamepad.requestBlock(inputCfgBlockNumber);
+        populateRemapInfoList(currentRemapProfileIndex, containerElement);
+        return true;
+    });
 
     // Set gamepad input mode
     gamepad.setInputMode(false);

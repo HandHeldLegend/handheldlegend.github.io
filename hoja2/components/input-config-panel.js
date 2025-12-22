@@ -369,7 +369,7 @@ class InputConfigPanel extends HTMLElement {
                     <div class="button-row">
                         ${showCopyPaste ? '<button class="action-button copy-button hoverable clickable">Copy</button>' : ''}
                         ${showCopyPaste ? '<button class="action-button paste-button hoverable clickable">Paste</button>' : ''}
-                        ${showCalibrate ? `<button class="action-button calibrate-button ${this._isCalibrating ? 'calibrating' : ''} hoverable clickable">${this._isCalibrating ? 'Stop' : 'Start'}</button>` : ''}
+                        ${showCalibrate ? `<button class="action-button calibrate-button ${this._isCalibrating ? 'calibrating' : ''} hoverable clickable">${this._isCalibrating ? 'Stop' : 'Calibrate'}</button>` : ''}
                     </div>
                 ` : ''}
             </div>
@@ -580,7 +580,7 @@ class InputConfigPanel extends HTMLElement {
     updateCalibrateButton() {
         const calibrateBtn = this.shadowRoot.querySelector('.calibrate-button');
         if (calibrateBtn) {
-            calibrateBtn.textContent = this._isCalibrating ? 'Stop' : 'Start';
+            calibrateBtn.textContent = this._isCalibrating ? 'Stop' : 'Calibrate';
             if (this._isCalibrating) {
                 calibrateBtn.classList.add('calibrating');
             } else {
