@@ -138,25 +138,30 @@ const gamecubeOutputTypes = [
 const sinputOutputCodeNames = [
     'South', 'East', 'West', 'North',
     'D Up', 'D Down', 'D Left', 'D Right',
-    'LS', 'RS', 'L1', 'R1',
-    'L2', 'R2', 'L4', 'R4',
-    'Start', 'Select', 'S Guide', 'Share', 'L5', 'R5',
-    'TPL', 'TPR', '3', '4', '5', '6',
-    'L2A', 'R2A', 
+    'L1', 'R1',
+    'L2', 'L2A', 'R2', 'R2A',
+    'L4', 'R4', 'L5', 'R5',
+    'Start', 'Select', 'S Guide', 'Share', 
+    '3', '4', 'TPL', 'TPR', 
+    'LS',  
     'LX+', 'LX-', 'LY+', 'LY-',
-    'RX+', 'RX-', 'RY+', 'RY-'
+    'RS',
+    'RX+', 'RX-', 'RY+', 'RY-',
+    // '5', '6',
 ];
 
 const sinputOutputTypes = [
-    1, 1, 1, 1,
-    4, 4, 4, 4,
-    1, 1, 1, 1,
-    1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1,
-    2, 2,
-    3, 3, 3, 3,
-    3, 3, 3, 3
+    1, 1, 1, 1, // SEWN
+    4, 4, 4, 4, // Dpad
+    1, 1, // LB, RB
+    1, 2, // LT, LTA
+    1, 2, // RT, RTA
+    1,1,1,1, // LP1-RP2
+    1,1,1,1, // Menu/Guides
+    1,1,1,1, // Digital misc
+    1, 3,3,3,3, // L Stick
+    1, 3,3,3,3, // R Stick
+    1,1, // Misc 5/6
 ];
 
 async function startCalibration(channel) {
@@ -490,8 +495,6 @@ function inputPanelOpened(event) {
         await stopCalibration();
     });
 
-    configPanelComponent.setRemapsDisabled(currentRemapProfileIndex==5);
-
     configPanelElement.classList.remove('hidden');
 
     if (!blurElement) return;
@@ -547,11 +550,6 @@ async function populateRemapInfoList(profileIndex, container) {
         });
     });
 
-    // Set input remap picker names
-    if(buttonGridComponent) {
-        buttonGridComponent.setButtons(outputNames);
-    }
-
     let moduleGridHTML = '';
 
     remapInfoList.forEach((info, index) => {
@@ -573,7 +571,30 @@ async function populateRemapInfoList(profileIndex, container) {
     }
 
     if(buttonGridComponent) {
-        buttonGridComponent.setButtons(outputNames);
+        /* Example use is
+        grid.setButtons([
+            { label: 'Button A', index: 0 },
+            { label: 'Button B', index: 5 },
+            { label: 'Button C', index: 10 }
+        ]);*/
+        let inputInfo = gamepad.input_static.input_info;
+        let buttonNamesList = [];
+
+        if(currentRemapProfileIndex === REMAP_PROFILE_SINPUT) {
+            outputNames.forEach((outputName, index) => {
+                if(inputInfo[index].input_type > 0) {
+                    buttonNamesList.push({ label: outputName, index: index });
+                }
+            });   
+        } else {
+            outputNames.forEach((outputName, index) => {
+                buttonNamesList.push({ label: outputName, index: index });
+            });   
+        }
+
+        console.log(buttonNamesList);
+
+        buttonGridComponent.setButtons(buttonNamesList);
     }
 
     inputMappingDisplays = container.querySelectorAll('input-mapping-display');

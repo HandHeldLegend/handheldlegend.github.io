@@ -4,7 +4,7 @@ class ButtonGrid extends HTMLElement {
         this.attachShadow({ mode: 'open' });
 
         // Component state
-        this._buttons = []; // Array of button labels
+        this._buttons = []; // Array of {label, index} objects
         this._onClick = null; // Callback function
     }
 
@@ -43,9 +43,9 @@ class ButtonGrid extends HTMLElement {
             <div class="button-grid-container">
                 <button class="grid-button cancel-button clickable hoverable" data-index="${-2}" data-label="Cancel">Cancel</button>
                 <button class="grid-button disable-button clickable hoverable" data-index="${-1}" data-label="Unmap">None</button>
-                ${this._buttons.map((label, index) => `
-                    <button class="grid-button clickable hoverable" data-index="${index}" data-label="${label}">
-                        ${label}
+                ${this._buttons.map((button) => `
+                    <button class="grid-button clickable hoverable" data-index="${button.index}" data-label="${button.label}">
+                        ${button.label}
                     </button>
                 `).join('')}
             </div>
@@ -80,7 +80,10 @@ class ButtonGrid extends HTMLElement {
 
     // Public API methods
     setButtons(buttonArray) {
-        this._buttons = Array.isArray(buttonArray) ? buttonArray : [];
+        // Validate that each item has label and index
+        this._buttons = Array.isArray(buttonArray) 
+            ? buttonArray.filter(btn => btn.label !== undefined && btn.index !== undefined)
+            : [];
         this.setAttribute('buttons', JSON.stringify(this._buttons));
     }
 
@@ -88,14 +91,16 @@ class ButtonGrid extends HTMLElement {
         return [...this._buttons];
     }
 
-    addButton(label) {
-        this._buttons.push(label);
+    addButton(label, index) {
+        this._buttons.push({ label, index });
         this.setAttribute('buttons', JSON.stringify(this._buttons));
     }
 
     removeButton(index) {
-        if (index >= 0 && index < this._buttons.length) {
-            this._buttons.splice(index, 1);
+        // Remove button by its index value, not array position
+        const arrayIndex = this._buttons.findIndex(btn => btn.index === index);
+        if (arrayIndex !== -1) {
+            this._buttons.splice(arrayIndex, 1);
             this.setAttribute('buttons', JSON.stringify(this._buttons));
         }
     }
