@@ -658,9 +658,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let analogEnable = (gamepad.analog_static.axis_rx | gamepad.analog_static.axis_lx) ? true : false;
         window.configApp.enableIcon(2, analogEnable); // Analog
 
-        window.configApp.enableIcon(3, gamepad.rgb_static.rgb_groups>0); // RGB
+        window.configApp.enableIcon(3, analogEnable); // Snapback
 
-        window.configApp.enableIcon(4, true); // RGB
+        window.configApp.enableIcon(4, gamepad.rgb_static.rgb_groups>0); // RGB
         
 
         let imuEnable = (gamepad.imu_static.axis_gyro_a) ? true : false;

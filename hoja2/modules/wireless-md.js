@@ -11,7 +11,7 @@ async function getCurrentBasebandVersion() {
 
     if(response.ok) {
         const data = await response.json();
-        if(data.fw_version) return data.fw_version;
+        if(data.fw_version) return data.fw_version + 100;
         else return false;
     }
 }
@@ -134,7 +134,7 @@ const wirelessStyle = `
 export async function render(container) {
 
     const currentBasebandVersion = await getCurrentBasebandVersion();
-    const showBasebandUpdate = gamepad.bluetooth_static.baseband_version < currentBasebandVersion ? true : false;
+    const showBasebandUpdate = gamepad.bluetooth_static.external_version_number < currentBasebandVersion ? true : false;
 
     wirelessConfig = {
     hardware: {

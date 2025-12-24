@@ -211,9 +211,13 @@ function inputReportHook(data) {
         let mapDisplayIdx = mappingDisplayIdx[idxOutput];
         let inputValueAnalog = data.getUint8(i) & 0x7F;
         let inputValuePress = (data.getUint8(i) & 0x80) != 0;
-
-        inputMappingDisplays[mapDisplayIdx].setValue(inputValueAnalog);
-        inputMappingDisplays[mapDisplayIdx].setPressed(inputValuePress);
+        
+        try {
+            inputMappingDisplays[mapDisplayIdx].setValue(inputValueAnalog);
+            inputMappingDisplays[mapDisplayIdx].setPressed(inputValuePress);
+        }
+        catch(e) {
+        }
     }
 
 

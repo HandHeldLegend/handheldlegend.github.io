@@ -14,8 +14,11 @@ class JoystickVisualizer extends HTMLElement {
             isTracing: false,
             // New state for deadzones
             deadzoneInner: 0.2, // 0.0 to 1.0
-            deadzoneOuter: 0.2  // 0.0 to 1.0
+            deadzoneOuter: 0.2  // 0.0 to 1.0 
         };
+        this._axisOutputScaler = 1.0;
+        this._axisOutputRoundingPoints = 0;
+        this._meleeMode = false;
     }
 
     async connectedCallback() {
@@ -187,12 +190,79 @@ class JoystickVisualizer extends HTMLElement {
         ctx.stroke();
     }
 
+    getMeleeCoordinates(x, y) {
+        const CLAMP_RADIUS = 80;
+
+        // 1. Calculate magnitude to check if clamping is necessary
+        const magnitude = Math.sqrt(x * x + y * y);
+
+        // 2. Clamp to the CLAMP_RADIUS (80) if the input exceeds it
+        const scale = magnitude > CLAMP_RADIUS ? (CLAMP_RADIUS / magnitude) : 1.0;
+
+        // 3. Truncate toward zero (as per the clampCoordinates logic in stickmap.js)
+        const clampedX = Math.trunc(x * scale);
+        const clampedY = Math.trunc(y * scale);
+
+        // 4. Convert to Melee's 0.0125 unit format (input / 80)
+        // and format to exactly 4 decimal places.
+        const finalX = (clampedX / CLAMP_RADIUS).toFixed(4);
+        const finalY = (clampedY / CLAMP_RADIUS).toFixed(4);
+
+        return {
+            x: finalX,
+            y: finalY
+        };
+    }
+
     updateDisplays() {
         const rawCoords = this.shadowRoot.querySelector('.raw-coords');
         const polarCoords = this.shadowRoot.querySelector('.polar-coords');
 
         if (rawCoords) {
-            rawCoords.textContent = `X: ${this.state.scaledX}, Y: ${this.state.scaledY}`;
+            const fullX = this.state.scaledX - 2048;
+            const fullY = this.state.scaledY - 2048;
+
+            let scaledX;
+            let scaledY;
+
+            let outX
+            let outY;
+
+            if (this._meleeMode == true) {
+                scaledX = fullX * 0.0537109375;
+                scaledY = fullY * 0.0537109375;
+
+                // Round to no decimal places
+                scaledX = Math.round(scaledX);
+                scaledY = Math.round(scaledY);
+
+                // Cut off values higher than 80 or lower than -80
+                if (scaledX < -80) scaledX = -80;
+                if (scaledY < -80) scaledY = -80;
+
+                if (scaledX > 80) scaledX = 80;
+                if (scaledY > 80) scaledY = 80;
+
+                let {x, y} = this.getMeleeCoordinates(scaledX, scaledY);
+
+                outX = x;
+                outY = y;
+            }
+            else {
+                // Apply scaling
+                scaledX = fullX * this._axisOutputScaler;
+                scaledY = fullY * this._axisOutputScaler;
+
+                // Add scaled center 
+                // Round according to rounding points
+                outX = Math.round(scaledX * Math.pow(10, this._axisOutputRoundingPoints)) / Math.pow(10, this._axisOutputRoundingPoints);
+                outY = Math.round(scaledY * Math.pow(10, this._axisOutputRoundingPoints)) / Math.pow(10, this._axisOutputRoundingPoints);
+            }
+
+            // If not melee mode, show the rounded values
+            outX = outX.toString();
+            outY = outY.toString();
+            rawCoords.textContent = `X: ${outX}, Y: ${outY}`;
         }
 
         let angle = this.state.angle.toFixed(1);
@@ -216,7 +286,7 @@ class JoystickVisualizer extends HTMLElement {
 
         let angle = Math.atan2(dy, dx) * 180 / Math.PI;
         if (angle < 0) angle += 360;
-        
+
         // Snaps 360 back to 0
         this.state.angle = angle % 360;
 
@@ -258,6 +328,20 @@ class JoystickVisualizer extends HTMLElement {
         if (!existingPoint || distance > existingPoint.distance) {
             this.state.tracePoints[normalizedIndex] = { x, y, distance };
         }
+    }
+
+    setAxisOutputScaler(value) {
+        this._axisOutputScaler = value;
+        this.updateDisplays();
+    }
+
+    setAxisOutputRoundingPoints(value) {
+        this._axisOutputRoundingPoints = value;
+        this.updateDisplays();
+    }
+
+    setMeleeMode(value) {
+        this._meleeMode = value == true ? true : false;
     }
 
     startTracing() {

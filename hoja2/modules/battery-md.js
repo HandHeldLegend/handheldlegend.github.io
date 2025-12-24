@@ -111,15 +111,20 @@ function decodeText(buffer) {
 }
 
 function batteryReportHook(data) {
-    return;
 
-    const chargeVal = data.getUint8(37);
+    // Original charging data is set on embedded like so:
+    /* webusb_input_report[1] = (uint8_t)batstat.charging | ((uint8_t)batstat.charging_done << 1);
+        webusb_input_report[2] = fgstat.percent; */
+
+    // Byte 1 contains charging status, PMIC active, and fuel gauge missing flags
+    // Byte 2 contains the battery percentage if fuel gauge is present
+
+    const chargeVal = data.getUint8(1);
+    const percentVal = data.getUint8(2);
+    
     batteryConfig.status.isCharging = (chargeVal & 0x01) !== 0;
     batteryConfig.status.isDone = (chargeVal & 0x02) !== 0;
-    batteryConfig.hardware.pmic.active = (chargeVal & 0x04) !== 0; 
-    const fuelGaugeMissing = (chargeVal & 0x08) !== 0;
-    batteryConfig.hardware.fuelGauge.active = !fuelGaugeMissing;
-    batteryConfig.status.percentage = !fuelGaugeMissing ? data.getUint8(38) : false;
+    batteryConfig.status.percentage = batteryConfig.hardware.fuelGauge.present ? percentVal : false;
 
     updateBatteryDisplay();
     updateHardwareUI();
