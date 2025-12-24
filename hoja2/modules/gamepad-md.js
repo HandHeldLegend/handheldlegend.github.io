@@ -134,6 +134,25 @@ export function render(container) {
             <div class="separator"></div>
 
             <h3 class="devinfo">Build: ${String(gamepad.device_static.fw_version)}</h3>
+
+            <div class="separator"></div>
+
+            <h2>Support Options</h2>
+            <div class="app-text-container">
+                <strong>WARNING</strong>
+                Pressing the button below will reboot your controller into a firmware update mode. 
+                This is only necessary if you are updating the firmware.
+            </div>
+            <single-shot-button 
+                id="reboot-into-update-mode" 
+                width="100"
+                ready-text="Bootloader" 
+                disabled-text="Rebooting..."
+                pending-text="Rebooting..."
+                success-text="Success"
+                failure-text="Error"
+            ></single-shot-button>
+
     `;
 
     /** @type {MultiPositionButton} */
@@ -200,6 +219,15 @@ export function render(container) {
         console.log("WebUSB Popup change");
         gamepad.gamepad_cfg.webusb_enable_popup = e.detail.selectedIndex;
         await writeGamepadMemBlock();
+    });
+
+    // Reboot into Update Mode
+    const rebootIntoUpdateModeButton = container.querySelector('single-shot-button[id="reboot-into-update-mode"]');
+    rebootIntoUpdateModeButton.addEventListener('click', async (e) => {
+        if(gamepad) {
+            gamepad.sendConfigCommand(gamepadCfgBlockNumber, 1);
+            return true;
+        }
     });
 
     enableTooltips(container);
