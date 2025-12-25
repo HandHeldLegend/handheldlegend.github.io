@@ -165,6 +165,15 @@ export function render(container) {
                 success-text="Complete!"
                 failure-text="Failure..."
             ></single-shot-button>
+
+            <div class="separator"></div>
+            <h2>Idle Glow<div class="header-tooltip" tooltip="When the gamepad is idle, it will glow a single LED.">?</div></h2>
+            <multi-position-button 
+                id="rgb-idle-enable" 
+                options="On, Off"
+                selected="${gamepad.rgb_cfg.rgb_idle_glow}"
+                width="130"
+            ></multi-position-button>
     `;
 
     updateRgbPickerTexts(rgbMode == 3 ? "fairy" : "normal");
@@ -267,4 +276,14 @@ export function render(container) {
 
         writeRgbMemBlock();
     });
+
+    const idleSelector = container.querySelector('multi-position-button[id="rgb-idle-enable"]');
+    idleSelector.addEventListener('change', (e) => {
+        console.log("RGB idle change");
+        gamepad.rgb_cfg.rgb_idle_glow = e.detail.selectedIndex;
+
+        writeRgbMemBlock();
+    });
+
+    enableTooltips(container);
 }
