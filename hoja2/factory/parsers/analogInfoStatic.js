@@ -36,8 +36,13 @@ export default class Analoginfostatic {
 	}
 
 	/** @type {Uint8} */
+	get invert_allowed() {
+		return this.#_getBitfield(0, 1, 1, 6);
+	}
+
+	/** @type {Uint8} */
 	get reserved() {
-		return this.#_getBitfield(0, 1, 2, 6);
+		return this.#_getBitfield(0, 1, 1, 7);
 	}
 
 
@@ -73,8 +78,13 @@ export default class Analoginfostatic {
 	}
 
 	/** @param {Uint8} value */
+	set invert_allowed(value) {
+		this.#_setBitfield(0, 1, 1, 6, value);
+	}
+
+	/** @param {Uint8} value */
 	set reserved(value) {
-		this.#_setBitfield(0, 1, 2, 6, value);
+		this.#_setBitfield(0, 1, 1, 7, value);
 	}
 
 

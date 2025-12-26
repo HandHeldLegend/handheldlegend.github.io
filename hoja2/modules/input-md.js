@@ -608,6 +608,8 @@ export function render(container) {
 
     containerElement = container;
 
+    let hoverCalibrateNotice = gamepad.hover_cfg.hover_calibration_set == 0 ? true : false;
+
     container.innerHTML = `
             <h2>Input Mode</h2>
             <multi-position-button 
@@ -632,7 +634,8 @@ export function render(container) {
 
             <div class="separator"></div>
 
-            <div class="app-text-container">
+            ${hoverCalibrateNotice ? 
+            `<div class="app-text-container">
                 To calibrate analog inputs (including triggers), press <strong>Start</strong>.<br>
                 Fully press and release all analog inputs.<br><br>
                 Press <strong>Stop</strong> once you have done this 3 to 4 times.
@@ -651,8 +654,9 @@ export function render(container) {
                     width="70"
                 ></tristate-button>
             </div>
+            <div class="separator"></div>` : ``}
 
-            <div class="separator"></div>
+            
 
             <div class="app-row">
                 <h3>Defaults</h3>
@@ -710,15 +714,19 @@ export function render(container) {
     });
 
     // Calibrate button
-    /** @type {TristateButton} */
-    const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
-    calibrateButton.setOnHandler(async (state) => {
-            return await startCalibration(0xFF);
-    });
 
-    calibrateButton.setOffHandler(async (state) => {
-        return await stopCalibration();
-    });
+    if(hoverCalibrateNotice==true)
+    {
+        /** @type {TristateButton} */
+        const calibrateButton = container.querySelector('tristate-button[id="calibrate-button"]');
+        calibrateButton.setOnHandler(async (state) => {
+                return await startCalibration(0xFF);
+        });
+
+        calibrateButton.setOffHandler(async (state) => {
+            return await stopCalibration();
+        });
+    }
 
     // Input Reset button
     const resetButton = container.querySelector('single-shot-button[id="global-angle-button"]');

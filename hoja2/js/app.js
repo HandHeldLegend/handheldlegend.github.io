@@ -687,12 +687,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
+
+        let debugFw = false;
         
         if(fwVersion == false)
         {
 
         }
-        else if(fwVersion.version > gamepad.device_static.fw_version) {
+        else if(fwVersion.version > gamepad.device_static.fw_version || debugFw===true) {
 
             let enableOptions = 
             {
