@@ -367,9 +367,15 @@ export function render(container) {
     analogModuleContainer = container;
     selectedAxis = 0;
 
+    let analogCalibrateNotice = false;
+    if(gamepad.analog_cfg.analog_calibration_set==0) analogCalibrateNotice=true;
+
     container.innerHTML = `
             <style>${acss}</style>    
-            <div class="app-text-container">
+            ${analogCalibrateNotice ? 
+            `<div class="app-text-container">
+                <strong>Your analog joysticks need to be calibrated!</strong>
+                <br><br>
                 To calibrate both sticks, press <strong>Calibrate</strong>.<br>
                 Move both analog sticks in a full circle slowly.<br><br>
                 Press <strong>Stop</strong> once you have rotated both sticks several times.
@@ -377,7 +383,7 @@ export function render(container) {
                 Verify the output of your analog sticks and that they both reach the full output range. Click <strong>Save</strong>!
                 <br><br>
                 <strong>You must calibrate both analog sticks at once.</strong>
-            </div>
+            </div>` : ``}
 
             <h2>Options</h2>
             <div class="app-row">
