@@ -367,6 +367,8 @@ export function render(container) {
     analogModuleContainer = container;
     selectedAxis = 0;
 
+    let analogInvertAllowed = gamepad.analog_static.invert_allowed == 1 ? true : false;
+
     let analogCalibrateNotice = false;
     if(gamepad.analog_cfg.analog_calibration_set==0) analogCalibrateNotice=true;
 
@@ -497,6 +499,39 @@ export function render(container) {
                 failure-text="Reset Error"
                 tooltip="This resets all angles and calibration to the default values."
             ></single-shot-button>
+            
+            ${analogInvertAllowed ? `
+            <div class="separator"></div>
+            
+            <h3>Invert</h3>
+            <div class="app-row">
+                <multi-position-button 
+                        id="invert-lx" 
+                        options="LX+, LX-"
+                        selected="${gamepad.analog_cfg.lx_invert ? 1 : 0}"
+                        width="80"
+                ></multi-position-button>
+                <multi-position-button 
+                        id="invert-ly" 
+                        options="LY+, LY-"
+                        selected="${gamepad.analog_cfg.ly_invert ? 1 : 0}"
+                        width="80"
+                ></multi-position-button>
+            </div>
+            <div class="app-row">
+                <multi-position-button 
+                        id="invert-rx" 
+                        options="RX+, RX-"
+                        selected="${gamepad.analog_cfg.rx_invert ? 1 : 0}"
+                        width="80"
+                ></multi-position-button>
+                <multi-position-button 
+                        id="invert-ry" 
+                        options="RY+, RY-"
+                        selected="${gamepad.analog_cfg.ry_invert ? 1 : 0}"
+                        width="80"
+                ></multi-position-button>
+            </div>` : ``}
     `;
 
     // JOYSTICK VISUALIZER
@@ -565,6 +600,33 @@ export function render(container) {
         populateUIElements();
     });
     // -----------------------------
+
+    // AXIS INVERT SELECTORS
+    if(analogInvertAllowed) {
+        const invertLX = container.querySelector('multi-position-button[id="invert-lx"]');
+        invertLX.addEventListener('change', (e) => {
+            gamepad.analog_cfg.lx_invert = e.detail.selectedIndex;
+            writeAngleMemBlock();
+        });
+
+        const invertLY = container.querySelector('multi-position-button[id="invert-ly"]');
+        invertLY.addEventListener('change', (e) => {
+            gamepad.analog_cfg.ly_invert = e.detail.selectedIndex;
+            writeAngleMemBlock();
+        });
+
+        const invertRX = container.querySelector('multi-position-button[id="invert-rx"]');
+        invertRX.addEventListener('change', (e) => {
+            gamepad.analog_cfg.rx_invert = e.detail.selectedIndex;
+            writeAngleMemBlock();
+        });
+
+        const invertRY = container.querySelector('multi-position-button[id="invert-ry"]');
+        invertRY.addEventListener('change', (e) => {
+            gamepad.analog_cfg.ry_invert = e.detail.selectedIndex;
+            writeAngleMemBlock();
+        });
+    }
 
     // ANGLE ADJUSTMENT HANDLERS
     angleMods = analogModuleContainer.querySelector('angle-modifier');

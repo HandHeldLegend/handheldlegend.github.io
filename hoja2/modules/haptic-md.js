@@ -28,16 +28,18 @@ export function render(container) {
 
     let hapticIntensity = Math.round((gamepad.haptic_cfg.haptic_strength/255) * 100);
 
-    let hapticTriggerBlock = ``; /*`
+    let hapticTriggerBlock = `
+    <div class="separator"></div>
     <h2>Haptic Triggers</h2>
     <multi-position-button 
+        width="130"
         id="haptic-trigger-mode" 
-        labels="Off, On"
-        default-selected="${gamepad.haptic_cfg.haptic_triggers}"
+        options="Off, On"
+        selected="${gamepad.haptic_cfg.haptic_triggers}"
     ></multi-position-button>
-    `;*/
+    `;
 
-    let hapticTriggerEnable = false;
+    let hapticTriggerEnable = true;
 
     if(!gamepad.haptic_static.haptic_hd) {
         hapticTriggerBlock = "";
@@ -84,11 +86,11 @@ export function render(container) {
 
     if(hapticTriggerEnable) {
         /** @type {MultiPositionButton} */
-    const hapticTriggerSelector = container.querySelector('multi-position-button[id="haptic-trigger-mode"]');
-    hapticTriggerSelector.addEventListener('change', async (e) => {
-        console.log("Haptic trigger mode change");
-        gamepad.haptic_cfg.haptic_triggers = e.detail.selectedIndex;
-        await writeHapticMemBlock();
+        const hapticTriggerSelector = container.querySelector('multi-position-button[id="haptic-trigger-mode"]');
+        hapticTriggerSelector.addEventListener('change', async (e) => {
+            console.log("Haptic trigger mode change");
+            gamepad.haptic_cfg.haptic_triggers = e.detail.selectedIndex;
+            await writeHapticMemBlock();
     });
     }
 }
