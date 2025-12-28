@@ -1,5 +1,9 @@
 typedef struct 
 {
-    uint16_t    capacity_mah;
-    uint8_t     part_number[24];
+    uint16_t    battery_capacity_mah;
+    uint8_t     battery_part_number[24];
+    uint8_t     pmic_status;
+    uint8_t     pmic_part_number[24];
+    uint8_t     fuelgauge_status;
+    uint8_t     fuelgauge_part_number[24];
 } batteryInfoStatic_s;

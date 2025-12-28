@@ -1,55 +1,61 @@
 .tristate-button {
-    border: none;
-    border-radius: var(--border-radius-md);
+    /* Default width that is overwritten */
+    width: 120px;
+
+    min-width: fit-content;
+
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+    align-content: center;
+    text-align: center;
     cursor: pointer;
-    transition: var(--transition-quick);
-    font-weight: bold;
-    min-width: 120px;
-    height: var(--config-box-height);
+
+    font-size: var(--font-size-md);
+
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
 
     /* Prevent text selection */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    -webkit-touch-callout: none;
-}
-
-.tristate-button.state-off {
-    background-color: var(--color-button-on);
-}
-.tristate-button.state-off:hover {
-    background-color: var(--color-button-on);
 }
 
 @media (hover: hover) {
-    .tristate-button.state-off:hover {
-        background: var(--color-button-on-hover);
+    .tristate-button.off:hover:not(:active),
+    .tristate-button.on:hover:not(:active) {
+        filter: brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all var(--transition-quick);
     }
 }
 
+.tristate-button.off {
+    background-color: var(--color-p3);
+    border: var(--spacing-xs) solid var(--color-p3-dark);
+}
 
-.tristate-button.state-off-to-on-transitioning,
-.tristate-button.state-on-to-off-transitioning {
-    background-color: var(--color-button-disabled);
-    color: black;
+.tristate-button.off-to-on {
     cursor: wait;
+    background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
 }
 
-.tristate-button.state-on {
-    background-color: var(--color-button-off);
-}
-.tristate-button.state-on:hover {
-    background-color: var(--color-button-off);
+.tristate-button.on {
+    background-color: var(--color-p4);
+    border: var(--spacing-xs) solid var(--color-p4-dark);
 }
 
-@media (hover: hover) {
-    .tristate-button.state-on:hover {
-        background: var(--color-button-off-hover);
-    }
+.tristate-button.on-to-off {
+    cursor: wait;
+    background-color: var(--color-p2);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
 }
 
-.tristate-button:disabled, .tristate-button:disabled:hover {
-    background-color: var(--color-button-disabled);
+.tristate-button.disabled {
     cursor: not-allowed;
+    background-color: var(--color-p5);
+    border: var(--spacing-xs) solid var(--color-p5-dark);
 }

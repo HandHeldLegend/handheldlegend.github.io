@@ -3,7 +3,6 @@ import HojaGamepad from '../js/gamepad.js';
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
@@ -126,8 +125,11 @@ export function render(container) {
                 min="0" 
                 max="100" 
                 step="1" 
-                default-value="${startBrightness}"
+                value="${startBrightness}"
+                width="300"
             ></number-selector>
+
+            <div class="separator"></div>
 
             <h2>Animation Time (ms)</h2>
             <number-selector 
@@ -136,17 +138,24 @@ export function render(container) {
                 min="300" 
                 max="5000" 
                 step="25" 
-                default-value="${animationTime}"
+                value="${animationTime}"
+                width="300"
             ></number-selector>
+
+            <div class="separator"></div>
 
             <h2>Mode</h2>
             <multi-position-button 
                 id="rgb-mode-select" 
-                labels="User, Rainbow, React, Fairy"
-                default-selected="${rgbMode}"
+                options="User, Rainbow, React, Fairy"
+                selected="${rgbMode}"
+                width="300"
             ></multi-position-button>
 
-            <h2>Bulk Options</h2>
+            <div class="separator"></div>
+
+            <h2>Colors</h2>
+            ${rgbPickersHTML}
             <single-shot-button 
                 id="color-paste-button" 
                 state="ready" 
@@ -157,8 +166,14 @@ export function render(container) {
                 failure-text="Failure..."
             ></single-shot-button>
 
-            <h2>Colors</h2>
-            ${rgbPickersHTML}
+            <div class="separator"></div>
+            <h2>Idle Glow<div class="header-tooltip" tooltip="When the gamepad is idle, it will glow a single LED.">?</div></h2>
+            <multi-position-button 
+                id="rgb-idle-enable" 
+                options="On, Off"
+                selected="${gamepad.rgb_cfg.rgb_idle_glow}"
+                width="130"
+            ></multi-position-button>
     `;
 
     updateRgbPickerTexts(rgbMode == 3 ? "fairy" : "normal");
@@ -261,4 +276,14 @@ export function render(container) {
 
         writeRgbMemBlock();
     });
+
+    const idleSelector = container.querySelector('multi-position-button[id="rgb-idle-enable"]');
+    idleSelector.addEventListener('change', (e) => {
+        console.log("RGB idle change");
+        gamepad.rgb_cfg.rgb_idle_glow = e.detail.selectedIndex;
+
+        writeRgbMemBlock();
+    });
+
+    enableTooltips(container);
 }

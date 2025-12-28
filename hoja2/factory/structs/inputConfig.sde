@@ -1,0 +1,12 @@
+typedef struct 
+{
+    uint8_t input_config_version;
+    inputConfigSlot_s input_profile_switch[36]; // SIZE=5
+    inputConfigSlot_s input_profile_xinput[36]; // SIZE=5
+    inputConfigSlot_s input_profile_snes[36]; // SIZE=5
+    inputConfigSlot_s input_profile_n64[36]; // SIZE=5
+    inputConfigSlot_s input_profile_gamecube[36]; // SIZE=5
+    inputConfigSlot_s input_profile_sinput[36]; // SIZE=5
+    inputConfigSlot_s input_profile_reserved_2[36]; // SIZE=5
+    uint8_t reserved[787];
+} inputConfig_s;

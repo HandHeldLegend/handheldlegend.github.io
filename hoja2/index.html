@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hoja2 Config</title>
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/modules.css">
 </head>
 
 <body>
@@ -16,23 +17,29 @@
             <div class="app-header">
                 <div class="center-buttons">
 
-                    
+                    <div class="ht-container">
+                        <tristate-button 
+                            id="connect-button" 
+                            width="74"
+                            off-text="Connect" 
+                            on-text="Disconnect"
+                            off-to-on-text="..."
+                            on-to-off-text="Disconnect"
+                        ></tristate-button>
+                        <div class="header-tooltip" tooltip="If you have trouble connecting, try holding A or South button during plug-in.">?</div>
+                    </div>
 
-                    <tristate-button id="connect-button" off-text="Connect" on-text="Disconnect"
-                        off-to-on-text="Connecting..."
-                        on-to-off-text="Disconnect"
-                    ></tristate-button>
-
-                    <span class="connect-hint">
-                        Hold A then plug in USB!
-                    </span>
-            
                     <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
                         pending-text="Saving..."
                     ></single-shot-button>
 
+                    <single-shot-button id="changelog-button" state="ready" ready-text="What's New?" disabled-text="What's New?"
+                        pending-text="What's New?"
+                    ></single-shot-button>
+
                 </div>
 
+                
                 <button visible="false" id="app-install-button" class="install-button">
                     Install
                 </button>
@@ -106,6 +113,7 @@
     </div>
 
     <script>
+
         const moduleContent = document.getElementById('module-content-container');
         const moduleHeader = document.getElementById('module-header');
 
@@ -119,6 +127,7 @@
     </script>
 
     <script src="./js/app.js" type="module"></script>
+    
 </body>
 
 </html>

@@ -46,13 +46,18 @@ export default class Gamepadconfig {
 	}
 
 	/** @type {Uint8Array} */
-	get host_mac_xinput() {
+	get host_mac_sinput() {
 		return this.#_getUint8Array(30, 6);
+	}
+
+	/** @type {Uint8} */
+	get webusb_enable_popup() {
+		return this.#_getUint8(36);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(36, 28);
+		return this.#_getUint8Array(37, 27);
 	}
 
 
@@ -98,13 +103,18 @@ export default class Gamepadconfig {
 	}
 
 	/** @param {Uint8Array} value */
-	set host_mac_xinput(value) {
+	set host_mac_sinput(value) {
 		this.#_setUint8Array(30, value);
+	}
+
+	/** @param {Uint8} value */
+	set webusb_enable_popup(value) {
+		this.#_setUint8(36, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(36, value);
+		this.#_setUint8Array(37, value);
 	}
 
 

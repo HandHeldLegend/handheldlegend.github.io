@@ -1,12 +1,12 @@
 import Gamepadconfig from "../factory/parsers/gamepadConfig.js";
-import Remapconfig from "../factory/parsers/remapConfig.js";
+import Hoverconfig from "../factory/parsers/hoverConfig.js";
 import Analogconfig from "../factory/parsers/analogConfig.js";
 import Rgbconfig from "../factory/parsers/rgbConfig.js";
 import Triggerconfig from "../factory/parsers/triggerConfig.js";
 import Imuconfig from "../factory/parsers/imuConfig.js";
 import Hapticconfig from "../factory/parsers/hapticConfig.js";
 import Userconfig from "../factory/parsers/userConfig.js";
-import Batteryconfig from "../factory/parsers/batteryConfig.js";
+import Inputconfig from "../factory/parsers/inputConfig.js";
 
 import Analoginfostatic from "../factory/parsers/analogInfoStatic.js";
 import Batteryinfostatic from "../factory/parsers/batteryInfoStatic.js";
@@ -14,7 +14,7 @@ import Bluetoothinfostatic from "../factory/parsers/bluetoothInfoStatic.js";
 import Deviceinfostatic from "../factory/parsers/deviceInfoStatic.js";
 import Rgbinfostatic from "../factory/parsers/rgbInfoStatic.js";
 import Imuinfostatic from "../factory/parsers/imuInfoStatic.js";
-import Buttoninfostatic from "../factory/parsers/buttonInfoStatic.js";
+import Inputinfostatic from "../factory/parsers/inputInfoStatic.js";
 import Hapticinfostatic from "../factory/parsers/hapticInfoStatic.js";
 
 import HojaLegacyManager from "./legacy.js";
@@ -34,25 +34,25 @@ class HojaGamepad {
   #chunkSizeMax = 32;
 
   gamepad_cfg = new Gamepadconfig();
-  remap_cfg = new Remapconfig();
+  hover_cfg = new Hoverconfig();
   analog_cfg = new Analogconfig();
   rgb_cfg = new Rgbconfig();
   trigger_cfg = new Triggerconfig();
   imu_cfg = new Imuconfig();
   haptic_cfg = new Hapticconfig();
   user_cfg = new Userconfig();
-  battery_cfg = new Batteryconfig();
+  input_cfg = new Inputconfig();
 
   legacy_manager = new HojaLegacyManager();
 
-  #configBlocks = [this.gamepad_cfg, this.remap_cfg,
+  #configBlocks = [this.gamepad_cfg, this.hover_cfg,
   this.analog_cfg, this.rgb_cfg, this.trigger_cfg,
   this.imu_cfg, this.haptic_cfg, this.user_cfg,
-  this.battery_cfg];
-  #configBlockNames = ["gamepad", "remap", "analog", "rgb", "trigger", "imu", "haptic", "user", "battery"];
+  this.input_cfg];
+  #configBlockNames = ["gamepad", "hover", "analog", "rgb", "trigger", "imu", "haptic", "user", "input"];
 
-  device_static = new Deviceinfostatic();
-  button_static = new Buttoninfostatic();
+  device_static   = new Deviceinfostatic();
+  input_static  = new Inputinfostatic();
   analog_static = new Analoginfostatic();
   imu_static = new Imuinfostatic();
   battery_static = new Batteryinfostatic();
@@ -60,10 +60,10 @@ class HojaGamepad {
   bluetooth_static = new Bluetoothinfostatic();
   rgb_static = new Rgbinfostatic();
 
-  #staticBlocks = [this.device_static, this.button_static,
+  #staticBlocks = [this.device_static, this.input_static,
   this.analog_static, this.haptic_static, this.imu_static,
   this.battery_static, this.bluetooth_static, this.rgb_static];
-  #staticBlockNames = ["device", "button", "analog", "haptic", "imu", "battery", "bluetooth", "rgb"];
+  #staticBlockNames = ["device", "input", "analog", "haptic", "imu", "battery", "bluetooth", "rgb"];
 
   // State for managing block reading
   #blockMemoryState = {
@@ -255,6 +255,16 @@ class HojaGamepad {
     return status;
   }
 
+  async setInputMode(joysticks = false) {
+    console.log("Setting input mode to " + (joysticks ? "joystick" : "hover"));
+    await this.sendReport(0x05, new Uint8Array([0x00, joysticks ? 254 : 255]));
+  }
+
+  async setFocusedInput(inputCode) {
+    console.log("Setting focused input to " + inputCode);
+    await this.sendReport(0x05, new Uint8Array([0x01, inputCode]));
+  }
+
   // Internal polling method
   #pollDevice() {
     if (!this.#isConnected) {
@@ -367,6 +377,7 @@ class HojaGamepad {
           }
           break;
 
+        case 254: // WEBUSB_INPUT_JOYSTICKS
         case 255: // WEBUSB_INPUT_RAW
           if (this.#_inputReportHook) {
             try {

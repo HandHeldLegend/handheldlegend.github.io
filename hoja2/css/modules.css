@@ -1,0 +1,67 @@
+/* Styles that are shared by modules can be placed here */
+.module-grid {
+    width: inherit;
+    max-width: 620px;
+    height: 100%;
+    align-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+    
+    gap: 2px;
+    row-gap: 18px;
+}
+
+@media (hover: hover) {
+    .hoverable {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .hoverable:hover {
+        filter:brightness(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transform: translate(-1px, -1px);
+        transition: all 0.1s ease-in-out;
+    }
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:active {
+    filter:brightness(1.2);
+   
+}
+
+.popup-blur {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(5px);
+  background-color: #b8b8b802;
+}
+
+.popup-blur.hidden {
+    display: none;
+}
+
+/* Popup window */
+.popup {
+  top: 50px;
+  position: fixed;
+  border-radius: var(--border-radius-lg);
+  border: 2px solid var(--color-p1-dark);
+  background-color: var(--color-p1);
+  background: var(--color-p1-grad);
+  width: fit-content;
+  height: fit-content;
+  max-height: 68vh;
+  overflow-y:auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.hidden {
+    display: none;
+}

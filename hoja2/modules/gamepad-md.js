@@ -3,7 +3,6 @@ import HojaGamepad from '../js/gamepad.js';
 import NumberSelector from '../components/number-selector.js';
 import MultiPositionButton from '../components/multi-position-button.js';
 import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
 
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
@@ -50,26 +49,38 @@ export function render(container) {
     let griprColor = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_grip_right);
 
     let hexDefault = '';
+    
+    let hostDefault = '';
+
     for(let i = 0; i < 6; i++)
     {
         let val = gamepad.gamepad_cfg.switch_mac_address[i].toString(16);
         hexDefault+=val;
         if(i != 5) hexDefault += ",";
+
+        let val2 = gamepad.gamepad_cfg.host_mac_switch[i].toString(16);
+        hostDefault+=val2;
+        if(i != 5) hostDefault += ",";
     }
+
+    console.log(gamepad.gamepad_cfg.webusb_enable_popup);
+
 
     container.innerHTML = `
             <h2>Default Mode</h2>
             <div class="app-text-container">
                 <strong>WARNING</strong>
-                <br>
-                Changing the default mode will require you to hold A upon plugging in the controller to connect to this configuration app. 
+                Changing the default mode will require you to hold the <strong>A or South</strong> button upon plugging in the controller to connect to this configuration app. 
             </div>
             <multi-position-button 
                 id="default-mode-selector" 
-                labels="NS, Xinput, GCUSB, GC, N64, SNES, SInput"
-                default-selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
+                width="364"
+                options="NS, Xinput, GCUSB, GC, N64, SNES, SInput"
+                selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
             ></multi-position-button>
             </h2>
+
+            <div class="separator"></div>
 
             <h2>MAC Address Base
                 <div class="header-tooltip" tooltip="This is the MAC that is used for USB and Bluetooth modes. Each mode increments the address.">?</div>
@@ -77,6 +88,8 @@ export function render(container) {
             <mac-address-selector 
                 default-value="${hexDefault}"
             ></mac-address-selector>
+
+            <div class="separator"></div>
 
             <h2>Switch Device Colors
             <div class="header-tooltip" tooltip="Colors which determine how the Switch
@@ -106,7 +119,40 @@ export function render(container) {
                 color="${griprColor}"
             ></group-rgb-picker>
 
+            <div class="separator"></div>
+
+            <h2>WebUSB Popup
+            <div class="header-tooltip" tooltip="Enable or disable the WebUSB popup when connecting the controller.">?</div>
+            </h2>
+            <multi-position-button 
+                id="webusb-popup-selector" 
+                width="100"
+                options="Off, On"
+                selected="${gamepad.gamepad_cfg.webusb_enable_popup}"
+            ></multi-position-button>
+
+            <div class="separator"></div>
+
             <h3 class="devinfo">Build: ${String(gamepad.device_static.fw_version)}</h3>
+
+            <div class="separator"></div>
+
+            <h2>Support Options</h2>
+            <div class="app-text-container">
+                <strong>WARNING</strong>
+                Pressing the button below will reboot your controller into a firmware update mode. 
+                This is only necessary if you are updating the firmware.
+            </div>
+            <single-shot-button 
+                id="reboot-into-update-mode" 
+                width="100"
+                ready-text="Bootloader" 
+                disabled-text="Rebooting..."
+                pending-text="Rebooting..."
+                success-text="Success"
+                failure-text="Error"
+            ></single-shot-button>
+
     `;
 
     /** @type {MultiPositionButton} */
@@ -165,6 +211,23 @@ export function render(container) {
         gamepad.gamepad_cfg.switch_mac_address = tmpAddress;
 
         await writeGamepadMemBlock();
+    });
+
+    // WebUSB Popup
+    const webusbPopupSelector = container.querySelector('multi-position-button[id="webusb-popup-selector"]');
+    webusbPopupSelector.addEventListener('change', async (e) => {
+        console.log("WebUSB Popup change");
+        gamepad.gamepad_cfg.webusb_enable_popup = e.detail.selectedIndex;
+        await writeGamepadMemBlock();
+    });
+
+    // Reboot into Update Mode
+    const rebootIntoUpdateModeButton = container.querySelector('single-shot-button[id="reboot-into-update-mode"]');
+    rebootIntoUpdateModeButton.addEventListener('click', async (e) => {
+        if(gamepad) {
+            gamepad.sendConfigCommand(gamepadCfgBlockNumber, 1);
+            return true;
+        }
     });
 
     enableTooltips(container);

@@ -1,0 +1,7 @@
+typedef struct 
+{
+    uint8_t hover_config_version;
+    uint8_t hover_calibration_set;
+    hoverSlot_s config[36]; // SIZE=4
+    uint8_t reserved[111];
+} hoverConfig_s;

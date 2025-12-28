@@ -1,0 +1,53 @@
+:host {
+    width:300px;
+}
+
+.button-grid-container { 
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 12px;
+    width: inherit;
+    height: max-content;
+    /* Prevent text selection */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.grid-button {
+    width: 90px;
+    height: 40px;
+    
+
+    border: 2px solid var(--color-p3-dark);
+    background-color: var(--color-p3);
+    border-radius: var(--border-radius-md);
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Prevent text wrapping */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px;
+}
+
+.disable-button {
+    border: 2px solid var(--color-p4-dark);
+    background-color: var(--color-p4);
+    border-radius: var(--border-radius-md);
+}
+
+.cancel-button {
+    background-color: var(--color-p2);
+    border: 2px solid var(--color-p2-dark);
+    border-radius: var(--border-radius-md);
+}

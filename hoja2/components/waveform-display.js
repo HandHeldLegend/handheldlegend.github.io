@@ -57,6 +57,7 @@ class WaveformDisplay extends HTMLElement {
             <style>
                 ${css}
                 :host {
+                    max-width:98vw;
                     width: ${width}px;
                     height: ${height}px;
                 }

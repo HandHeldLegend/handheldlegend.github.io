@@ -1,18 +1,4 @@
 typedef struct 
 {
-    uint8_t     trigger_config_version;
-    uint8_t     trigger_mode_gamecube; // Trigger mode for gamecube only
-    uint16_t    left_min;
-    uint16_t    left_max;
-    uint16_t    left_deadzone : 15;
-    uint16_t    left_disabled : 1;
-    uint16_t    left_hairpin_value;
-    uint16_t    left_static_output_value;
-    uint16_t    right_min;
-    uint16_t    right_max;
-    uint16_t    right_deadzone : 15;
-    uint16_t    right_disabled : 1;
-    uint16_t    right_hairpin_value;
-    uint16_t    right_static_output_value;
-    uint8_t     reserved[42];
+    uint8_t reserved[64];
 } triggerConfig_s;

@@ -30,9 +30,14 @@ export default class Rgbconfig {
 		return this.#_getUint16(132);
 	}
 
+	/** @type {Uint8} */
+	get rgb_idle_glow() {
+		return this.#_getUint8(134);
+	}
+
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(134, 122);
+		return this.#_getUint8Array(135, 121);
 	}
 
 
@@ -62,9 +67,14 @@ export default class Rgbconfig {
 		this.#_setUint16(132, value);
 	}
 
+	/** @param {Uint8} value */
+	set rgb_idle_glow(value) {
+		this.#_setUint8(134, value);
+	}
+
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(134, value);
+		this.#_setUint8Array(135, value);
 	}
 
 

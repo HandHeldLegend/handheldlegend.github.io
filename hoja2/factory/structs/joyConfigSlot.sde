@@ -1,0 +1,9 @@
+typedef struct 
+{
+    float in_angle;
+    float out_angle;
+    float deadzone;
+    float in_distance;
+    float out_distance;
+    uint8_t enabled;
+} joyConfigSlot_s;

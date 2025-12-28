@@ -1,0 +1,64 @@
+:host {
+    margin-left: auto;
+    margin-right: auto;
+    height: auto;
+    overflow: visible;
+}
+
+.joystick-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+}
+
+.joystick-display {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+
+    box-sizing: border-box;
+    
+    overflow: hidden;
+
+    border:  var(--spacing-xs) solid var(--color-p1-light);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1);
+    border-radius: var(--border-radius-md);
+}
+
+.joystick-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.info-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 3px;
+    padding-right: 3px;
+    background-color: var(--color-p1-dark);
+    border-radius: var(--border-radius-md);
+    z-index: 10;
+    font-size: var(--font-size-md);
+    font-weight: 500;
+}
+
+.info-left,
+.info-right {
+    display: flex;
+    align-items: center;
+}
+
+.raw-coords {
+    color: var(--color-text-tertiary);
+}
+
+.polar-coords {
+    color: var(--color-text-tertiary);
+}

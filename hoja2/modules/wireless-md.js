@@ -1,139 +1,233 @@
 import HojaGamepad from '../js/gamepad.js';
 
-import NumberSelector from '../components/number-selector.js';
-import MultiPositionButton from '../components/multi-position-button.js';
-import GroupRgbPicker from '../components/group-rgb-picker.js';
-import AngleSelector from '../components/angle-selector.js';
-
-import TristateButton from '../components/tristate-button.js';
-import SingleShotButton from '../components/single-shot-button.js';
-
-import { enableTooltips } from '../js/tooltips.js';
-
-const basebandCmd = 2;
-const gamepadCfgBlock = 0;
-const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
 /** @type {HojaGamepad} */
 const gamepad = HojaGamepad.getInstance();
+const basebandCmd = 2;
+const gamepadCfgBlock = 0;
 
-const parseWirelessBufferText = buffer => {
-    const text = new TextDecoder().decode(buffer).trim();
-    // Log each character code to see what's actually in there
-    //console.log('Character codes:', [...text].map(c => c.charCodeAt(0)));
-    
-    // Remove any null bytes or other whitespace and then check
-    const cleanText = text.replace(/\0+/g, '').trim();
-    return cleanText === '~' ? false : cleanText;
-};
-
-
+const btManifestUrl = "https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/manifest.json";
 async function getCurrentBasebandVersion() {
     let response = await fetch(btManifestUrl);
 
     if(response.ok) {
         const data = await response.json();
-        if(data.fw_version) return data.fw_version;
+        if(data.fw_version) return data.fw_version + 100;
         else return false;
     }
 }
 
+let wirelessConfig = {
+    hardware: {
+        chip: { model: "Unknown", present: false, active: false }
+    },
+    options: {
+        showUpdateTools: false,
+        showFccInfo: false,
+        updateAvailable: false // New Flag
+    },
+    fcc: {
+        id: "N/A",
+        text: "This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received."
+    }
+};
+
+function decodeText(buffer) {
+    const decoder = new TextDecoder('utf-8');
+    const str = decoder.decode(buffer);
+    
+    // Remove any null characters (0x00) from the string
+    return str.replace(/\x00/g, '');
+}
+
+function updateWirelessUI() {
+    const chipModel = document.getElementById('wireless-chip-model');
+    const chipStatus = document.getElementById('wireless-chip-status');
+
+    if (chipModel) chipModel.textContent = wirelessConfig.hardware.chip.model;
+
+    if (chipStatus) {
+        const isPresent = wirelessConfig.hardware.chip.present;
+        chipStatus.textContent = isPresent ? 'Available' : 'Unavailable';
+        chipStatus.className = `status-badge ${isPresent ? 'active' : 'not-present'}`;
+    }
+}
+
+const wirelessStyle = `
+.wireless-panel {
+    display: flex; flex-direction: column; width: 100%; max-width: 360px;
+    padding: var(--spacing-md); box-sizing: border-box; border-radius: var(--border-radius-md);
+    background: var(--color-p1-grad);
+    background-color: var(--color-p1); border: var(--spacing-xs) solid var(--color-p1-dark);
+    margin-bottom: var(--spacing-md); gap: 12px;
+}
+
+.panel-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+
+.update-msg {
+
+    background: var(--color-p2-grad);
+    color: var(--color-text-tertiary);
+    padding: 6px 10px;
+    border-radius: var(--border-radius-md);
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+    font-size: var(--font-size-md);
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--color-p2-dark);
+    animation: pulse 2.3s ease-in-out infinite;
+}
+
+@keyframes pulse { 
+    0%, 100% { filter: brightness(1); } 
+    50% { filter: brightness(1.1); box-shadow: 0 0 5px var(--color-p3); } 
+}
+
+.button-group { display: flex; gap: 8px; width: 320px; margin-top: 4px; margin-left: auto; margin-right: auto}
+
+.btn-wireless {
+    flex: 1;
+
+    height: var(--button-h);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-md);
+
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    
+    background: var(--color-p3-grad);
+    background-color: var(--color-p3);
+    border: var(--spacing-xs) solid var(--color-p3-dark);
+
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+}
+
+@media (hover: hover) {
+    .btn-wireless:hover {
+        filter:brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+        transform: translate(-1px, -1px);
+        transition: all 0.1s ease-in-out;
+    }
+}
+
+.btn-wireless:active { transform: scale(0.98); }
+
+.fcc-section {
+    padding-top: 8px; border-top: 1px solid var(--color-p1-dark);
+    font-size: 10px; color: var(--color-text-secondary); line-height: 1.4;
+}
+
+.fcc-id { font-weight: bold; color: var(--color-text-tertiary); margin-bottom: 4px; }
+
+.status-badge { padding: 4px 10px; border-radius: 12px; font-size: var(--font-size-sm); font-weight: bold; text-transform: uppercase; }
+.status-badge.active { background: var(--color-p3-grad); color: var(--color-text-tertiary); }
+.status-badge.not-present { background: var(--color-p4-grad); color: var(--color-text-tertiary); }
+
+.hardware-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); font-weight: 500; }
+.hardware-model { font-size: var(--font-size-md); color: var(--color-text-tertiary); font-weight: 600; }
+`;
+
 export async function render(container) {
 
-    let fccId = parseWirelessBufferText(gamepad.device_static.fcc_id);
-    console.log(fccId);
-
-    let showElabel = false;
-    if(fccId !== false) { 
-        showElabel = true;
-    }
-
     const currentBasebandVersion = await getCurrentBasebandVersion();
+    const showBasebandUpdate = gamepad.bluetooth_static.external_version_number < currentBasebandVersion ? true : false;
 
-    console.log("This baseband: " + gamepad.bluetooth_static.baseband_version);
-    console.log("Newest baseband: " + currentBasebandVersion);
-
-    let updateSegment = `
-    <div class="app-text-container">
-    Baseband is up to date.
-    </div>
-    `;
-
-    let regulationSegment = `
-    <h2>Regulatory Information</h2>
-    <div class="app-text-container">
-        <strong>FCC ID: ${fccId}</strong>
-        <br>
-        This device complies with Part 15 of the
-        FCC Rules. Operation is subject to the
-        following two conditions: (1) This device
-        may not cause harmful interference, and (2)
-        This device must accept any interference
-        received, including interference that may
-        cause undesired operation. 
-    </div>
-    `
-
-    if(!showElabel) {
-        regulationSegment = "";
-    }
-
-    if(gamepad.bluetooth_static.baseband_version < currentBasebandVersion) {
-        updateSegment = `
-        <div class="app-row">
-            <single-shot-button id="baseband-button" state="ready" ready-text="Enter Baseband Mode" disabled-text="..."
-                pending-text="Entering..." failure-text="Not connected." success-text="Entering..."
-            ></single-shot-button>
-
-            <single-shot-button id="open-update-page-button" state="ready" ready-text="Update Tool" disabled-text="..."
-                pending-text="Opening..." failure-text="Opening..." success-text="Opening..."
-            ></single-shot-button>
-
-            <single-shot-button id="open-update-guide-button" state="ready" ready-text="Update Guide" disabled-text="..."
-                pending-text="Opening..." failure-text="Opening..." success-text="Opening..."
-            ></single-shot-button>
-        </div>
-        <div visible="true" class="app-text-container">
-            To update your wireless firmware, first, click the 'Enter Baseband Mode' button. 
-            Your indicator light/lights will begin to flash orange. At this point, you may click the 'Update Tool'
-            to open the appropriate page to begin the update process. Follow all instructions from the update tool
-            to properly update your device.
-        </div>
-        `;
-    }
+    wirelessConfig = {
+    hardware: {
+        chip: { 
+            model: decodeText(gamepad.bluetooth_static.part_number), 
+            present: true, 
+            active: gamepad.bluetooth_static.bluetooth_status > 0 
+        }
+    },
+    options: {
+        showUpdateTools: gamepad.bluetooth_static.external_update_supported > 0,
+        showFccInfo: decodeText(gamepad.bluetooth_static.fcc_id.buffer) != "",
+        updateAvailable: showBasebandUpdate
+    },
+    fcc: {
+        id: decodeText(gamepad.bluetooth_static.fcc_id.buffer),
+        text: "This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received."
+    }};
 
     container.innerHTML = `
-    <h2>Baseband Update</h2>
-    ${updateSegment}
-    ${regulationSegment}
+    <style>${wirelessStyle}</style>
+    <div class="wireless-panel">
+        <div class="panel-row">
+            <div class="hardware-name">
+                <div class="hardware-label">Wireless Chip</div>
+                <div class="hardware-model" id="wireless-chip-model">-</div>
+            </div>
+            <span class="status-badge" id="wireless-chip-status">Unknown</span>
+        </div>
+
+        ${wirelessConfig.options.showUpdateTools ? `
+            ${wirelessConfig.options.updateAvailable ? `
+                <div class="update-msg">Wireless Update Available!</div>
+            ` : ''}
+            <div class="button-group">
+                <button class="btn-wireless" onclick="window.enterWirelessUpdate()">Enter Update Mode</button>
+                <button class="btn-wireless" onclick="window.openUpdatePage()">Update Page</button>
+                <button class="btn-wireless" onclick="window.openHelpPage()">Help Page</button>
+            </div>
+        ` : ''}
+
+        ${wirelessConfig.options.showFccInfo ? `
+        <div class="fcc-section">
+            <div class="fcc-id">FCC ID: ${wirelessConfig.fcc.id}</div>
+            <div>${wirelessConfig.fcc.text}</div>
+        </div>
+        ` : ''}
+    </div>
     `;
 
-    if(gamepad.bluetooth_static.baseband_version < currentBasebandVersion) {
-        const basebandButton = container.querySelector('single-shot-button[id="baseband-button"]');
-        const openToolButton = container.querySelector('single-shot-button[id="open-update-page-button"]');
-        const openGuideButton = container.querySelector('single-shot-button[id="open-update-guide-button"]');
+    // Global hooks for button actions
+    window.enterWirelessUpdate = () => {
+        console.log("Entering wireless update mode...");
+        if(gamepad) {
+            gamepad.sendConfigCommand(gamepadCfgBlock, basebandCmd);
+        }
+    };
 
-        basebandButton.setOnClick(async () => {
-            try {
-                if(gamepad) {
-                    gamepad.sendConfigCommand(gamepadCfgBlock, basebandCmd);
-                    return true;
-                }
-                return false;
-            }
-            catch(e) {
-                return false;
-            }
-        });
+    window.openUpdatePage = () => {
+        window.open('https://handheldlegend.github.io/hoja_baseband/', '_blank');
+    };
 
-        openToolButton.setOnClick(() => {
-            window.open("https://handheldlegend.github.io/hoja_baseband/", '_blank');
-            return true;
-        });
+    window.openHelpPage = () => {
+        window.open('https://docs.handheldlegend.com/s/portal/doc/esp32-baseband-update-page-vhX2Im50kN', '_blank');
+    };
 
-        openGuideButton.setOnClick(() => {
-            window.open("https://docs.handheldlegend.com/s/portal/doc/esp32-baseband-update-page-vhX2Im50kN", '_blank');
-            return true;
-        });
-    }   
-    
+    // Initial UI Sync
+    updateWirelessUI();
 }
+
+/**
+ * Configure the wireless module
+ * @param {Object} config 
+ */
+export function setWirelessConfig(config) {
+    if (config.hardware?.chip) Object.assign(wirelessConfig.hardware.chip, config.hardware.chip);
+    if (config.options) Object.assign(wirelessConfig.options, config.options);
+    if (config.fcc) Object.assign(wirelessConfig.fcc, config.fcc);
+
+    // If container exists, re-render to reflect optional sections or update messages
+    const container = document.getElementById('wireless-chip-model')?.closest('.wireless-panel')?.parentElement;
+    if (container) render(container);
+    else updateWirelessUI();
+}
+
+// Example Default Setup
+setWirelessConfig({
+    hardware: {
+        chip: { model: "ESP32-PICO-MINI-02", present: true }
+    },
+    options: {
+        showUpdateTools: true,
+        updateAvailable: true,
+        showFccInfo: true
+    }
+});
