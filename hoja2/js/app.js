@@ -467,6 +467,7 @@ async function enableFwUpdateMessage({enableDropdown, enableBootloader, enableDo
     const updateButton = document.getElementById("update-button");
     const fwMessageBox = document.getElementById("fw-update-box");
     const cancelButton = document.getElementById("exit-bootloader-button");
+    
 
     if(enableDropdown != undefined) {
         if(enableDropdown) {
@@ -476,6 +477,7 @@ async function enableFwUpdateMessage({enableDropdown, enableBootloader, enableDo
             fwMessageBox.setAttribute("visible", "false");
         }
     }
+    
 
     if(enableBootloader != undefined) {
         if(enableBootloader) {
@@ -626,6 +628,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.configApp = new ConfigApp(appTitleHeader);
 
     saveButton.setOnClick(sendSaveCommand);
+
+    const changelogButton = document.getElementById("changelog-button");
+    changelogButton.setOnClick(() => {
+        window.open('https://docs.handheldlegend.com/s/portal/doc/whats-new-xmtMoBg2Pu', '_blank');
+        return true;
+    });
 
     var debug = false;
 
