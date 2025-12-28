@@ -471,7 +471,7 @@ function inputPanelOpened(event) {
     let inputType = gamepad.input_static.input_info[inputCode].input_type;
     let outputCode = outputConfig[inputCode].output_code;
     let outputType = outputTypes[outputCode];
-    let outputLabel = outputNames[outputCode];
+    let outputLabel = outputNames[outputCode] || `Disabled`;
     let outputMode = outputConfig[inputCode].output_mode;
     let thresholdDelta = outputConfig[inputCode].threshold_delta;
     let staticOutput = outputConfig[inputCode].static_output;
