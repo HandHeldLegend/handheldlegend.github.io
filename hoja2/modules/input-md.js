@@ -357,6 +357,7 @@ function outputSelectionClicked(event) {
             closeRemapPanel();
             return;
         case -1: // Unmap
+            writeMappingInfo(currentFocusedInput, -1, null, null, null);
             configPanelComponent.setOutputLabelAndType('Disabled', 'none');
             // Update the mapping display
             let mapDisplayIdxUnmap = mappingDisplayIdx[currentFocusedInput];
