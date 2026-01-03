@@ -2,7 +2,6 @@ class AngleModifier extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        // Data structure now includes deadzone
         this.points = [];
     }
 
@@ -12,9 +11,8 @@ class AngleModifier extends HTMLElement {
         this.render(css);
     }
 
-    // Public API to add a point from parent component
     addPoint(inAngle = 0, inDist = 0) {
-        if (this.points.length >= 16) return; // Hard limit for safety
+        if (this.points.length >= 16) return;
         this.points.push({
             inAngle,
             inDist,
@@ -26,8 +24,6 @@ class AngleModifier extends HTMLElement {
         this.dispatchEvent(new CustomEvent('add', { detail: { index: this.points.length - 1 } }));
     }
 
-
-    // Public API to reset everything
     resetAll() {
         this.points = this.points.map(p => ({
             ...p,
@@ -56,9 +52,10 @@ class AngleModifier extends HTMLElement {
                 
                 <div class="in-data-grid">
                     <span class="label-micro">∠ In</span>
-                    <span class="val-micro">${p.inAngle.toFixed(2)}°</span>
+                    <input type="number" step="0.01" class="edit-input val-micro in-a" value="${p.inAngle.toFixed(2)}">
+                    
                     <span class="label-micro">D In</span>
-                    <span class="val-micro">${p.inDist.toFixed(2)}</span>
+                    <input type="number" step="0.01" class="edit-input val-micro in-d" value="${p.inDist.toFixed(2)}">
                 </div>
 
                 <div class="input-col">
@@ -99,9 +96,17 @@ class AngleModifier extends HTMLElement {
 
             const update = (key, val) => {
                 this.points[i][key] = parseFloat(val) || 0;
-                this.dispatchEvent(new CustomEvent('change', { detail: { index: i, data: this.points[i] } }));
+                this.dispatchEvent(new CustomEvent('change', { 
+                    detail: { 
+                        index: i, 
+                        data: this.points[i] 
+                    } 
+                }));
             };
 
+            // Input Listeners
+            row.querySelector('.in-a').onchange = (e) => update('inAngle', e.target.value);
+            row.querySelector('.in-d').onchange = (e) => update('inDist', e.target.value);
             row.querySelector('.out-a').onchange = (e) => update('outAngle', e.target.value);
             row.querySelector('.out-d').onchange = (e) => update('outDist', e.target.value);
             row.querySelector('.out-z').onchange = (e) => update('deadzone', e.target.value);

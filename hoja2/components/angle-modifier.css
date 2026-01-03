@@ -48,32 +48,39 @@
     margin-bottom: 0;
 }
 
-/* Updated In-Data Grid to prevent label wrapping */
 .in-data-grid {
     display: grid;
-    /* Increased first column width (60px) to ensure "IN ANGLE" fits on one line */
     grid-template-columns: 28px 1fr; 
     grid-template-rows: 1fr 1fr;
-    flex: 1.2; /* Give slightly more weight to the IN section */
+    flex: 1.2;
     padding: 0 4px;
     align-content: center;
     font-size: var(--font-size-sm);
     border-right: 1px solid rgba(255,255,255,0.1);
+    gap: 2px 0; /* Added slight gap for input separation */
 }
 
 .label-micro {
     text-transform: uppercase;
-
     font-weight: bold;
     align-self: center;
-    white-space: nowrap; /* Forces text to stay on one line */
+    white-space: nowrap;
 }
 
+/* Updated to allow input behavior within the micro grid */
 .val-micro {
     font-family: monospace;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-sm) !important; /* Keep it small to fit */
     text-align: right;
     align-self: center;
+    padding: 0 2px !important;
+    height: 18px !important; /* Fixed height for the grid row */
+    background: transparent;
+}
+
+/* Ensure the hover effect applies to the micro inputs too */
+.val-micro:hover, .val-micro:focus {
+    background: var(--color-p5);
 }
 
 .input-col {
