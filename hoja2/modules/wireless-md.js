@@ -11,7 +11,7 @@ async function getCurrentBasebandVersion() {
 
     if(response.ok) {
         const data = await response.json();
-        if(data.fw_version) return data.fw_version + 100;
+        if(data.fw_version) return data.fw_version;
         else return false;
     }
 }

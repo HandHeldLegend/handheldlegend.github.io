@@ -1,5 +1,5 @@
 const CACHE_CONFIG = {
-  version: 'v0.003.035', // Increment this when you update files
+  version: 'v0.003.036', // Increment this when you update files
   folders: {
     '/': ['attributions.txt', 'index.html', 'manifest.json', 'ping.json'],
     '/assets/3d/': ['supergamepad.stl', 'supergamepadOLD.stl'],
