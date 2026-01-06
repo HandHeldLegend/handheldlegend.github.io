@@ -610,6 +610,7 @@ export function render(container) {
     containerElement = container;
 
     let hoverCalibrateNotice = gamepad.hover_cfg.hover_calibration_set == 0 ? true : false;
+    hoverCalibrateNotice = true;
 
     container.innerHTML = `
             <h2>Input Mode</h2>
