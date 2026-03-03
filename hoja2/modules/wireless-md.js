@@ -27,7 +27,7 @@ let wirelessConfig = {
     },
     fcc: {
         id: "N/A",
-        text: "This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received."
+        text: "This device complies with Part 15 of the FCC Rules. Operation is subject to the following two conditions: (1) this device may not cause harmful interference, and (2) this device must accept any interference received, including interference that may cause undesired operation."
     }
 };
 
