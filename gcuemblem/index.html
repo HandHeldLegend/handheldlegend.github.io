@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCU Skin Designer - Final v7</title>
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --panel-color: #1a1a1a;
+            --accent-color: #4f46e5;
+            --success-color: #10b981;
+            --input-bg: #2a2a2a;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: #e5e5e5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        /* Standard Controls */
+        .controls {
+            background: var(--panel-color);
+            padding: 20px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 1100px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 5px; }
+        .row-header { display: flex; justify-content: space-between; align-items: center; }
+        label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #888; }
+        
+        input[type="number"] {
+            background: var(--input-bg);
+            border: 1px solid #444;
+            color: var(--success-color);
+            padding: 3px 6px;
+            border-radius: 4px;
+            width: 65px;
+            font-family: monospace;
+        }
+
+        .upload-zone {
+            grid-column: 1 / -1;
+            border: 2px dashed #444;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* The Stage */
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 750px;
+            background: #111;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Keep background within stage */
+            border: 1px solid #333;
+        }
+
+        #gamepadBg {
+            position: absolute;
+            width: 1400px; 
+            height: 1000px;
+            background-image: url('gcu_background.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.7;
+        }
+
+        .canvas-container {
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+
+        #exportBtn {
+            grid-column: 1 / -1;
+            background: var(--success-color);
+            color: white; border: none; padding: 12px; border-radius: 6px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase;
+        }
+
+        /* Dev Console */
+        #devConsole {
+            position: fixed; top: 20px; left: 20px; background: rgba(0,0,0,0.95);
+            padding: 15px; border: 1px solid #ff00ff; border-radius: 8px;
+            display: none; z-index: 1000; width: 250px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <div class="upload-zone" onclick="document.getElementById('artUpload').click()">
+            <span style="color:var(--accent-color)">FILE:</span> CLICK TO UPLOAD DESIGN (.PNG)
+            <input type="file" id="artUpload" accept="image/png" style="display:none">
+        </div>
+
+        <div class="control-group" style="grid-column: 1/-1; flex-direction: row; align-items: center;">
+            <input type="checkbox" id="showGuides" style="width:18px; height:18px;">
+            <label for="showGuides" style="margin-left:8px; text-transform: none; color:#eee;">Show Center Guides</label>
+        </div>
+
+        <div class="control-group">
+            <div class="row-header"><label>Scale</label><input type="number" id="nScale" step="0.01" value="1.00"></div>
+            <input type="range" id="rScale" min="0.01" max="5" step="0.01" value="1">
+        </div>
+
+        <div class="control-group">
+            <div class="row-header"><label>Pos X</label><input type="number" id="nX" value="0"></div>
+            <input type="range" id="rX" min="-1000" max="1000" value="0">
+        </div>
+
+        <div class="control-group">
+            <div class="row-header"><label>Pos Y</label><input type="number" id="nY" value="0"></div>
+            <input type="range" id="rY" min="-1000" max="1000" value="0">
+        </div>
+
+        <button id="exportBtn">Export 600DPI Print (Clean)</button>
+    </div>
+
+    <div class="stage">
+        <div id="gamepadBg"></div>
+        <div class="canvas-container">
+            <canvas id="mainCanvas"></canvas>
+        </div>
+    </div>
+
+    <div id="devConsole">
+        <h4 style="color:#ff00ff; margin:0 0 10px 0;">DEV ALIGNMENT</h4>
+        <label>BG X: <span id="vBgX">0</span></label><input type="range" id="rBgX" min="-1000" max="1000" value="0" style="width:100%">
+        <label>BG Y: <span id="vBgY">390</span></label><input type="range" id="rBgY" min="-1000" max="1000" value="390" style="width:100%">
+        <label>BG Size: <span id="vBgSize">204</span></label><input type="range" id="rBgSize" min="10" max="500" value="204" style="width:100%">
+    </div>
+
+    <canvas id="exportCanvas" style="display:none"></canvas>
+
+<script>
+    // --- USER DEFAULTS ---
+    const ALIGN_DEF = { x: -1, y: 390, s: 154 };
+
+    const MM_W = 90, MM_H = 42, DPI_WS = 360, DPI_EXP = 600, IN_MM = 25.4;
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const bg = document.getElementById('gamepadBg');
+
+    const wsW = Math.round((MM_W / IN_MM) * DPI_WS);
+    const wsH = Math.round((MM_H / IN_MM) * DPI_WS);
+    canvas.width = wsW; canvas.height = wsH;
+
+    let thickImg = new Image(), userArt = null;
+    let state = { x: wsW/2, y: wsH/2, s: 1 };
+
+    window.onload = () => {
+        // Init Dev Sliders
+        document.getElementById('rBgX').value = ALIGN_DEF.x;
+        document.getElementById('rBgY').value = ALIGN_DEF.y;
+        document.getElementById('rBgSize').value = ALIGN_DEF.s;
+        updateBg();
+
+        thickImg.src = 'gcu_thick_bg_360dpi.png';
+        thickImg.onload = draw;
+    };
+
+    function updateBg() {
+        const x = document.getElementById('rBgX').value;
+        const y = document.getElementById('rBgY').value;
+        const s = document.getElementById('rBgSize').value;
+        bg.style.transform = `translate(${x}px, ${y}px) scale(${s/100})`;
+        document.getElementById('vBgX').innerText = x;
+        document.getElementById('vBgY').innerText = y;
+        document.getElementById('vBgSize').innerText = s;
+    }
+
+    // --- ART UI SYNC ---
+    function sync(rangeId, numId, prop) {
+        const r = document.getElementById(rangeId);
+        const n = document.getElementById(numId);
+        const update = (val) => {
+            if (prop === 's') state.s = parseFloat(val);
+            if (prop === 'x') state.x = (wsW/2) + parseInt(val);
+            if (prop === 'y') state.y = (wsH/2) + parseInt(val);
+            draw();
+        };
+        r.oninput = () => { n.value = r.value; update(r.value); };
+        n.oninput = () => { r.value = n.value; update(n.value); };
+    }
+
+    sync('rScale', 'nScale', 's');
+    sync('rX', 'nX', 'x');
+    sync('rY', 'nY', 'y');
+
+    document.getElementById('showGuides').onchange = draw;
+    document.getElementById('rBgX').oninput = updateBg;
+    document.getElementById('rBgY').oninput = updateBg;
+    document.getElementById('rBgSize').oninput = updateBg;
+
+    window.onkeydown = (e) => { if(e.key.toLowerCase()==='d'){ const d=document.getElementById('devConsole'); d.style.display=d.style.display==='block'?'none':'block';}};
+
+    document.getElementById('artUpload').onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const img = new Image();
+            img.onload = () => { userArt = img; draw(); };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    function draw() {
+        ctx.clearRect(0, 0, wsW, wsH);
+        if (userArt) {
+            ctx.save();
+            ctx.translate(state.x, state.y);
+            ctx.scale(state.s, state.s);
+            ctx.drawImage(userArt, -userArt.width/2, -userArt.height/2);
+            ctx.restore();
+        }
+        if (document.getElementById('showGuides').checked) {
+            ctx.save();
+            ctx.strokeStyle = 'cyan';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath(); ctx.moveTo(wsW/2, 0); ctx.lineTo(wsW/2, wsH); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, wsH/2); ctx.lineTo(wsW, wsH/2); ctx.stroke();
+            ctx.restore();
+        }
+        if (thickImg.complete) ctx.drawImage(thickImg, 0, 0, wsW, wsH);
+    }
+
+    // --- DPI INJECTION & EXPORT ---
+    function injectDPI(blob) {
+        return blob.arrayBuffer().then(buffer => {
+            const ppm = Math.round(600 * 39.3701);
+            const phys = new Uint8Array([0,0,0,9,112,72,89,115, (ppm>>24)&255,(ppm>>16)&255,(ppm>>8)&255,ppm&255, (ppm>>24)&255,(ppm>>16)&255,(ppm>>8)&255,ppm&255, 1, 0,0,0,0]);
+            return new Blob([buffer.slice(0,33), phys, buffer.slice(33)], {type:'image/png'});
+        });
+    }
+
+    document.getElementById('exportBtn').onclick = () => {
+        const eCanvas = document.getElementById('exportCanvas');
+        const eCtx = eCanvas.getContext('2d');
+        const eW = Math.round((MM_W / IN_MM) * DPI_EXP);
+        const eH = Math.round((MM_H / IN_MM) * DPI_EXP);
+        eCanvas.width = eW; eCanvas.height = eH;
+
+        const r = DPI_EXP / DPI_WS;
+        eCtx.clearRect(0,0,eW,eH);
+        if (userArt) {
+            eCtx.save();
+            eCtx.translate(state.x * r, state.y * r);
+            eCtx.scale(state.s * r, state.s * r);
+            eCtx.drawImage(userArt, -userArt.width/2, -userArt.height/2);
+            eCtx.restore();
+        }
+        eCanvas.toBlob((b) => {
+            injectDPI(b).then(final => {
+                const url = URL.createObjectURL(final);
+                const a = document.createElement('a');
+                a.download = `GCU_600DPI_Print.png`;
+                a.href = url; a.click();
+            });
+        }, 'image/png');
+    };
+</script>
+</body>
+</html>
