@@ -63,6 +63,11 @@
             margin-bottom: 10px;
         }
 
+        .upload-zone.dragover {
+            border-color: var(--accent-color);
+            background: rgba(79, 70, 229, 0.12);
+        }
+
         /* The Stage */
         .stage {
             position: relative;
@@ -109,15 +114,48 @@
             padding: 15px; border: 1px solid #ff00ff; border-radius: 8px;
             display: none; z-index: 1000; width: 250px;
         }
+
+        #mobileWarning {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            box-sizing: border-box;
+            margin: 20px 0;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid #b45309;
+            background: #2b1d0e;
+            color: #fde68a;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        #dpiWarning {
+            grid-column: 1 / -1;
+            display: none;
+            box-sizing: border-box;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #b45309;
+            background: #2b1d0e;
+            color: #fde68a;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
 
+    <div id="mobileWarning">
+        Mobile is not fully supported for this tool. Please use a desktop browser for accurate scaling and print output.
+    </div>
+
     <div class="controls">
-        <div class="upload-zone" onclick="document.getElementById('artUpload').click()">
-            <span style="color:var(--accent-color)">FILE:</span> CLICK TO UPLOAD DESIGN (.PNG)
-            <input type="file" id="artUpload" accept="image/png" style="display:none">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('artUpload').click()">
+            <span style="color:var(--accent-color)">FILE:</span> CLICK OR DRAG TO UPLOAD DESIGN (.PNG, .SVG)
+            <input type="file" id="artUpload" accept="image/png,image/svg+xml,.svg" style="display:none">
         </div>
+
+        <div id="dpiWarning"></div>
 
         <div class="control-group" style="grid-column: 1/-1; flex-direction: row; align-items: center;">
             <input type="checkbox" id="showGuides" style="width:18px; height:18px;">
@@ -162,10 +200,17 @@
     // --- USER DEFAULTS ---
     const ALIGN_DEF = { x: -1, y: 390, s: 154 };
 
-    const MM_W = 90, MM_H = 42, DPI_WS = 360, DPI_EXP = 600, IN_MM = 25.4;
+    const MM_W = 90, MM_H = 42, DPI_WS = 360, DPI_EXP = 600, MIN_SOURCE_DPI = 600, IN_MM = 25.4;
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
     const bg = document.getElementById('gamepadBg');
+    const dpiWarning = document.getElementById('dpiWarning');
+    const uploadZone = document.getElementById('uploadZone');
+    const artUpload = document.getElementById('artUpload');
+    const scaleRange = document.getElementById('rScale');
+    const scaleNum = document.getElementById('nScale');
+    const MIN_SCALE = parseFloat(scaleRange.min);
+    const MAX_SCALE_DEFAULT = parseFloat(scaleRange.max);
 
     const wsW = Math.round((MM_W / IN_MM) * DPI_WS);
     const wsH = Math.round((MM_H / IN_MM) * DPI_WS);
@@ -173,8 +218,64 @@
 
     let thickImg = new Image(), userArt = null;
     let state = { x: wsW/2, y: wsH/2, s: 1 };
+    let maxAllowedScale = MAX_SCALE_DEFAULT;
+
+    function isMobileDevice() {
+        const ua = navigator.userAgent || '';
+        const hasMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+        const likelyTouchLayout = window.matchMedia('(max-width: 900px)').matches && window.matchMedia('(pointer: coarse)').matches;
+        return hasMobileUA || likelyTouchLayout;
+    }
+
+    function setMobileUnsupportedUI() {
+        document.getElementById('mobileWarning').style.display = 'block';
+        document.querySelector('.controls').style.display = 'none';
+        document.querySelector('.stage').style.display = 'none';
+    }
+
+    function clampScale(value) {
+        return Math.max(MIN_SCALE, Math.min(maxAllowedScale, value));
+    }
+
+    function setScale(value) {
+        const clamped = clampScale(value);
+        state.s = clamped;
+        scaleRange.value = clamped.toFixed(2);
+        scaleNum.value = clamped.toFixed(2);
+        draw();
+    }
+
+    function setScaleLimit(maxScale) {
+        maxAllowedScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE_DEFAULT, maxScale));
+        scaleRange.max = maxAllowedScale.toFixed(2);
+        setScale(state.s);
+    }
+
+    function showDpiWarning(message) {
+        dpiWarning.style.display = 'block';
+        dpiWarning.textContent = message;
+    }
+
+    function hideDpiWarning() {
+        dpiWarning.style.display = 'none';
+        dpiWarning.textContent = '';
+    }
+
+    function getResolutionBasedDpi(img) {
+        // Estimate source DPI from pixel resolution against print size.
+        const widthInches = MM_W / IN_MM;
+        const heightInches = MM_H / IN_MM;
+        const dpiX = img.width / widthInches;
+        const dpiY = img.height / heightInches;
+        return Math.min(dpiX, dpiY);
+    }
 
     window.onload = () => {
+        if (isMobileDevice()) {
+            setMobileUnsupportedUI();
+            return;
+        }
+
         // Init Dev Sliders
         document.getElementById('rBgX').value = ALIGN_DEF.x;
         document.getElementById('rBgY').value = ALIGN_DEF.y;
@@ -200,10 +301,10 @@
         const r = document.getElementById(rangeId);
         const n = document.getElementById(numId);
         const update = (val) => {
-            if (prop === 's') state.s = parseFloat(val);
+            if (prop === 's') setScale(parseFloat(val));
             if (prop === 'x') state.x = (wsW/2) + parseInt(val);
             if (prop === 'y') state.y = (wsH/2) + parseInt(val);
-            draw();
+            if (prop !== 's') draw();
         };
         r.oninput = () => { n.value = r.value; update(r.value); };
         n.oninput = () => { r.value = n.value; update(n.value); };
@@ -220,15 +321,70 @@
 
     window.onkeydown = (e) => { if(e.key.toLowerCase()==='d'){ const d=document.getElementById('devConsole'); d.style.display=d.style.display==='block'?'none':'block';}};
 
-    document.getElementById('artUpload').onchange = (e) => {
+    function handleImportedFile(file) {
+        if (!file) return;
+
+        const fileName = file.name || '';
+        const fileType = file.type || '';
+        const isSvg = fileType === 'image/svg+xml' || fileName.toLowerCase().endsWith('.svg');
+        const isPng = fileType === 'image/png' || fileName.toLowerCase().endsWith('.png');
+        if (!isSvg && !isPng) {
+            showDpiWarning('Unsupported file type. Please upload PNG or SVG.');
+            return;
+        }
+
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        new Promise((resolve) => {
+            reader.onload = (ev) => resolve(ev.target.result);
+            reader.readAsDataURL(file);
+        }).then((dataUrl) => {
             const img = new Image();
-            img.onload = () => { userArt = img; draw(); };
-            img.src = ev.target.result;
-        };
-        reader.readAsDataURL(e.target.files[0]);
+            img.onload = () => {
+                userArt = img;
+
+                if (isSvg) {
+                    setScaleLimit(MAX_SCALE_DEFAULT);
+                    setScale(1);
+                    hideDpiWarning();
+                } else {
+                    const detectedDpi = getResolutionBasedDpi(img);
+                    const safeScale = detectedDpi / MIN_SOURCE_DPI;
+                    setScaleLimit(safeScale);
+                    if (detectedDpi < MIN_SOURCE_DPI) {
+                        setScale(safeScale);
+                        showDpiWarning(`This image resolution provides about ${detectedDpi.toFixed(0)} DPI for the print area, below the recommended ${MIN_SOURCE_DPI} DPI. It has been auto-scaled to ${safeScale.toFixed(2)}x to maintain ${MIN_SOURCE_DPI} DPI effective quality, and scaling above this limit is disabled.`);
+                    } else {
+                        setScale(1);
+                        hideDpiWarning();
+                    }
+                }
+
+                draw();
+            };
+            img.src = dataUrl;
+        });
+    }
+
+    artUpload.onchange = (e) => {
+        handleImportedFile(e.target.files[0]);
+        artUpload.value = '';
     };
+
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const file = e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files[0] : null;
+        handleImportedFile(file);
+    });
 
     function draw() {
         ctx.clearRect(0, 0, wsW, wsH);
