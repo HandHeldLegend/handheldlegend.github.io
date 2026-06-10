@@ -5,6 +5,7 @@ typedef struct
     uint16_t    external_version_number;
     uint8_t     bluetooth_bdr_supported;
     uint8_t     bluetooth_ble_supported;
-    uint8_t     bluetooth_status;
+    uint8_t     wireless_part_status;
     uint8_t     fcc_id[24];
+    uint8_t     wlan_supported;
 } bluetoothInfoStatic_s;

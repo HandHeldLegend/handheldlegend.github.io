@@ -613,6 +613,10 @@ async function getCurrentBasebandVersion() {
         }
     }
 
+function hasEsp32ExternalWirelessHardware() {
+    return gamepad.bluetooth_static.external_update_supported > 0;
+}
+
 // Initialize the app when DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -741,7 +745,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("Closing module: " + window.configApp.currentModule());
 
-        if(window.configApp.currentModule() != "Wireless") {
+        const keepWirelessModuleForExternalUpdate =
+            hasEsp32ExternalWirelessHardware()
+            && window.configApp.currentModule() == "Wireless";
+
+        if (!keepWirelessModuleForExternalUpdate) {
             window.configApp.closemoduleView();
         }
 

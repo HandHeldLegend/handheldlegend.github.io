@@ -2,7 +2,7 @@
 
 export default class Bluetoothinfostatic {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(54);
+    this.buffer = buffer || new Uint8Array(55);
   }
 
   	/** @type {Uint8Array} */
@@ -31,13 +31,18 @@ export default class Bluetoothinfostatic {
 	}
 
 	/** @type {Uint8} */
-	get bluetooth_status() {
+	get wireless_part_status() {
 		return this.#_getUint8(29);
 	}
 
 	/** @type {Uint8Array} */
 	get fcc_id() {
 		return this.#_getUint8Array(30, 24);
+	}
+
+	/** @type {Uint8} */
+	get wlan_supported() {
+		return this.#_getUint8(54);
 	}
 
 
@@ -68,13 +73,18 @@ export default class Bluetoothinfostatic {
 	}
 
 	/** @param {Uint8} value */
-	set bluetooth_status(value) {
+	set wireless_part_status(value) {
 		this.#_setUint8(29, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set fcc_id(value) {
 		this.#_setUint8Array(30, value);
+	}
+
+	/** @param {Uint8} value */
+	set wlan_supported(value) {
+		this.#_setUint8(54, value);
 	}
 
 

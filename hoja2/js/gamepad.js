@@ -121,7 +121,10 @@ class HojaGamepad {
       this.#device = await navigator.usb.requestDevice({
         filters: [
           // Replace with your specific USB device vendor and product IDs
-          { vendorId: 0x057E, productId: 0x2009 }
+          { vendorId: 0x057E, productId: 0x2009 }, // Nintendo Switch Pro Controller
+          { vendorId: 0x2E8A, productId: 0x10C6 }, // HOJA Gamepad Generic
+          { vendorId: 0x2E8A, productId: 0x10DD }, // GC Ultimate
+          { vendorId: 0x2E8A, productId: 0x10DF }, // ProGCC
         ]
       });
 
