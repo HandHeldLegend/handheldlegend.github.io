@@ -54,7 +54,7 @@ export function render(container) {
 
     for(let i = 0; i < 6; i++)
     {
-        let val = gamepad.gamepad_cfg.switch_mac_address[i].toString(16);
+        let val = gamepad.gamepad_cfg.gamepad_mac_address[i].toString(16);
         hexDefault+=val;
         if(i != 5) hexDefault += ",";
 
@@ -69,13 +69,14 @@ export function render(container) {
     container.innerHTML = `
             <h2>Default Mode</h2>
             <div class="app-text-container">
-                <strong>WARNING</strong>
-                Changing the default mode will require you to hold the <strong>A or South</strong> button upon plugging in the controller to connect to this configuration app. 
+                <strong>WARNING</strong><br>
+                Only <strong>Switch & Steam modes</strong> work with the config app.<br><br>
+                Changing the default mode may require you to hold the <strong>A or South</strong> button upon plugging in the controller to connect to this configuration app. 
             </div>
             <multi-position-button 
                 id="default-mode-selector" 
                 width="364"
-                options="NS, Xinput, GCUSB, GC, N64, SNES, SInput"
+                options="Switch, Xinput, Slippi, GCube, N64, SNES, Steam"
                 selected="${gamepad.gamepad_cfg.gamepad_default_mode}"
             ></multi-position-button>
             </h2>
@@ -195,7 +196,7 @@ export function render(container) {
 
     macSelector.addEventListener('change', async (e) => {
         let macArray = stringToArray(e.detail.value);
-        let tmpAddress = gamepad.gamepad_cfg.switch_mac_address;
+        let tmpAddress = gamepad.gamepad_cfg.gamepad_mac_address;
 
         for(let i = 0; i < 6; i++)
         {
@@ -208,7 +209,7 @@ export function render(container) {
             tmpAddress[0] -= 1;
         }
 
-        gamepad.gamepad_cfg.switch_mac_address = tmpAddress;
+        gamepad.gamepad_cfg.gamepad_mac_address = tmpAddress;
 
         await writeGamepadMemBlock();
     });

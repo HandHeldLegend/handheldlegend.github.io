@@ -147,7 +147,7 @@ export function render(container) {
             <h2>Mode</h2>
             <multi-position-button 
                 id="rgb-mode-select" 
-                options="User, Rainbow, React, Fairy"
+                options="Chroma, User, Rainbow, React, Fairy"
                 selected="${rgbMode}"
                 width="300"
             ></multi-position-button>
@@ -176,7 +176,7 @@ export function render(container) {
             ></multi-position-button>
     `;
 
-    updateRgbPickerTexts(rgbMode == 3 ? "fairy" : "normal");
+    updateRgbPickerTexts(rgbMode == 4 ? "fairy" : "normal");
 
     // Optional: Add event listeners to specific number selectors
     const brightnessSelector = container.querySelector('number-selector[id="brightness-slider"]');
@@ -267,7 +267,7 @@ export function render(container) {
         console.log("RGB mode change");
         gamepad.rgb_cfg.rgb_mode = e.detail.selectedIndex;
 
-        if(e.detail.selectedIndex == 3) {
+        if(e.detail.selectedIndex == 4) {
             updateRgbPickerTexts("fairy");
         }
         else {
