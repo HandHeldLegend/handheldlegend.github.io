@@ -3,7 +3,7 @@ import Hoverslot from './hoverSlot.js';
 
 export default class Hoverconfig {
   constructor(buffer) {
-    this.buffer = buffer || new Uint8Array(257);
+    this.buffer = buffer || new Uint8Array(256);
   }
 
   	/** @type {Uint8} */
@@ -28,7 +28,7 @@ export default class Hoverconfig {
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(146, 111);
+		return this.#_getUint8Array(146, 110);
 	}
 
 
