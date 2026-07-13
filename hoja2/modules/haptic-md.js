@@ -93,4 +93,5 @@ export function render(container) {
             await writeHapticMemBlock();
     });
     }
+    enableTooltips(container);
 }
