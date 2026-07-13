@@ -473,7 +473,7 @@ export function render(container) {
                     options="Full, GC, Melee, N64"
                     selected="0"
                     width="180"
-                    tooltip="Show the translated coordinates for a given gamepad mode.
+                    tooltip="Show the translated coordinates for a given gamepad mode."
                 >
                 </multi-position-button>
                 </div>
