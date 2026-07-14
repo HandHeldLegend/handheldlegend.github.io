@@ -6,5 +6,7 @@ typedef struct
     int8_t      imu_b_gyro_offsets[3];
     int8_t      imu_b_accel_config[3];
     uint8_t     imu_disabled;
-    uint8_t     reserved[18];
+    uint8_t     imu_gyro_sensitivity[3];   // X, Y, Z — default 120 (1.20x)
+    uint8_t     imu_accel_sensitivity[3];  // X, Y, Z — default 100 (1.00x)
+    uint8_t     reserved[12];
 } imuConfig_s;

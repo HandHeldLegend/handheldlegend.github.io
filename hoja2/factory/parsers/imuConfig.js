@@ -36,8 +36,18 @@ export default class Imuconfig {
 	}
 
 	/** @type {Uint8Array} */
+	get imu_gyro_sensitivity() {
+		return this.#_getUint8Array(14, 3);
+	}
+
+	/** @type {Uint8Array} */
+	get imu_accel_sensitivity() {
+		return this.#_getUint8Array(17, 3);
+	}
+
+	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(14, 18);
+		return this.#_getUint8Array(20, 12);
 	}
 
 
@@ -73,8 +83,18 @@ export default class Imuconfig {
 	}
 
 	/** @param {Uint8Array} value */
-	set reserved(value) {
+	set imu_gyro_sensitivity(value) {
 		this.#_setUint8Array(14, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set imu_accel_sensitivity(value) {
+		this.#_setUint8Array(17, value);
+	}
+
+	/** @param {Uint8Array} value */
+	set reserved(value) {
+		this.#_setUint8Array(20, value);
 	}
 
 

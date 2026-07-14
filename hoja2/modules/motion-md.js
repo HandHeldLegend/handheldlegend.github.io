@@ -6,20 +6,60 @@ import IMUDataDisplay from '../components/imu-data-display.js';
 import TristateButton from '../components/tristate-button.js';
 import SingleShotButton from '../components/single-shot-button.js';
 import MultiPositionButton from '../components/multi-position-button.js';
+import NumberSelector from '../components/number-selector.js';
 
 import { enableTooltips } from '../js/tooltips.js';
 
 /** @type {HojaGamepad} */
 let gamepad = HojaGamepad.getInstance();
 const gyroCfgBlockNumber = 5;
+const SENSITIVITY_MIN = 50;
+const SENSITIVITY_MAX = 200;
+const GYRO_SENSITIVITY_DEFAULT = 120;
+const ACCEL_SENSITIVITY_DEFAULT = 100;
 let sensorVis = null;
 let imuDisplay = null;
 
 let debugInterval = null;
 let debugTime = 0;
 
+const AXIS_IDS = ['x', 'y', 'z'];
+
 async function writeRemapMemBlock() {
     await gamepad.sendBlock(gyroCfgBlockNumber);
+}
+
+function clampSensitivity(value, fallback) {
+    if (!value) return fallback;
+    return Math.max(SENSITIVITY_MIN, Math.min(SENSITIVITY_MAX, value));
+}
+
+function readSensitivityAxes(values, fallback) {
+    return AXIS_IDS.map((_, i) => clampSensitivity(values?.[i], fallback));
+}
+
+function setSensitivityAxis(getter, setter, axisIndex, value, fallback) {
+    const current = readSensitivityAxes(getter(), fallback);
+    current[axisIndex] = Math.max(SENSITIVITY_MIN, Math.min(SENSITIVITY_MAX, Math.round(value)));
+    setter(new Uint8Array(current));
+}
+
+function sensitivityAxisRows(idPrefix, values) {
+    return AXIS_IDS.map((axis, i) => `
+        <div class="app-row">
+            <h3 style="width: 24px;">${axis.toUpperCase()}</h3>
+            <div class="vert-separator"></div>
+            <number-selector 
+                id="${idPrefix}-${axis}"
+                type="integer"
+                min="${SENSITIVITY_MIN}"
+                max="${SENSITIVITY_MAX}"
+                step="1"
+                value="${values[i]}"
+                width="300"
+            ></number-selector>
+        </div>
+    `).join('');
 }
 
 function startSensorDebug(sensorVis, options = {}) {
@@ -137,9 +177,36 @@ function uint32ToRgbHex(uint32) {
     return hexString;
 }
 
+function bindSensitivitySliders(container, idPrefix, getter, setter, fallback) {
+    AXIS_IDS.forEach((axis, axisIndex) => {
+        /** @type {NumberSelector} */
+        const slider = container.querySelector(`number-selector[id="${idPrefix}-${axis}"]`);
+        slider.addEventListener('change', async (e) => {
+            setSensitivityAxis(getter, setter, axisIndex, e.detail.value, fallback);
+            await writeRemapMemBlock();
+        });
+    });
+}
+
+function applySensitivityToSliders(container, idPrefix, values) {
+    AXIS_IDS.forEach((axis, i) => {
+        /** @type {NumberSelector} */
+        const slider = container.querySelector(`number-selector[id="${idPrefix}-${axis}"]`);
+        slider.setState(values[i]);
+    });
+}
+
 export function render(container) {
 
     let hexColorBody = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
+    const gyroSensitivity = readSensitivityAxes(
+        gamepad.imu_cfg.imu_gyro_sensitivity,
+        GYRO_SENSITIVITY_DEFAULT
+    );
+    const accelSensitivity = readSensitivityAxes(
+        gamepad.imu_cfg.imu_accel_sensitivity,
+        ACCEL_SENSITIVITY_DEFAULT
+    );
 
     container.innerHTML = `
         <h2>Motion Settings</h2>
@@ -162,6 +229,7 @@ export function render(container) {
                 width="150"
             ></multi-position-button>
         </div>
+
         <div class="separator"></div>
         <h2>Visualizer</h2>
         <sensor-visualization
@@ -173,6 +241,28 @@ export function render(container) {
         ></sensor-visualization>
         <div class="separator"></div>
         <imu-data-display></imu-data-display>
+
+        <div class="separator"></div>
+        <h2>Gyro Sensitivity</h2>
+        ${sensitivityAxisRows('gyro-sensitivity', gyroSensitivity)}
+
+        <h2>Accelerometer Sensitivity</h2>
+        ${sensitivityAxisRows('accel-sensitivity', accelSensitivity)}
+
+        <div class="separator"></div>
+        <div class="app-row">
+            <h3>Defaults</h3>
+            <single-shot-button 
+                id="reset-sensitivity-button"
+                state="ready"
+                ready-text="Reset"
+                disabled-text="Reset"
+                pending-text="Resetting..."
+                success-text="Success"
+                failure-text="Error"
+                tooltip="Reset gyro and accelerometer sensitivity to defaults."
+            ></single-shot-button>
+        </div>
     `;
 
     sensorVis = container.querySelector('sensor-visualization');
@@ -190,6 +280,35 @@ export function render(container) {
         console.log("IMU Disable Changed.");
         gamepad.imu_cfg.imu_disabled = e.detail.selectedIndex;
         await writeRemapMemBlock();
+    });
+
+    bindSensitivitySliders(
+        container,
+        'gyro-sensitivity',
+        () => gamepad.imu_cfg.imu_gyro_sensitivity,
+        (value) => { gamepad.imu_cfg.imu_gyro_sensitivity = value; },
+        GYRO_SENSITIVITY_DEFAULT
+    );
+
+    bindSensitivitySliders(
+        container,
+        'accel-sensitivity',
+        () => gamepad.imu_cfg.imu_accel_sensitivity,
+        (value) => { gamepad.imu_cfg.imu_accel_sensitivity = value; },
+        ACCEL_SENSITIVITY_DEFAULT
+    );
+
+    const resetButton = container.querySelector('single-shot-button[id="reset-sensitivity-button"]');
+    resetButton.setOnClick(async () => {
+        const gyroDefaults = [GYRO_SENSITIVITY_DEFAULT, GYRO_SENSITIVITY_DEFAULT, GYRO_SENSITIVITY_DEFAULT];
+        const accelDefaults = [ACCEL_SENSITIVITY_DEFAULT, ACCEL_SENSITIVITY_DEFAULT, ACCEL_SENSITIVITY_DEFAULT];
+
+        gamepad.imu_cfg.imu_gyro_sensitivity = new Uint8Array(gyroDefaults);
+        gamepad.imu_cfg.imu_accel_sensitivity = new Uint8Array(accelDefaults);
+        applySensitivityToSliders(container, 'gyro-sensitivity', gyroDefaults);
+        applySensitivityToSliders(container, 'accel-sensitivity', accelDefaults);
+        await writeRemapMemBlock();
+        return true;
     });
 
     enableTooltips(container);
