@@ -52,10 +52,10 @@ class AngleModifier extends HTMLElement {
                 
                 <div class="in-data-grid">
                     <span class="label-micro">∠ In</span>
-                    <input type="number" step="0.01" class="edit-input val-micro in-a" value="${p.inAngle.toFixed(2)}">
+                    <input title="Input Angle" type="number" step="0.01" class="edit-input val-micro in-a" value="${p.inAngle.toFixed(2)}">
                     
                     <span class="label-micro">D In</span>
-                    <input type="number" step="0.01" class="edit-input val-micro in-d" value="${p.inDist.toFixed(2)}">
+                    <input title="Input Distance" type="number" step="0.01" class="edit-input val-micro in-d" value="${p.inDist.toFixed(2)}">
                 </div>
 
                 <div class="input-col">

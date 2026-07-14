@@ -30,7 +30,7 @@ export function render(container) {
 
     let hapticTriggerBlock = `
     <div class="separator"></div>
-    <h2>Haptic Triggers</h2>
+    <h2>Haptic Triggers<div class="header-tooltip" tooltip="Enable haptic feedback when the trigger is pressed past its activation threshold or delta value, set in Input.">?</div></h2>
     <multi-position-button 
         width="130"
         id="haptic-trigger-mode" 
@@ -93,4 +93,5 @@ export function render(container) {
             await writeHapticMemBlock();
     });
     }
+    enableTooltips(container);
 }

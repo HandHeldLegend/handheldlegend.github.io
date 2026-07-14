@@ -435,6 +435,7 @@ export function render(container) {
                     off-to-on-text="Calibrate"
                     on-to-off-text="Stop"
                     width="70"
+                    tooltip="Calibrate both analog sticks."
                 ></tristate-button>
 
                 <single-shot-button 
@@ -462,6 +463,7 @@ export function render(container) {
                     options="Off, On"
                     selected="0"
                     width="100"
+                    tooltip="Enable the joystick trace inside the visualizer as the stick is moved."
                 ></multi-position-button>
                 </div>
 
@@ -471,8 +473,9 @@ export function render(container) {
                     options="Full, GC, Melee, N64"
                     selected="0"
                     width="180"
-                ></multi-position-button>
-                <div class="header-tooltip" tooltip="Show the translated coordinates for a given gamepad mode.">?</div>
+                    tooltip="Show the translated coordinates for a given gamepad mode."
+                >
+                </multi-position-button>
                 </div>
 
                 <joystick-visualizer id="joystick"></joystick-visualizer>

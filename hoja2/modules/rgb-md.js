@@ -145,6 +145,15 @@ export function render(container) {
             <div class="separator"></div>
 
             <h2>Mode</h2>
+            <!--
+            Tentative tooltip
+            <div class="header-tooltip" tooltip="Chroma: Colors change based on gamepad profile and its outputs.
+                User: Glow solid colors.
+                Rainbow: Colors change over time across the spectrum.
+                React: Colors flash on when input is pressed, then fade back off on release.
+                Fairy: Colors change across inputs based on the color list."
+            >?</div>
+            -->
             <multi-position-button 
                 id="rgb-mode-select" 
                 options="Chroma, User, Rainbow, React, Fairy"

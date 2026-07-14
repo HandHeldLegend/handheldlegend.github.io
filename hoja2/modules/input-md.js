@@ -616,7 +616,7 @@ export function render(container) {
             <h2>Input Mode</h2>
             <multi-position-button 
                 id="input-mode-select" 
-                options="SW, XI, SNES, N64, GC, SI"
+                options="Switch, Xinput, SNES, N64, GCube, Steam"
                 width="300"
                 default-selected="0"
             ></multi-position-button>
