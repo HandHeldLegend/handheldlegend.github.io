@@ -10,8 +10,8 @@ typedef struct
         uint16_t    rx_center : 15;
         uint16_t    ry_invert : 1;
         uint16_t    ry_center : 15; 
-        joyConfigSlot_s joy_config_l[16]; // SIZE=21
-        joyConfigSlot_s joy_config_r[16]; // SIZE=21
+        joyConfigSlot_s  joy_config_l[16]; // SIZE=21
+        joyConfigSlot_s  joy_config_r[16]; // SIZE=21
         uint16_t    l_deadzone; 
         uint16_t    r_deadzone; 
         uint8_t     l_snapback_type;
@@ -20,7 +20,8 @@ typedef struct
         uint16_t    r_deadzone_outer; 
         uint16_t    l_snapback_intensity; 
         uint16_t    r_snapback_intensity;
-        uint16_t    l_threshold; // Analog->Digital threshold for left joystick
-        uint16_t    r_threshold; // Analog->Digital threshold for right joystick
-        uint8_t     reserved[324];
+        // Exp scalers: stored = sensitivity - 49 (range 1..251, default 51 => 100 / 1.00x)
+        uint8_t     l_exp_scaler;
+        uint8_t     r_exp_scaler;
+        uint8_t     reserved[326];
 } analogConfig_s;

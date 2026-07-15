@@ -25,6 +25,25 @@ class NumberSelector extends HTMLElement {
         return ['width', 'type', 'min', 'max', 'step', 'value', 'label'];
     }
 
+    static decimalPlacesForStep(step) {
+        if (!Number.isFinite(step) || step <= 0) return 0;
+        const stepStr = step.toString().toLowerCase();
+        if (stepStr.includes('e-')) {
+            return parseInt(stepStr.split('e-')[1], 10) || 0;
+        }
+        const dot = stepStr.indexOf('.');
+        return dot === -1 ? 0 : stepStr.length - dot - 1;
+    }
+
+    getDecimalPlaces(config = this.getConfig()) {
+        if (config.type !== 'float') return 0;
+        return NumberSelector.decimalPlacesForStep(config.step);
+    }
+
+    formatValue(value, config = this.getConfig()) {
+        return Number(value).toFixed(this.getDecimalPlaces(config));
+    }
+
     async connectedCallback() {
         // Load the component-specific CSS
         const csstext = await fetch('./components/number-selector.css');
@@ -68,11 +87,11 @@ class NumberSelector extends HTMLElement {
                     class="slider" 
                     min="${config.min}" 
                     max="${config.max}" 
-                    value="${config.value.toFixed(config.type === 'float' ? 1 : 0)}"
+                    value="${this.formatValue(config.value, config)}"
                     step="${config.step}"
                 >
             </div>
-            <div class="value-display">${config.value.toFixed(config.type === 'float' ? 1 : 0)}</div>
+            <div class="value-display">${this.formatValue(config.value, config)}</div>
             <button orientation="right" class="btn-control btn-increase">▶</button>
             </div>
         `;
@@ -103,7 +122,7 @@ class NumberSelector extends HTMLElement {
                 e.target.value = value;
             }
 
-            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 1 : 0);
+            valueDisplay.textContent = this.formatValue(value, config);
 
             if (!this._isInternalUpdate)
                 this.dispatchEvent(
@@ -123,7 +142,7 @@ class NumberSelector extends HTMLElement {
                 e.target.value = value;
             }
 
-            valueDisplay.textContent = value.toFixed(config.type === 'float' ? 1 : 0);
+            valueDisplay.textContent = this.formatValue(value, config);
         });
 
         // Decrease button
@@ -148,16 +167,13 @@ class NumberSelector extends HTMLElement {
     // Get the current state of the selector
     getState() {
         const slider = this.shadowRoot.querySelector('.slider');
-        const valueDisplay = this.shadowRoot.querySelector('.value-display');
         const config = this.getConfig();
 
         return {
             value: parseFloat(slider.value),
             label: config.label,
             type: config.type,
-            formattedValue: config.type === 'float'
-                ? parseFloat(slider.value).toFixed(1)
-                : parseInt(slider.value, 10),
+            formattedValue: this.formatValue(slider.value, config),
         };
     }
 
@@ -188,7 +204,7 @@ class NumberSelector extends HTMLElement {
 
         // Update the slider and display
         slider.value = clampedValue;
-        valueDisplay.textContent = clampedValue.toFixed(config.type === 'float' ? 1 : 0);
+        valueDisplay.textContent = this.formatValue(clampedValue, config);
 
         this._isInternalUpdate = false;
     }

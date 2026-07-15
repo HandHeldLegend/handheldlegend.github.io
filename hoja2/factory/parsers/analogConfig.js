@@ -116,19 +116,19 @@ export default class Analogconfig {
 		return this.#_getUint16(694);
 	}
 
-	/** @type {Uint16} */
-	get l_threshold() {
-		return this.#_getUint16(696);
+	/** @type {Uint8} */
+	get l_exp_scaler() {
+		return this.#_getUint8(696);
 	}
 
-	/** @type {Uint16} */
-	get r_threshold() {
-		return this.#_getUint16(698);
+	/** @type {Uint8} */
+	get r_exp_scaler() {
+		return this.#_getUint8(697);
 	}
 
 	/** @type {Uint8Array} */
 	get reserved() {
-		return this.#_getUint8Array(700, 324);
+		return this.#_getUint8Array(698, 326);
 	}
 
 
@@ -237,19 +237,19 @@ export default class Analogconfig {
 		this.#_setUint16(694, value);
 	}
 
-	/** @param {Uint16} value */
-	set l_threshold(value) {
-		this.#_setUint16(696, value);
+	/** @param {Uint8} value */
+	set l_exp_scaler(value) {
+		this.#_setUint8(696, value);
 	}
 
-	/** @param {Uint16} value */
-	set r_threshold(value) {
-		this.#_setUint16(698, value);
+	/** @param {Uint8} value */
+	set r_exp_scaler(value) {
+		this.#_setUint8(697, value);
 	}
 
 	/** @param {Uint8Array} value */
 	set reserved(value) {
-		this.#_setUint8Array(700, value);
+		this.#_setUint8Array(698, value);
 	}
 
 

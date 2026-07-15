@@ -31,11 +31,35 @@ let currentConfigSlots;
 
 let innerDeadzone = 0;
 let outerDeadzone = 0;
+let expMultiplier = 1.0;
 
 let analogModuleContainer;
 
 let dzInnerPicker;
 let dzOuterPicker;
+let expCurvePicker;
+
+// Exponential curve encoding (matches firmware ANALOG_EXP_*)
+// User-facing value is the exponent multiplier (0.50–3.00).
+const STORED_MIN = 1;
+const STORED_MAX = 251;
+const STORED_DEFAULT = 51;
+const SENSITIVITY_OFFSET = 49;
+const MULTIPLIER_MIN = 0.50;
+const MULTIPLIER_MAX = 3.00;
+const MULTIPLIER_DEFAULT = 1.00;
+
+function storedToMultiplier(stored) {
+    if (stored < STORED_MIN || stored > STORED_MAX) {
+        return (STORED_DEFAULT + SENSITIVITY_OFFSET) / 100;
+    }
+    return (stored + SENSITIVITY_OFFSET) / 100;
+}
+
+function multiplierToStored(multiplier) {
+    const clamped = Math.max(MULTIPLIER_MIN, Math.min(MULTIPLIER_MAX, multiplier));
+    return Math.round(clamped * 100) - SENSITIVITY_OFFSET;
+}
 
 /** @type {AngleModifier} */
 let angleMods;
@@ -128,10 +152,12 @@ async function writeAngleMemBlock() {
         gamepad.analog_cfg.joy_config_l = currentConfigSlots;
         gamepad.analog_cfg.l_deadzone = innerDeadzone;
         gamepad.analog_cfg.l_deadzone_outer = outerDeadzone;
+        gamepad.analog_cfg.l_exp_scaler = multiplierToStored(expMultiplier);
     } else if (selectedAxis == 1) {
         gamepad.analog_cfg.joy_config_r = currentConfigSlots;
         gamepad.analog_cfg.r_deadzone = innerDeadzone;
         gamepad.analog_cfg.r_deadzone_outer = outerDeadzone;
+        gamepad.analog_cfg.r_exp_scaler = multiplierToStored(expMultiplier);
     }
 
     gamepad.analog_cfg.analog_calibration_set = 1;
@@ -150,6 +176,9 @@ async function populateUIElements(refresh = false) {
 
     innerDeadzone = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone : gamepad.analog_cfg.r_deadzone;
     outerDeadzone = selectedAxis === 0 ? gamepad.analog_cfg.l_deadzone_outer : gamepad.analog_cfg.r_deadzone_outer;
+    expMultiplier = storedToMultiplier(
+        selectedAxis === 0 ? gamepad.analog_cfg.l_exp_scaler : gamepad.analog_cfg.r_exp_scaler
+    );
 
     if(analogModuleContainer) {
 
@@ -157,6 +186,9 @@ async function populateUIElements(refresh = false) {
         if(dzInnerPicker && dzOuterPicker) {
             dzInnerPicker.setState(innerDeadzone);
             dzOuterPicker.setState(outerDeadzone);
+        }
+        if(expCurvePicker) {
+            expCurvePicker.setState(expMultiplier);
         }
         // --------------------------
 
@@ -428,6 +460,20 @@ export function render(container) {
             </div>
 
             <div class="app-row">
+                <h3 style="width: 64px;">Curve<div class="header-tooltip" tooltip="Exponential response curve multiplier. 1.00 is linear. Below 1 softens near center; above 1 sharpens mid-stick response. Range 0.50–3.00.">?</div></h3>
+                <div class="vert-separator" style="margin-left:20px"></div>
+                <number-selector 
+                    id="exp-curve-picker" 
+                    type="float" 
+                    min="${MULTIPLIER_MIN}" 
+                    max="${MULTIPLIER_MAX}" 
+                    step="0.01" 
+                    value="${MULTIPLIER_DEFAULT}"
+                    width="240"
+                ></number-selector>
+            </div>
+
+            <div class="app-row">
                 <tristate-button 
                     id="calibrate-button" 
                     off-text="Calibrate" 
@@ -683,9 +729,10 @@ export function render(container) {
     });
     // -----------------------------
 
-    // DEADZONE ADJUSTMENT HANDLERS
+    // DEADZONE / CURVE ADJUSTMENT HANDLERS
     dzInnerPicker = container.querySelector('number-selector[id="inner-deadzone-picker"]');
     dzOuterPicker = container.querySelector('number-selector[id="outer-deadzone-picker"]');
+    expCurvePicker = container.querySelector('number-selector[id="exp-curve-picker"]');
 
     dzInnerPicker.addEventListener('change', async (e) => {
         innerDeadzone = e.detail.value;
@@ -695,6 +742,12 @@ export function render(container) {
 
     dzOuterPicker.addEventListener('change', async (e) => {
         outerDeadzone = e.detail.value;
+        await writeAngleMemBlock();
+        populateUIElements();
+    });
+
+    expCurvePicker.addEventListener('change', async (e) => {
+        expMultiplier = e.detail.value;
         await writeAngleMemBlock();
         populateUIElements();
     });
