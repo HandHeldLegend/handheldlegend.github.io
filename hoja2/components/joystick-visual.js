@@ -19,6 +19,8 @@ class JoystickVisualizer extends HTMLElement {
         this._axisOutputScaler = 1.0;
         this._axisOutputRoundingPoints = 0;
         this._meleeMode = false;
+        this._rawColor = 'rgba(255, 51, 40, 0.79)';
+        this._scaledColor = 'rgba(74, 40, 255, 0.79)';
     }
 
     async connectedCallback() {
@@ -47,6 +49,16 @@ class JoystickVisualizer extends HTMLElement {
                         </div>
                     </div>
                     <canvas class="joystick-canvas"></canvas>
+                    <div class="legend-overlay">
+                        <span class="legend-item">
+                            <span class="legend-dot" style="background:${this._rawColor}"></span>
+                            Raw
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-dot" style="background:${this._scaledColor}"></span>
+                            Scaled
+                        </span>
+                    </div>
                 </div>
             </div>
         `;
@@ -100,8 +112,8 @@ class JoystickVisualizer extends HTMLElement {
 
 
             // Draw positions
-            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.rawX, this.state.rawY, 'rgba(255, 51, 40, 0.79)', 6);
-            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.scaledX, this.state.scaledY, 'rgba(74, 40, 255, 0.79)', 6);
+            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.rawX, this.state.rawY, this._rawColor, 6);
+            this.drawPosition(ctx, centerX, centerY, maxRadius, this.state.scaledX, this.state.scaledY, this._scaledColor, 6);
 
             this.updateDisplays();
         } catch (err) {
