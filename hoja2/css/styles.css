@@ -184,6 +184,41 @@ body {
     display: none;
 }
 
+.debug-button {
+    min-width: fit-content;
+    padding: 0 10px;
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+    cursor: pointer;
+    margin: auto;
+    background: var(--color-p5-grad);
+    background-color: var(--color-p5);
+    border: var(--spacing-xs) solid var(--color-p5-dark);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
+    user-select: none;
+}
+
+.debug-button[visible="false"] {
+    display: none;
+}
+
+.debug-button[data-active="true"] {
+    background: var(--color-p2-grad);
+    background-color: var(--color-p2);
+    border-color: var(--color-p2-dark);
+}
+
+@media (hover: hover) {
+    .debug-button:hover:not(:active) {
+        filter: brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+    }
+}
+
 @media (hover: hover) {
     .install-button:hover:not(:active) {
         filter:brightness(1.1);
@@ -247,10 +282,77 @@ body {
 .header-msg-box[visible=true] {
     align-items: center;
     text-align: center;
-    max-height: 550px;
+    max-height: 720px;
     /* Adjust as needed */
     padding-bottom: 8px;
     padding-top: 8px;
+}
+
+.fw-update-box h2 {
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+.fw-install-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    max-width: 360px;
+    margin: 4px 0 8px;
+}
+
+.fw-install-picker[hidden] {
+    display: none;
+}
+
+.fw-install-picker label {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.fw-install-picker select {
+    width: 100%;
+    max-width: 320px;
+    height: var(--button-h);
+    border-radius: var(--border-radius-sm);
+    border: var(--spacing-xs) solid var(--color-p2-dark);
+    background: var(--background-mid);
+    color: var(--color-text-primary);
+    padding: 0 10px;
+    font-size: var(--font-size-md);
+}
+
+.fw-uf2-tips {
+    width: 100%;
+    max-width: 420px;
+    margin: 4px 0 8px;
+    padding: 10px 14px;
+    text-align: left;
+    background: color-mix(in srgb, var(--background-mid) 70%, black);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid color-mix(in srgb, var(--color-p1) 40%, transparent);
+}
+
+.fw-uf2-tips[hidden] {
+    display: none;
+}
+
+.fw-uf2-tips ol {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+}
+
+.fw-uf2-tips li + li {
+    margin-top: 6px;
+}
+
+.fw-uf2-tips strong {
+    color: var(--color-p1-light);
 }
 
 .header-msg-box p {

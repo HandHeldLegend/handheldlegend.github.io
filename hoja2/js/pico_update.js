@@ -4,53 +4,19 @@ const INTERFACE_CLASS = 255; // Vendor-specific interface class
 
 const FLASH_ERASE_CMD = 0x03;
 const FLASH_WRITE_CMD = 0x05;
-const ENTER_XIP_CMD = 0x07;
 const EXIT_XIP_CMD = 0x06;
 const EXCLUSIVE_CMD = 0x01;
 const REBOOT_CMD = 0x02;
-const USER_TOKEN = 0xFEFE;
 const MAGIC_NUM = 0x431fd10b;
-
-function updateProgress(percent, isFlashing = false) {
-    const progressBar = document.getElementById('progressBar');
-    const statusText = document.getElementById('statusText');
-    const percentage = document.getElementById('percentage');
-    
-    if (!progressBar || !statusText || !percentage) {
-        console.log(`Progress: ${Math.round(percent)}% ${isFlashing ? '(Flashing)' : '(Downloading)'}`);
-        return;
-    }
-    
-    // Clamp percentage between 0 and 100
-    percent = Math.max(0, Math.min(100, percent));
-    
-    // Update progress bar width
-    progressBar.style.width = percent + '%';
-    
-    // Update color based on phase
-    if (isFlashing) {
-        progressBar.classList.add('flashing');
-        statusText.textContent = 'Flashing firmware...';
-    } else {
-        progressBar.classList.remove('flashing');
-        statusText.textContent = percent === 100 ? 'Download complete' : 'Downloading firmware...';
-    }
-    
-    // Update percentage display
-    percentage.textContent = Math.round(percent) + '%';
-    
-    // Update status for completion
-    if (percent === 100) {
-        if (isFlashing) {
-            statusText.textContent = 'Firmware update complete!';
-        }
-    }
-}
 
 let picoDevice;
 let interfaceNumber = null;
 let endpointOut = null;
 let endpointIn = null;
+
+/** Cached UF2 payload when Picoboot fails and we need a staged folder-picker step */
+let cachedUf2ForPicker = null;
+let cachedUf2Url = null;
 
 var userToken = 1;
 function getUserToken() {
@@ -58,6 +24,68 @@ function getUserToken() {
     userToken += 1;
     userToken %= 0xFFFFFFFF;
     return ret;
+}
+
+export function supportsDirectoryPicker() {
+    // File System Access API requires a secure context (https or localhost).
+    return typeof window.showDirectoryPicker === 'function' && window.isSecureContext === true;
+}
+
+function withTimeout(promise, ms, label = 'operation') {
+    let timer;
+    return Promise.race([
+        promise.finally(() => clearTimeout(timer)),
+        new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+        }),
+    ]);
+}
+
+function updateProgress(percent, isFlashing = false, message = null) {
+    const progressBar = document.getElementById('progressBar');
+    const statusText = document.getElementById('statusText');
+    const percentage = document.getElementById('percentage');
+
+    if (!progressBar || !statusText || !percentage) {
+        console.log(`Progress: ${Math.round(percent)}% ${message || ''}`);
+        return;
+    }
+
+    percent = Math.max(0, Math.min(100, percent));
+    progressBar.style.width = percent + '%';
+
+    if (isFlashing) {
+        progressBar.classList.add('flashing');
+    } else {
+        progressBar.classList.remove('flashing');
+    }
+
+    percentage.textContent = Math.round(percent) + '%';
+
+    if (message) {
+        statusText.textContent = message;
+        return;
+    }
+
+    if (isFlashing) {
+        statusText.textContent = percent === 100
+            ? 'Firmware update complete!'
+            : 'Flashing firmware...';
+    } else {
+        statusText.textContent = percent === 100
+            ? 'Download complete'
+            : 'Downloading firmware...';
+    }
+}
+
+export function setUpdateStatus(message, percent = null, isFlashing = false) {
+    if (percent == null) {
+        const statusText = document.getElementById('statusText');
+        if (statusText) statusText.textContent = message;
+        else console.log(message);
+        return;
+    }
+    updateProgress(percent, isFlashing, message);
 }
 
 class PicobootCmd {
@@ -79,22 +107,6 @@ class PicobootCmd {
         this.bCmdSize = 12;
     }
 
-    setReboot2Cmd(dFlags, dDelayMS, dParam0, dParam1) {
-        const view = new DataView(this.args);
-        view.setUint32(0, dFlags, true);
-        view.setUint32(4, dDelayMS, true);
-        view.setUint32(8, dParam0, true);
-        view.setUint32(12, dParam1, true);
-        this.bCmdSize = 16;
-    }
-
-    setAddressOnlyCmd(dAddr) {
-        const view = new DataView(this.args);
-        view.setUint32(0, dAddr, true);
-        this.bCmdSize = 4;
-    }
-
-    // Used for write/read
     setRangeCmd(dAddr, dSize) {
         const view = new DataView(this.args);
         view.setUint32(0, dAddr, true);
@@ -102,38 +114,10 @@ class PicobootCmd {
         this.bCmdSize = 8;
     }
 
-    setExec2Cmd(imageBase, imageSize, workareaBase, workareaSize) {
-        const view = new DataView(this.args);
-        view.setUint32(0, imageBase, true);
-        view.setUint32(4, imageSize, true);
-        view.setUint32(8, workareaBase, true);
-        view.setUint32(12, workareaSize, true);
-        this.bCmdSize = 16;
-    }
-
     setExclusiveCmd(bExclusive) {
         const view = new DataView(this.args);
         view.setUint8(0, bExclusive);
         this.bCmdSize = 1;
-    }
-
-    setOtpCmd(wRow, wRowCount, bEcc) {
-        const view = new DataView(this.args);
-        view.setUint16(0, wRow, true);
-        view.setUint16(2, wRowCount, true);
-        view.setUint8(4, bEcc);
-        this.bCmdSize = 5;
-    }
-
-    setGetInfoCmd(bType, bParam, wParam, dParams) {
-        const view = new DataView(this.args);
-        view.setUint8(0, bType);
-        view.setUint8(1, bParam);
-        view.setUint16(2, wParam, true);
-        view.setUint32(4, dParams[0], true);
-        view.setUint32(8, dParams[1], true);
-        view.setUint32(12, dParams[2], true);
-        this.bCmdSize = 16;
     }
 
     toUint8Array() {
@@ -154,127 +138,396 @@ class PicobootCmd {
     }
 }
 
-export async function pico_exit_bootloader_attempt() {
-    console.log("Attempting pico bootloader exit.");
-    
-    updateProgress(0, true); // Show some activity
-
-    try {
-        picoDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: VID, productId: PID }] });
-        await picoDevice.open();
-
-        updateProgress(50, true);
-
-        // Find and claim the specific interface
-        await findAndClaimInterface(picoDevice);
-
-        // Reboot the device
-        await rebootDevice();
-
-        updateProgress(100, true);
-        console.log('Flashing complete. Device rebooted.');
-
-        return true;
-    } catch (error) {
-        console.error('Error:', error);
-        updateProgress(0, false); // Reset on error
-    }
+function isUserCancelled(error) {
+    if (!error) return false;
+    const name = error.name || '';
+    return name === 'NotFoundError' || name === 'AbortError';
 }
 
 function convertUf2ToBinUrl(url) {
-    const match = url.toLowerCase().lastIndexOf(".uf2");
-    if (match === -1) return url; // fallback if .uf2 not found
-
-    return url.slice(0, match) + ".bin";
+    if (!url) return url;
+    const match = url.toLowerCase().lastIndexOf('.uf2');
+    if (match === -1) return url;
+    return url.slice(0, match) + '.bin';
 }
 
-// Pass through our file data
-// BIN format only!
-export async function pico_update_attempt_flash(url, checksum) {
-    let binData = null;
-    let gotBinOK = false;
-    let furl = convertUf2ToBinUrl(url);
+function ensureUf2Url(url) {
+    if (!url) return url;
+    if (url.toLowerCase().endsWith('.uf2')) return url;
+    if (url.toLowerCase().endsWith('.bin')) {
+        return url.slice(0, -4) + '.uf2';
+    }
+    return url;
+}
 
+async function sha256Hex(buffer) {
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    return Array.from(new Uint8Array(hashBuffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+}
 
-    console.log("Downloading firmware from:", furl);
+async function downloadFirmware(url, label = 'Downloading firmware...') {
+    updateProgress(10, false, label);
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    updateProgress(40, false, label);
+    const data = await response.arrayBuffer();
+    updateProgress(70, false, 'Download complete');
+    return data;
+}
 
-    // Reset progress at start
-    updateProgress(0, false);
-
+async function closePicoDevice() {
+    if (!picoDevice) return;
     try {
-        // Fetch the binary file with progress tracking
-        updateProgress(10, false); // Starting download
-        
-        const response = await fetch(furl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (interfaceNumber != null && picoDevice.opened) {
+            await picoDevice.releaseInterface(interfaceNumber);
         }
-        
-        updateProgress(30, false); // Download started
-        
-        // Get the response as array buffer
-        binData = await response.arrayBuffer();
-        
-        updateProgress(60, false); // Download complete
-        
-        // Calculate SHA-256 checksum
-        updateProgress(70, false); // Starting verification
-        
-        const hashBuffer = await crypto.subtle.digest('SHA-256', binData);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const calculatedChecksum = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        
-        updateProgress(80, false); // Verification in progress
-        
-        // Compare checksums
-        if (calculatedChecksum.toLowerCase() === checksum.toLowerCase()) {
-            console.log("Bin retrieved and file verified...");
-            gotBinOK = true;
-            updateProgress(100, false); // Download and verification complete
-        } else {
-            console.error("BIN checksum failure");
-            gotBinOK = false;
-            updateProgress(100, false); // Mark as complete even if failed
+    } catch (_) { /* ignore */ }
+    try {
+        if (picoDevice.opened) await picoDevice.close();
+    } catch (_) { /* ignore */ }
+    picoDevice = null;
+    interfaceNumber = null;
+    endpointOut = null;
+    endpointIn = null;
+}
+
+/**
+ * Request the Pico bootloader and claim the Picoboot vendor interface.
+ * Prefers an already-authorized device from getDevices() so no picker is needed.
+ * @param {{ allowRequestDevice?: boolean }} [options]
+ * @returns {{ ok: true } | { ok: false, cancelled: boolean, needsPermission: boolean, claimFailed?: boolean, error?: Error }}
+ */
+export async function pico_try_claim_bootloader(options = {}) {
+    const allowRequestDevice = options.allowRequestDevice !== false;
+    // claimInterface can hang forever on Windows when WinUSB is not bound
+    const claimTimeoutMs = options.claimTimeoutMs ?? 2000;
+    interfaceNumber = null;
+    endpointOut = null;
+    endpointIn = null;
+
+    const tryOpenAndClaim = async (device) => {
+        picoDevice = device;
+        if (!picoDevice.opened) {
+            await withTimeout(picoDevice.open(), claimTimeoutMs, 'USB open');
+        }
+        await withTimeout(findAndClaimInterface(picoDevice), claimTimeoutMs, 'USB claim');
+        if (interfaceNumber === null) {
+            throw new Error('Vendor interface not found');
+        }
+        return { ok: true };
+    };
+
+    const failClaim = (error, { cancelled = false, needsPermission = false } = {}) => ({
+        ok: false,
+        cancelled,
+        needsPermission,
+        claimFailed: true,
+        error,
+    });
+
+    // Already-permitted Pico (e.g. after a connect event) — no user gesture required
+    let hadKnownDevice = false;
+    try {
+        const existing = await navigator.usb.getDevices();
+        const known = existing.find((d) => d.vendorId === VID && d.productId === PID);
+        if (known) {
+            hadKnownDevice = true;
+            try {
+                return await tryOpenAndClaim(known);
+            } catch (error) {
+                console.warn('Could not claim known Pico bootloader:', error);
+                await closePicoDevice();
+                // Do not pop another USB picker — fall through to UF2
+                return failClaim(error, {
+                    needsPermission: !allowRequestDevice,
+                });
+            }
         }
     } catch (error) {
-        console.error('Error verifying checksum:', error);
-        gotBinOK = false;
-        updateProgress(100, false); // Mark as complete on error
+        console.warn('getDevices failed:', error);
     }
 
-    // Short delay to show download completion
-    await new Promise(resolve => setTimeout(resolve, 500));
+    if (!allowRequestDevice) {
+        return failClaim(
+            new Error('Bootloader present but not claimable without a user gesture'),
+            { needsPermission: true }
+        );
+    }
+
+    // Known device already failed claim — only skip requestDevice on auto-flow (no user gesture)
+    if (hadKnownDevice && !allowRequestDevice) {
+        return failClaim(new Error('Picoboot interface unavailable'));
+    }
 
     try {
-        picoDevice = await navigator.usb.requestDevice({ filters: [{ vendorId: VID, productId: PID }] });
-        await picoDevice.open();
+        updateProgress(0, true, 'Select the Pico bootloader in the browser popup...');
+        const device = await navigator.usb.requestDevice({
+            filters: [{ vendorId: VID, productId: PID }],
+        });
+        return await tryOpenAndClaim(device);
+    } catch (error) {
+        console.error('Picoboot claim failed:', error);
+        await closePicoDevice();
+        return failClaim(error, { cancelled: isUserCancelled(error) });
+    }
+}
 
-        // Find and claim the specific interface
-        await findAndClaimInterface(picoDevice);
+/**
+ * Write a UF2 image to the RPI-RP2 drive via the File System Access API.
+ * Call this only after the UI has shown instructions — the OS picker covers the page.
+ */
+function isExpectedUf2EjectError(error) {
+    const msg = String(error?.message || error).toLowerCase();
+    const name = error?.name || '';
+    // After a UF2 write the Pico reboots and unmounts RPI-RP2 mid-close.
+    return (
+        name === 'AbortError' ||
+        name === 'NotFoundError' ||
+        name === 'InvalidStateError' ||
+        msg.includes('aborted') ||
+        msg.includes('security policy') ||
+        msg.includes('not found') ||
+        msg.includes('no such file') ||
+        msg.includes('the requesting window')
+    );
+}
 
-        if (interfaceNumber === null) {
-            console.log('Failed to find the correct interface.');
+export async function pico_write_uf2_via_picker(uf2Data) {
+    if (!supportsDirectoryPicker()) {
+        throw new Error('Folder picker is blocked here. Use https or http://localhost (not a raw IP).');
+    }
+
+    updateProgress(0, true, 'Waiting for folder selection...');
+
+    let dirHandle;
+    try {
+        dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    } catch (error) {
+        if (isUserCancelled(error)) throw error;
+        const msg = String(error?.message || error);
+        if (error?.name === 'SecurityError' || msg.toLowerCase().includes('security policy')) {
+            throw new Error('Folder picker blocked by browser security policy. Use https or http://localhost.');
+        }
+        throw error;
+    }
+
+    // Confirm this looks like a Pico bootloader volume
+    try {
+        await dirHandle.getFileHandle('INFO_UF2.TXT');
+    } catch (_) {
+        throw new Error('That folder is not RPI-RP2. Look for INFO_UF2.TXT and try again.');
+    }
+
+    updateProgress(30, true, 'Writing UF2 to RPI-RP2...');
+
+    const fileHandle = await dirHandle.getFileHandle('firmware.uf2', { create: true });
+    const writable = await fileHandle.createWritable();
+
+    try {
+        await writable.write(uf2Data);
+    } catch (error) {
+        // Write can also abort if the volume ejects very quickly — treat as success.
+        if (!isExpectedUf2EjectError(error)) {
+            try { await writable.abort(); } catch (_) { /* ignore */ }
+            throw error;
+        }
+        console.warn('UF2 write ended with expected eject error (device likely rebooted):', error);
+    }
+
+    try {
+        await writable.close();
+    } catch (error) {
+        // Expected: Pico reboots as soon as the UF2 lands and the drive disappears.
+        console.warn('UF2 close after write (expected if device rebooted):', error);
+    }
+
+    cachedUf2ForPicker = null;
+    cachedUf2Url = null;
+
+    updateProgress(100, true, 'UF2 written. Device should reboot.');
+    return true;
+}
+
+/**
+ * Complete a previously staged UF2 write (firmware already downloaded).
+ */
+export async function pico_complete_uf2_picker_flash() {
+    if (!cachedUf2ForPicker) {
+        throw new Error('No firmware ready. Click Update to prepare the file again.');
+    }
+    return pico_write_uf2_via_picker(cachedUf2ForPicker);
+}
+
+export function pico_has_cached_uf2() {
+    return !!cachedUf2ForPicker;
+}
+
+export function pico_get_cached_uf2_url() {
+    return cachedUf2Url;
+}
+
+function stageUf2Picker(uf2Data, uf2Url) {
+    cachedUf2ForPicker = uf2Data;
+    cachedUf2Url = uf2Url;
+    updateProgress(100, false, 'Firmware ready - select the RPI-RP2 drive next.');
+    return { needsUserAction: true, reason: 'directory-picker' };
+}
+
+/**
+ * Flash firmware: try Picoboot/WebUSB first, fall back to UF2 directory picker,
+ * then to a manual UF2 download.
+ *
+ * @param {string} url Firmware URL (.uf2 or .bin)
+ * @param {string|null} checksum Optional SHA-256 of the .bin image
+ * @param {{ allowRequestDevice?: boolean }} [options]
+ * @returns {Promise<boolean|{ needsUserAction: true, reason: string }>}
+ */
+export async function pico_update_attempt_flash(url, checksum = null, options = {}) {
+    const allowRequestDevice = options.allowRequestDevice !== false;
+    const uf2Url = ensureUf2Url(url);
+    const binUrl = convertUf2ToBinUrl(uf2Url);
+
+    updateProgress(0, false, 'Preparing firmware...');
+
+    // WebUSB + File System Access require a secure context.
+    // If not secure, we can still provide the UF2 download link.
+    if (window.isSecureContext !== true) {
+        updateProgress(0, false, 'This page is not in a secure context. Falling back to UF2 download.');
+        if (uf2Url) {
+            return { needsUserAction: true, reason: 'manual-download', uf2Url };
+        }
+        return false;
+    }
+
+    let binData = null;
+    let uf2Data = null;
+    let binVerified = false;
+
+    try {
+        const [binResult, uf2Result] = await Promise.allSettled([
+            downloadFirmware(binUrl, 'Downloading firmware...'),
+            downloadFirmware(uf2Url, 'Downloading firmware...'),
+        ]);
+
+        if (binResult.status === 'fulfilled') {
+            binData = binResult.value;
+            if (checksum) {
+                updateProgress(85, false, 'Verifying firmware...');
+                const calculated = await sha256Hex(binData);
+                binVerified = calculated.toLowerCase() === checksum.toLowerCase();
+                if (!binVerified) {
+                    console.error('BIN checksum failure');
+                    binData = null;
+                }
+            } else {
+                binVerified = true;
+            }
+        } else {
+            console.warn('BIN download failed:', binResult.reason);
+        }
+
+        if (uf2Result.status === 'fulfilled') {
+            uf2Data = uf2Result.value;
+        } else {
+            console.warn('UF2 download failed:', uf2Result.reason);
+        }
+
+        if (!binData && !uf2Data) {
+            updateProgress(0, false, 'Failed to download firmware.');
             return false;
         }
 
-        if (gotBinOK) {
-            await markExclusive(true);
-            console.log("Updating...");
+        updateProgress(100, false, 'Firmware ready');
+    } catch (error) {
+        console.error('Error downloading firmware:', error);
+        updateProgress(0, false, 'Failed to download firmware.');
+        return false;
+    }
 
-            // Flash the firmware with progress tracking
-            await writeFlashWithProgress(binData, binData.byteLength);
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // --- Try Picoboot / WebUSB first (falls back to UF2 if claim fails or times out) ---
+    if (binData && binVerified) {
+        updateProgress(0, true, 'Connecting to Pico bootloader...');
+        const claim = await pico_try_claim_bootloader({
+            allowRequestDevice,
+            claimTimeoutMs: 5000,
+        });
+
+        if (claim.ok) {
+            try {
+                await markExclusive(true);
+                await writeFlashWithProgress(binData, binData.byteLength);
+                await rebootDevice();
+                updateProgress(100, true, 'Firmware update complete!');
+                console.log('Flashing complete. Device rebooted.');
+                return true;
+            } catch (error) {
+                console.error('Picoboot flash failed:', error);
+                await closePicoDevice();
+                // Fall through to UF2 path
+            }
+        } else if (claim.needsPermission && !allowRequestDevice) {
+            // May still stage UF2 below if we already have the file
+            if (!(uf2Data && supportsDirectoryPicker())) {
+                updateProgress(0, false, 'Click Update to authorize the bootloader device.');
+                return { needsUserAction: true, reason: 'permission' };
+            }
+            setUpdateStatus('Direct update unavailable. Use RPI-RP2 next...');
+        } else if (!claim.cancelled) {
+            setUpdateStatus('Direct update unavailable. Use RPI-RP2 next...');
         } else {
-            console.log("Failed to get FW file. Continue to reboot.");
+            updateProgress(0, false, 'Device selection cancelled.');
+            return false;
         }
+    }
 
-        // Reboot the device
+    // --- UF2 fallback: stage for a guided picker step (same for update + install) ---
+    if (uf2Data && supportsDirectoryPicker()) {
+        return stageUf2Picker(uf2Data, uf2Url);
+    }
+
+    // --- Manual download last resort (not treated as flash success) ---
+    if (uf2Url) {
+        updateProgress(0, false, 'Download the UF2 and copy it to the RPI-RP2 drive.');
+        return { needsUserAction: true, reason: 'manual-download', uf2Url };
+    }
+
+    updateProgress(0, false, 'Update failed.');
+    return false;
+}
+
+export async function pico_exit_bootloader_attempt() {
+    console.log('Attempting pico bootloader exit.');
+    updateProgress(0, true, 'Connecting to bootloader to restart...');
+
+    const claim = await pico_try_claim_bootloader({
+        allowRequestDevice: true,
+        claimTimeoutMs: 5000,
+    });
+    if (!claim.ok) {
+        if (claim.cancelled) {
+            updateProgress(0, false, 'Device selection cancelled.');
+        } else {
+            updateProgress(0, false, 'Could not restart via Picoboot. Unplug/replug the device.');
+        }
+        return false;
+    }
+
+    try {
+        updateProgress(50, true, 'Restarting device...');
         await rebootDevice();
-
-        console.log('Flashing complete. Device rebooted.');
+        updateProgress(100, true, 'Device restarted.');
         return true;
-        
     } catch (error) {
         console.error('Error:', error);
+        await closePicoDevice();
+        updateProgress(0, false, 'Restart failed.');
+        return false;
     }
 }
 
@@ -285,13 +538,15 @@ async function findAndClaimInterface(dev) {
         for (const iface of configuration.interfaces) {
             if (iface.alternate.interfaceClass === INTERFACE_CLASS) {
                 interfaceNumber = iface.interfaceNumber;
-                endpointOut = iface.alternate.endpoints.find(e => e.direction === 'out');
-                endpointIn = iface.alternate.endpoints.find(e => e.direction === 'in');
+                endpointOut = iface.alternate.endpoints.find((e) => e.direction === 'out');
+                endpointIn = iface.alternate.endpoints.find((e) => e.direction === 'in');
 
                 await dev.selectConfiguration(configuration.configurationValue);
                 await dev.claimInterface(interfaceNumber);
 
-                console.log(`Claimed interface ${interfaceNumber} with endpoints OUT: ${endpointOut.endpointNumber}, IN: ${endpointIn.endpointNumber}`);
+                console.log(
+                    `Claimed interface ${interfaceNumber} with endpoints OUT: ${endpointOut.endpointNumber}, IN: ${endpointIn.endpointNumber}`
+                );
                 return;
             }
         }
@@ -299,61 +554,32 @@ async function findAndClaimInterface(dev) {
 }
 
 async function markExclusive(exclusive) {
-    console.log("Marking device exclusive");
+    console.log('Marking device exclusive');
     const cmd = new PicobootCmd(EXCLUSIVE_CMD, 0);
     cmd.setExclusiveCmd(0x02);
     const output = cmd.toUint8Array();
 
     let result = await picoDevice.transferOut(endpointOut.endpointNumber, output);
-    console.log("Cmd sent:", result);
+    console.log('Cmd sent:', result);
     result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
-    console.log("Cmd sent confirm:", result);
+    console.log('Cmd sent confirm:', result);
 
     await exitXip();
 }
 
-async function eraseFlash(address, size) {
-    const sectorSize = 4096;
-    let eraseSize = 512 * sectorSize;
-    let token = getUserToken();
-
-    const eraseCommand = new ArrayBuffer(32);
-    const view = new DataView(eraseCommand);
-    view.setUint32(0x00, MAGIC_NUM, true);  // Magic number
-    view.setUint32(0x04, token, true);       // User Token
-    view.setUint8(0x08, FLASH_ERASE_CMD);    // Command ID
-    view.setUint8(0x09, 0x08);               // Cmd size
-    view.setUint16(0x0A, 0, true);           // Reserved
-    view.setUint32(0x0C, 0, true);           // Transfer length
-    view.setUint32(0x10, 0x10000000, true);  // Flash address to erase
-    view.setUint32(0x14, eraseSize, true);   // Size to erase
-
-    console.log("Sending erase...");
-
-    let result = await picoDevice.transferOut(endpointOut.endpointNumber, eraseCommand);
-    if (result.status == 'ok') {
-        console.log("eraseFlash SENT");
-    }
-
-    result = await picoDevice.transferIn(endpointIn.endpointNumber, 0);  // Read empty IN packet to confirm erase
-    if (result.status == 'ok') {
-        console.log("eraseFlash CONFIRMED");
-    }
-}
-
 async function exitXip() {
-    console.log("Exit XIP");
+    console.log('Exit XIP');
     var cmd = new PicobootCmd(EXIT_XIP_CMD, 0);
     var output = cmd.toUint8Array();
 
     let result = await picoDevice.transferOut(endpointOut.endpointNumber, output);
-    console.log("Cmd sent:", result);
+    console.log('Cmd sent:', result);
     result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
-    console.log("Cmd sent exit XIP:", result);
+    console.log('Cmd sent exit XIP:', result);
 }
 
 async function writeFlashWithProgress(data, size) {
-    console.log("Attempt write data with progress tracking");
+    console.log('Attempt write data with progress tracking');
 
     const pageSize = 4096;
     const totalPages = Math.ceil(size / pageSize);
@@ -361,32 +587,25 @@ async function writeFlashWithProgress(data, size) {
 
     const dataView = new Uint8Array(data);
 
-    // Start flashing phase
-    updateProgress(0, true);
+    updateProgress(0, true, 'Flashing firmware...');
 
     for (let i = 0; i < totalPages; i++) {
-        console.log("Chunk erasing ", i);
-
-        // Calculate progress (each page represents a portion of the total)
         const progressPercent = (i / totalPages) * 100;
-        updateProgress(progressPercent, true);
+        updateProgress(progressPercent, true, 'Flashing firmware...');
 
         const ecmd = new PicobootCmd(FLASH_ERASE_CMD, 0);
         ecmd.setRangeCmd(addr, pageSize);
         const ecmdOutput = ecmd.toUint8Array();
 
         let eresult = await picoDevice.transferOut(endpointOut.endpointNumber, ecmdOutput);
-        console.log("Data erased:", eresult);
+        console.log('Data erased:', eresult);
         eresult = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
-        console.log("Confirm erase:", i);
+        console.log('Confirm erase:', i);
 
         await exitXip();
 
-        console.log("Chunk sending ", i);
-
         let chunk = dataView.subarray(i * pageSize, (i + 1) * pageSize);
 
-        // If this is the last chunk and it's not full, pad it with zeros
         if (i === totalPages - 1 && chunk.length < pageSize) {
             const paddedChunk = new Uint8Array(pageSize);
             paddedChunk.set(chunk);
@@ -398,34 +617,31 @@ async function writeFlashWithProgress(data, size) {
         const cmdOutput = cmd.toUint8Array();
 
         let result = await picoDevice.transferOut(endpointOut.endpointNumber, cmdOutput);
-        console.log("Data sent:", result);
+        console.log('Data sent:', result);
 
         result = await picoDevice.transferOut(endpointOut.endpointNumber, chunk);
         result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
-        console.log("Confirm write:", i);
+        console.log('Confirm write:', i);
 
         await exitXip();
 
         addr += pageSize;
-        
-        // Update progress after each page is complete
+
         const finalProgressPercent = ((i + 1) / totalPages) * 100;
-        updateProgress(finalProgressPercent, true);
+        updateProgress(finalProgressPercent, true, 'Flashing firmware...');
     }
 
-    // Ensure we show 100% completion
-    updateProgress(100, true);
+    updateProgress(100, true, 'Firmware update complete!');
 }
 
 async function rebootDevice() {
-
-    console.log("Exit XIP");
+    console.log('Reboot device');
     var cmd = new PicobootCmd(REBOOT_CMD, 0);
     cmd.setRebootCmd(0, 0x20042000, 500);
     var output = cmd.toUint8Array();
 
     let result = await picoDevice.transferOut(endpointOut.endpointNumber, output);
-    console.log("Cmd sent:", result);
+    console.log('Cmd sent:', result);
     result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
-    console.log("Cmd sent exit XIP:", result);
+    console.log('Cmd reboot confirm:', result);
 }

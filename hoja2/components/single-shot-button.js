@@ -140,12 +140,20 @@ class SingleShotButton extends HTMLElement {
                 if (this._onClick != null) {
                     const result = await this._onClick();
 
+                    // Handler may disable this button (e.g. update flow complete)
+                    if (this.getAttribute('state') === 'disabled') {
+                        return;
+                    }
+
                     // Set success or failure state based on result
                     const resultState = result ? 'success' : 'failure';
                     this.updateButtonState(resultState);
 
                     // Set timer to return to ready state after 1 second
                     this._stateTimer = setTimeout(() => {
+                        if (this.getAttribute('state') === 'disabled') {
+                            return;
+                        }
                         this.updateButtonState('ready');
                     }, 500);
 
@@ -208,12 +216,20 @@ class SingleShotButton extends HTMLElement {
         // Clear any existing timers when enabling/disabling
         if (this._stateTimer) {
             clearTimeout(this._stateTimer);
+            this._stateTimer = null;
         }
 
         const newState = enable ? 'ready' : 'disabled';
         this.setAttribute('state', newState);
-        const button = this.shadowRoot.querySelector('.single-shot-button');
+        this._currentState = newState;
+        const button = this.shadowRoot?.querySelector('.single-shot-button');
+        if (!button) return;
         button.disabled = !enable;
+        const stateConfig = this._states[newState];
+        if (stateConfig) {
+            button.className = `single-shot-button ${stateConfig.class}`;
+            button.textContent = stateConfig.text;
+        }
     }
 
     // Cleanup when element is removed

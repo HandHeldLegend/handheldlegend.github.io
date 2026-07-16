@@ -97,6 +97,7 @@ class HojaGamepad {
   #_inputReportHook = null;
   #_snapbackReportHook = null;
   #_legacyDetectionHook = null;
+  #_bootloaderHook = null;
 
   // Private constructor to enforce singleton
   constructor() {
@@ -114,6 +115,10 @@ class HojaGamepad {
     return this.#instance;
   }
 
+  get isConnected() {
+    return this.#isConnected;
+  }
+
   // Connect to the USB device
   async connect() {
     try {
@@ -125,8 +130,17 @@ class HojaGamepad {
           { vendorId: 0x2E8A, productId: 0x10C6 }, // HOJA Gamepad Generic
           { vendorId: 0x2E8A, productId: 0x10DD }, // GC Ultimate
           { vendorId: 0x2E8A, productId: 0x10DF }, // ProGCC
+          { vendorId: 0x2E8A, productId: 0x0003 }, // RP2040 / Pico bootloader
         ]
       });
+
+      // Bare Pico bootloader — hand off to install/update UI (not a gamepad session)
+      if (this.#device.vendorId === 0x2E8A && this.#device.productId === 0x0003) {
+        this.#device = null;
+        this.#isConnected = false;
+        if (this.#_bootloaderHook) await this.#_bootloaderHook();
+        return false;
+      }
 
       // Open the device
       await this.#device.open();
@@ -429,6 +443,10 @@ class HojaGamepad {
     this.#_legacyDetectionHook = callback;
   }
 
+  setBootloaderHook(callback) {
+    this.#_bootloaderHook = callback;
+  }
+
   setConnectHook(callback) {
     this.#_connectHook = callback;
   }
@@ -659,6 +677,18 @@ class HojaGamepad {
       console.error('Failed to send command.', error);
       return false;
     }
+  }
+
+  /**
+   * Reboot into BOOTSEL without waiting for a command ACK (device will disconnect).
+   */
+  async rebootToBootloader() {
+    if (!this.#isConnected) {
+      throw new Error("Can't send command, device not connected!");
+    }
+    // WEBUSB_ID_CONFIG_COMMAND = 4, GAMEPAD_CMD_RESET_TO_BOOTLOADER = 1
+    await this.sendReport(4, new Uint8Array([0, 1]));
+    return true;
   }
 }
 
