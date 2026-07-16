@@ -31,11 +31,6 @@ export function supportsDirectoryPicker() {
     return typeof window.showDirectoryPicker === 'function' && window.isSecureContext === true;
 }
 
-function isWindowsHost() {
-    const ua = navigator.userAgent.toLowerCase();
-    return ua.includes('windows') || ua.includes('win32') || ua.includes('win64') || ua.includes('wow64');
-}
-
 function withTimeout(promise, ms, label = 'operation') {
     let timer;
     return Promise.race([
@@ -263,8 +258,8 @@ export async function pico_try_claim_bootloader(options = {}) {
         );
     }
 
-    // Known device already failed claim — skip requestDevice, use UF2
-    if (hadKnownDevice) {
+    // Known device already failed claim — only skip requestDevice on auto-flow (no user gesture)
+    if (hadKnownDevice && !allowRequestDevice) {
         return failClaim(new Error('Picoboot interface unavailable'));
     }
 
@@ -378,7 +373,7 @@ export function pico_get_cached_uf2_url() {
 function stageUf2Picker(uf2Data, uf2Url) {
     cachedUf2ForPicker = uf2Data;
     cachedUf2Url = uf2Url;
-    updateProgress(100, false, 'Firmware ready — select the RPI-RP2 drive next.');
+    updateProgress(100, false, 'Firmware ready - select the RPI-RP2 drive next.');
     return { needsUserAction: true, reason: 'directory-picker' };
 }
 
@@ -455,16 +450,12 @@ export async function pico_update_attempt_flash(url, checksum = null, options = 
 
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    // Windows: Picoboot claim often hangs (no WinUSB). Prefer UF2 immediately when available.
-    const preferUf2 =
-        isWindowsHost() && uf2Data && supportsDirectoryPicker();
-
-    // --- Try Picoboot / WebUSB ---
-    if (binData && binVerified && !preferUf2) {
+    // --- Try Picoboot / WebUSB first (falls back to UF2 if claim fails or times out) ---
+    if (binData && binVerified) {
         updateProgress(0, true, 'Connecting to Pico bootloader...');
         const claim = await pico_try_claim_bootloader({
             allowRequestDevice,
-            claimTimeoutMs: 2000,
+            claimTimeoutMs: 5000,
         });
 
         if (claim.ok) {
@@ -487,12 +478,12 @@ export async function pico_update_attempt_flash(url, checksum = null, options = 
                 return { needsUserAction: true, reason: 'permission' };
             }
             setUpdateStatus('Direct update unavailable. Use RPI-RP2 next...');
-        } else {
-            // claimFailed, cancelled USB picker, timeout, etc.
+        } else if (!claim.cancelled) {
             setUpdateStatus('Direct update unavailable. Use RPI-RP2 next...');
+        } else {
+            updateProgress(0, false, 'Device selection cancelled.');
+            return false;
         }
-    } else if (preferUf2) {
-        setUpdateStatus('Preparing RPI-RP2 update method...');
     }
 
     // --- UF2 fallback: stage for a guided picker step (same for update + install) ---
@@ -514,7 +505,10 @@ export async function pico_exit_bootloader_attempt() {
     console.log('Attempting pico bootloader exit.');
     updateProgress(0, true, 'Connecting to bootloader to restart...');
 
-    const claim = await pico_try_claim_bootloader({ allowRequestDevice: true });
+    const claim = await pico_try_claim_bootloader({
+        allowRequestDevice: true,
+        claimTimeoutMs: 5000,
+    });
     if (!claim.ok) {
         if (claim.cancelled) {
             updateProgress(0, false, 'Device selection cancelled.');

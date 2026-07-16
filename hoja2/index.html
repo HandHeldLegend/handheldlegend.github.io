@@ -37,6 +37,10 @@
                         pending-text="What's New?"
                     ></single-shot-button>
 
+                    <button visible="false" id="debug-button" class="debug-button" data-active="false">
+                        Debug: FW
+                    </button>
+
                 </div>
 
                 
@@ -51,7 +55,7 @@
 
             <div visible="false" id="fw-update-box" class="header-msg-box fw-update-box">
                 <h2 id="fw-update-title">Update Available</h2>
-                <p id="fw-update-guide">Click Update to begin. You'll be guided through each step.</p>
+                <p id="fw-update-guide">Click Bootloader to reset your controller into update mode.</p>
 
                 <div id="fw-install-picker" class="fw-install-picker" hidden>
                     <label for="fw-device-select">Select your device</label>
@@ -64,7 +68,7 @@
                     <ol>
                         <li>In the folder dialog, open the drive named <strong>RPI-RP2</strong></li>
                         <li>Select that drive folder (you should see <strong>INFO_UF2.TXT</strong> inside)</li>
-                        <li>Click Select / Open — do not pick Downloads or Documents</li>
+                        <li>Click Select / Open - do not pick Downloads or Documents</li>
                     </ol>
                 </div>
 
@@ -79,7 +83,7 @@
 
                 <div class="app-row">
                     <single-shot-button id="update-button" state="ready" ready-text="Update" disabled-text="..."
-                        pending-text="Working..." failure-text="Failed" success-text="Done" width="110"
+                        pending-text="Working..." failure-text="Failed" success-text="Done"
                     ></single-shot-button>
                     <single-shot-button id="exit-bootloader-button" state="ready" ready-text="Restart" disabled-text="..."
                         pending-text="Restarting..." failure-text="Failed" success-text="Done"

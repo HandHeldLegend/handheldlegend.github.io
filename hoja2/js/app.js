@@ -22,6 +22,19 @@ let pendingFwChecksum = undefined;
 let pendingIsLegacy = false;
 let buildsLoaded = false;
 
+/** Debug mode via URL: ?debug, ?debug=1, ?debug=force-update, ?debug&forceUpdate=1 */
+const DEBUG_URL_PARAMS = new URLSearchParams(window.location.search);
+const DEBUG_MODE = (() => {
+    if (!DEBUG_URL_PARAMS.has('debug')) return false;
+    const v = (DEBUG_URL_PARAMS.get('debug') || '1').toLowerCase();
+    return v !== '0' && v !== 'false' && v !== 'off';
+})();
+let debugForceFwOnConnect = DEBUG_MODE && (
+    DEBUG_URL_PARAMS.get('debug') === 'force-update' ||
+    DEBUG_URL_PARAMS.get('forceUpdate') === '1' ||
+    DEBUG_URL_PARAMS.get('force-update') === '1'
+);
+
 async function isOnline() {
     try {
         // Any HTTP response means the browser has network; 404 is still "online".
@@ -221,12 +234,12 @@ class ConfigApp {
             event.preventDefault();
             this.closemoduleView();
             // Only handle back gesture if a module is open
-            // Push a new state to maintain history stack
-            history.pushState(null, '', window.location.pathname);
+            // Push a new state to maintain history stack (keep query params e.g. ?debug=)
+            history.pushState(null, '', window.location.pathname + window.location.search);
         };
 
-        // Add initial state when app loads
-        history.pushState(null, '', window.location.pathname);
+        // Add initial state when app loads (preserve ?debug= etc.)
+        history.pushState(null, '', window.location.pathname + window.location.search);
     }
 
     async loadSettingsModules() {
@@ -499,16 +512,20 @@ function showUpdateComplete() {
         'Update Complete',
         'Firmware was written successfully. Wait a moment for the controller to reboot, then click Connect.'
     );
-    setUpdateStatus('Done — click Connect when ready', 100, true);
-    setUpdateButtonLabel('Update');
+    setUpdateStatus('Done - click Connect when ready', 100, true);
 
-    // Gray out all actions except Dismiss
+    // Gray out Update / Restart; only Dismiss stays active
+    updateButton.setAttribute('disabled-text', 'Update');
+    restartButton.setAttribute('disabled-text', 'Restart');
     updateButton.enableButton(false);
     restartButton.enableButton(false);
     dismissButton.enableButton(true);
     dismissButton.setAttribute('ready-text', 'Dismiss');
     const dismissBtn = dismissButton.shadowRoot?.querySelector('.single-shot-button');
-    if (dismissBtn) dismissBtn.textContent = 'Dismiss';
+    if (dismissBtn) {
+        dismissBtn.textContent = 'Dismiss';
+        dismissBtn.disabled = false;
+    }
 
     box.setAttribute('visible', 'true');
 }
@@ -692,8 +709,8 @@ async function handleFwUpdateClick() {
         if (!gamepad) return false;
 
         setFwGuide(
-            'Update Mode',
-            'Rebooting into bootloader… Firmware will download and flash automatically when the Pico bootloader appears. If it asks, click Update again.'
+            'Entering Bootloader',
+            'Resetting into bootloader mode. When the Pico bootloader appears, click Update to download and flash firmware.'
         );
         setUpdateStatus('Sending reboot to bootloader...', 10, true);
         fwUiMode = 'awaiting-bootloader';
@@ -718,6 +735,7 @@ async function handleFwUpdateClick() {
             }
             setUpdateStatus('Failed to enter update mode.', 0, false);
             fwUiMode = 'update-available';
+            setUpdateButtonLabel('Bootloader');
             return false;
         }
     }
@@ -746,7 +764,7 @@ async function handleFwUpdateClick() {
 /**
  * Connected gamepad has a newer firmware available.
  */
-async function showUpdateAvailable(url, checksum, { legacy = false } = {}) {
+async function showUpdateAvailable(url, checksum, { legacy = false, debugForced = false } = {}) {
     const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
 
     pendingFwUrl = url;
@@ -756,10 +774,12 @@ async function showUpdateAvailable(url, checksum, { legacy = false } = {}) {
 
     picker.hidden = true;
     uf2Tips.hidden = true;
-    setUpdateButtonLabel('Update');
+    setUpdateButtonLabel('Bootloader');
     setFwGuide(
-        'Update Available',
-        'Click Update once. The controller will reboot into bootloader mode and firmware will flash automatically when ready.'
+        debugForced ? 'Update Available (Debug)' : 'Update Available',
+        debugForced
+            ? 'Debug mode: forcing the update flow even though firmware is up to date. Click Bootloader to reset into update mode and test the full flow.'
+            : 'A newer firmware is available. Click Bootloader to reset your controller into update mode. When the Pico bootloader appears, click Update to flash.'
     );
     setUpdateStatus('Ready', 0, false);
 
@@ -770,6 +790,49 @@ async function showUpdateAvailable(url, checksum, { legacy = false } = {}) {
     const dismissBtn = dismissButton.shadowRoot?.querySelector('.single-shot-button');
     if (dismissBtn) dismissBtn.textContent = 'Dismiss';
     box.setAttribute('visible', 'true');
+}
+
+async function tryShowGamepadFwUpdate(fwVersion, { debugForced = false } = {}) {
+    const firmwareUrl = parseBufferText(gamepad.device_static.firmware_url);
+    if (!firmwareUrl) {
+        if (debugForced) {
+            setUpdateStatus('Debug: no firmware URL on device.', 0, false);
+        }
+        return false;
+    }
+
+    const checksum = fwVersion?.checksum ?? null;
+    await showUpdateAvailable(firmwareUrl, checksum, { debugForced });
+    return true;
+}
+
+function updateDebugButtonUi() {
+    const btn = document.getElementById('debug-button');
+    if (!btn) return;
+
+    if (!DEBUG_MODE) {
+        btn.setAttribute('visible', 'false');
+        return;
+    }
+
+    btn.setAttribute('visible', 'true');
+    btn.setAttribute('data-active', debugForceFwOnConnect ? 'true' : 'false');
+    btn.textContent = debugForceFwOnConnect ? 'Debug: FW ON' : 'Debug: FW';
+    btn.title = debugForceFwOnConnect
+        ? 'Force update prompt on connect (on). Click to turn off, or force now if connected.'
+        : 'Click to force the update prompt on the next connect (or now if connected).';
+}
+
+async function toggleDebugForceFw() {
+    debugForceFwOnConnect = !debugForceFwOnConnect;
+    updateDebugButtonUi();
+
+    if (debugForceFwOnConnect && gamepad?.isConnected) {
+        const fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
+        await tryShowGamepadFwUpdate(fwVersion, { debugForced: true });
+    }
+
+    return true;
 }
 
 /**
@@ -806,9 +869,9 @@ function showUf2DriveStep() {
 
     setFwGuide(
         'Select RPI-RP2 Drive',
-        'Direct USB flashing is unavailable on this system. Read the steps below, then click the button — a folder dialog will open on top of this page.'
+        'Direct USB flashing is unavailable on this system. Read the steps below, then click the button - a folder dialog will open on top of this page.'
     );
-    setUpdateStatus('Ready — pick RPI-RP2 in the next dialog', 100, false);
+    setUpdateStatus('Ready - pick RPI-RP2 in the next dialog', 100, false);
     setUpdateButtonLabel('Select RPI-RP2');
 
     updateButton.enableButton(true);
@@ -856,7 +919,7 @@ async function showBootloaderInstall() {
     setUpdateButtonLabel('Install');
     setFwGuide(
         'Install HOJA?',
-        'A Raspberry Pi bootloader was detected. Select your device below, then click Install. The same update steps apply — including RPI-RP2 drive selection on Windows.'
+        'A Raspberry Pi bootloader was detected. Select your device below, then click Install. The same update steps apply - including RPI-RP2 drive selection on Windows.'
     );
     setUpdateStatus('Select a device to continue', 0, false);
 
@@ -994,6 +1057,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         return true;
     });
 
+    const debugButton = document.getElementById('debug-button');
+    if (debugButton) {
+        debugButton.addEventListener('click', () => {
+            toggleDebugForceFw();
+        });
+        updateDebugButtonUi();
+        if (DEBUG_MODE) {
+            console.log('Hoja debug mode enabled. Add ?debug=force-update to auto-force the update prompt on connect.');
+        }
+    }
+
     var debug = false;
 
     if (debug) {
@@ -1056,17 +1130,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
 
-        let debugFw = false;
-        
-        if(fwVersion == false)
-        {
+        const debugForced = DEBUG_MODE && debugForceFwOnConnect;
+        const updateAvailable = fwVersion !== false
+            && fwVersion.version > gamepad.device_static.fw_version;
 
-        }
-        else if(fwVersion.version > gamepad.device_static.fw_version || debugFw===true) {
-            await showUpdateAvailable(
-                parseBufferText(gamepad.device_static.firmware_url),
-                fwVersion.checksum
-            );
+        if (updateAvailable || debugForced) {
+            await tryShowGamepadFwUpdate(fwVersion, { debugForced });
         }
         else {
             // Firmware current — clear update / complete panels
@@ -1075,7 +1144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 pendingFwUrl = undefined;
                 pendingFwChecksum = undefined;
             }
-        }       
+        }
     }
 
     function disconnectHandle() {

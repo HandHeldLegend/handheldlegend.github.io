@@ -184,6 +184,41 @@ body {
     display: none;
 }
 
+.debug-button {
+    min-width: fit-content;
+    padding: 0 10px;
+    color: var(--color-text-tertiary);
+    height: var(--button-h);
+    cursor: pointer;
+    margin: auto;
+    background: var(--color-p5-grad);
+    background-color: var(--color-p5);
+    border: var(--spacing-xs) solid var(--color-p5-dark);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-sm);
+    box-sizing: border-box;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-quick);
+    user-select: none;
+}
+
+.debug-button[visible="false"] {
+    display: none;
+}
+
+.debug-button[data-active="true"] {
+    background: var(--color-p2-grad);
+    background-color: var(--color-p2);
+    border-color: var(--color-p2-dark);
+}
+
+@media (hover: hover) {
+    .debug-button:hover:not(:active) {
+        filter: brightness(1.1);
+        box-shadow: var(--box-shadow-outset);
+    }
+}
+
 @media (hover: hover) {
     .install-button:hover:not(:active) {
         filter:brightness(1.1);
