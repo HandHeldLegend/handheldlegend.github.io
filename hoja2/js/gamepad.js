@@ -131,11 +131,15 @@ class HojaGamepad {
           { vendorId: 0x2E8A, productId: 0x10DD }, // GC Ultimate
           { vendorId: 0x2E8A, productId: 0x10DF }, // ProGCC
           { vendorId: 0x2E8A, productId: 0x0003 }, // RP2040 / Pico bootloader
+          { vendorId: 0x2E8A, productId: 0x000F }, // RP2350 bootloader
         ]
       });
 
       // Bare Pico bootloader — hand off to install/update UI (not a gamepad session)
-      if (this.#device.vendorId === 0x2E8A && this.#device.productId === 0x0003) {
+      if (
+        this.#device.vendorId === 0x2E8A &&
+        (this.#device.productId === 0x0003 || this.#device.productId === 0x000F)
+      ) {
         this.#device = null;
         this.#isConnected = false;
         if (this.#_bootloaderHook) await this.#_bootloaderHook();

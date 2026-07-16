@@ -1,5 +1,5 @@
 const VID = 0x2e8a;
-const PID = 0x0003;
+const BOOTLOADER_PIDS = [0x0003, 0x000f];
 const INTERFACE_CLASS = 255; // Vendor-specific interface class
 
 const FLASH_ERASE_CMD = 0x03;
@@ -7,12 +7,14 @@ const FLASH_WRITE_CMD = 0x05;
 const EXIT_XIP_CMD = 0x06;
 const EXCLUSIVE_CMD = 0x01;
 const REBOOT_CMD = 0x02;
+const REBOOT2_CMD = 0x0a;
 const MAGIC_NUM = 0x431fd10b;
 
 let picoDevice;
 let interfaceNumber = null;
 let endpointOut = null;
 let endpointIn = null;
+let activeBootloaderIs2350 = false;
 
 /** Cached UF2 payload when Picoboot fails and we need a staged folder-picker step */
 let cachedUf2ForPicker = null;
@@ -31,6 +33,11 @@ export function supportsDirectoryPicker() {
     return typeof window.showDirectoryPicker === 'function' && window.isSecureContext === true;
 }
 
+function isWindowsHost() {
+    const ua = navigator.userAgent.toLowerCase();
+    return ua.includes('windows') || ua.includes('win32') || ua.includes('win64') || ua.includes('wow64');
+}
+
 function withTimeout(promise, ms, label = 'operation') {
     let timer;
     return Promise.race([
@@ -39,6 +46,32 @@ function withTimeout(promise, ms, label = 'operation') {
             timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
         }),
     ]);
+}
+
+function isRp2350Bootloader(device) {
+    return device?.vendorId === VID && device?.productId === 0x000f;
+}
+
+async function usbTransferOut(endpointNumber, data, timeoutMs = 1500, label = 'USB OUT') {
+    if (timeoutMs == null) {
+        return picoDevice.transferOut(endpointNumber, data);
+    }
+    return withTimeout(
+        picoDevice.transferOut(endpointNumber, data),
+        timeoutMs,
+        label
+    );
+}
+
+async function usbTransferIn(endpointNumber, length, timeoutMs = 1500, label = 'USB IN') {
+    if (timeoutMs == null) {
+        return picoDevice.transferIn(endpointNumber, length);
+    }
+    return withTimeout(
+        picoDevice.transferIn(endpointNumber, length),
+        timeoutMs,
+        label
+    );
 }
 
 function updateProgress(percent, isFlashing = false, message = null) {
@@ -105,6 +138,15 @@ class PicobootCmd {
         view.setUint32(4, dSP, true);
         view.setUint32(8, dDelayMS, true);
         this.bCmdSize = 12;
+    }
+
+    setReboot2Cmd(dFlags, dDelayMS, dParam0, dParam1) {
+        const view = new DataView(this.args);
+        view.setUint32(0, dFlags, true);
+        view.setUint32(4, dDelayMS, true);
+        view.setUint32(8, dParam0, true);
+        view.setUint32(12, dParam1, true);
+        this.bCmdSize = 16;
     }
 
     setRangeCmd(dAddr, dSize) {
@@ -193,6 +235,7 @@ async function closePicoDevice() {
     interfaceNumber = null;
     endpointOut = null;
     endpointIn = null;
+    activeBootloaderIs2350 = false;
 }
 
 /**
@@ -211,6 +254,7 @@ export async function pico_try_claim_bootloader(options = {}) {
 
     const tryOpenAndClaim = async (device) => {
         picoDevice = device;
+        activeBootloaderIs2350 = isRp2350Bootloader(picoDevice);
         if (!picoDevice.opened) {
             await withTimeout(picoDevice.open(), claimTimeoutMs, 'USB open');
         }
@@ -233,7 +277,9 @@ export async function pico_try_claim_bootloader(options = {}) {
     let hadKnownDevice = false;
     try {
         const existing = await navigator.usb.getDevices();
-        const known = existing.find((d) => d.vendorId === VID && d.productId === PID);
+        const known = existing.find((d) =>
+            d.vendorId === VID && BOOTLOADER_PIDS.includes(d.productId)
+        );
         if (known) {
             hadKnownDevice = true;
             try {
@@ -266,7 +312,7 @@ export async function pico_try_claim_bootloader(options = {}) {
     try {
         updateProgress(0, true, 'Select the Pico bootloader in the browser popup...');
         const device = await navigator.usb.requestDevice({
-            filters: [{ vendorId: VID, productId: PID }],
+            filters: BOOTLOADER_PIDS.map((productId) => ({ vendorId: VID, productId })),
         });
         return await tryOpenAndClaim(device);
     } catch (error) {
@@ -319,7 +365,7 @@ export async function pico_write_uf2_via_picker(uf2Data) {
     try {
         await dirHandle.getFileHandle('INFO_UF2.TXT');
     } catch (_) {
-        throw new Error('That folder is not RPI-RP2. Look for INFO_UF2.TXT and try again.');
+        throw new Error('That folder is not a Pico boot drive. Look for INFO_UF2.TXT on RPI-RP2 or RP2350 and try again.');
     }
 
     updateProgress(30, true, 'Writing UF2 to RPI-RP2...');
@@ -373,7 +419,7 @@ export function pico_get_cached_uf2_url() {
 function stageUf2Picker(uf2Data, uf2Url) {
     cachedUf2ForPicker = uf2Data;
     cachedUf2Url = uf2Url;
-    updateProgress(100, false, 'Firmware ready - select the RPI-RP2 drive next.');
+    updateProgress(100, false, 'Firmware ready - select the RPI-RP2 or RP2350 drive next.');
     return { needsUserAction: true, reason: 'directory-picker' };
 }
 
@@ -453,23 +499,34 @@ export async function pico_update_attempt_flash(url, checksum = null, options = 
     // --- Try Picoboot / WebUSB first (falls back to UF2 if claim fails or times out) ---
     if (binData && binVerified) {
         updateProgress(0, true, 'Connecting to Pico bootloader...');
+        const claimTimeoutMs = isWindowsHost() ? 1000 : 5000;
         const claim = await pico_try_claim_bootloader({
             allowRequestDevice,
-            claimTimeoutMs: 5000,
+            claimTimeoutMs,
         });
 
         if (claim.ok) {
+            let flashSucceeded = false;
             try {
                 await markExclusive(true);
                 await writeFlashWithProgress(binData, binData.byteLength);
-                await rebootDevice();
-                updateProgress(100, true, 'Firmware update complete!');
-                console.log('Flashing complete. Device rebooted.');
-                return true;
+                flashSucceeded = true;
             } catch (error) {
                 console.error('Picoboot flash failed:', error);
                 await closePicoDevice();
-                // Fall through to UF2 path
+                // Fall through to UF2 path only when flash itself failed
+            }
+
+            if (flashSucceeded) {
+                try {
+                    await rebootDevice();
+                } catch (rebootError) {
+                    // Device often disconnects before the reboot ack arrives.
+                    console.warn('Reboot ack missed (device likely rebooted):', rebootError);
+                }
+                updateProgress(100, true, 'Firmware update complete!');
+                console.log('Flashing complete. Device rebooted.');
+                return true;
             }
         } else if (claim.needsPermission && !allowRequestDevice) {
             // May still stage UF2 below if we already have the file
@@ -505,9 +562,10 @@ export async function pico_exit_bootloader_attempt() {
     console.log('Attempting pico bootloader exit.');
     updateProgress(0, true, 'Connecting to bootloader to restart...');
 
+    const claimTimeoutMs = isWindowsHost() ? 1000 : 5000;
     const claim = await pico_try_claim_bootloader({
         allowRequestDevice: true,
-        claimTimeoutMs: 5000,
+        claimTimeoutMs,
     });
     if (!claim.ok) {
         if (claim.cancelled) {
@@ -520,7 +578,11 @@ export async function pico_exit_bootloader_attempt() {
 
     try {
         updateProgress(50, true, 'Restarting device...');
-        await rebootDevice();
+        try {
+            await rebootDevice();
+        } catch (rebootError) {
+            console.warn('Reboot ack missed (device likely rebooted):', rebootError);
+        }
         updateProgress(100, true, 'Device restarted.');
         return true;
     } catch (error) {
@@ -559,24 +621,30 @@ async function markExclusive(exclusive) {
     cmd.setExclusiveCmd(0x02);
     const output = cmd.toUint8Array();
 
-    let result = await picoDevice.transferOut(endpointOut.endpointNumber, output);
+    let result = await usbTransferOut(endpointOut.endpointNumber, output, 1500, 'exclusive access');
     console.log('Cmd sent:', result);
-    result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
+    result = await usbTransferIn(endpointIn.endpointNumber, 1, 1500, 'exclusive access ack');
     console.log('Cmd sent confirm:', result);
 
     await exitXip();
 }
 
 async function exitXip() {
+    // EXIT_XIP is documented as a no-op on RP2350.
+    if (activeBootloaderIs2350) {
+        return;
+    }
     console.log('Exit XIP');
     var cmd = new PicobootCmd(EXIT_XIP_CMD, 0);
     var output = cmd.toUint8Array();
 
-    let result = await picoDevice.transferOut(endpointOut.endpointNumber, output);
+    let result = await usbTransferOut(endpointOut.endpointNumber, output, 1500, 'exit xip');
     console.log('Cmd sent:', result);
-    result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
+    result = await usbTransferIn(endpointIn.endpointNumber, 1, 1500, 'exit xip ack');
     console.log('Cmd sent exit XIP:', result);
 }
+
+const FLASH_TRANSFER_TIMEOUT_MS = 30000;
 
 async function writeFlashWithProgress(data, size) {
     console.log('Attempt write data with progress tracking');
@@ -597,9 +665,9 @@ async function writeFlashWithProgress(data, size) {
         ecmd.setRangeCmd(addr, pageSize);
         const ecmdOutput = ecmd.toUint8Array();
 
-        let eresult = await picoDevice.transferOut(endpointOut.endpointNumber, ecmdOutput);
+        let eresult = await usbTransferOut(endpointOut.endpointNumber, ecmdOutput, FLASH_TRANSFER_TIMEOUT_MS, `erase ${i}`);
         console.log('Data erased:', eresult);
-        eresult = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
+        eresult = await usbTransferIn(endpointIn.endpointNumber, 1, FLASH_TRANSFER_TIMEOUT_MS, `erase ${i} ack`);
         console.log('Confirm erase:', i);
 
         await exitXip();
@@ -616,11 +684,11 @@ async function writeFlashWithProgress(data, size) {
         cmd.setRangeCmd(addr, pageSize);
         const cmdOutput = cmd.toUint8Array();
 
-        let result = await picoDevice.transferOut(endpointOut.endpointNumber, cmdOutput);
+        let result = await usbTransferOut(endpointOut.endpointNumber, cmdOutput, FLASH_TRANSFER_TIMEOUT_MS, `write cmd ${i}`);
         console.log('Data sent:', result);
 
-        result = await picoDevice.transferOut(endpointOut.endpointNumber, chunk);
-        result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
+        result = await usbTransferOut(endpointOut.endpointNumber, chunk, FLASH_TRANSFER_TIMEOUT_MS, `write data ${i}`);
+        result = await usbTransferIn(endpointIn.endpointNumber, 1, FLASH_TRANSFER_TIMEOUT_MS, `write ${i} ack`);
         console.log('Confirm write:', i);
 
         await exitXip();
@@ -636,12 +704,21 @@ async function writeFlashWithProgress(data, size) {
 
 async function rebootDevice() {
     console.log('Reboot device');
-    var cmd = new PicobootCmd(REBOOT_CMD, 0);
-    cmd.setRebootCmd(0, 0x20042000, 500);
+    const is2350 = activeBootloaderIs2350 || isRp2350Bootloader(picoDevice);
+    var cmd = new PicobootCmd(is2350 ? REBOOT2_CMD : REBOOT_CMD, 0);
+    if (is2350) {
+        // RP2350 normal reboot uses REBOOT2 with flags=0
+        cmd.setReboot2Cmd(0, 500, 0, 0);
+    } else {
+        cmd.setRebootCmd(0, 0x20042000, 500);
+    }
     var output = cmd.toUint8Array();
 
-    let result = await picoDevice.transferOut(endpointOut.endpointNumber, output);
-    console.log('Cmd sent:', result);
-    result = await picoDevice.transferIn(endpointIn.endpointNumber, 1);
-    console.log('Cmd reboot confirm:', result);
+    await usbTransferOut(endpointOut.endpointNumber, output, 3000, 'reboot');
+    try {
+        await usbTransferIn(endpointIn.endpointNumber, 1, 2000, 'reboot ack');
+    } catch (error) {
+        // Expected when the device reboots and disconnects before the ack is read.
+        console.warn('Reboot ack not received:', error);
+    }
 }

@@ -324,6 +324,31 @@ body {
     font-size: var(--font-size-md);
 }
 
+.fw-install-warning {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: var(--border-radius-sm);
+    background: color-mix(in srgb, var(--color-p4) 18%, var(--background-mid));
+    border: 1px solid color-mix(in srgb, var(--color-p4) 40%, transparent);
+    box-sizing: border-box;
+}
+
+.fw-install-warning input {
+    margin-top: 2px;
+    flex: 0 0 auto;
+}
+
+.fw-install-warning span {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+}
+
 .fw-uf2-tips {
     width: 100%;
     max-width: 420px;

@@ -459,6 +459,7 @@ function getFwUiElements() {
         title: document.getElementById('fw-update-title'),
         guide: document.getElementById('fw-update-guide'),
         picker: document.getElementById('fw-install-picker'),
+        installConfirm: document.getElementById('fw-install-confirm'),
         uf2Tips: document.getElementById('fw-uf2-tips'),
         select: document.getElementById('fw-device-select'),
         updateButton: document.getElementById('update-button'),
@@ -468,10 +469,11 @@ function getFwUiElements() {
 }
 
 function hideFwUpdateUi() {
-    const { box, picker, uf2Tips } = getFwUiElements();
+    const { box, picker, installConfirm, uf2Tips } = getFwUiElements();
     fwUiMode = 'hidden';
     box.setAttribute('visible', 'false');
     picker.hidden = true;
+    if (installConfirm) installConfirm.checked = false;
     uf2Tips.hidden = true;
     setUpdateButtonLabel('Update');
 }
@@ -592,6 +594,15 @@ async function resolveInstallSelection() {
     return { url: option.dataset.uf2Url, checksum };
 }
 
+function refreshBootloaderInstallState() {
+    const { select, installConfirm, updateButton } = getFwUiElements();
+    if (fwUiMode !== 'bootloader-install') return;
+
+    const hasSelection = !!select?.selectedOptions?.[0]?.value;
+    const hasConfirmed = !!installConfirm?.checked;
+    updateButton.enableButton(hasSelection && hasConfirmed);
+}
+
 /** Update + install: rebooted gamepad or bare bootloader with known firmware */
 async function startBootloaderFlashSession({ allowRequestDevice = true } = {}) {
     if (!pendingFwUrl) {
@@ -621,6 +632,15 @@ async function populateDeviceSelect() {
     try {
         const builds = await listHojaBuilds();
         select.innerHTML = '<option value="">Choose a device...</option>';
+
+        const nukeOption = document.createElement('option');
+        nukeOption.value = 'full-reset-nuke';
+        nukeOption.textContent = 'FULL RESET - NUKE';
+        nukeOption.dataset.uf2Url = '/hoja2/firmware/universal_flash_nuke.uf2';
+        nukeOption.dataset.binUrl = '';
+        nukeOption.dataset.manifestUrl = '';
+        select.appendChild(nukeOption);
+
         for (const build of builds) {
             const option = document.createElement('option');
             option.value = build.id;
@@ -638,7 +658,7 @@ async function populateDeviceSelect() {
 }
 
 function wireFwButtons() {
-    const { updateButton, restartButton, dismissButton, select } = getFwUiElements();
+    const { updateButton, restartButton, dismissButton, select, installConfirm } = getFwUiElements();
 
     updateButton.setOnClick(async () => {
         return await handleFwUpdateClick();
@@ -671,6 +691,12 @@ function wireFwButtons() {
             pendingFwUrl = undefined;
             pendingFwChecksum = undefined;
         }
+
+        refreshBootloaderInstallState();
+    });
+
+    installConfirm?.addEventListener('change', () => {
+        refreshBootloaderInstallState();
     });
 }
 
@@ -908,7 +934,7 @@ function showManualUf2Step(uf2Url) {
  * Bare Pico bootloader with no known device firmware — offer HOJA install.
  */
 async function showBootloaderInstall() {
-    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+    const { box, picker, installConfirm, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
 
     pendingFwUrl = undefined;
     pendingFwChecksum = undefined;
@@ -919,14 +945,15 @@ async function showBootloaderInstall() {
     setUpdateButtonLabel('Install');
     setFwGuide(
         'Install HOJA?',
-        'A Raspberry Pi bootloader was detected. Select your device below, then click Install. The same update steps apply - including RPI-RP2 drive selection on Windows.'
+        'A Raspberry Pi bootloader was detected. Select your device below, then click Install. The same update steps apply - including RPI-RP2 or RP2350 drive selection on Windows.'
     );
     setUpdateStatus('Select a device to continue', 0, false);
 
     picker.hidden = false;
+    if (installConfirm) installConfirm.checked = false;
     await populateDeviceSelect();
 
-    updateButton.enableButton(true);
+    updateButton.enableButton(false);
     restartButton.enableButton(true);
     dismissButton.enableButton(true);
     box.setAttribute('visible', 'true');
@@ -937,15 +964,23 @@ async function enableLegacyFwUpdateMessage(url) {
 }
 
 function isPicoBootloaderDevice(device) {
-    return device?.vendorId === 0x2e8a && device?.productId === 0x0003;
+    return device?.vendorId === 0x2e8a
+        && (device?.productId === 0x0003 || device?.productId === 0x000f);
 }
 
 async function handlePicoBootloaderConnect() {
-    // Don't reset an in-progress or completed flash flow
-    if (fwUiMode === 'update-complete' || fwUiMode === 'uf2-drive-select') {
+    // Don't reset an in-progress flow or interrupt the UF2/manual step
+    if (fwUiMode === 'uf2-drive-select') {
         return;
     }
     if (fwUiMode === 'bootloader-flash' || fwUiMode === 'awaiting-bootloader') {
+        return;
+    }
+
+    // After a successful flash or nuke, allow a fresh bootloader connect
+    // to reopen the installer when there is no pending known firmware.
+    if (fwUiMode === 'update-complete' && !pendingFwUrl) {
+        await showBootloaderInstall();
         return;
     }
 

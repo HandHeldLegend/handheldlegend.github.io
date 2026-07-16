@@ -62,11 +62,15 @@
                     <select id="fw-device-select">
                         <option value="">Loading devices...</option>
                     </select>
+                    <label for="fw-install-confirm" class="fw-install-warning">
+                        <input type="checkbox" id="fw-install-confirm">
+                        <span>I understand that installing incorrect firmware may brick this device. Recovery may require disassembling the device to reach boot mode again.</span>
+                    </label>
                 </div>
 
                 <div id="fw-uf2-tips" class="fw-uf2-tips" hidden>
                     <ol>
-                        <li>In the folder dialog, open the drive named <strong>RPI-RP2</strong></li>
+                        <li>In the folder dialog, open the drive named <strong>RPI-RP2</strong> or <strong>RP2350</strong></li>
                         <li>Select that drive folder (you should see <strong>INFO_UF2.TXT</strong> inside)</li>
                         <li>Click Select / Open - do not pick Downloads or Documents</li>
                     </ol>
