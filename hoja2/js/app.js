@@ -8,32 +8,31 @@ import SingleShotButton from '../components/single-shot-button.js';
 
 import { 
     pico_update_attempt_flash, 
-    pico_exit_bootloader_attempt 
+    pico_exit_bootloader_attempt,
+    pico_complete_uf2_picker_flash,
+    pico_has_cached_uf2,
+    setUpdateStatus,
 } from './pico_update.js';
+import { listHojaBuilds, getBuildManifest } from './hoja_builds.js';
 
-let deviceDetected = false;
-let deviceFwUrl = undefined;
-let deviceFwChecksum = undefined;
-
-function isWindows() {
-  // Check the user agent string for Windows indicators
-  const userAgent = navigator.userAgent.toLowerCase();
-  
-  // Look for common Windows identifiers
-  return userAgent.includes('win32') || 
-         userAgent.includes('win64') || 
-         userAgent.includes('windows') || 
-         userAgent.includes('wow64');
-}
+/** @type {'hidden' | 'update-available' | 'awaiting-bootloader' | 'bootloader-flash' | 'bootloader-install' | 'uf2-drive-select' | 'update-complete'} */
+let fwUiMode = 'hidden';
+let pendingFwUrl = undefined;
+let pendingFwChecksum = undefined;
+let pendingIsLegacy = false;
+let buildsLoaded = false;
 
 async function isOnline() {
     try {
-        const response = await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
+        // Any HTTP response means the browser has network; 404 is still "online".
+        await fetch('/ping.json', { method: 'HEAD', cache: 'no-store' });
         console.log("ONLINE");
-        return response.ok;
+        return true;
     } catch (error) {
-        console.log("OFFLINE");
-        return false; // Network request failed, assume offline
+        // Fall back to browser connectivity flag (Live Server may lack ping.json).
+        const online = navigator.onLine !== false;
+        console.log(online ? "ONLINE" : "OFFLINE");
+        return online;
     }
 }
 
@@ -441,119 +440,474 @@ async function enableNotifMessage(msg) {
     }
 }
 
-async function enableLegacyFwUpdateMessage(url) {
-    const bootloaderButton = document.getElementById("bootloader-button");
-    const downloadButton = document.getElementById("download-button");
-    const fwMessageBox = document.getElementById("fw-update-box");
+function getFwUiElements() {
+    return {
+        box: document.getElementById('fw-update-box'),
+        title: document.getElementById('fw-update-title'),
+        guide: document.getElementById('fw-update-guide'),
+        picker: document.getElementById('fw-install-picker'),
+        uf2Tips: document.getElementById('fw-uf2-tips'),
+        select: document.getElementById('fw-device-select'),
+        updateButton: document.getElementById('update-button'),
+        restartButton: document.getElementById('exit-bootloader-button'),
+        dismissButton: document.getElementById('dismiss-fw-button'),
+    };
+}
 
-    bootloaderButton.setOnClick(async () => {
-        if(gamepad) {
-            await gamepad.setBootloaderLegacy();
+function hideFwUpdateUi() {
+    const { box, picker, uf2Tips } = getFwUiElements();
+    fwUiMode = 'hidden';
+    box.setAttribute('visible', 'false');
+    picker.hidden = true;
+    uf2Tips.hidden = true;
+    setUpdateButtonLabel('Update');
+}
+
+function setFwGuide(title, guide) {
+    const els = getFwUiElements();
+    els.title.textContent = title;
+    els.guide.textContent = guide;
+}
+
+function setUpdateButtonLabel(text) {
+    const { updateButton } = getFwUiElements();
+    updateButton.setAttribute('ready-text', text);
+    // Refresh visible label if currently ready/disabled
+    const state = updateButton.getAttribute('state') || 'ready';
+    if (state === 'ready' || state === 'disabled') {
+        updateButton.setAttribute('state', state);
+        const btn = updateButton.shadowRoot?.querySelector('.single-shot-button');
+        if (btn && state === 'ready') btn.textContent = text;
+    }
+}
+
+/**
+ * Shared success screen for every flash path (Picoboot, UF2 picker, install, update).
+ */
+function showUpdateComplete() {
+    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+
+    fwUiMode = 'update-complete';
+    pendingFwUrl = undefined;
+    pendingFwChecksum = undefined;
+    pendingIsLegacy = false;
+
+    picker.hidden = true;
+    uf2Tips.hidden = true;
+
+    setFwGuide(
+        'Update Complete',
+        'Firmware was written successfully. Wait a moment for the controller to reboot, then click Connect.'
+    );
+    setUpdateStatus('Done — click Connect when ready', 100, true);
+    setUpdateButtonLabel('Update');
+
+    // Gray out all actions except Dismiss
+    updateButton.enableButton(false);
+    restartButton.enableButton(false);
+    dismissButton.enableButton(true);
+    dismissButton.setAttribute('ready-text', 'Dismiss');
+    const dismissBtn = dismissButton.shadowRoot?.querySelector('.single-shot-button');
+    if (dismissBtn) dismissBtn.textContent = 'Dismiss';
+
+    box.setAttribute('visible', 'true');
+}
+
+function applyFlashResult(result) {
+    if (result === true) {
+        showUpdateComplete();
+        return true;
+    }
+    if (result?.needsUserAction) {
+        if (result.reason === 'directory-picker') {
+            showUf2DriveStep();
             return true;
         }
+        if (result.reason === 'manual-download') {
+            showManualUf2Step(result.uf2Url);
+            return true;
+        }
+        setFwGuide(
+            'Action Needed',
+            'Click Update to authorize the Pico bootloader device in the browser popup.'
+        );
+        setUpdateStatus('Click Update to continue', 0, false);
+        setUpdateButtonLabel('Authorize');
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Shared flash pipeline for update + install (Picoboot → UF2 drive → manual).
+ * Always enters bootloader-flash mode so USB reconnects don't dismiss the panel.
+ */
+async function runFirmwareFlash(url, checksum, { allowRequestDevice = true } = {}) {
+    if (!url) {
+        setUpdateStatus('No firmware URL available.', 0, false);
+        return false;
+    }
+
+    pendingFwUrl = url;
+    pendingFwChecksum = checksum;
+    fwUiMode = 'bootloader-flash';
+
+    const { picker } = getFwUiElements();
+    picker.hidden = true;
+
+    const result = await pico_update_attempt_flash(url, checksum, { allowRequestDevice });
+    return applyFlashResult(result);
+}
+
+async function resolveInstallSelection() {
+    const { select } = getFwUiElements();
+    const option = select.selectedOptions[0];
+    if (!option?.value) return null;
+
+    let checksum = null;
+    try {
+        const manifest = await getBuildManifest(option.dataset.manifestUrl);
+        if (manifest?.checksum) checksum = manifest.checksum;
+    } catch (error) {
+        console.warn('Could not load manifest checksum:', error);
+    }
+
+    return { url: option.dataset.uf2Url, checksum };
+}
+
+/** Update + install: rebooted gamepad or bare bootloader with known firmware */
+async function startBootloaderFlashSession({ allowRequestDevice = true } = {}) {
+    if (!pendingFwUrl) {
+        setUpdateStatus('No firmware URL available.', 0, false);
+        return false;
+    }
+
+    await showBootloaderFlash();
+    return await runFirmwareFlash(pendingFwUrl, pendingFwChecksum, { allowRequestDevice });
+}
+
+function isActiveFwSession() {
+    return [
+        'awaiting-bootloader',
+        'bootloader-flash',
+        'bootloader-install',
+        'uf2-drive-select',
+        'update-complete',
+    ].includes(fwUiMode);
+}
+
+async function populateDeviceSelect() {
+    const { select } = getFwUiElements();
+    if (buildsLoaded && select.options.length > 1) return;
+
+    select.innerHTML = '<option value="">Loading devices...</option>';
+    try {
+        const builds = await listHojaBuilds();
+        select.innerHTML = '<option value="">Choose a device...</option>';
+        for (const build of builds) {
+            const option = document.createElement('option');
+            option.value = build.id;
+            option.textContent = build.label;
+            option.dataset.uf2Url = build.uf2Url;
+            option.dataset.binUrl = build.binUrl;
+            option.dataset.manifestUrl = build.manifestUrl;
+            select.appendChild(option);
+        }
+        buildsLoaded = true;
+    } catch (error) {
+        console.error('Failed to load HOJA builds:', error);
+        select.innerHTML = '<option value="">Could not load device list</option>';
+    }
+}
+
+function wireFwButtons() {
+    const { updateButton, restartButton, dismissButton, select } = getFwUiElements();
+
+    updateButton.setOnClick(async () => {
+        return await handleFwUpdateClick();
     });
 
-    downloadButton.setOnClick(() => {
-        window.open(url, '_blank');
+    restartButton.setOnClick(async () => {
+        return await pico_exit_bootloader_attempt();
+    });
+
+    dismissButton.setOnClick(async () => {
+        hideFwUpdateUi();
+        pendingFwUrl = undefined;
+        pendingFwChecksum = undefined;
+        pendingIsLegacy = false;
+        dismissButton.setAttribute('ready-text', 'Dismiss');
+        const dismissBtn = dismissButton.shadowRoot?.querySelector('.single-shot-button');
+        if (dismissBtn) dismissBtn.textContent = 'Dismiss';
+        setUpdateStatus('Ready', 0, false);
         return true;
     });
 
-    fwMessageBox.setAttribute("visible", "true");
+    select.addEventListener('change', async () => {
+        if (fwUiMode !== 'bootloader-install') return;
+
+        const fw = await resolveInstallSelection();
+        if (fw) {
+            pendingFwUrl = fw.url;
+            pendingFwChecksum = fw.checksum;
+        } else {
+            pendingFwUrl = undefined;
+            pendingFwChecksum = undefined;
+        }
+    });
 }
 
-async function enableFwUpdateMessage({enableDropdown, enableBootloader, enableDownload, enableEasy, enableCancel}, url, checksum) {
-    const bootloaderButton = document.getElementById("bootloader-button");
-    const downloadButton = document.getElementById("download-button");
-    const updateButton = document.getElementById("update-button");
-    const fwMessageBox = document.getElementById("fw-update-box");
-    const cancelButton = document.getElementById("exit-bootloader-button");
-    
-
-    if(enableDropdown != undefined) {
-        if(enableDropdown) {
-            fwMessageBox.setAttribute("visible", "true");
-        }
-        else {
-            fwMessageBox.setAttribute("visible", "false");
-        }
-    }
-    
-
-    if(enableBootloader != undefined) {
-        if(enableBootloader) {
-            bootloaderButton.setOnClick(async () => {
-                if(gamepad) {
-                    gamepad.sendConfigCommand(gamepadCfgBlock, bootloaderCmd);
+async function handleFwUpdateClick() {
+    // Staged UF2 step: folder picker when cached, otherwise manual download
+    if (fwUiMode === 'uf2-drive-select') {
+        if (pico_has_cached_uf2()) {
+            try {
+                await pico_complete_uf2_picker_flash();
+                showUpdateComplete();
+                return true;
+            } catch (error) {
+                console.error(error);
+                // If picker itself was blocked, fall back to manual download
+                const msg = String(error?.message || error).toLowerCase();
+                if (pendingFwUrl && (msg.includes('security policy') || msg.includes('folder picker blocked'))) {
+                    window.open(pendingFwUrl, '_blank');
+                    showManualUf2Step(pendingFwUrl);
                     return true;
                 }
-            });
-            bootloaderButton.enableButton(true);
+                setUpdateStatus(error.message || 'Folder selection failed.', 0, false);
+                return false;
+            }
         }
-        else {
-            bootloaderButton.enableButton(false);
+        if (pendingFwUrl) {
+            window.open(pendingFwUrl, '_blank');
+            showUpdateComplete();
+            return true;
         }
+        setUpdateStatus('No firmware file ready.', 0, false);
+        return false;
     }
 
-    if(enableDownload != undefined)
-    {
-        if(deviceDetected != true)
-        {
-            downloadButton.setOnClick(() => {
-                window.open('https://docs.handheldlegend.com/s/portal/doc/firmware-list-NVFevpDKbQ', '_blank');
+    // Step 1: connected gamepad → reboot into BOOTSEL (do NOT wait for ACK — device dies)
+    if (fwUiMode === 'update-available') {
+        if (!gamepad) return false;
+
+        setFwGuide(
+            'Update Mode',
+            'Rebooting into bootloader… Firmware will download and flash automatically when the Pico bootloader appears. If it asks, click Update again.'
+        );
+        setUpdateStatus('Sending reboot to bootloader...', 10, true);
+        fwUiMode = 'awaiting-bootloader';
+        setUpdateButtonLabel('Update');
+
+        try {
+            if (pendingIsLegacy) {
+                // Fire-and-forget — device will disconnect
+                gamepad.setBootloaderLegacy().catch(() => {});
+            } else {
+                await gamepad.rebootToBootloader();
+            }
+
+            setUpdateStatus('Waiting for Pico bootloader...', 30, true);
+            return true;
+        } catch (error) {
+            console.error(error);
+            // Device may have already rebooted mid-transfer; treat as success
+            if (fwUiMode === 'awaiting-bootloader') {
+                setUpdateStatus('Waiting for Pico bootloader...', 30, true);
                 return true;
-            });
-        }
-        else if(url != undefined && checksum != undefined) {
-            downloadButton.setOnClick(() => {
-                window.open(url, '_blank');
-                return true;
-            });
-        }
-
-        if(enableDownload) {
-            downloadButton.enableButton(true);
-        }
-        else {
-            downloadButton.enableButton(false);
+            }
+            setUpdateStatus('Failed to enter update mode.', 0, false);
+            fwUiMode = 'update-available';
+            return false;
         }
     }
 
-    if(enableEasy != undefined) {
-
-        if(deviceDetected != true)
-        {
-            updateButton.enableButton(false);
-        }
-        else if (enableEasy == false) {
-            updateButton.enableButton(false);
-        }
-        else if (enableEasy == true) {
-            updateButton.enableButton(true);
-        }
-
-        if(url != undefined && checksum != undefined) {
-            updateButton.setOnClick(async () => {
-                if(gamepad) {
-                    await pico_update_attempt_flash(url, checksum);
-                    return true;
-                }
-            });
-        }
+    // Step 2: flash (manual click — has user gesture for requestDevice / folder picker)
+    if (fwUiMode === 'awaiting-bootloader' || fwUiMode === 'bootloader-flash') {
+        return await startBootloaderFlashSession({ allowRequestDevice: true });
     }
 
-    if(enableCancel != undefined)
-    {
-        if(enableCancel == true) {
-            cancelButton.setOnClick(async () => {
-                await pico_exit_bootloader_attempt();
-                return true;
-            });
-            cancelButton.enableButton(true);
+    // Install HOJA onto a bare bootloader — same flash pipeline as updates
+    if (fwUiMode === 'bootloader-install') {
+        const fw = await resolveInstallSelection();
+        if (!fw) {
+            setUpdateStatus('Select a device first.', 0, false);
+            return false;
         }
-        else {
-            cancelButton.enableButton(false);
-        }
+
+        pendingFwUrl = fw.url;
+        pendingFwChecksum = fw.checksum;
+        return await startBootloaderFlashSession({ allowRequestDevice: true });
     }
+
+    return false;
+}
+
+/**
+ * Connected gamepad has a newer firmware available.
+ */
+async function showUpdateAvailable(url, checksum, { legacy = false } = {}) {
+    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+
+    pendingFwUrl = url;
+    pendingFwChecksum = checksum;
+    pendingIsLegacy = legacy;
+    fwUiMode = 'update-available';
+
+    picker.hidden = true;
+    uf2Tips.hidden = true;
+    setUpdateButtonLabel('Update');
+    setFwGuide(
+        'Update Available',
+        'Click Update once. The controller will reboot into bootloader mode and firmware will flash automatically when ready.'
+    );
+    setUpdateStatus('Ready', 0, false);
+
+    updateButton.enableButton(true);
+    restartButton.enableButton(false);
+    dismissButton.enableButton(true);
+    dismissButton.setAttribute('ready-text', 'Dismiss');
+    const dismissBtn = dismissButton.shadowRoot?.querySelector('.single-shot-button');
+    if (dismissBtn) dismissBtn.textContent = 'Dismiss';
+    box.setAttribute('visible', 'true');
+}
+
+/**
+ * Pico bootloader present and we already know which firmware to flash.
+ */
+async function showBootloaderFlash() {
+    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+
+    fwUiMode = 'bootloader-flash';
+    picker.hidden = true;
+    uf2Tips.hidden = true;
+    setUpdateButtonLabel('Update');
+    setFwGuide(
+        'Ready to Flash',
+        'Flashing firmware… If direct USB flashing is blocked, you will get clear steps to select the RPI-RP2 drive.'
+    );
+    setUpdateStatus('Bootloader detected', 40, true);
+
+    updateButton.enableButton(true);
+    restartButton.enableButton(true);
+    dismissButton.enableButton(true);
+    box.setAttribute('visible', 'true');
+}
+
+/**
+ * Show instructions BEFORE opening the OS folder picker (picker covers the page).
+ */
+function showUf2DriveStep() {
+    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+
+    fwUiMode = 'uf2-drive-select';
+    picker.hidden = true;
+    uf2Tips.hidden = false;
+
+    setFwGuide(
+        'Select RPI-RP2 Drive',
+        'Direct USB flashing is unavailable on this system. Read the steps below, then click the button — a folder dialog will open on top of this page.'
+    );
+    setUpdateStatus('Ready — pick RPI-RP2 in the next dialog', 100, false);
+    setUpdateButtonLabel('Select RPI-RP2');
+
+    updateButton.enableButton(true);
+    restartButton.enableButton(true);
+    dismissButton.enableButton(true);
+    box.setAttribute('visible', 'true');
+}
+
+/**
+ * Last-resort path when the folder picker API is unavailable.
+ */
+function showManualUf2Step(uf2Url) {
+    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+
+    fwUiMode = 'uf2-drive-select';
+    pendingFwUrl = uf2Url;
+    picker.hidden = true;
+    uf2Tips.hidden = false;
+
+    setFwGuide(
+        'Copy UF2 to RPI-RP2',
+        'Click Download UF2, then copy the file onto the drive named RPI-RP2 in File Explorer. The controller will reboot when the copy finishes.'
+    );
+    setUpdateStatus('Download the UF2, then copy it to RPI-RP2', 100, false);
+    setUpdateButtonLabel('Download UF2');
+
+    updateButton.enableButton(true);
+    restartButton.enableButton(false);
+    dismissButton.enableButton(true);
+    box.setAttribute('visible', 'true');
+}
+
+/**
+ * Bare Pico bootloader with no known device firmware — offer HOJA install.
+ */
+async function showBootloaderInstall() {
+    const { box, picker, uf2Tips, updateButton, restartButton, dismissButton } = getFwUiElements();
+
+    pendingFwUrl = undefined;
+    pendingFwChecksum = undefined;
+    pendingIsLegacy = false;
+    fwUiMode = 'bootloader-install';
+
+    uf2Tips.hidden = true;
+    setUpdateButtonLabel('Install');
+    setFwGuide(
+        'Install HOJA?',
+        'A Raspberry Pi bootloader was detected. Select your device below, then click Install. The same update steps apply — including RPI-RP2 drive selection on Windows.'
+    );
+    setUpdateStatus('Select a device to continue', 0, false);
+
+    picker.hidden = false;
+    await populateDeviceSelect();
+
+    updateButton.enableButton(true);
+    restartButton.enableButton(true);
+    dismissButton.enableButton(true);
+    box.setAttribute('visible', 'true');
+}
+
+async function enableLegacyFwUpdateMessage(url) {
+    await showUpdateAvailable(url, null, { legacy: true });
+}
+
+function isPicoBootloaderDevice(device) {
+    return device?.vendorId === 0x2e8a && device?.productId === 0x0003;
+}
+
+async function handlePicoBootloaderConnect() {
+    // Don't reset an in-progress or completed flash flow
+    if (fwUiMode === 'update-complete' || fwUiMode === 'uf2-drive-select') {
+        return;
+    }
+    if (fwUiMode === 'bootloader-flash' || fwUiMode === 'awaiting-bootloader') {
+        return;
+    }
+
+    // Known firmware (gamepad update or install device already selected)
+    if (pendingFwUrl) {
+        try {
+            await startBootloaderFlashSession({ allowRequestDevice: false });
+        } catch (error) {
+            console.error('Auto-flash failed:', error);
+            setUpdateStatus('Click Update to retry flash', 0, false);
+        }
+        return;
+    }
+
+    if (fwUiMode !== 'bootloader-install') {
+        await showBootloaderInstall();
+    }
+}
+
+async function handlePicoBootloaderDisconnect() {
+    // Keep the panel open for every active bootloader flash / install step
+    if (isActiveFwSession()) {
+        return;
+    }
+    hideFwUpdateUi();
 }
 
 async function sendSaveCommand() {
@@ -567,13 +921,18 @@ async function sendSaveCommand() {
 }
 
 async function badgeCheck() {
+    if (!gamepad?.isConnected) return;
 
     const analogCfgBlockNumber = 2;
     const hoverCfgBlockNumber = 1;
 
-    // Re-read data
-    await gamepad.requestBlock(analogCfgBlockNumber);
-    await gamepad.requestBlock(hoverCfgBlockNumber);
+    try {
+        await gamepad.requestBlock(analogCfgBlockNumber);
+        await gamepad.requestBlock(hoverCfgBlockNumber);
+    } catch (error) {
+        console.warn('badgeCheck skipped (device not ready):', error.message || error);
+        return;
+    }
 
     if(!gamepad.hover_cfg.hover_calibration_set) {
             window.configApp.setNotificationBadge(1, true);
@@ -589,14 +948,10 @@ async function badgeCheck() {
     if(gamepad.bluetooth_static.external_update_supported) {
         let currentBasebandVersion = await getCurrentBasebandVersion();
 
-        //console.log(currentBasebandVersion);
-        //console.log(gamepad.bluetooth_static.external_version_number);
-
         if(gamepad.bluetooth_static.external_version_number < currentBasebandVersion) {
             window.configApp.setNotificationBadge(9, true);
         }
         else window.configApp.setNotificationBadge(9, false);
-        // End Baseband Version Check
     }
 }
 
@@ -618,7 +973,7 @@ function hasEsp32ExternalWirelessHardware() {
 }
 
 // Initialize the app when DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
     const connectButton = document.getElementById('connect-button');
     const saveButton = document.getElementById('save-button');
@@ -655,7 +1010,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.configApp.setCloseCallback(async () => {
-        await badgeCheck();
+        try {
+            await badgeCheck();
+        } catch (error) {
+            console.warn('Close badge check skipped:', error);
+        }
     });
 
     enableTooltips(document);
@@ -694,9 +1053,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable Save
         saveButton.enableButton(true);
 
-        // Set device detect flag
-        deviceDetected = true;
-
         // Get FW version and compare
         let fwVersion = await getManifestVersion(parseBufferText(gamepad.device_static.manifest_url));
 
@@ -707,34 +1063,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         }
         else if(fwVersion.version > gamepad.device_static.fw_version || debugFw===true) {
-
-            let enableOptions = 
-            {
-                enableDropdown: true,
-                enableBootloader: true,
-                enableDownload: true,
-                enableEasy: true,
-                enableCancel: false
-            }
-
-            if(isWindows()) {
-                enableOptions.enableEasy = false;
-            }
-
-            // Enable FW update
-            enableFwUpdateMessage(enableOptions, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
+            await showUpdateAvailable(
+                parseBufferText(gamepad.device_static.firmware_url),
+                fwVersion.checksum
+            );
         }
         else {
-            let enableOptions = 
-            {
-                enableDropdown: false,
-                enableBootloader: false,
-                enableDownload: false,
-                enableEasy: false,
-                enableCancel: false
+            // Firmware current — clear update / complete panels
+            if (fwUiMode !== 'hidden' && fwUiMode !== 'bootloader-install') {
+                hideFwUpdateUi();
+                pendingFwUrl = undefined;
+                pendingFwChecksum = undefined;
             }
-            // Enable FW update
-            enableFwUpdateMessage(enableOptions, parseBufferText(gamepad.device_static.firmware_url), fwVersion.checksum);
         }       
     }
 
@@ -742,6 +1082,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // Disable Save
         saveButton.enableButton(false);
         connectButton.setState('off');
+
+        // Keep pending FW URL if we just asked the device to enter bootloader
+        if (fwUiMode === 'update-available') {
+            hideFwUpdateUi();
+            pendingFwUrl = undefined;
+            pendingFwChecksum = undefined;
+            pendingIsLegacy = false;
+        }
+
+        // Avoid module close work that talks to USB while rebooting into bootloader
+        if (fwUiMode === 'awaiting-bootloader' || fwUiMode === 'bootloader-flash') {
+            for(let i = 0; i < 10; i++)
+            {
+                window.configApp.enableIcon(i, false);
+                window.configApp.setNotificationBadge(i, false);
+            }
+            saveButton.enableButton(false);
+            connectButton.setState('off');
+            return true;
+        }
 
         console.log("Closing module: " + window.configApp.currentModule());
 
@@ -759,66 +1119,45 @@ document.addEventListener('DOMContentLoaded', () => {
             window.configApp.setNotificationBadge(i, false);
         }
 
-        let enableOptions =
-        {
-            enableDropdown: false,
-            enableBootloader: false,
-            enableDownload: false,
-            enableEasy: false
-        };
-
         return true;
     }
 
     gamepad.setConnectHook(connectHandle);
     gamepad.setDisconnectHook(disconnectHandle);
     gamepad.setLegacyDetectionHook(enableLegacyFwUpdateMessage);
+    gamepad.setBootloaderHook(handlePicoBootloaderConnect);
 
-    const PICO_VID = 0x2e8a;
-    const PICO_PID = 0x0003;
+    wireFwButtons();
 
-    // Listen for device connect/disconnect events for Pico Bootloader
-    navigator.usb.addEventListener('connect', event => {
-        console.log('USB device connected:', event.device);
-        if (event.device.vendorId === PICO_VID && 
-            event.device.productId === PICO_PID) {
-            console.log('Pico Boot Device Detected');
-            
-            let enableOptions =
-            {
-                enableDropdown: true,
-                enableBootloader: false,
-                enableDownload: true,
-                enableEasy: true,
-                enableCancel: true
-            };
+    if (navigator.usb) {
+        // Listen for device connect/disconnect events for Pico Bootloader
+        navigator.usb.addEventListener('connect', async (event) => {
+            console.log('USB device connected:', event.device);
+            if (isPicoBootloaderDevice(event.device)) {
+                console.log('Pico Boot Device Detected');
+                await handlePicoBootloaderConnect();
+            }
+        });
 
-            enableFwUpdateMessage(enableOptions, undefined, undefined);
+        // Listen for device disconnect events for Pico Bootloader
+        navigator.usb.addEventListener('disconnect', async (event) => {
+            console.log('USB device disconnected:', event.device);
+            if (isPicoBootloaderDevice(event.device)) {
+                console.log('Pico Boot Device disconnected!');
+                await handlePicoBootloaderDisconnect();
+            }
+        });
+
+        // If a Pico bootloader is already authorized/connected on load, offer install
+        try {
+            const existing = await navigator.usb.getDevices();
+            if (existing.some(isPicoBootloaderDevice) && !pendingFwUrl) {
+                await showBootloaderInstall();
+            }
+        } catch (error) {
+            console.warn('Could not query existing USB devices:', error);
         }
-    });
-
-    // Listen for device disconnect events for Pico Bootloader
-    navigator.usb.addEventListener('disconnect', event => {
-        console.log('USB device disconnected:', event.device);
-        if (event.device.vendorId === PICO_VID && 
-            event.device.productId === PICO_PID) {
-            console.log('Pico Boot Device disconnected!');
-            
-            // Clear device detected flag
-            deviceDetected = false;
-
-            let enableOptions =
-            {
-                enableDropdown: false,
-                enableBootloader: false,
-                enableDownload: false,
-                enableEasy: false,
-                enableCancel: false
-            };
-
-            enableFwUpdateMessage(enableOptions, undefined, undefined);
-        }
-    });
+    }
 
     // Optional async handlers for connection/disconnection
     connectButton.setOnHandler(async () => {

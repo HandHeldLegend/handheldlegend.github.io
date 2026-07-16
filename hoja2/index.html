@@ -26,7 +26,7 @@
                             off-to-on-text="..."
                             on-to-off-text="Disconnect"
                         ></tristate-button>
-                        <div class="header-tooltip" tooltip="If you have trouble connecting, try holding A or South button during plug-in.">?</div>
+                        <div class="header-tooltip" tooltip="If you have trouble connecting, try holding A or South button during plug-in. To install HOJA on a blank board, put it in BOOTSEL and choose the RPI-RP2 / Pico bootloader device.">?</div>
                     </div>
 
                     <single-shot-button id="save-button" state="disabled" ready-text="Save" disabled-text="Save"
@@ -49,47 +49,45 @@
 
             </div>
 
-            <div visible="false" id="fw-update-box" class="header-msg-box">
-                <h2>Update Available</h2>
-                <p>Click 'Enter Update Mode' first.</p>
-                <div class="app-row">
-                    <single-shot-button id="bootloader-button" state="ready" ready-text="Enter Update Mode" disabled-text="..."
-                        pending-text="Entering..." failure-text="Entering..." success-text="Entering..."
-                    ></single-shot-button>
+            <div visible="false" id="fw-update-box" class="header-msg-box fw-update-box">
+                <h2 id="fw-update-title">Update Available</h2>
+                <p id="fw-update-guide">Click Update to begin. You'll be guided through each step.</p>
+
+                <div id="fw-install-picker" class="fw-install-picker" hidden>
+                    <label for="fw-device-select">Select your device</label>
+                    <select id="fw-device-select">
+                        <option value="">Loading devices...</option>
+                    </select>
                 </div>
 
-                <div class="separator"> </div>
-
-                <h3>Manual Update (Windows)</h3>
-                <p>Click 'Download' to retrieve the latest firmware. 
-                    Save the .uf2 firmware for your device to the RPI-RP2 USB device in your file explorer.</p>
-                <div class="app-row">
-                    <single-shot-button id="download-button" state="ready" ready-text="Download" disabled-text="Download"
-                        pending-text="Download" success-text="Opening..."
-                    ></single-shot-button>
+                <div id="fw-uf2-tips" class="fw-uf2-tips" hidden>
+                    <ol>
+                        <li>In the folder dialog, open the drive named <strong>RPI-RP2</strong></li>
+                        <li>Select that drive folder (you should see <strong>INFO_UF2.TXT</strong> inside)</li>
+                        <li>Click Select / Open — do not pick Downloads or Documents</li>
+                    </ol>
                 </div>
 
-                <div class="separator"> </div>
-
-                <h3>Easy Update</h3>
-                <p>Click 'Update' to connect to and update your gamepad.</p>
                 <div class="progress-info">
-                    <span class="status-text" id="statusText">Ready to start</span>
+                    <span class="status-text" id="statusText">Ready</span>
                     <span class="percentage" id="percentage">0%</span>
                 </div>
-                
+
                 <div class="progress-bar-wrapper">
                     <div class="progress-bar" id="progressBar"></div>
                 </div>
+
                 <div class="app-row">
                     <single-shot-button id="update-button" state="ready" ready-text="Update" disabled-text="..."
-                        pending-text="Updating..." failure-text="Completed..." success-text="Completed..."
+                        pending-text="Working..." failure-text="Failed" success-text="Done" width="110"
                     ></single-shot-button>
                     <single-shot-button id="exit-bootloader-button" state="ready" ready-text="Restart" disabled-text="..."
-                        pending-text="Restarting..." failure-text="Completed..." success-text="Completed..."
+                        pending-text="Restarting..." failure-text="Failed" success-text="Done"
+                    ></single-shot-button>
+                    <single-shot-button id="dismiss-fw-button" state="ready" ready-text="Dismiss" disabled-text="..."
+                        pending-text="..." failure-text="..." success-text="..."
                     ></single-shot-button>
                 </div>
-
             </div>
 
         </div>
