@@ -41,6 +41,12 @@ function stringToArray(input) {
     return input.split(',');
 }
 
+function decodeText(buffer) {
+    const decoder = new TextDecoder('utf-8');
+    const str = decoder.decode(buffer);
+    return str.replace(/\x00/g, '').trim();
+}
+
 export function render(container) {
 
     let bodyColor = uint32ToRgbHex(gamepad.gamepad_cfg.gamepad_color_body);
@@ -134,6 +140,7 @@ export function render(container) {
 
             <div class="separator"></div>
 
+            <h3 class="devinfo">Device: ${decodeText(gamepad.device_static.name) || "Unknown"}</h3>
             <h3 class="devinfo">Build: ${String(gamepad.device_static.fw_version)}</h3>
 
             <div class="separator"></div>
