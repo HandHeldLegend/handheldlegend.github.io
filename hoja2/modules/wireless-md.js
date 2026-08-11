@@ -73,7 +73,7 @@ function wirelessChipFromStatic(btStatic) {
     return {
         model: hasModel ? model : "Unknown",
         present: true,
-        active: status > 0
+        active: status === 2
     };
 }
 
