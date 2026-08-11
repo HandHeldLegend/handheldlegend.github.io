@@ -107,6 +107,20 @@ window.addEventListener('appinstalled', (evt) => {
     deferredPrompt = null;
 });
 
+// Reads the version string out of app_sw.js directly (rather than the SW's
+// active cache name) since the cache isn't populated until well after page
+// load, which would leave first-time visitors seeing a stale/empty version.
+async function getAppVersion() {
+    try {
+        const response = await fetch('/hoja2/app_sw.js', { cache: 'no-store' });
+        const text = await response.text();
+        const match = text.match(/version:\s*['"]([^'"]+)['"]/);
+        return match ? match[1] : null;
+    } catch (error) {
+        return null;
+    }
+}
+
 // Function to check if app is already installed
 async function checkInstallState() {
     // First check if it's already installed via getInstalledRelatedApps()
@@ -1091,6 +1105,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.open('https://docs.handheldlegend.com/s/portal/doc/whats-new-xmtMoBg2Pu', '_blank');
         return true;
     });
+
+    const changelogTooltip = document.getElementById('changelog-tooltip');
+    if (changelogTooltip) {
+        const appVersion = await getAppVersion();
+        changelogTooltip.setAttribute('tooltip', appVersion ? `App version: ${appVersion}` : "View what's new");
+    }
 
     const debugButton = document.getElementById('debug-button');
     if (debugButton) {

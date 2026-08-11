@@ -33,9 +33,12 @@
                         pending-text="Saving..."
                     ></single-shot-button>
 
-                    <single-shot-button id="changelog-button" state="ready" ready-text="What's New?" disabled-text="What's New?"
-                        pending-text="What's New?"
-                    ></single-shot-button>
+                    <div class="ht-container">
+                        <single-shot-button id="changelog-button" state="ready" ready-text="What's New?" disabled-text="What's New?"
+                            pending-text="What's New?"
+                        ></single-shot-button>
+                        <div id="changelog-tooltip" class="header-tooltip" tooltip="View what's new">?</div>
+                    </div>
 
                     <button visible="false" id="debug-button" class="debug-button" data-active="false">
                         Debug: FW
