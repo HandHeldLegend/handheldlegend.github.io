@@ -1189,16 +1189,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         const updateAvailable = fwVersion !== false
             && fwVersion.version > gamepad.device_static.fw_version;
 
+        let promptShown = false;
         if (updateAvailable || debugForced) {
-            await tryShowGamepadFwUpdate(fwVersion, { debugForced });
+            promptShown = await tryShowGamepadFwUpdate(fwVersion, { debugForced });
         }
-        else {
-            // Firmware current — clear update / complete panels
-            if (fwUiMode !== 'hidden' && fwUiMode !== 'bootloader-install') {
-                hideFwUpdateUi();
-                pendingFwUrl = undefined;
-                pendingFwChecksum = undefined;
-            }
+
+        // Nothing to prompt about — clear whatever panel is still on screen.
+        // That includes the bootloader install prompt: a gamepad just connected,
+        // so it is already running HOJA and the offer to install is stale.
+        if (!promptShown && fwUiMode !== 'hidden') {
+            hideFwUpdateUi();
+            pendingFwUrl = undefined;
+            pendingFwChecksum = undefined;
         }
     }
 
