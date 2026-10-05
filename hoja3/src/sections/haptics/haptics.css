@@ -1,9 +1,0 @@
-/* Haptics page — waveform visualizer frame. Theme tokens only. */
-.hp-scope { display: flex; flex-direction: column; gap: var(--space-2); }
-.hp-scope .cv-surface {
-  border-radius: var(--radius-md);
-  background: var(--surface-sunken);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-.hp-scope-caption { font-size: var(--text-xs); color: var(--text-muted); }

@@ -1,0 +1,3 @@
+[submodule "hoja3"]
+	path = hoja3
+	url = https://github.com/HandHeldLegend/hhl-gamepad-config.git
