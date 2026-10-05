@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<!-- HHL Gamepad Config UI icon sprite. 24x24, 2px round strokes, currentColor.
+     Usage: <svg class="icon"><use href="assets/icons/ui.svg#i-NAME"/></svg>
+     Stroke attributes live on a wrapping <g> inside each symbol so they survive <use>. -->
+
+<symbol id="i-gamepad" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10a5 5 0 0 1 0 10H7A5 5 0 0 1 7 7z"/><path d="M5 12h4M7 10v4"/></g><g fill="currentColor"><circle cx="15.5" cy="13" r="1.25"/><circle cx="18" cy="10.75" r="1.25"/></g></symbol>
+
+<symbol id="i-input" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="12" r="2.5"/><circle cx="19.5" cy="12" r="2.5"/><path d="M9 8.5h6M13 6.5l2 2-2 2"/><path d="M15 15.5H9M11 13.5l-2 2 2 2"/></g></symbol>
+
+<symbol id="i-joystick" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.6 3.2h-7.2L3.2 8.4v7.2l5.2 5.2h7.2l5.2-5.2V8.4z"/><circle cx="12" cy="12" r="4"/></g><circle cx="12" cy="12" r="1.25" fill="currentColor"/></symbol>
+
+<symbol id="i-snapback" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12Q4.5 1 7 12q2 8 4 0 1.75-6 3.5 0 1.5 4.5 3 0 1.25-2.75 2.5 0H22"/></g></symbol>
+
+<symbol id="i-rgb" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="5"/><circle cx="8.5" cy="14.5" r="5"/><circle cx="15.5" cy="14.5" r="5"/></g></symbol>
+
+<symbol id="i-motion" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14V4M9.8 6.2L12 4l2.2 2.2"/><path d="M12 14l7.4 4.25M16.6 18.9l2.8-.65-.6-2.85"/><path d="M12 14l-7.4 4.25M7.4 18.9l-2.8-.65.6-2.85"/></g><circle cx="12" cy="14" r="1.75" fill="currentColor"/></symbol>
+
+<symbol id="i-haptics" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="18" rx="2"/><path d="M5 9v6M2 10.5v3M19 9v6M22 10.5v3"/></g></symbol>
+
+<symbol id="i-user" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></g></symbol>
+
+<symbol id="i-battery" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2M6 10.5v3M9.5 10.5v3"/></g></symbol>
+
+<symbol id="i-wireless" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8"/></g><circle cx="12" cy="12" r="1.75" fill="currentColor"/></symbol>
+
+<symbol id="i-firmware" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"/><rect x="9.5" y="9.5" width="5" height="5" rx=".5"/><path d="M9.5 2.5V6M14.5 2.5V6M9.5 18v3.5M14.5 18v3.5M2.5 9.5H6M2.5 14.5H6M18 9.5h3.5M18 14.5h3.5"/></g></symbol>
+
+<symbol id="i-settings" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.85 10.26v3.48l-2.77.42a7.4 7.4 0 0 1-.55 1.31l1.66 2.27-2.45 2.45-2.27-1.66a7.4 7.4 0 0 1-1.31.55l-.42 2.77h-3.48l-.42-2.77a7.4 7.4 0 0 1-1.31-.55l-2.27 1.66-2.45-2.45 1.66-2.27a7.4 7.4 0 0 1-.55-1.31l-2.77-.42v-3.48l2.77-.42a7.4 7.4 0 0 1 .55-1.31L3.81 6.26l2.45-2.45 2.27 1.66a7.4 7.4 0 0 1 1.31-.55l.42-2.77h3.48l.42 2.77a7.4 7.4 0 0 1 1.31.55l2.27-1.66 2.45 2.45-1.66 2.27a7.4 7.4 0 0 1 .55 1.31z"/><circle cx="12" cy="12" r="3"/></g></symbol>
+
+<symbol id="i-arena" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 3.5l13 13M14.4 18.6l4.2-4.2M16.5 16.5L20 20"/><path d="M20.5 3.5l-13 13M9.6 18.6l-4.2-4.2M7.5 16.5L4 20"/></g></symbol>
+
+<symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9v11a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9"/></g></symbol>
+
+<symbol id="i-back" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></g></symbol>
+
+<symbol id="i-chevron-right" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></g></symbol>
+
+<symbol id="i-chevron-down" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></g></symbol>
+
+<symbol id="i-close" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></g></symbol>
+
+<symbol id="i-menu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></g></symbol>
+
+<symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></g></symbol>
+
+<symbol id="i-warning" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/></g><circle cx="12" cy="17" r="1.25" fill="currentColor"/></symbol>
+
+<symbol id="i-info" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16.5v-5"/></g><circle cx="12" cy="7.75" r="1.25" fill="currentColor"/></symbol>
+
+<symbol id="i-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2.5-3 4"/></g><circle cx="12" cy="17.5" r="1.25" fill="currentColor"/></symbol>
+
+<symbol id="i-sun" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></symbol>
+
+<symbol id="i-moon" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></g></symbol>
+
+<symbol id="i-system" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></g></symbol>
+
+<symbol id="i-download" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></g></symbol>
+
+<symbol id="i-upload" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 21h14"/></g></symbol>
+
+<symbol id="i-refresh" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66L20 8.5"/><path d="M20 4v4.5h-4.5"/></g></symbol>
+
+<symbol id="i-external" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></g></symbol>
+
+<symbol id="i-usb" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v4M15 2v4"/><path d="M6 6h12v4a6 6 0 0 1-12 0z"/><path d="M12 16v6"/></g></symbol>
+
+<symbol id="i-unplug" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v4M15 2v4"/><path d="M6 6h12v4a6 6 0 0 1-12 0z"/><path d="M12 16v6"/><path d="M3 3l18 18"/></g></symbol>
+
+<symbol id="i-save" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M8 3v4h7V3M7 21v-7h10v7"/></g></symbol>
+
+<symbol id="i-install" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v11M7 9l5 5 5-5"/><path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/></g></symbol>
+
+<symbol id="i-trash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14M10 11v6M14 11v6"/></g></symbol>
+
+<symbol id="i-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></g></symbol>
+
+<symbol id="i-minus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></g></symbol>
+
+<symbol id="i-play" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l13 8-13 8z"/></g></symbol>
+
+<symbol id="i-stop" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="2"/></g></symbol>
+
+<symbol id="i-calibrate" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></g><circle cx="12" cy="12" r="1.25" fill="currentColor"/></symbol>
+
+<symbol id="i-sparkle" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5c.6 4.3 2.7 6.4 7 7-4.3.6-6.4 2.7-7 7-.6-4.3-2.7-6.4-7-7 4.3-.6 6.4-2.7 7-7z"/><path d="M19 2v4M17 4h4"/></g></symbol>
+
+<symbol id="i-link" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></g></symbol>
+
+<symbol id="i-copy" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M15 9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h4"/></g></symbol>
+
+<symbol id="i-palette" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.8 1.8-1.8 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z"/></g><g fill="currentColor"><circle cx="7.5" cy="11" r="1.4"/><circle cx="10" cy="7" r="1.4"/><circle cx="14.5" cy="7" r="1.4"/><circle cx="17" cy="10.5" r="1.4"/></g></symbol>
+
+<symbol id="i-sliders" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11M18 6h3M3 12h3M10 12h11M3 18h7M14 18h7"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="12" cy="18" r="2"/></g></symbol>
+
+<symbol id="i-dpad" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5V9h5.5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5H15v5.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5V15H3.5a.5.5 0 0 1-.5-.5v-5a.5.5 0 0 1 .5-.5H9z"/></g><circle cx="12" cy="12" r="1.25" fill="currentColor"/></symbol>
+
+<symbol id="i-trigger" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10h14a3 3 0 0 1 3 3v4a4 4 0 0 1-4 4h-1.5L15 19.5H9L7.5 21H6a4 4 0 0 1-4-4v-4a3 3 0 0 1 3-3z"/><path d="M5 7V5.5A2.5 2.5 0 0 1 7.5 3H9a1 1 0 0 1 1 1v3zM19 7V5.5A2.5 2.5 0 0 0 16.5 3H15a1 1 0 0 0-1 1v3z"/></g></symbol>
+
+<symbol id="i-bolt" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></g></symbol>
+
+</svg>

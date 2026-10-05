@@ -1,0 +1,38 @@
+{
+  "id": "./",
+  "name": "HHL Gamepad Config",
+  "short_name": "HHL Config",
+  "description": "Configure, calibrate and update HOJA-powered controllers from Hand Held Legend. Works offline.",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#121117",
+  "theme_color": "#121117",
+  "categories": ["utilities", "games"],
+  "icons": [
+    { "src": "assets/icons/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/app/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/icons/app/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/app/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/app/monochrome-512.png", "sizes": "512x512", "type": "image/png", "purpose": "monochrome" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Update firmware",
+      "short_name": "Firmware",
+      "url": "./#/firmware",
+      "icons": [{ "src": "assets/icons/app/shortcut-update.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Gameplay arena",
+      "short_name": "Arena",
+      "url": "./#/arena",
+      "icons": [{ "src": "assets/icons/app/shortcut-arena.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ],
+  "launch_handler": { "client_mode": ["focus-existing", "auto"] }
+}

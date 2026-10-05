@@ -1,0 +1,166 @@
+/*
+ * joysticks.css — Joysticks page (and the calibration dialog). Theme tokens only.
+ * Container queries keep the layout right whether the sidebar is open or not.
+ * Text sizes are in rem so they follow the user's font-size setting.
+ */
+
+/* ---- Page layout ------------------------------------------------------------------- */
+.js-page { container: jspage / inline-size; }
+/* Left/right columns use the shared .lr-split layout (css/components.css). The column tone drives its
+   deep-link highlight; scroll-margin keeps a scrolled-to column clear of the sticky app bar. */
+.js-page .lr-col { --tone: var(--red); --tone-soft: var(--red-soft); scroll-margin-top: calc(var(--appbar-h) + var(--space-4)); }
+
+/* ---- Live visualizer --------------------------------------------------------------- */
+/* Canvas + legend, then the readout panel and controls. A wide card (single stick) puts the readout
+   beside the canvas; columns and phones stack it underneath. */
+.js-visual { container: jsvis / inline-size; width: 100%; }
+.js-vis-grid { display: grid; gap: var(--space-3); grid-template-columns: minmax(0, 1fr); }
+.js-vis-main { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.js-vis-side { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.js-visual .cv-surface { max-width: 340px; margin: 0 auto; }
+@container jsvis (min-width: 600px) {
+  .js-vis-grid { grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem); align-items: start; }
+}
+
+.js-legend { display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap; font-size: 0.875rem; color: var(--text-muted); }
+.js-key { display: inline-flex; align-items: center; gap: 6px; cursor: help; }
+/* Marker shapes match the canvas: input = hollow ring, output = filled dot, trace = filled square. */
+.js-swatch { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex: none; }
+.js-swatch.in { background: transparent; box-shadow: inset 0 0 0 2.5px var(--red); }
+.js-swatch.out { background: var(--blue); }
+.js-swatch.trace { background: var(--green); border-radius: 3px; }
+
+/* Readout panel: large tabular numerals in fixed-width cells, so values don't jitter. */
+.js-readout { display: flex; flex-direction: column; gap: var(--space-1); }
+.js-rtable {
+  width: 100%; table-layout: fixed; border-collapse: collapse;
+  background: var(--surface-2); border-radius: var(--radius-md); overflow: hidden;
+}
+.js-rtable th, .js-rtable td { padding: 6px var(--space-3); }
+.js-rtable thead th {
+  font-size: 0.875rem; font-weight: 600; color: var(--text-muted); text-align: right; white-space: nowrap; cursor: help;
+}
+.js-rtable thead th .js-swatch { margin-inline-end: 6px; vertical-align: -1px; }
+.js-rtable tbody th { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); text-align: left; overflow-wrap: anywhere; }
+.js-rtable tbody td {
+  font-family: var(--font-mono); font-size: 1rem; font-weight: 600; color: var(--text);
+  font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap;
+}
+.js-rtable tbody tr + tr > * { border-top: 1px solid var(--border); }
+.js-rtable tr > :first-child { width: 34%; }
+.js-units { margin: 0; font-size: 0.875rem; color: var(--text-muted); }
+
+.js-controls { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: center; }
+.js-controls .seg { flex: 1 1 100%; }
+.js-trace { display: inline-flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; font-weight: 600; }
+.js-announce { margin-inline-start: auto; min-height: 40px; }
+.js-announce[aria-pressed="true"] { --btn-bg: var(--tone-soft, var(--accent-soft)); --btn-fg: var(--text); --btn-border: var(--tone, var(--accent)); }
+
+/* ---- Sensitivity tab: compact rows -------------------------------------------------- */
+/* Each control: label (+ "?" tip with the full explanation) and one short help line, then the slider
+   row (step buttons, track, number) at the column's full width. Wide cards put text and slider on one
+   line. The curve preview sits under the controls (beside them on wide cards) at a modest size. */
+.js-sens { container: jssens / inline-size; display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); }
+.js-fields { display: flex; flex-direction: column; min-width: 0; }
+.js-sens .field { grid-template-columns: minmax(0, 1fr); gap: var(--space-1) var(--space-4); min-height: 0; padding: var(--space-2) 0; }
+.js-sens .field + .field { padding-top: var(--space-2); border-top: 1px dashed var(--border); }
+.js-sens .field-label { font-size: 0.9375rem; }
+.js-sens .field-desc { font-size: 0.875rem; margin-top: 0; }
+.js-sens .field-control { justify-self: stretch; }
+.js-sens .slider { width: 100%; gap: var(--space-2); }
+.js-sens .slider input[type="range"] { flex: 1 1 auto; min-width: 0; min-height: 40px; }
+.js-sens .input.num { width: 5rem; }
+@container jssens (min-width: 560px) {
+  .js-sens .field { grid-template-columns: minmax(10rem, 0.9fr) minmax(16rem, 1.1fr); align-items: center; }
+}
+@container jssens (min-width: 760px) {
+  .js-sens { grid-template-columns: minmax(0, 1fr) minmax(220px, 280px); align-items: start; }
+}
+.js-curve-wrap { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; width: 100%; max-width: 320px; justify-self: center; }
+.js-curve-legend { font-size: 0.875rem; color: var(--text-muted); }
+
+/* ---- Angle map editor -------------------------------------------------------------- */
+.am { container: am / inline-size; display: flex; flex-direction: column; gap: var(--space-3); }
+.am[aria-busy="true"] .am-list { opacity: 0.6; pointer-events: none; transition: opacity var(--dur-med); }
+.am-help { font-size: 0.875rem; color: var(--text-muted); }
+.am-intro { display: flex; align-items: flex-start; gap: var(--space-2); }
+.am-intro p { margin: 0; font-size: 0.9375rem; flex: 1; }
+.am-tools { display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap; }
+.am-figure { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: none; width: 112px; }
+.am-figure .cv-surface { width: 112px; }
+.am-legend { display: flex; gap: var(--space-2); font-size: 0.75rem; color: var(--text-muted); }
+.am-legend > span { display: inline-flex; align-items: center; gap: 4px; }
+.am-legend .js-swatch { width: 10px; height: 10px; }
+.am-spoke { display: inline-block; width: 12px; height: 2.5px; background: var(--blue); border-radius: 2px; }
+.am-actions { flex: 1 1 10rem; min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.am-action { display: flex; align-items: center; gap: var(--space-1) var(--space-2); flex-wrap: wrap; }
+.am-action .btn { min-height: 40px; flex: none; }
+.am-action .am-help { flex: 1 1 9rem; min-width: 0; }
+.am-count { font-size: 0.875rem; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.am-foot { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.am-foot .btn { min-height: 40px; }
+
+/* Slot grid. Narrow (default): two lines per slot —
+     #  use  input∠ → output∠  [capture][delete]
+             in dist → out dist  snap zone
+   Wide (≥ 600px): one line per slot. The header uses the same grid so it lines up. */
+.am-table { display: flex; flex-direction: column; }
+.am-list { display: flex; flex-direction: column; }
+.am-row {
+  display: grid; align-items: center; gap: 4px 6px;
+  grid-template-columns: 46px minmax(0, 1fr) 12px minmax(0, 1fr) 36px 36px;
+  grid-template-areas:
+    "num ia ar1 oa act act"
+    "on id ar2 od dz dz";
+  padding: 4px 0;
+}
+.am-list .am-row { border-top: 1px solid var(--border); }
+.am-row.off { opacity: 0.7; }
+.am-c-num { grid-area: num; text-align: center; } .am-c-on { grid-area: on; }
+.am-c-ia { grid-area: ia; } .am-c-oa { grid-area: oa; }
+.am-c-id { grid-area: id; } .am-c-od { grid-area: od; }
+.am-c-dz { grid-area: dz; } .am-c-act { grid-area: act; display: flex; justify-content: flex-end; gap: 2px; }
+.am-c-ar1 { grid-area: ar1; } .am-c-ar2 { grid-area: ar2; }
+.am-c-ar1, .am-c-ar2 { color: var(--text-muted); text-align: center; font-weight: 700; }
+.am-head { padding: 0 0 var(--space-1); }
+/* Header text flows inline with its "?" tip, so a long word gets the full column width (no mid-word breaks). */
+.am-head > span {
+  display: block; min-width: 0; align-self: end;
+  font-size: 0.8125rem; font-weight: 600; color: var(--text-muted); line-height: 1.25;
+  hyphens: auto; overflow-wrap: break-word;
+}
+.am-head .tip { display: inline-grid; vertical-align: middle; width: 18px; height: 18px; font-size: 11px; margin-inline-start: 2px; }
+.am-num {
+  width: 24px; height: 24px; border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--tone-soft, var(--surface-2)); color: var(--text); font-size: 0.8125rem; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.am-field { display: flex; align-items: center; gap: 2px; min-width: 0; }
+.am-row .input.num {
+  width: 100%; min-width: 0; min-height: 36px; padding: 0 3px;
+  font-size: 0.875rem; font-variant-numeric: tabular-nums; color: var(--text);
+  -moz-appearance: textfield; appearance: textfield;
+}
+.am-row .input.num::-webkit-inner-spin-button, .am-row .input.num::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.am-unit { font-size: 0.875rem; color: var(--text-muted); width: 0.6em; flex: none; }
+.am-c-act .btn { min-height: 36px; width: 36px; }
+.am-unused > summary { cursor: pointer; font-size: 0.875rem; font-weight: 600; color: var(--text-muted); padding: var(--space-1) 0; min-height: 32px; }
+.am-unused > .am-help { margin: 0 0 var(--space-2); }
+@container am (min-width: 600px) {
+  .am-row {
+    grid-template-columns: 26px 46px minmax(0, 1fr) 12px minmax(0, 1fr) minmax(0, 1fr) 12px minmax(0, 1fr) minmax(0, 0.85fr) 76px;
+    grid-template-areas: "num on ia ar1 oa id ar2 od dz act";
+    min-height: 44px;
+  }
+}
+
+/* ---- Calibration dialog & tab ------------------------------------------------------ */
+.cal-steps { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: var(--space-2); }
+.cal-steps li::marker { color: var(--red); font-weight: 700; }
+.cal-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr)); }
+.cal-stick { display: flex; flex-direction: column; gap: var(--space-2); }
+.cal-stick .cv-surface { max-width: 240px; margin: 0 auto; }
+.cal-status { display: flex; align-items: center; gap: var(--space-2); font-weight: 600; min-height: 1.5em; }
+.cal-status.ok { color: var(--green); }
+.cal-done { display: flex; gap: var(--space-4); align-items: flex-start; }
+.cal-done p + p { margin-top: var(--space-2); }

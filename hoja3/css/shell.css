@@ -1,0 +1,199 @@
+/* shell.css — App frame: splash, app bar, sidebar, pages, home grid. */
+
+/* ---- Splash -------------------------------------------------------------------------- */
+#splash {
+  position: fixed; inset: 0; z-index: 5000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4);
+  background: var(--bg-tint), var(--bg);
+  transition: opacity var(--dur-slow) var(--ease-out), visibility var(--dur-slow);
+}
+#splash.done { opacity: 0; visibility: hidden; }
+#splash .splash-icon { border-radius: 22px; box-shadow: var(--shadow-3); animation: rise-in 500ms var(--ease-out) both; }
+#splash .splash-title { font-family: var(--font-display); font-size: var(--text-xl); letter-spacing: -0.01em; }
+#splash .splash-status { color: var(--text-muted); font-size: var(--text-sm); min-height: 1.5em; }
+#splash.error .sfc-loader { display: none; }
+
+/* ---- Frame --------------------------------------------------------------------------- */
+.app {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "bar" "main";
+  min-height: 100dvh;
+}
+.app.wide {
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-areas: "bar bar" "nav main";
+}
+
+/* ---- App bar ------------------------------------------------------------------------- */
+.appbar {
+  grid-area: bar;
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: var(--space-2);
+  min-height: var(--appbar-h);
+  padding: max(env(safe-area-inset-top), 8px) max(var(--space-4), env(safe-area-inset-right)) 8px max(var(--space-4), env(safe-area-inset-left));
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.brand { display: flex; align-items: center; gap: var(--space-2); color: var(--text); text-decoration: none; margin-right: var(--space-2); }
+.brand:hover { color: var(--text); }
+.brand-mark { border-radius: 9px; box-shadow: var(--shadow-1); transition: transform var(--dur-med) var(--ease-spring); }
+.brand:hover .brand-mark { transform: rotate(-6deg) scale(1.05); }
+.brand-text { font-family: var(--font-display); font-size: var(--text-lg); white-space: nowrap; }
+.brand-text strong { font-weight: 800; }
+
+.device-chip {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: 6px 14px 6px 12px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border); background: var(--surface); cursor: pointer; text-align: left;
+  max-width: 260px; min-width: 0;
+  transition: background-color var(--dur-med);
+}
+.device-chip:hover { background: var(--surface-2); }
+.device-chip .chip-text { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.device-chip .chip-name { font-weight: 700; font-size: var(--text-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.device-chip .chip-sub { font-size: var(--text-xs); color: var(--text-muted); }
+.device-chip.demo { border-style: dashed; border-color: var(--accent); }
+
+.save-btn.dirty { --btn-bg: var(--yellow-soft); --btn-fg: var(--text); }
+
+/* The app bar never overflows: buttons keep their size, the device chip shrinks and truncates first,
+   then (narrower) the brand text and button labels collapse. Spanish labels are ~30% longer. */
+.appbar > * { flex-shrink: 0; }
+.appbar > .device-chip { flex-shrink: 1; min-width: 0; overflow: hidden; }
+.device-chip .chip-text { min-width: 0; overflow: hidden; }
+.device-chip .chip-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.appbar > .spacer { flex: 1 1 0; min-width: 0; }
+@media (max-width: 900px) { .brand-text { display: none; } }
+@media (max-width: 820px) {
+  .appbar .save-btn .btn-label, .appbar .connect-btn .btn-label, .appbar .install-btn .btn-label { display: none; }
+  .appbar .save-btn, .appbar .connect-btn, .appbar .install-btn { width: 40px; min-width: 40px; padding: 0; }
+}
+@media (max-width: 760px) {
+  .brand-text { display: none; }
+  .appbar .save-btn .btn-label, .appbar .connect-btn .btn-label { display: none; }
+  .appbar .save-btn, .appbar .connect-btn { width: 40px; min-width: 40px; padding: 0; }
+  .appbar .device-chip { max-width: none; flex: 0 1 auto; min-width: 0; }
+  .appbar .install-btn .btn-label { display: none; }
+}
+@media (max-width: 380px) {
+  .appbar .device-chip .chip-sub { display: none; }
+  .appbar .appbar-settings { display: none; }
+}
+
+/* ---- Sidebar ------------------------------------------------------------------------- */
+.sidebar { display: none; }
+.app.wide .sidebar {
+  grid-area: nav;
+  display: flex; flex-direction: column; gap: var(--space-4);
+  position: sticky; top: var(--appbar-h); height: calc(100dvh - var(--appbar-h));
+  overflow-y: auto; padding: var(--space-4) var(--space-3) var(--space-5);
+  border-right: 1px solid var(--border);
+}
+.nav-group { display: flex; flex-direction: column; gap: 2px; }
+.nav-group-title { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); font-weight: 700; padding: 0 var(--space-3) var(--space-1); }
+.nav-link {
+  position: relative; display: flex; align-items: center; gap: var(--space-3);
+  padding: 8px var(--space-3); border-radius: var(--radius-md);
+  color: var(--text-muted); text-decoration: none; font-weight: 600;
+  transition: background-color var(--dur-med), color var(--dur-med);
+}
+.nav-link:hover { background: var(--surface-2); color: var(--text); }
+.nav-link .nav-icon {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--tone-soft); color: var(--tone);
+  transition: background-color var(--dur-med), color var(--dur-med), transform var(--dur-med) var(--ease-spring);
+}
+.nav-link .nav-icon .icon { width: 17px; height: 17px; }
+.nav-link[aria-current] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-1); }
+.nav-link[aria-current] .nav-icon { background: var(--tone); color: #fff; transform: scale(1.04); }
+.nav-link.disabled { opacity: 0.4; }
+.nav-link.waiting .nav-label { opacity: 0.75; }
+.nav-badge { margin-left: auto; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+.nav-badge.on { background: var(--tone); box-shadow: 0 0 0 3px var(--tone-soft); }
+.nav-foot { margin-top: auto; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3); }
+.sfc-dots { display: inline-flex; gap: 4px; }
+.sfc-dots i { width: 7px; height: 7px; border-radius: 50%; }
+.sfc-dots i:nth-child(1) { background: var(--sfc-red); }
+.sfc-dots i:nth-child(2) { background: var(--sfc-yellow); }
+.sfc-dots i:nth-child(3) { background: var(--sfc-green); }
+.sfc-dots i:nth-child(4) { background: var(--sfc-blue); }
+
+/* ---- Main & pages -------------------------------------------------------------------- */
+.main { grid-area: main; min-width: 0; padding: var(--space-5) max(var(--space-4), env(safe-area-inset-right)) calc(var(--space-7) + env(safe-area-inset-bottom)) max(var(--space-4), env(safe-area-inset-left)); }
+.page { max-width: var(--content-max); margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-5); }
+.page:has(.lr-split:not(.single)) { max-width: 1240px; } /* left/right pages get room for two columns */
+.page.page-enter { animation: rise-in var(--dur-slow) var(--ease-out) both; }
+.page-body { display: flex; flex-direction: column; gap: var(--space-4); }
+.page-head { display: flex; align-items: center; gap: var(--space-3); }
+.page-head .page-titles { min-width: 0; flex: 1; }
+.page-head h1 { font-size: var(--text-2xl); }
+.page-head p { font-size: var(--text-sm); margin-top: 2px; }
+.page-head-extra { display: flex; gap: var(--space-2); align-items: center; }
+.app.wide .page-head > .btn:first-child { display: none; } /* back button only on narrow layouts */
+.app[data-page="home"] .page-head { display: none; }
+@media (max-width: 560px) {
+  .main { padding-top: var(--space-4); }
+  .page-head h1 { font-size: var(--text-xl); }
+  .page-head .face { --size: 36px !important; }
+}
+
+/* ---- Home ---------------------------------------------------------------------------- */
+.hero {
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 1fr auto; gap: var(--space-5); align-items: center;
+  padding: var(--space-6); border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-2);
+}
+.hero::before {
+  /* the four SFC color bars along the top edge */
+  content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px;
+  background: linear-gradient(90deg, var(--sfc-red) 0 25%, var(--sfc-yellow) 25% 50%, var(--sfc-green) 50% 75%, var(--sfc-blue) 75%);
+}
+.hero h1 { font-size: clamp(1.6rem, 3.2vw, 2.2rem); }
+.hero p { color: var(--text-muted); margin-top: var(--space-2); max-width: 52ch; }
+.hero .hero-actions { margin-top: var(--space-5); display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.hero .hero-art { width: 148px; height: 148px; border-radius: 34px; box-shadow: var(--shadow-3); animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-6px) rotate(-1deg); } }
+@media (max-width: 640px) {
+  .hero { grid-template-columns: 1fr; padding: var(--space-5); }
+  .hero .hero-art { display: none; }
+  .hero .hero-actions .btn { flex: 1; }
+}
+
+.tips { margin: 0; padding-left: 1.2em; display: grid; gap: var(--space-2); color: var(--text-muted); font-size: var(--text-sm); }
+
+.tiles { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+.tile {
+  position: relative; display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg);
+  background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-1);
+  color: var(--text); text-decoration: none;
+  transition: transform var(--dur-med) var(--ease-out), box-shadow var(--dur-med) var(--ease-out), border-color var(--dur-med);
+}
+.tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: color-mix(in srgb, var(--tone) 40%, var(--border)); color: var(--text); }
+.tile:active { transform: translateY(0) scale(0.99); }
+.tile .tile-title { font-weight: 700; font-family: var(--font-display); }
+.tile .tile-sub { color: var(--text-muted); font-size: var(--text-sm); line-height: 1.4; }
+.tile.disabled { opacity: 0.45; pointer-events: none; }
+.tile.waiting .face { filter: saturate(0.4); opacity: 0.8; }
+.tile .tile-badge { position: absolute; top: var(--space-3); right: var(--space-3); }
+@media (max-width: 560px) {
+  .tiles { grid-template-columns: repeat(2, 1fr); }
+  .tile .tile-sub { display: none; }
+  .tile { align-items: center; text-align: center; padding: var(--space-4) var(--space-2); }
+}
+
+.device-card .device-head { display: flex; gap: var(--space-4); align-items: center; flex-wrap: wrap; }
+.device-card .device-head > div { flex: 1 1 200px; }
+@media (max-width: 560px) { .device-card .device-head > .btn { width: 100%; } }
+.device-card .device-name { font-family: var(--font-display); font-size: var(--text-xl); font-weight: 800; }
+
+/* Deep-link apply dialog */
+.change-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); }
+.change-list li { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; justify-content: space-between; padding: var(--space-3); border-radius: var(--radius-md); background: var(--surface-2); }
+.change-list li.unsupported { opacity: 0.6; }
+.change-list .change-label { font-weight: 600; }

@@ -1,0 +1,62 @@
+/*
+ * snapback.css — Snapback page. Theme tokens only.
+ * The left/right columns use the shared .lr-split layout (css/components.css); this file only adds
+ * page details on top of it.
+ */
+
+/* Narrow pages: Left/Right switch plus a shortcut to a capture that landed on the hidden stick. */
+.sb-switch { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+.sb-switch > .seg { min-width: 200px; }
+.sb-new {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 6px 12px; border-radius: var(--radius-pill); border: 1px solid var(--tone);
+  background: var(--tone-soft); color: var(--text); font-size: var(--text-xs); font-weight: 600; cursor: pointer;
+  animation: fade-in var(--dur-med) var(--ease-out);
+}
+.sb-new-go { color: var(--tone); font-weight: 800; }
+
+/* Wide pages: line the two columns' cards up row by row (filter cards share a height, analyzers start
+ * level) even when one stick shows the cutoff slider and the other doesn't. */
+@container (min-width: 640px) {
+  .sb-split:not(.single) .lr-col { display: grid; grid-row: span 3; grid-template-rows: subgrid; }
+}
+/* Deep-link scrolling stops below the sticky app bar. */
+.sb-split .lr-col { scroll-margin-top: calc(var(--appbar-h) + var(--space-4)); }
+
+/* Filter card: stacked rows so the controls get the column's full width. */
+.sb-filter .field-control > .seg,
+.sb-filter .field-control > .slider { width: 100%; max-width: 480px; }
+.sb-mode-note { margin: 0; padding-top: var(--space-3); border-top: 1px dashed var(--border); }
+
+.sb-status { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-xs); color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+/* Analyzer: sized by its own width (a column can be narrow even on a wide screen). */
+.sb-plot { container: sb-plot / inline-size; display: flex; flex-direction: column; gap: var(--space-3); }
+.sb-head { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; min-height: 28px; }
+.sb-axis { display: inline-flex; align-items: center; gap: var(--space-2); }
+.sb-stats { display: grid; grid-template-columns: repeat(4, auto); gap: var(--space-2) var(--space-4); }
+.sb-stats:empty { display: none; }
+.sb-stat { display: flex; flex-direction: column; align-items: flex-end; cursor: help; }
+.sb-stat-label { font-size: var(--text-xs); color: var(--text-muted); }
+.sb-stat-value { font-variant-numeric: tabular-nums; font-weight: 700; font-family: var(--font-mono); font-size: var(--text-sm); }
+@container sb-plot (max-width: 479px) {
+  .sb-head .spacer { display: none; }
+  .sb-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
+  .sb-stat { align-items: flex-start; }
+}
+@container sb-plot (max-width: 299px) {
+  .sb-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.sb-history { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.sb-history:empty { display: none; }
+.sb-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: var(--radius-pill); border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-size: var(--text-xs); font-weight: 700; cursor: pointer;
+  transition: background-color var(--dur-fast), border-color var(--dur-fast);
+}
+.sb-chip:hover { border-color: var(--tone); }
+.sb-chip[aria-pressed="true"] { background: var(--tone-soft); border-color: var(--tone); }
+.sb-chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tone); }
+.sb-chip .faint { font-weight: 500; font-variant-numeric: tabular-nums; }

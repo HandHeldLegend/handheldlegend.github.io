@@ -1,0 +1,186 @@
+/* input.css — Input section (remap grid, editor, analog calibration). Theme tokens only. */
+
+/* ---- Glyphs ------------------------------------------------------------------------------ */
+/* Glyph PNGs are white on transparent; drawn as a mask so they take the current text color. */
+.inp-glyph {
+  --g: 38px;
+  width: var(--g); height: var(--g); flex: none;
+  display: inline-grid; place-items: center;
+  color: var(--text);
+}
+.inp-glyph .glyph {
+  width: 100%; height: 100%;
+  background: currentColor;
+  -webkit-mask: var(--glyph) center / contain no-repeat;
+  mask: var(--glyph) center / contain no-repeat;
+}
+/* Text fallback when there is no glyph for a label: a chip shaped like the glyph set. */
+.inp-glyph.chip { border: 2px solid currentColor; border-radius: 50%; padding: 0 2px; }
+.inp-glyph.chip.square { border-radius: 28%; }
+.inp-glyph .glyph-text {
+  font-weight: 800; font-size: calc(var(--g) * 0.3); line-height: 1; letter-spacing: -0.02em;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.inp-glyph.off { color: var(--red); opacity: 0.85; }
+
+/* ---- Live meters ---------------------------------------------------------------------------- */
+.inp-meter {
+  position: relative; width: 100%; height: 4px; border-radius: 4px;
+  background: var(--surface-3);
+}
+.inp-meter-fill {
+  position: absolute; inset: 0; border-radius: inherit;
+  background: var(--text-faint);
+  transform-origin: left center; transform: scaleX(var(--v, 0));
+}
+.inp-meter.pressed .inp-meter-fill { background: var(--tone, var(--accent)); }
+.inp-meter-mark {
+  display: none; position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1.5px;
+  left: calc(var(--m, 0) * 100%); border-radius: 2px; background: var(--text);
+}
+.inp-meter.has-mark .inp-meter-mark { display: block; }
+.inp-meter.lg { height: 12px; border-radius: 6px; }
+.inp-meter.lg .inp-meter-mark { top: -5px; bottom: -5px; }
+
+/* ---- Mode picker ---------------------------------------------------------------------------- */
+.inp-mode-seg { display: flex; }
+.inp-mode-seg .seg { flex: 1; }
+.inp-mode-select { display: none; }
+.inp-mode-select .select { width: 100%; font-weight: 600; }
+@media (max-width: 640px) {
+  .inp-mode-seg { display: none; }
+  .inp-mode-select { display: block; }
+}
+
+/* ---- Layout: grid + (wide) side editor --------------------------------------------------- */
+.inp-layout { display: grid; gap: var(--space-4); align-items: start; }
+.inp-layout.split { grid-template-columns: minmax(0, 1fr) 340px; }
+.inp-aside { position: sticky; top: calc(var(--appbar-h) + var(--space-4)); min-width: 0; }
+.inp-aside > .card { max-height: calc(100dvh - var(--appbar-h) - var(--space-6)); overflow: auto; }
+.inp-aside-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-2);
+  padding: var(--space-6) var(--space-4); border: 1px dashed var(--border-strong); border-radius: var(--radius-lg);
+}
+
+/* ---- Input grid ----------------------------------------------------------------------------- */
+.inp-group-title {
+  display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-2);
+  font-family: var(--font-ui); font-size: var(--text-xs); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);
+}
+.inp-grid { display: grid; gap: var(--space-2); grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); }
+
+.inp-tile {
+  position: relative; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--surface-2); color: var(--text); cursor: pointer; text-align: center;
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out),
+              transform var(--dur-med) var(--ease-out), background-color var(--dur-med);
+}
+.inp-tile:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+.inp-tile:active { transform: translateY(0) scale(0.985); }
+.inp-tile[aria-current="true"] { border-color: var(--tone, var(--accent)); background: var(--tone-soft, var(--accent-soft)); }
+.inp-tile.is-pressed { border-color: var(--tone, var(--accent)); box-shadow: 0 0 0 3px var(--tone-soft, var(--accent-soft)); }
+.inp-tile.is-pressed .inp-tile-map > .inp-glyph:first-child { color: var(--tone, var(--accent)); }
+.inp-tile-map { display: flex; align-items: center; gap: 2px; }
+.inp-tile-map > .icon { width: 14px; height: 14px; color: var(--text-faint); }
+/* Foot row: analog mode pill or "Off". Always present (fixed height) so every tile is the same size. */
+.inp-tile-foot {
+  display: flex; align-items: center; justify-content: center; max-width: 100%;
+  min-height: 18px; line-height: 1.2;
+}
+.inp-tile-pill {
+  max-width: 100%; padding: 1px 8px; border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: var(--tone-soft, var(--accent-soft)); color: var(--tone-ink, var(--accent-ink));
+}
+.inp-tile-off { font-size: var(--text-xs); font-weight: 600; color: var(--text-muted); }
+
+/* ---- Editor --------------------------------------------------------------------------------- */
+.inp-editor { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.inp-editor .field + .field { padding-top: var(--space-3); }
+/* Keep fields inside the 340px side panel: the analog-mode segmented control shares the width and
+   lets long (translated) labels like "Analógico completo" wrap instead of widening the panel. */
+.inp-editor .field { grid-template-columns: minmax(0, 1fr); }
+.inp-editor .field .seg { display: flex; width: 100%; overflow: visible; }
+.inp-editor .field .seg button {
+  flex: 1 1 0; min-width: 0; padding: 4px var(--space-2);
+  white-space: normal; overflow-wrap: break-word; text-align: center; line-height: 1.15;
+}
+/* Input on top, "sends in <mode>" and the output button below (fits the 340px side panel). */
+.inp-ed-head { display: flex; flex-direction: column; align-items: stretch; gap: var(--space-2); }
+.inp-ed-in { display: flex; align-items: center; gap: var(--space-3); min-width: 0; padding: 0 var(--space-2); }
+.inp-ed-arrow { display: flex; align-items: center; gap: var(--space-1); padding-left: calc(var(--space-2) + 12px); color: var(--text-faint); font-size: var(--text-xs); font-weight: 600; }
+.inp-ed-arrow .icon { width: 16px; height: 16px; }
+.inp-out-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; text-align: left; }
+.inp-out-label { font-weight: 700; font-size: var(--text-lg); font-family: var(--font-display); }
+.inp-out-kind { color: var(--text-muted); font-size: var(--text-xs); }
+.inp-out-btn {
+  min-width: 0;
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--surface-2); color: var(--text); cursor: pointer;
+  transition: border-color var(--dur-fast), background-color var(--dur-med);
+}
+.inp-out-btn:hover, .inp-out-btn[aria-expanded="true"] { border-color: var(--tone, var(--accent)); }
+.inp-out-change {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 2px;
+  color: var(--tone, var(--accent)); font-size: var(--text-sm); font-weight: 600; white-space: nowrap;
+}
+.inp-out-btn[aria-expanded="true"] .inp-out-change .icon { transform: rotate(180deg); }
+
+.inp-picker {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-3); border-radius: var(--radius-md);
+  background: var(--surface-sunken); border: 1px solid var(--border);
+  animation: rise-in var(--dur-med) var(--ease-out);
+}
+.inp-picker-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.inp-picker-title { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: var(--space-1); }
+.inp-choices { display: grid; gap: var(--space-1); grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+.inp-choice {
+  display: flex; align-items: center; gap: var(--space-2); min-width: 0;
+  padding: 4px var(--space-2) 4px 4px; border-radius: var(--radius-sm);
+  border: 1px solid transparent; background: transparent; color: var(--text); cursor: pointer; text-align: left;
+}
+.inp-choice:hover { background: var(--surface-2); border-color: var(--border); }
+.inp-choice[aria-pressed="true"] { background: var(--tone-soft, var(--accent-soft)); border-color: var(--tone, var(--accent)); }
+.inp-choice-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+.inp-choice-label { font-weight: 600; font-size: var(--text-sm); overflow: hidden; overflow-wrap: break-word; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+.inp-choice-used { font-size: 10px; color: var(--text-faint); overflow: hidden; overflow-wrap: break-word; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+
+.inp-live { display: flex; flex-direction: column; gap: var(--space-2); }
+.inp-live-head { display: flex; align-items: center; gap: var(--space-2); }
+.inp-live-title { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; }
+.inp-live-val { font-variant-numeric: tabular-nums; font-weight: 700; min-width: 3.5em; text-align: right; }
+.inp-ed-tools { gap: var(--space-1); }
+
+/* Dialog variant (narrow screens) — the kit's dialog already becomes a bottom sheet on phones. */
+dialog.inp-dialog .dialog-body { gap: var(--space-4); }
+
+/* ---- Calibration ---------------------------------------------------------------------------- */
+.inp-steps { margin: 0; padding-left: 1.3em; display: grid; gap: var(--space-1); color: var(--text-muted); font-size: var(--text-sm); }
+.inp-steps strong { color: var(--text); }
+.inp-cal-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.inp-cal-row {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-md);
+  background: var(--surface-2); border: 1px solid var(--border);
+  transition: border-color var(--dur-med);
+}
+.inp-cal-row.is-active { border-color: var(--blue); }
+.inp-cal-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.inp-cal-name { display: flex; align-items: baseline; gap: var(--space-2); justify-content: space-between; }
+.inp-cal-row .inp-meter { height: 8px; }
+.inp-tab-badge { padding: 0 6px; margin-left: 2px; }
+
+@media (max-width: 560px) {
+  .inp-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+  .inp-tile { padding: var(--space-2) 4px; }
+  .inp-tile .inp-glyph { --g: 32px !important; }
+  .inp-cal-row { flex-wrap: wrap; }
+  .inp-cal-row > .btn { margin-left: auto; }
+}

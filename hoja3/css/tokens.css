@@ -1,0 +1,223 @@
+/*
+ * tokens.css — The single source of truth for the visual theme.
+ *
+ * Palette: Super Famicom. The four face-button colors (A red, B yellow, X blue, Y green) plus the
+ * lavender of the North-American SNES are used as "splashes" on a vanilla-white (light) or
+ * near-black (dark) canvas. Components never use raw hex values — only the semantic tokens below.
+ *
+ * Theme selection: <html data-theme="light|dark"> forces a theme; without the attribute the
+ * OS preference decides (system mode). Dark is the default when the OS gives no preference.
+ */
+
+:root {
+  /* ---- Brand palette (raw; prefer semantic tokens in components) ---- */
+  --sfc-red: #e23b3b;
+  --sfc-yellow: #f4b41a;
+  --sfc-blue: #2f6bd8;
+  --sfc-green: #23a35a;
+  --sfc-lavender: #8e7cc3;
+  --sfc-gray-1: #e9e8ee;
+  --sfc-gray-2: #c9c7d3;
+  --sfc-gray-3: #6e6b7b;
+
+  /* ---- Type ---- */
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Roboto Mono", monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.9375rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+
+  /* ---- Shape & spacing ---- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --sidebar-w: 264px;
+  --appbar-h: 60px;
+  --content-max: 920px;
+
+  /* ---- Motion (calm: short fades and small offsets only) ---- */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur-med: 200ms;
+  --dur-slow: 320ms;
+
+  color-scheme: dark;
+  /* Dark is the default theme. */
+  --bg: #121117;
+  --bg-tint: radial-gradient(1200px 600px at 100% -10%, rgb(142 124 195 / 0.10), transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, rgb(47 107 216 / 0.07), transparent 60%);
+  --surface: #1b1a22;
+  --surface-2: #24232d;
+  --surface-3: #2e2c39;
+  --surface-sunken: #16151c;
+  --border: #302e3a;
+  --border-strong: #45425244;
+  --text: #ecebf2;
+  --text-muted: #a09dae;
+  --text-faint: #9592a5;      /* ≥ 4.5:1 on every surface (WCAG AA) */
+  --text-on-accent: #ffffff;
+
+  --accent: #a493e0;           /* lavender, lifted for dark backgrounds */
+  --accent-strong: #8e7cc3;
+  --accent-soft: rgb(164 147 224 / 0.16);
+  --red: #f05454;
+  --yellow: #f7c140;
+  --blue: #5b8cf0;
+  --green: #3cc276;
+  --red-soft: rgb(240 84 84 / 0.15);
+  --yellow-soft: rgb(247 193 64 / 0.15);
+  --blue-soft: rgb(91 140 240 / 0.15);
+  --green-soft: rgb(60 194 118 / 0.15);
+  /* Text-safe "ink" variants of the splash colours: ≥ 4.5:1 on every surface and on their own soft
+     tint (badges). Use these for coloured TEXT; the plain tones are for fills, icons and strokes. */
+  --red-ink: #ff7a7a;
+  --yellow-ink: #f7c140;
+  --blue-ink: #80a8ff;
+  --green-ink: #3cc276;
+  --accent-ink: #b3a5ec;
+  /* Fill + "on" pairs for solid coloured controls (buttons, selected segments): text ≥ 4.5:1 on the fill. */
+  --fill-red: #c93636;    --on-red: #ffffff;
+  --fill-blue: #3a6bd4;   --on-blue: #ffffff;
+  --fill-green: #3cc276;  --on-green: #0e1a12;
+  --fill-yellow: #f7c140; --on-yellow: #241c00;
+  --fill-accent: #7461b5; --on-accent: #ffffff;
+
+  --success: var(--green);
+  --warning: var(--yellow);
+  --danger: var(--red);
+  --info: var(--blue);
+
+  --focus-ring: 0 0 0 3px rgb(164 147 224 / 0.55);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-2: 0 6px 20px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.3);
+  --shadow-3: 0 18px 48px rgb(0 0 0 / 0.5);
+  --press-depth: 0 3px 0 rgb(0 0 0 / 0.45);   /* SFC-button "lip" under raised buttons */
+  --scrim: rgb(8 7 12 / 0.62);
+}
+
+/* Light theme: vanilla white with SFC color splashes. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f8f7f4;
+  --bg-tint: radial-gradient(1200px 600px at 100% -10%, rgb(142 124 195 / 0.10), transparent 60%),
+             radial-gradient(900px 500px at -10% 110%, rgb(244 180 26 / 0.07), transparent 60%);
+  --surface: #ffffff;
+  --surface-2: #f2f1f5;
+  --surface-3: #e9e8ee;
+  --surface-sunken: #efeef2;
+  --border: #e3e1e9;
+  --border-strong: #c9c7d3;
+  --text: #1e1c26;
+  --text-muted: #5f5c6d;
+  --text-faint: #66637a;
+  --text-on-accent: #ffffff;
+
+  --accent: #7b68b8;
+  --accent-strong: #6a57a8;
+  --accent-soft: rgb(142 124 195 / 0.14);
+  --red: #d93636;
+  --yellow: #d99a06;
+  --blue: #2f6bd8;
+  --green: #1e9152;
+  --red-soft: rgb(226 59 59 / 0.11);
+  --yellow-soft: rgb(244 180 26 / 0.16);
+  --blue-soft: rgb(47 107 216 / 0.11);
+  --green-soft: rgb(35 163 90 / 0.12);
+  --red-ink: #b02525;
+  --yellow-ink: #855a00;
+  --blue-ink: #1d52b3;
+  --green-ink: #156b3b;
+  --accent-ink: #5c4a9b;
+  --fill-red: #c62f2f;    --on-red: #ffffff;
+  --fill-blue: #2f6bd8;   --on-blue: #ffffff;
+  --fill-green: #1a7d45;  --on-green: #ffffff;
+  --fill-yellow: #f2b01e; --on-yellow: #241c00;
+  --fill-accent: #6a57a8; --on-accent: #ffffff;
+
+  --focus-ring: 0 0 0 3px rgb(123 104 184 / 0.40);
+  --shadow-1: 0 1px 2px rgb(30 28 38 / 0.08);
+  --shadow-2: 0 6px 18px rgb(30 28 38 / 0.08), 0 1px 3px rgb(30 28 38 / 0.06);
+  --shadow-3: 0 18px 48px rgb(30 28 38 / 0.18);
+  --press-depth: 0 3px 0 rgb(30 28 38 / 0.18);
+  --scrim: rgb(30 28 38 / 0.38);
+}
+
+/* System mode: follow the OS when no explicit theme is set. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --bg: #f8f7f4;
+    --bg-tint: radial-gradient(1200px 600px at 100% -10%, rgb(142 124 195 / 0.10), transparent 60%),
+               radial-gradient(900px 500px at -10% 110%, rgb(244 180 26 / 0.07), transparent 60%);
+    --surface: #ffffff;
+    --surface-2: #f2f1f5;
+    --surface-3: #e9e8ee;
+    --surface-sunken: #efeef2;
+    --border: #e3e1e9;
+    --border-strong: #c9c7d3;
+    --text: #1e1c26;
+    --text-muted: #5f5c6d;
+    --text-faint: #66637a;
+    --accent: #7b68b8;
+    --accent-strong: #6a57a8;
+    --accent-soft: rgb(142 124 195 / 0.14);
+    --red: #d93636;
+    --yellow: #d99a06;
+    --blue: #2f6bd8;
+    --green: #1e9152;
+    --red-soft: rgb(226 59 59 / 0.11);
+    --yellow-soft: rgb(244 180 26 / 0.16);
+    --blue-soft: rgb(47 107 216 / 0.11);
+    --green-soft: rgb(35 163 90 / 0.12);
+    --red-ink: #b02525;
+    --yellow-ink: #855a00;
+    --blue-ink: #1d52b3;
+    --green-ink: #156b3b;
+    --accent-ink: #5c4a9b;
+    --fill-red: #c62f2f;    --on-red: #ffffff;
+    --fill-blue: #2f6bd8;   --on-blue: #ffffff;
+    --fill-green: #1a7d45;  --on-green: #ffffff;
+    --fill-yellow: #f2b01e; --on-yellow: #241c00;
+    --fill-accent: #6a57a8; --on-accent: #ffffff;
+    --focus-ring: 0 0 0 3px rgb(123 104 184 / 0.40);
+    --shadow-1: 0 1px 2px rgb(30 28 38 / 0.08);
+    --shadow-2: 0 6px 18px rgb(30 28 38 / 0.08), 0 1px 3px rgb(30 28 38 / 0.06);
+    --shadow-3: 0 18px 48px rgb(30 28 38 / 0.18);
+    --press-depth: 0 3px 0 rgb(30 28 38 / 0.18);
+    --scrim: rgb(30 28 38 / 0.38);
+  }
+}
+
+/* Accent "splash" helpers: set --tone on any element, children use var(--tone). */
+.tone-red      { --tone: var(--red);      --tone-soft: var(--red-soft);    --tone-ink: var(--red-ink); --tone-fill: var(--fill-red); --tone-on: var(--on-red); }
+.tone-yellow   { --tone: var(--yellow);   --tone-soft: var(--yellow-soft); --tone-ink: var(--yellow-ink); --tone-fill: var(--fill-yellow); --tone-on: var(--on-yellow); }
+.tone-blue     { --tone: var(--blue);     --tone-soft: var(--blue-soft);   --tone-ink: var(--blue-ink); --tone-fill: var(--fill-blue); --tone-on: var(--on-blue); }
+.tone-green    { --tone: var(--green);    --tone-soft: var(--green-soft);  --tone-ink: var(--green-ink); --tone-fill: var(--fill-green); --tone-on: var(--on-green); }
+.tone-lavender { --tone: var(--accent);   --tone-soft: var(--accent-soft); --tone-ink: var(--accent-ink); --tone-fill: var(--fill-accent); --tone-on: var(--on-accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur-med: 0ms;
+    --dur-slow: 0ms;
+  }
+}
+
+/* Japanese: prefer native CJK UI fonts (all ship with the OS; nothing is downloaded). */
+:root:lang(ja) {
+  --font-ui: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", "Noto Sans JP", "Noto Sans CJK JP", system-ui, sans-serif;
+  --font-display: "Hiragino Sans", "Yu Gothic UI", "Meiryo", "Noto Sans JP", "Noto Sans CJK JP", system-ui, sans-serif;
+}

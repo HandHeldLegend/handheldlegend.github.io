@@ -1,0 +1,98 @@
+/**
+ * Japanese translations — gamepad. English source text → translation.
+ * Machine-drafted; NEEDS NATIVE REVIEW. Terminology: src/i18n/GLOSSARY.md.
+ */
+export default {
+  // Default mode
+  'Default mode': 'デフォルトモード',
+  'What the controller pretends to be when it starts up.': '起動時にコントローラーが何として認識されるかを設定します。',
+  'Warning.': '警告：',
+  'Only {modes} work with the config app. Changing the default mode may require you to hold the {button} button upon plugging in the controller to connect to this configuration app.': '設定アプリで使えるのは{modes}のみです。デフォルトモードを変更すると、この設定アプリに接続するために、コントローラーを接続する際に{button}ボタンを押し続ける必要がある場合があります。',
+  'Switch & Steam modes': 'SwitchモードとSteamモード',
+  'A or South': 'Aまたは下',
+  'Hold A (South) while plugging in to reconnect to this app after switching modes.': 'モード変更後にこのアプリへ再接続するには、A（下ボタン）を押しながらコントローラーを接続してください。',
+  'Config app': 'アプリ対応',
+  'The output mode the controller starts in when plugged in or powered on. Only Switch and Steam modes work with this config app — after changing it, hold A (South) while plugging in to come back here.': '接続時または電源オン時にコントローラーが起動する出力モードです。この設定アプリで使えるのはSwitchモードとSteamモードのみです。変更後にここへ戻るには、A（下ボタン）を押しながら接続してください。',
+  // Mode names stay as-is (brands / firmware names).
+  'Switch': 'Switch',
+  'XInput': 'XInput',
+  'Slippi': 'Slippi',
+  'GCube': 'GCube',
+  'N64': 'N64',
+  'SNES': 'SNES',
+  'Steam': 'Steam',
+  'Nintendo Switch Pro Controller. Works with this app.': 'Nintendo Switch Proコントローラー。このアプリに対応しています。',
+  'Xbox-style controller for Windows PCs.': 'Windows PC向けのXbox風コントローラーです。',
+  'GameCube adapter mode for Slippi / Dolphin.': 'Slippi / Dolphin向けのGameCubeアダプターモードです。',
+  'Native GameCube (Joybus) output.': 'GameCube（Joybus）のネイティブ出力です。',
+  'Native Nintendo 64 (Joybus) output.': 'Nintendo 64（Joybus）のネイティブ出力です。',
+  'Native SNES / Super Famicom output.': 'SNES / スーパーファミコンのネイティブ出力です。',
+  'Steam mode, for Steam and SDL games on PC. Works with this app.': 'SteamやPCのSDL対応ゲーム向けのSteamモードです。このアプリに対応しています。',
+
+  // Switch colors
+  'Switch device colors': 'Switchでの表示カラー',
+  'How the Switch draws your controller in its menus and some games.': 'Switchのメニューや一部のゲームで表示されるコントローラーの色です。',
+  'Colors which determine how the Switch displays the controller in menus and some games. They don’t change the LEDs — see the RGB page for those.': 'Switchがメニューや一部のゲームでコントローラーを表示する際の色です。LEDの色は変わりません。LEDはRGBページで設定してください。',
+  'Controller color preview': 'コントローラーのカラープレビュー',
+  'Body': '本体',
+  'Buttons': 'ボタン',
+  'Left grip': '左グリップ',
+  'Right grip': '右グリップ',
+  'Body color': '本体の色',
+  'Main shell color the Switch shows in its menus and some games.': 'Switchのメニューや一部のゲームで表示される本体の色です。',
+  'Switch only: these colors tell the console how to draw the controller in its menus. They do not change any LEDs (see the RGB page for those).': 'Switchのみ：これらの色は、メニューでコントローラーをどう表示するかをSwitch本体に伝えるものです。LEDの色は変わりません（LEDはRGBページで設定します）。',
+  'Buttons color': 'ボタンの色',
+  'Color of the buttons as drawn by the Switch.': 'Switchで表示されるボタンの色です。',
+  'Left grip color': '左グリップの色',
+  'Left handle color as drawn by the Switch.': 'Switchで表示される左グリップの色です。',
+  'Right grip color': '右グリップの色',
+  'Right handle color as drawn by the Switch.': 'Switchで表示される右グリップの色です。',
+  'Presets': 'プリセット',
+  'Color presets': 'カラープリセット',
+  'Neon': 'ネオン',
+  'Charcoal': 'チャコール',
+  'Indigo': 'インディゴ',
+  'Apply the {name} colors': '{name}カラーを適用',
+  '{name} colors applied': '{name}カラーを適用しました',
+  'Undo': '元に戻す',
+
+  // Connection
+  'Connection': '接続',
+  'How the controller introduces itself when you plug it in.': '接続したときのコントローラーのふるまいです。',
+  'WebUSB popup': 'WebUSBポップアップ',
+  'Show the browser’s “open the config app” notification when the controller is plugged in.': 'コントローラーを接続したときに、ブラウザーの「設定アプリを開く」通知を表示します。',
+  'WLAN dongle PIN': 'WLANドングルのPIN',
+  'The four-digit PIN that pairs the controller with its WLAN USB dongle is set on the Wireless page.': 'コントローラーとWLAN USBドングルをペアリングする4桁のPINは、ワイヤレスページで設定します。',
+  'Open Wireless': 'ワイヤレスを開く',
+
+  // MAC address
+  'MAC address base': 'MACアドレス（ベース）',
+  'The hardware address used for USB and Bluetooth modes.': 'USBモードとBluetoothモードで使われるハードウェアアドレスです。',
+  'Base address': 'ベースアドレス',
+  'Each mode adds one to this address. Change it only if two controllers clash; you may need to pair again afterwards.': 'モードごとにこのアドレスに1ずつ加算されます。2台のコントローラーが競合する場合のみ変更してください。変更後は再ペアリングが必要になる場合があります。',
+  'This is the MAC that is used for USB and Bluetooth modes. Each mode increments the address. The first byte must be even.': 'USBモードとBluetoothモードで使われるMACアドレスです。モードごとにアドレスが1ずつ増えます。最初のバイトは偶数である必要があります。',
+  'The first byte must be even, so it was changed to {byte}.': '最初のバイトは偶数である必要があるため、{byte}に変更しました。',
+  'Saved as {mac} — press Save to keep it.': '{mac}に設定しました。保持するには「保存」を押してください。',
+  'MAC address': 'MACアドレス',
+  'MAC byte {n} of 6': 'MACアドレスの{n}/6バイト目',
+
+  // Device
+  'Device': 'デバイス',
+  'What this controller reports about itself.': 'このコントローラーが報告する情報です。',
+  'Unknown': '不明',
+  'Maker': 'メーカー',
+  'Manual': 'マニュアル',
+  'Open manual': 'マニュアルを開く',
+
+  // Support
+  'Support options': 'サポートオプション',
+  'For firmware updates and troubleshooting.': 'ファームウェアのアップデートやトラブルシューティング用です。',
+  'Pressing the button below will reboot your controller into a firmware update mode. This is only necessary if you are updating the firmware.': '下のボタンを押すと、コントローラーがファームウェアのアップデートモードで再起動します。ファームウェアをアップデートする場合のみ必要です。',
+  'Reboot to bootloader': 'ブートローダーで再起動',
+  'Reboot into update mode?': 'アップデートモードで再起動しますか？',
+  'The controller will disconnect and restart in its bootloader so new firmware can be installed — this app offers to install it when the controller reappears. Unsaved changes will be lost. Only do this if you are updating the firmware.': 'コントローラーが切断され、新しいファームウェアをインストールできるようブートローダーで再起動します。コントローラーが再び認識されると、このアプリからインストールできます。未保存の変更は失われます。ファームウェアをアップデートする場合のみ実行してください。',
+  'Reboot': '再起動',
+  'Rebooting…': '再起動中…',
+  'Rebooting into the bootloader…': 'ブートローダーで再起動しています…',
+  'Couldn’t reboot the controller.': 'コントローラーを再起動できませんでした。',
+};

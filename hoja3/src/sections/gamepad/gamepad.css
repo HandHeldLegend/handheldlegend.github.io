@@ -1,0 +1,108 @@
+/*
+ * gamepad.css — Gamepad page: mode tiles, Switch color preview + presets, MAC editor.
+ * Theme tokens only; the controller preview's fills are the user's colors (set inline as
+ * --pv-* custom properties by pad-preview.js).
+ */
+
+/* ---- Default mode tiles ------------------------------------------------------------------- */
+.gp-modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(140px, 100%), 1fr));
+  gap: var(--space-2);
+}
+.gp-mode {
+  position: relative;
+  display: flex; flex-direction: column; gap: var(--space-1);
+  text-align: left; cursor: pointer;
+  padding: var(--space-3);
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--surface-sunken); color: var(--text);
+  transition: border-color var(--dur-fast), background-color var(--dur-fast), transform var(--dur-fast);
+}
+.gp-mode:hover { border-color: var(--border-strong); }
+.gp-mode:active { transform: translateY(1px); }
+.gp-mode:focus-visible { box-shadow: var(--focus-ring); outline: none; }
+.gp-mode[aria-checked="true"] { border-color: var(--tone); background: var(--tone-soft); }
+.gp-mode-top { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-2); padding-right: 26px; }
+.gp-mode-name { font-weight: 700; font-family: var(--font-display); }
+.gp-mode-check {
+  position: absolute; top: var(--space-2); right: var(--space-2);
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center; flex: none;
+  background: var(--tone); color: var(--text-on-accent);
+  opacity: 0; transform: scale(0.6);
+  transition: opacity var(--dur-fast), transform var(--dur-med) var(--ease-spring);
+}
+.gp-mode-check .icon { width: 14px; height: 14px; }
+.gp-mode[aria-checked="true"] .gp-mode-check { opacity: 1; transform: none; }
+.gp-mode-about { font-size: var(--text-sm); color: var(--text-muted); }
+
+/* ---- Switch colors ------------------------------------------------------------------------ */
+.gp-colors {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--space-4) var(--space-5);
+  align-items: center;
+}
+@media (max-width: 700px) { .gp-colors { grid-template-columns: 1fr; } }
+.gp-color-fields { display: flex; flex-direction: column; min-width: 0; }
+.gp-color-fields .field { grid-template-columns: minmax(0, 1fr) auto; }
+.gp-color-fields .field .field-control { justify-self: end; }
+
+.gp-preview {
+  width: 100%; max-width: 360px; justify-self: center;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface-sunken);
+}
+.gp-preview svg { display: block; width: 100%; height: auto; overflow: visible; }
+.gp-preview svg * { transition: fill var(--dur-med) var(--ease-out); }
+/* Controller artwork regions (pad-preview.js; art: assets/art/procon.svg). Defaults are the source file's
+   colors; derived tones keep the source's relationships (e.g. wells ≈ 25% darker than the body). */
+.gp-preview .pv-body { fill: var(--pv-body, rgb(89 94 97)); }
+.gp-preview .pv-grip-l { fill: var(--pv-grip-l, rgb(63 67 70)); }
+.gp-preview .pv-grip-r { fill: var(--pv-grip-r, rgb(63 67 70)); }
+.gp-preview .pv-btn { fill: var(--pv-buttons, rgb(58 57 59)); }
+.gp-preview .pv-dish { fill: color-mix(in srgb, var(--pv-buttons, rgb(48 48 49)), white 8%); }
+.gp-preview .pv-well { fill: color-mix(in srgb, var(--pv-body, rgb(89 94 97)), black 24%); }
+.gp-preview .pv-well-sm { fill: color-mix(in srgb, var(--pv-body, rgb(89 94 97)), black 28%); }
+.gp-preview .pv-halo { fill: color-mix(in srgb, color-mix(in srgb, var(--pv-body, rgb(89 94 97)), black 22%), rgb(70 76 120) 25%); }
+.gp-preview .pv-home { fill: rgb(137 137 182); }
+.gp-preview .pv-outline { fill: rgb(8 9 10); }
+
+.gp-presets-wrap { display: flex; flex-direction: column; gap: var(--space-2); }
+.gp-presets-label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+.gp-presets { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.gp-preset {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-height: 36px; padding: 0 var(--space-3) 0 var(--space-2);
+  border: 1px solid var(--border); border-radius: var(--radius-pill);
+  background: var(--surface-2); color: var(--text); cursor: pointer;
+  font-size: var(--text-sm); font-weight: 600;
+  transition: border-color var(--dur-fast), transform var(--dur-fast);
+}
+.gp-preset:hover { border-color: var(--tone); }
+.gp-preset:active { transform: translateY(1px); }
+.gp-preset:focus-visible { box-shadow: var(--focus-ring); outline: none; }
+.gp-preset-dots { display: inline-flex; }
+.gp-preset-dots span {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid var(--surface-2);
+  margin-left: -6px;
+}
+.gp-preset-dots span:first-child { margin-left: 0; }
+
+/* ---- MAC editor ---------------------------------------------------------------------------- */
+.gp-mac-field { grid-template-columns: minmax(0, 1fr); }
+.gp-mac-field .field-control { min-width: 0; }
+.mac-editor { display: flex; align-items: center; gap: var(--space-1); flex-wrap: nowrap; width: 100%; max-width: 380px; min-width: 0; }
+.mac-editor .mac-byte {
+  width: 3em; min-width: 0; flex: 1 1 0; max-width: 56px;
+  text-align: center; text-transform: uppercase; font-variant-numeric: tabular-nums;
+  padding-left: 0; padding-right: 0;
+}
+.mac-editor .mac-sep { color: var(--text-faint); font-family: var(--font-mono); font-weight: 700; }
+.gp-mac-note:empty { display: none; }
+
+/* ---- Misc ---------------------------------------------------------------------------------- */
+.gp-build { font-variant-numeric: tabular-nums; }

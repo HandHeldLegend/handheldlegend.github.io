@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HHL Gamepad Config</title>
+  <meta name="description" content="Configure, calibrate and update HOJA-powered controllers from Hand Held Legend. Works offline once installed.">
+  <meta name="theme-color" content="#121117">
+  <meta name="color-scheme" content="dark light">
+
+  <!-- PWA / platform icons -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icons/app/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/icons/app/favicon.ico" sizes="48x48">
+  <link rel="apple-touch-icon" href="assets/icons/app/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HHL Config">
+  <meta name="application-name" content="HHL Config">
+  <meta name="msapplication-TileColor" content="#121117">
+  <meta name="msapplication-TileImage" content="assets/icons/app/mstile-150.png">
+  <!-- iOS launch screens (portrait) -->
+  <link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)" href="assets/icons/splash/splash-1290x2796.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3)" href="assets/icons/splash/splash-1179x2556.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)" href="assets/icons/splash/splash-1284x2778.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)" href="assets/icons/splash/splash-1170x2532.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="assets/icons/splash/splash-750x1334.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="assets/icons/splash/splash-2048x2732.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)" href="assets/icons/splash/splash-1668x2388.png">
+  <link rel="apple-touch-startup-image" media="(device-width: 820px) and (device-height: 1180px) and (-webkit-device-pixel-ratio: 2)" href="assets/icons/splash/splash-1640x2360.png">
+
+  <!-- Agent/LLM-facing description of deep links and settings -->
+  <link rel="alternate" type="text/plain" href="llms.txt" title="LLM guide">
+
+  <!-- Apply the saved theme before first paint (avoids a light/dark flash). Default: dark. -->
+  <script>
+    (function () {
+      try {
+        var p = JSON.parse(localStorage.getItem('hhl-config:prefs') || '{}');
+        var t = p.theme || 'dark';
+        if (t !== 'system') document.documentElement.setAttribute('data-theme', t);
+        var light = t === 'light' || (t === 'system' && matchMedia('(prefers-color-scheme: light)').matches);
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#f8f7f4' : '#121117');
+      } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/shell.css">
+  <link rel="modulepreload" href="src/main.js">
+</head>
+<body>
+  <!-- Splash: shown until src/main.js finishes booting. -->
+  <div id="splash" role="status" aria-live="polite">
+    <img src="assets/icons/app/icon-192.png" alt="" width="96" height="96" class="splash-icon">
+    <div class="splash-title"><strong>HHL</strong> Gamepad Config</div>
+    <div class="sfc-loader motion-ok" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="splash-status">Loading…</div>
+  </div>
+
+  <div id="app-root"></div>
+
+  <noscript>
+    <p style="padding:24px">HHL Gamepad Config needs JavaScript. Please enable it and reload.</p>
+  </noscript>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

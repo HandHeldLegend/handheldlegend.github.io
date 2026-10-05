@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<title>HHL Gamepad Config</title>
+<defs><linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B1A22"/><stop offset="1" stop-color="#121117"/></linearGradient></defs>
+<rect x="0" y="0" width="1024" height="1024" rx="230" fill="url(#tile)"/>
+<circle cx="512" cy="512" r="430" fill="none" stroke="#8E7CC3" stroke-width="16"/>
+<circle cx="512" cy="532" r="372" fill="#C9C7D3"/>
+<circle cx="512" cy="512" r="372" fill="#E9E8EE"/>
+<rect x="267.45" y="267.45" width="489.1" height="489.1" rx="130" transform="rotate(45 512 512)" fill="#C9C7D3"/>
+<circle cx="512" cy="361" r="98" fill="#6E6B7B"/>
+<circle cx="512" cy="347" r="98" fill="#2F6BD8"/>
+<circle cx="677" cy="526" r="98" fill="#6E6B7B"/>
+<circle cx="677" cy="512" r="98" fill="#E23B3B"/>
+<circle cx="512" cy="691" r="98" fill="#6E6B7B"/>
+<circle cx="512" cy="677" r="98" fill="#F4B41A"/>
+<circle cx="347" cy="526" r="98" fill="#6E6B7B"/>
+<circle cx="347" cy="512" r="98" fill="#23A35A"/>
+</svg>
