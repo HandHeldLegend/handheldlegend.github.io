@@ -804,3 +804,58 @@ h3 {
     font-size: 14px;
     color: #28ce80a9;
 }
+
+/* ---- New app banner (links to hoja3) ---- */
+.new-app-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--color-p3) 22%, var(--background-low)) 0%, var(--background-low) 100%);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-p3) 45%, transparent);
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    user-select: text;
+}
+.new-app-banner[hidden] { display: none; }
+.new-app-dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-p3);
+    box-shadow: 0 0 8px var(--color-p3);
+}
+.new-app-text { margin: 0; flex: 1; min-width: 0; }
+.new-app-open {
+    flex: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--color-p3-grad);
+    color: #0b2416;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.new-app-open:hover, .new-app-open:focus-visible { filter: brightness(1.08); }
+.new-app-open:focus-visible, .new-app-close:focus-visible { outline: 2px solid white; outline-offset: 2px; }
+.new-app-close {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: white;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.75;
+}
+.new-app-close:hover { opacity: 1; background: rgb(255 255 255 / 0.1); }
+@media (max-width: 640px) {
+    .new-app-banner { flex-wrap: wrap; }
+    .new-app-text { flex-basis: calc(100% - 50px); }
+    .new-app-open { margin-left: 22px; }
+}

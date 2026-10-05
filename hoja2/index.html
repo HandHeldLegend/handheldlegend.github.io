@@ -14,6 +14,16 @@
 <body>
     <div class="app-container">
         <div class="app-header-container">
+            <!-- Points hoja2 users to the new app (hoja3). Dismissal is remembered per browser. -->
+            <div id="new-app-banner" class="new-app-banner" role="region" aria-label="New app available" hidden>
+                <span class="new-app-dot" aria-hidden="true"></span>
+                <p class="new-app-text">
+                    <strong>New: HHL Gamepad Config</strong> &mdash; the next version of this app.
+                    Your settings stay on the controller.
+                </p>
+                <a class="new-app-open" href="https://handheldlegend.github.io/hoja3/">Try the new app</a>
+                <button type="button" class="new-app-close" id="new-app-close" aria-label="Dismiss" title="Dismiss">&times;</button>
+            </div>
             <div class="app-header">
                 <div class="center-buttons">
 
@@ -137,6 +147,20 @@
 
     <script src="./js/app.js" type="module"></script>
     
+    <script>
+        // New-app banner: shown until dismissed on this browser.
+        (function () {
+            var KEY = 'hhl-new-app-banner-dismissed';
+            var banner = document.getElementById('new-app-banner');
+            var dismissed = false;
+            try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) { /* storage blocked */ }
+            if (!dismissed) banner.hidden = false;
+            document.getElementById('new-app-close').addEventListener('click', function () {
+                banner.hidden = true;
+                try { localStorage.setItem(KEY, '1'); } catch (e) { /* storage blocked */ }
+            });
+        })();
+    </script>
 </body>
 
 </html>
