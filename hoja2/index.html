@@ -14,15 +14,18 @@
 <body>
     <div class="app-container">
         <div class="app-header-container">
-            <!-- Points hoja2 users to the new app (hoja3). Dismissal is remembered per browser. -->
-            <div id="new-app-banner" class="new-app-banner" role="region" aria-label="New app available" hidden>
+            <!-- Retirement notice: hoja2 is replaced by HHL Gamepad Config (hoja3). Dismissing hides it for
+                 3 days; in the last 14 days before RETIRE_DATE it can't be dismissed. See the script below. -->
+            <div id="new-app-banner" class="new-app-banner retiring" role="region" aria-label="This app is being retired">
                 <span class="new-app-dot" aria-hidden="true"></span>
-                <p class="new-app-text">
-                    <strong>New: HHL Gamepad Config</strong>, the next version of this app.
-                    Your settings stay on the controller.
-                </p>
-                <a class="new-app-open" href="https://handheldlegend.github.io/hoja3/">Try the new app</a>
-                <button type="button" class="new-app-close" id="new-app-close" aria-label="Dismiss" title="Dismiss">&times;</button>
+                <div class="new-app-text">
+                    <p><strong>This app is being retired on <span id="retire-date">December 7, 2026</span>.</strong>
+                    Please move to <strong>HHL Gamepad Config</strong>, its replacement.</p>
+                    <p class="new-app-why">New firmware features (Wii mode, the ESP32 HCI bridge update, per-mode motion and motion
+                    flicks) are only supported there. Your settings stay on the controller, so nothing is lost.</p>
+                </div>
+                <a class="new-app-open" href="https://handheldlegend.github.io/hoja3/">Open the new app</a>
+                <button type="button" class="new-app-close" id="new-app-close" aria-label="Hide for 3 days" title="Hide for 3 days">&times;</button>
             </div>
             <div class="app-header">
                 <div class="center-buttons">
@@ -148,16 +151,24 @@
     <script src="./js/app.js" type="module"></script>
     
     <script>
-        // New-app banner: shown until dismissed on this browser.
+        // Retirement notice: visible by default. "x" hides it for 3 days on this browser; in the last
+        // 14 days before the retirement date it stays up (no close button).
         (function () {
-            var KEY = 'hhl-new-app-banner-dismissed';
+            var RETIRE_DATE = new Date('2026-12-07T00:00:00');
+            var KEY = 'hhl-retire-banner-hidden-until';
+            var SNOOZE_MS = 3 * 24 * 60 * 60 * 1000;
+            var FINAL_MS = 14 * 24 * 60 * 60 * 1000;
             var banner = document.getElementById('new-app-banner');
-            var dismissed = false;
-            try { dismissed = localStorage.getItem(KEY) === '1'; } catch (e) { /* storage blocked */ }
-            if (!dismissed) banner.hidden = false;
-            document.getElementById('new-app-close').addEventListener('click', function () {
+            var close = document.getElementById('new-app-close');
+            var now = Date.now();
+            var final = RETIRE_DATE.getTime() - now < FINAL_MS;
+            var hiddenUntil = 0;
+            try { hiddenUntil = Number(localStorage.getItem(KEY)) || 0; } catch (e) { /* storage blocked */ }
+            if (final) { close.hidden = true; banner.hidden = false; }
+            else banner.hidden = hiddenUntil > now;
+            close.addEventListener('click', function () {
                 banner.hidden = true;
-                try { localStorage.setItem(KEY, '1'); } catch (e) { /* storage blocked */ }
+                try { localStorage.setItem(KEY, String(Date.now() + SNOOZE_MS)); } catch (e) { /* storage blocked */ }
             });
         })();
     </script>

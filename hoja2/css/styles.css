@@ -859,3 +859,14 @@ h3 {
     .new-app-text { flex-basis: calc(100% - 50px); }
     .new-app-open { margin-left: 22px; }
 }
+
+/* Retirement variant of the banner: warmer, more visible, with a second line of reasons. */
+.new-app-banner.retiring {
+    background: linear-gradient(90deg, color-mix(in srgb, var(--color-p2) 30%, var(--background-low)) 0%, var(--background-low) 100%);
+    border-bottom-color: color-mix(in srgb, var(--color-p2) 60%, transparent);
+}
+.new-app-banner.retiring .new-app-dot { background: var(--color-p2); box-shadow: 0 0 8px var(--color-p2); }
+.new-app-banner.retiring .new-app-open { background: var(--color-p2-grad); color: #2a1600; }
+.new-app-text p { margin: 0; }
+.new-app-why { margin-top: 2px !important; font-size: 0.82rem; opacity: 0.85; }
+.new-app-close[hidden] { display: none; }
