@@ -106,11 +106,9 @@ fail() {
   exit 1
 }
 
-echo "Erasing the module..."
-"${ESPTOOL[@]}" --chip esp32 --port "$PORT" --baud "$BAUD" --before default_reset --after no_reset erase_flash || fail
-echo
-echo "Writing $NAME (takes about a minute)..."
-"${ESPTOOL[@]}" --chip esp32 --port "$PORT" --baud "$BAUD" --before default_reset --after hard_reset write_flash \
+# One connection: erase everything, then write (a separate erase left the stub at the high baud rate).
+echo "Erasing the module and writing $NAME (takes about a minute)..."
+"${ESPTOOL[@]}" --chip esp32 --port "$PORT" --baud "$BAUD" --before default_reset --after hard_reset write_flash --erase-all \
   0x1000 "$TMP/bootloader.bin" \
   0x8000 "$TMP/partitions.bin" \
   0x10000 "$TMP/firmware.bin" || fail
