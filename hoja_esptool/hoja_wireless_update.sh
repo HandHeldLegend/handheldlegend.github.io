@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 # HOJA wireless module (ESP32) updater for Linux and macOS.
-# Installs the HCI bridge (current controller firmware) or the HOJA baseband (older controller
-# firmware) with esptool. https://handheldlegend.github.io/hoja3/
+# Installs the HCI bridge firmware with esptool. https://handheldlegend.github.io/hoja3/
 #
-#   bash hoja_wireless_update.sh            # asks which firmware, finds the port
-#   bash hoja_wireless_update.sh bridge     # or: baseband
+#   bash hoja_wireless_update.sh            # finds the port
 #   PORT=/dev/ttyUSB0 bash hoja_wireless_update.sh
 set -euo pipefail
 
 BRIDGE_BASE="https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-HCI-Bridge/main/build"
-LEGACY_BASE="https://raw.githubusercontent.com/HandHeldLegend/HOJA-ESP32-Baseband/master/build"
 BAUD="${BAUD:-460800}"
 
 echo "==============================================="
@@ -31,19 +28,8 @@ fi
 command -v curl >/dev/null 2>&1 || { echo "[ERROR] curl isn't installed."; exit 1; }
 
 # --- firmware ------------------------------------------------------------------------------------
-PICK="${1:-}"
-if [[ -z "$PICK" ]]; then
-  echo "Which wireless firmware?"
-  echo "  1. HCI bridge     - current controller firmware (the app's Wireless page shows \"ESP32 HCI\")"
-  echo "  2. HOJA baseband  - older controller firmware (the Wireless page shows \"ESP32\")"
-  read -r -p "Enter 1 or 2 [1]: " PICK || true
-fi
-case "$PICK" in
-  2|baseband|legacy) NAME="HOJA baseband"; BASE="$LEGACY_BASE"; APP="ESP32.bin" ;;
-  *)                 NAME="HCI bridge";    BASE="$BRIDGE_BASE"; APP="hoja_hci_bridge.bin" ;;
-esac
-echo
-echo "Installing: $NAME"
+NAME="HCI bridge"; BASE="$BRIDGE_BASE"; APP="hoja_hci_bridge.bin"
+echo "Installing: HCI bridge (needs current controller firmware: the app's Wireless page shows \"ESP32 HCI\")"
 echo
 
 TMP="$(mktemp -d)"
@@ -117,5 +103,5 @@ echo
 echo "==============================================="
 echo "[SUCCESS] $NAME installed."
 echo "==============================================="
-echo "Unplug the controller to finish. If you switched firmware families"
-echo "(HOJA baseband to HCI bridge), pair your Switch and other hosts again."
+echo "Unplug the controller to finish. Coming from the older HOJA baseband firmware?"
+echo "Pair your Switch and other hosts again."
