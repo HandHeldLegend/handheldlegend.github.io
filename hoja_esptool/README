@@ -5,3 +5,7 @@ then
 npm run build
 
 cheers
+Offline updaters (no browser needed; both use esptool, which resets the module correctly):
+  hoja-local-updater-win.zip   Windows: esptool.exe + hoja_wireless_update.bat
+  hoja_wireless_update.sh      Linux/macOS: bash hoja_wireless_update.sh [bridge|baseband]
+Both install the HCI bridge (current controller firmware) by default, or the HOJA baseband.
