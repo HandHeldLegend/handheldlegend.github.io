@@ -51,7 +51,7 @@ echo "Put the controller in update mode"
 echo "==============================================="
 echo "1. Close browser tabs and other apps that might use the controller's serial port."
 echo "2. Unplug the controller."
-echo "3. Hold Start/Plus and R Bumper, keep holding, and plug it in."
+echo "3. Hold Start/Plus and R Bumper (ZR on GC Ultimate), keep holding, and plug it in."
 echo "   The lights pulse orange in update mode."
 echo "   (Or use the web app's wireless module update up to its Connect step, then close the browser.)"
 read -r -p "4. Press Enter to start. " _ || true
