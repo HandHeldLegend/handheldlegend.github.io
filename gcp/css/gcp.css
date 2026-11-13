@@ -1,0 +1,526 @@
+/*
+ * GC Pocket firmware update page.
+ * Colors follow the HHL Gamepad Config tool (hoja3/css/tokens.css): dark by default,
+ * light when the visitor's system asks for it.
+ */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #121117;
+  --surface: #1b1a22;
+  --surface-2: #24232d;
+  --border: #302e3a;
+  --text: #ecebf2;
+  --text-muted: #a09dae;
+  --accent: #a493e0;
+  --accent-soft: rgb(164 147 224 / 0.16);
+  --fill-accent: #7461b5;
+  --on-accent: #ffffff;
+  --notice-bg: rgb(247 193 64 / 0.15);
+  --notice-border: rgb(247 193 64 / 0.45);
+  --focus-ring: 0 0 0 3px rgb(164 147 224 / 0.55);
+  --press-depth: 0 3px 0 rgb(0 0 0 / 0.45);
+
+  --led-yellow: #f7c140;
+  --led-green: #3cc276;
+  --led-purple: #a26bf0;
+  --led-cyan: #3fd0e0;
+
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Roboto", "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-rounded, "SF Pro Rounded", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Roboto Mono", monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --surface-2: #f2f1f5;
+    --border: #e3e1e9;
+    --text: #1e1c26;
+    --text-muted: #5f5c6d;
+    --accent: #7b68b8;
+    --accent-soft: rgb(142 124 195 / 0.14);
+    --fill-accent: #6a57a8;
+    --notice-bg: rgb(244 180 26 / 0.16);
+    --notice-border: rgb(217 154 6 / 0.55);
+    --focus-ring: 0 0 0 3px rgb(123 104 184 / 0.40);
+    --press-depth: 0 3px 0 rgb(30 28 38 / 0.18);
+
+    --led-yellow: #e0a40c;
+    --led-green: #1e9152;
+    --led-purple: #7b3fd6;
+    --led-cyan: #0f9fb3;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.page {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---- Text ---- */
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.2;
+  margin: 1.5rem 0 0.5rem;
+}
+
+h2 + h3 {
+  margin-top: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--surface-2);
+  border-radius: 6px;
+  padding: 0.1em 0.35em;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.page-head {
+  text-align: center;
+  padding: 0 0.5rem 0.5rem;
+}
+
+.page-head p {
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+/* ---- Cards ---- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1.25rem;
+}
+
+.step-num {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--fill-accent);
+  color: var(--on-accent);
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Adapter picker ---- */
+
+.adapter-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.adapter-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 1rem 0.75rem;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  cursor: pointer;
+  text-align: center;
+}
+
+.adapter-option:hover {
+  border-color: var(--accent);
+}
+
+.adapter-option:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.adapter-option:has(input:focus-visible) {
+  box-shadow: var(--focus-ring);
+}
+
+/* The radio itself is hidden; the whole card is its label. */
+.adapter-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.adapter-art {
+  width: 100%;
+  max-width: 9rem;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+.adapter-art rect {
+  fill: var(--fill-accent);
+}
+
+.adapter-art circle {
+  fill: var(--surface);
+}
+
+.adapter-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.adapter-note {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ---- Update panel ---- */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Without JavaScript both panels show; keep them visibly apart. */
+.panel + .panel {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.panel[hidden] + .panel {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.latest {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+.latest-label {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.latest strong {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.latest-notes {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  white-space: pre-line;
+  margin-top: 0.25rem;
+}
+
+/* "What's new": a dropdown inside the latest-version box */
+.whatsnew {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
+
+.whatsnew summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.whatsnew summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron: points down when closed, up when open */
+.whatsnew summary::after {
+  content: "";
+  flex: none;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin: 0 0.3rem 0.2rem 0;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+.whatsnew[open] summary::after {
+  margin-bottom: -0.2rem;
+  transform: rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whatsnew summary::after {
+    transition: none;
+  }
+}
+
+.whatsnew summary:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.changes {
+  list-style: none;
+  margin: 0.85rem 0 0.25rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.changes li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.latest .changes strong {
+  font-family: var(--font-ui);
+  font-size: 1rem;
+}
+
+.changes span {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 2.25rem;
+}
+
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* The installer element creates its own <button>; style it like every other button here. */
+.btn,
+esp-web-install-button button {
+  appearance: none;
+  display: inline-block;
+  border: 0;
+  border-radius: 12px;
+  background: var(--fill-accent);
+  color: var(--on-accent);
+  box-shadow: var(--press-depth);
+  font: inherit;
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn:hover,
+esp-web-install-button button:hover {
+  filter: brightness(1.1);
+}
+
+.btn:active,
+esp-web-install-button button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.45);
+}
+
+.btn:focus-visible,
+esp-web-install-button button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.notice {
+  background: var(--notice-bg);
+  border: 1px solid var(--notice-border);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+
+/* ---- Usage reference ---- */
+
+.modes {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modes li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.6rem;
+  background: var(--surface-2);
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+}
+
+.modes .muted {
+  margin-left: auto;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* Two LEDs side by side for a mode with two colors */
+.modes .led + .led {
+  margin-left: -0.3rem;
+}
+
+.explainer {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 12px 12px 0;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.explainer + .explainer {
+  margin-top: 0.75rem;
+}
+
+.small {
+  font-size: 0.85rem;
+  margin-top: 1rem;
+}
+
+.led {
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+}
+
+.led-yellow { background: var(--led-yellow); }
+.led-green { background: var(--led-green); }
+.led-purple { background: var(--led-purple); }
+.led-cyan { background: var(--led-cyan); }
+
+.tips {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* ---- Footer ---- */
+
+.page-foot {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+

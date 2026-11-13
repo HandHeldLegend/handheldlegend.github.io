@@ -1,216 +1,254 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script type="module" src="/js/esp32webtool/install-button.js"> </script>
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
-  <link rel="stylesheet" href="css/gcp_config.css" type="text/css">
-  <link rel="stylesheet" href="/css/sliderPicker.css" type="text/css">
-  <link rel="stylesheet" href="/css/radioPicker.css" type="text/css">
-  <link rel="stylesheet" href="/css/containers.css" type="text/css">
-  
-
-  <!-- Meta Tags required for
-       Progressive Web App -->
-  <meta name="apple-mobile-web-app-status-bar" content="#aa7700">
-  <meta name="theme-color" content="black">
-
-  <!-- Manifest File link -->
-  <link rel="manifest" href="manifest.json">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GC Pocket Firmware Update</title>
+  <meta name="description" content="Update the firmware on your Hand Held Legend GC Pocket or GC Pocket+ GameCube controller adapter.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237461b5'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/gcp.css">
+  <!-- Browser installer for the GC Pocket (ESP32-S3). Shared with other pages on this site. -->
+  <script type="module" src="/js/esp32webtool/install-button.js"></script>
 </head>
 
 <body>
-  <div class="context">
+  <main class="page">
 
-    <ul class="circles">
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-    </ul>
+    <header class="page-head">
+      <h1>GC Pocket Firmware Update</h1>
+      <p>Update the firmware on your GC Pocket or GC Pocket+ adapter.</p>
+    </header>
 
-    <h1>GC Pocket Update Tool</h1>
+    <!-- 1. Which adapter -->
+    <section class="card" aria-labelledby="pick-title">
+      <h2 id="pick-title"><span class="step-num">1</span> Pick your adapter</h2>
 
-    <div class="box">
-      <div class="box-inner">
-        <!--<button type="button" id="installButton" onclick="installButton()" >{install}</button>-->
-        <!--<div class="row">
-          <button type="button" id="connectButton" onclick="connectButton()">Connect</button>
-          <button type="button" id="disconnectButton" onclick="disconnectButton()" disabled>Disconnect</button>
-        </div>-->
+      <div class="adapter-picker" role="radiogroup" aria-labelledby="pick-title">
+        <label class="adapter-option">
+          <input type="radio" name="adapter" value="gcp">
+          <svg class="adapter-art" viewBox="0 0 120 56" aria-hidden="true">
+            <rect x="34" y="8" width="52" height="40" rx="10" />
+            <circle cx="60" cy="28" r="9" />
+          </svg>
+          <span class="adapter-name">GC Pocket</span>
+          <span class="adapter-note">1 controller port</span>
+        </label>
 
-        <!-- INITIAL FW INSTALL MSG BOX ESP32-S3 -->
-        <div class="message-box" id="esp32-initialize-board-box" disabled="true">
+        <label class="adapter-option">
+          <input type="radio" name="adapter" value="gcpplus">
+          <svg class="adapter-art" viewBox="0 0 120 56" aria-hidden="true">
+            <rect x="4" y="8" width="112" height="40" rx="10" />
+            <circle cx="21" cy="28" r="9" />
+            <circle cx="47" cy="28" r="9" />
+            <circle cx="73" cy="28" r="9" />
+            <circle cx="99" cy="28" r="9" />
+          </svg>
+          <span class="adapter-name">GC Pocket+</span>
+          <span class="adapter-note">4 controller ports</span>
+        </label>
+      </div>
+    </section>
 
-          <h2>Update Device</h2>
-          To initialize your GC Pocket, first, unplug the device. Hold down both buttons, then plug in the device via USB.
-          Use the button below to install the new firmware to your GC Pocket. Choose 'USB JTag' to flash the appropriate device.
+    <!-- 2. Update steps. Each panel below is one adapter; everything that differs between them lives here. -->
+    <section class="card" aria-labelledby="update-title">
+      <h2 id="update-title"><span class="step-num">2</span> Update</h2>
 
-          <div class="full-width">
-            <div class="line"></div>
-          </div>
+      <p class="muted" id="pick-hint" hidden>Pick your adapter above to see the steps.</p>
 
-          <div class="full-width" id="fwChangeLog">
-            5.21.2024
-            <br>
-            - Update Frame Alignment
-            <br>
-            - FramePerfect Update
-            <br>
-          </div>
+      <!-- GC Pocket: single port, ESP32-S3, installed from the browser -->
+      <div class="panel" data-adapter="gcp"
+        data-manifest="https://raw.githubusercontent.com/HandHeldLegend/GC-Adapter-ESP32-S3/main/FW/manifest.json">
 
-          <div class="full-width">
-            <div class="line"></div>
-          </div>
-
-          <div class="row">
-          <esp-web-install-button id="install_esp32" manifest="https://raw.githubusercontent.com/HandHeldLegend/GC-Adapter-ESP32-S3/main/FW/esp32manifest.json"></esp-web-install-button>
-          </div>
+        <div class="latest" data-latest>
+          <span class="latest-label">Latest firmware for GC Pocket</span>
+          <strong data-version>Checking…</strong>
+          <p class="latest-notes" data-notes hidden></p>
+          <details class="whatsnew" data-whatsnew="13" hidden>
+            <summary>What&rsquo;s new in version 13</summary>
+            <ul class="changes">
+              <li>
+                <strong>Rumble no longer turns on by itself</strong>
+                <span>In GameCube mode, some games send a &ldquo;brake&rdquo; signal to stop the motor quickly. The adapter read it as &ldquo;on&rdquo;, so in Super Smash Bros. for Wii U every controller rumbled from the start of a match.</span>
+              </li>
+              <li>
+                <strong>Hold a button to change modes</strong>
+                <span>Hold the left or right button for about a second and let go when the LEDs show the next mode&rsquo;s color. A quick press does nothing, so bumping a button can&rsquo;t change your mode any more.</span>
+              </li>
+              <li>
+                <strong>Hold both buttons to save your mode</strong>
+                <span>Hold both for about a second to make the current mode the one the adapter starts in. The LEDs blink twice when it is saved.</span>
+              </li>
+              <li>
+                <strong>One GameCube mode instead of two</strong>
+                <span>GameCube and Slippi are now a single mode. The adapter works out whether it is plugged into a console (purple, 8 ms) or a computer (cyan, 1000 inputs a second) by itself.</span>
+              </li>
+              <li>
+                <strong>Switch mode: better rumble and timing</strong>
+                <span>Rumble follows what the game asks for much more closely, and inputs are sent in step with the console&rsquo;s frames.</span>
+              </li>
+              <li>
+                <strong>Switch mode on a computer: plug the controller in any time</strong>
+                <span>A controller plugged in after the adapter now shows up in Steam. The adapter restarts itself for a moment to make that happen.</span>
+              </li>
+              <li>
+                <strong>XInput mode: triggers and sticks rest at zero</strong>
+                <span>A trigger that sat a hair above zero, or a centered stick that read slightly off, now reads exactly zero.</span>
+              </li>
+              <li>
+                <strong>No more browser pop-up</strong>
+                <span>Plugging the adapter in no longer makes Chrome or Edge offer to open this page.</span>
+              </li>
+            </ul>
+          </details>
         </div>
 
-        <!-- INITIAL FW INSTALL MSG BOX RP2040 -->
-        <div class="message-box" id="rp2040-initialize-board-box" disabled="true">
-          <h2>Update Device</h2>
-          To initialize your GC Pocket+, hold down both buttons, then plug in the device via USB.
-          Download the firmware using the button below, then drag the firmware to the RPI-RP2 device in your file explorer/Finder app. 
+        <ol class="steps">
+          <li>Unplug the adapter from USB.</li>
+          <li>Hold down <strong>both buttons</strong> on the adapter and plug it into your computer. Then let go.</li>
+          <li>Click <strong>Install firmware</strong> below. The list that opens shows only your adapter, as
+            <strong>USB JTAG/serial debug unit</strong>: select it and click Connect. If the list is empty, the
+            adapter isn't in update mode, so go back to step 1.</li>
+          <li>Follow the prompts. When the install is complete, unplug the adapter and plug it back in.</li>
+        </ol>
 
-          <div class="full-width">
-            <div class="line"></div>
-          </div>
-
-          <div class="full-width" id="fwChangeLog">
-            5.21.2024
-            <br>
-            - Update Frame Alignment
-            <br>
-            - FramePerfect Update
-            <br>
-          </div>
-
-          <div class="full-width">
-            <div class="line"></div>
-          </div>
-
-          <div class="row">
-          <a id="downloadLink"
-            href="https://github.com/HandHeldLegend/GC-Adapter-RP2040/raw/master/FW/build/gc_adapter_rp2040.uf2" download>
-            <button type="button" id="fwButton">Download</button></div>
-          </a>
+        <div class="actions">
+          <esp-web-install-button id="install-gcp"
+            manifest="https://raw.githubusercontent.com/HandHeldLegend/GC-Adapter-ESP32-S3/main/FW/esp32manifest.json"></esp-web-install-button>
         </div>
 
-        <!-- INFO -->
-        <!-- --------------- -->
-        <div class="collapsible" enabled="true">
+        <p class="notice" id="serial-notice" hidden>
+          This adapter updates straight from the browser, which only works in <strong>Chrome</strong> or
+          <strong>Edge</strong> on a computer. Open this page there to continue.
+        </p>
+      </div>
 
-          <input id="info-drop" class="toggle" type="checkbox">
+      <!-- GC Pocket+: four ports, RP2040, updated by copying a file -->
+      <div class="panel" data-adapter="gcpplus"
+        data-manifest="https://raw.githubusercontent.com/HandHeldLegend/GC-Adapter-RP2040/master/FW/manifest.json">
 
-          <label for="info-drop" id="info-toggle" , class="lbl-toggle">Usage Info</label>
-          <div class="dropdown">
-            
-
-            <div class="full-width">
-              <p>Use either button to cycle the mode. The LED color indicates the current mode.</p><br>
-              <p>Press both buttons together to save the default mode.</p>
-              <div class="line"></div>
-            </div>
-
-            <div class="full-width">
-            <div class="collapsible-row-double">
-              <row>
-                <h2>Switch Mode</h2>
-                Yellow LED
-              </row>
-              <row>
-                <h2>XInput Mode</h2>
-                Green LED
-              </row>
-            </div></div>
-
-            <div class="line"></div>
-
-            <div class="full-width">
-            <div class="collapsible-row-double">
-              
-              <row>
-                <h2>GC USB Mode</h2>
-                Purple LED
-              </row>
-              <row>
-                <h2>Slippi Mode</h2>
-                Cyan LED
-              </row>
-            </div>
-            </div>
-
-            <div class="line"></div>
-
-            <div class="full-width">
-              Socials
-            <div class="row">
-              
-              <button type="button" onclick="window.open('https:/\/\/discord.gg/nCcbR6Z75C', '_blank')">Discord</button>
-              <button type="button" onclick="window.open('https:/\/\/x.com/MitchHHL', '_blank')">  X  </button>
-            </div>
-          </div>
-
-          </div>
-        </div>
-        <!-- --------------- -->
-
-        <!-- Initialization  -->
-        <!-- --------------- -->
-        <div class="collapsible" enabled="true">
-
-          <input id="init-drop" class="toggle" type="checkbox">
-
-          <label for="init-drop" id="init-toggle" , class="lbl-toggle">Update Device</label>
-          <div class="dropdown">
-
-            
-
-            <div class="full-width">
-              <p>Click the button corresponding to your device.</p>
-              <div class="line"></div>
-            </div>
-
-            <div class="full-width">
-            <div class="row">
-              <button type="button" onclick="window.location.href = window.location.href.split('?')[0] + '?init=gcp'">Single Port</button>
-              <button type="button" onclick="window.location.href = window.location.href.split('?')[0] + '?init=gcpplus'">4 Port</button>
-            </div>
-          </div>
-
-          </div>
+        <div class="latest" data-latest>
+          <span class="latest-label">Latest firmware for GC Pocket+</span>
+          <strong data-version>Checking…</strong>
+          <p class="latest-notes" data-notes hidden></p>
+          <details class="whatsnew" data-whatsnew="13" hidden>
+            <summary>What&rsquo;s new in version 13</summary>
+            <ul class="changes">
+              <li>
+                <strong>Rumble no longer turns on by itself</strong>
+                <span>In GameCube mode, some games send a &ldquo;brake&rdquo; signal to stop the motor quickly. The adapter read it as &ldquo;on&rdquo;, so in Super Smash Bros. for Wii U every controller rumbled from the start of a match.</span>
+              </li>
+              <li>
+                <strong>Hold a button to change modes</strong>
+                <span>Hold the left or right button for about a second and let go when the LEDs show the next mode&rsquo;s color. A quick press does nothing, so bumping a button can&rsquo;t change your mode any more.</span>
+              </li>
+              <li>
+                <strong>Hold both buttons to save your mode</strong>
+                <span>Hold both for about a second to make the current mode the one the adapter starts in. The LEDs blink twice when it is saved.</span>
+              </li>
+              <li>
+                <strong>One GameCube mode instead of two</strong>
+                <span>GameCube and Slippi are now a single mode. The adapter works out whether it is plugged into a console (purple, 8 ms) or a computer (cyan, 1000 inputs a second) by itself.</span>
+              </li>
+              <li>
+                <strong>Switch mode: better rumble and timing</strong>
+                <span>Rumble follows what the game asks for much more closely, and inputs are sent in step with the console&rsquo;s frames.</span>
+              </li>
+              <li>
+                <strong>Switch mode on a computer: plug controllers in any time</strong>
+                <span>A controller plugged in after the adapter now shows up in Steam. The other controllers drop out for about a second while the adapter reconnects.</span>
+              </li>
+              <li>
+                <strong>XInput mode: all four controllers in Steam</strong>
+                <span>The adapter now appears as an Xbox 360 wireless receiver, so each controller is its own Xbox 360 Wireless Controller and empty ports show as nothing. Before, Steam only saw the first controller.</span>
+              </li>
+              <li>
+                <strong>XInput mode: triggers and sticks rest at zero</strong>
+                <span>A trigger that sat a hair above zero, or a centered stick that read slightly off, now reads exactly zero.</span>
+              </li>
+              <li>
+                <strong>No more browser pop-up</strong>
+                <span>Plugging the adapter in no longer makes Chrome or Edge offer to open this page.</span>
+              </li>
+            </ul>
+          </details>
         </div>
 
+        <ol class="steps">
+          <li>Unplug the adapter from USB.</li>
+          <li>Hold down <strong>both buttons</strong> on the adapter and plug it into your computer. Let go once a
+            drive named <strong>RPI-RP2</strong> shows up.</li>
+          <li>Click <strong>Download firmware</strong> below.</li>
+          <li>Drag the downloaded <code>gc_adapter_rp2040.uf2</code> file onto the <strong>RPI-RP2</strong> drive.
+            The drive disappears and the adapter restarts by itself. That means the update worked.</li>
+        </ol>
 
+        <div class="actions">
+          <a class="btn"
+            href="https://raw.githubusercontent.com/HandHeldLegend/GC-Adapter-RP2040/master/FW/build/gc_adapter_rp2040.uf2"
+            download="gc_adapter_rp2040.uf2">Download firmware</a>
+        </div>
+      </div>
+    </section>
 
-    </div>
-  </div>
-  <!-- --------------- -->
+    <!-- Reference -->
+    <section class="card" aria-labelledby="usage-title">
+      <h2 id="usage-title">Using your adapter</h2>
 
+      <h3>Modes</h3>
+      <p>The LED color shows the current mode.</p>
 
+      <ul class="modes">
+        <li><span class="led led-yellow"></span><strong>Switch</strong><span class="muted">Yellow</span></li>
+        <li><span class="led led-green"></span><strong>XInput</strong><span class="muted">Green</span></li>
+        <li><span class="led led-purple"></span><span class="led led-cyan"></span><strong>GameCube</strong><span
+            class="muted">Purple on a console, cyan on a computer</span></li>
+      </ul>
 
-  </div>
-  </div>
-  </div>
-  <div class="footer">
-    <a href="https://handheldlegend.github.io/attributions.html" target="_blank">JS/CSS Attributions</a> | Site by Mitch
-    Cairns | ©
-    2023, Hand Held Legend
-  </div>
-  <script src="js/gcp_version.js"></script>
-  <script src="js/gcp_config.js"></script>
+      <div class="explainer">
+        <strong>GameCube mode works out what it is plugged into.</strong>
+        <p>On a console it behaves like Nintendo's own GameCube adapter and sends your inputs every 8 ms. The LEDs
+          stay purple.</p>
+        <p>On a computer it sends 1000 inputs a second, which is what Slippi and Dolphin want. The LEDs turn cyan a
+          moment after you plug it in.</p>
+        <p>You don't pick between the two, and there is no separate Slippi mode any more.</p>
+      </div>
 
+      <div class="explainer">
+        <strong>XInput mode on the GC Pocket+ shows up as an Xbox 360 wireless receiver.</strong>
+        <p>Each controller you plug in appears on your computer as its own Xbox 360 Wireless Controller, and a port
+          with nothing in it shows as no controller. That is how Steam and Windows tell the four ports apart.</p>
+        <p>The single-port GC Pocket shows up as one wired Xbox 360 controller.</p>
+      </div>
+
+      <h3>Changing modes</h3>
+      <ul class="tips">
+        <li>Hold the left or right button for about a second. When the LEDs change to the next mode's color, let go
+          and the adapter switches to it.</li>
+        <li>A quick press does nothing, so bumping a button can't change your mode.</li>
+        <li>Unplug your controllers first: the buttons are locked while a controller is connected.</li>
+        <li>To make the current mode the one the adapter starts in, hold both buttons for about a second. The LEDs
+          blink twice when it is saved.</li>
+      </ul>
+
+      <p class="muted small">This describes firmware 13, the current version for both adapters. Older
+        firmware changes mode and saves on a quick press, and has Slippi as its own cyan mode.</p>
+    </section>
+
+    <footer class="page-foot">
+      <p>
+        Need help?
+        <a href="https://discord.handheldlegend.com" target="_blank" rel="noopener">Discord</a>
+        <span aria-hidden="true">·</span>
+        <a href="https://x.com/MitchHHL" target="_blank" rel="noopener">X</a>
+      </p>
+      <p>© Hand Held Legend</p>
+    </footer>
+
+  </main>
+
+  <script src="js/gcp.js"></script>
 </body>
 
 </html>
